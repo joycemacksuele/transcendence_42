@@ -1,0 +1,19 @@
+# Logs
+logs/
+npm-debug.log
+
+# Versioning and metadata
+.git
+.gitignore
+.dockerignore
+
+# Build dependencies
+node_modules
+
+# Environment (contains sensitive data)
+.env
+
+# Files not required for production
+.editorconfig
+tslint.json
+nodemon.json
