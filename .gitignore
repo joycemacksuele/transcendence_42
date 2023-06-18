@@ -1,5 +1,15 @@
+# gradle (in case we choose kotlin)
+build.gradle
+gradle.properties
+settings.gradle
+.gradle/
+frontend/.gradle/
+frontend/gradle/
+frontend/src/main/kotlin
+frontend/src/test/kotlin
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -97,24 +107,11 @@ dist
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
 
-# vuepress build output
-.vuepress/dist
-
-# vuepress v2.x temp and cache directory
-.temp
-.cache
-
-# Docusaurus cache and generated files
-.docusaurus
-
 # Serverless directories
 .serverless/
 
 # FuseBox cache
 .fusebox/
-
-# DynamoDB Local files
-.dynamodb/
 
 # TernJS port file
 .tern-port
@@ -128,3 +125,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# IDE
+.idea/
