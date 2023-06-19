@@ -1,12 +1,12 @@
 # gradle (in case we choose kotlin)
-build.gradle
-gradle.properties
-settings.gradle
-.gradle/
-frontend/.gradle/
-frontend/gradle/
-frontend/src/main/kotlin
-frontend/src/test/kotlin
+#build.gradle
+#gradle.properties
+#settings.gradle
+#.gradle/
+#frontend/.gradle/
+#frontend/gradle/
+#frontend/src/main/kotlin
+#frontend/src/test/kotlin
 
 # Logs
 logs/
