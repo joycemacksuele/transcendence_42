@@ -1,4 +1,5 @@
 # gradle (in case we choose kotlin)
+build/
 #build.gradle
 #gradle.properties
 #settings.gradle
