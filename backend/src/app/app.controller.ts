@@ -1,0 +1,18 @@
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+import Console from "console";
+
+// To use the controller in typescript, you need to use the nest controller decorator @Controller() followed
+// by its associated class, you can also add an optional route path to a controller, for example@Controller(‘users’)
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {
+    Console.log('LOG AppController constructor');
+  }
+
+  @Get('/')
+  getHello(): string {
+    Console.log('LOG getHello AppController');
+    return this.appService.getHello();
+  }
+}
