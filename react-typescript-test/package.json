@@ -1,0 +1,22 @@
+{
+  "name": "react-typescript-test",
+  "version": "1.0.0",
+  "description": "testing creating a react typescript web page",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack serve --open"
+  },
+  "author": "joyce",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "typescript": "^5.1.3",
+    "yarn": "^1.22.19"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

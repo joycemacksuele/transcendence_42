@@ -10,7 +10,7 @@ logs/
 
 
 # Environment (contains sensitive data)
-.env
+../.env
 
 # Files not required for production
 .editorconfig
