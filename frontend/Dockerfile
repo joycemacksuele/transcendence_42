@@ -5,6 +5,10 @@ WORKDIR /frontend
 # Copy package.json and package-lock.json to the container
 # The name 'package*'is the default name, so that 'npm install' recognizes it
 COPY package*.json ./
+RUN chmod 777 ./package.json
+# chmod as an attempt to get rid of this error:
+# npm ERR! enoent ENOENT: no such file or directory, open '/backend/package.json'
+# npm ERR! enoent This is related to npm not being able to find a file.
 
 # Install dependencies
 # NPM (Node Package Manager) is a package manager for JavaScript. It is the
