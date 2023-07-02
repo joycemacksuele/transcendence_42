@@ -11,8 +11,8 @@ services:
         ports:
             - 3000:3000
             # - "${FRONTEND_PORT}:${FRONTEND_PORT}"
-        volumes:
-            - ./frontend/_frontend_volume:/nonsense
+#        volumes: -> DO WE WANT TO SAVE THINGS FROM THE FRONTEND CONTAINER?
+#            - ./frontend/_frontend_volume:/nonsense
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
             # - ./_frontend_volume:/myapp:rw,uid=<501>,gid=<20>
             # - ./path/on/host:/myapp/node_modules/.cache
@@ -34,8 +34,8 @@ services:
         ports:
             - 3001:3001
             # - "${BACKEND_PORT}:${BACKEND_PORT}"
-        volumes:
-            - ./backend/_backend_volume:/nonsense
+#        volumes: -> DO WE WANT TO SAVE THINGS FROM THE BACKEND CONTAINER?
+#            - ./backend/_backend_volume:/nonsense
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
               # - ./_backend_volume:/myapp:rw,uid=<501>,gid=<20>
 #        env_file:
@@ -61,6 +61,7 @@ services:
             # - "${POSTGRES_PORT}:${POSTGRES_PORT}"
         volumes:
             - ./backend/_database_volume:/var/lib/postgresql/data
+            # TODO: Check if this is the real path from postgres with data we want to save
 #        env_file:
 #            - ./.env
 #        restart: unless-stopped
