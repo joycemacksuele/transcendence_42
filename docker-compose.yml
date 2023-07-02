@@ -2,36 +2,6 @@ version: '3.7'
 
 # service: A running container with definitions and configurations about how each container image will run.
 services:
-    # --------------------------------------------- PostgreSQL
-    database:
-        container_name: database
-        image: postgres
-        env_file:
-            - ./env
-        restart: unless-stopped
-        volumes:
-            - ./_database_volume:/var/lib/postgresql/data
-        ports:
-            - 5432:5432
-            # - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-        environment:
-            - POSTGRES_USER=transcendence_user
-            - POSTGRES_PASSWORD=novogeslo1
-            - POSTGRES_DB=mydb
-            # - POSTGRES_DB=${POSTGRES_DB}
-            # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            # - POSTGRES_USER=${POSTGRES_USER}
-        # healthcheck:
-        #   test: pg_isready -U ${POSTGRES_USER}
-        #   # test: [ "pg_isready", "-U", "${POSTGRES_USER}" ]
-        #   interval: 10s
-        #   timeout: 5s
-        #   retries: 5
-        #   start_period: 30s
-        # healthcheck:
-        #   test: /healthchecks/postgres.sh
-        #   interval: "5s"
-
     # --------------------------------------------- nestJS
     nest_app:
         container_name: backend
@@ -39,7 +9,7 @@ services:
             context: ./backend
             dockerfile: Dockerfile
         env_file:
-            - ./env
+            - ./.env
         restart: on-failure
         depends_on:
             database:
@@ -67,7 +37,7 @@ services:
         depends_on:
             nest_app:
                 condition: service_started
-            database"
+            database:
                 condition: service_healthy
         volumes:
             - ./_frontend_volume:/frontend
@@ -76,6 +46,36 @@ services:
         ports:
             - 3000:3000
             # - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+
+    # --------------------------------------------- PostgreSQL
+    database:
+        container_name: database
+        image: postgres
+        env_file:
+            - ./.env
+        restart: unless-stopped
+        volumes:
+            - ./backend/_database_volume:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+            # - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+        environment:
+            - POSTGRES_USER=transcendence_user
+            - POSTGRES_PASSWORD=novogeslo1
+            - POSTGRES_DB=mydb
+            # - POSTGRES_DB=${POSTGRES_DB}
+            # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            # - POSTGRES_USER=${POSTGRES_USER}
+        # healthcheck:
+        #   test: pg_isready -U ${POSTGRES_USER}
+        #   # test: [ "pg_isready", "-U", "${POSTGRES_USER}" ]
+        #   interval: 10s
+        #   timeout: 5s
+        #   retries: 5
+        #   start_period: 30s
+        # healthcheck:
+        #   test: /healthchecks/postgres.sh
+        #   interval: "5s"
 
 # volumes:
 #      - ./<host_machine_dir_path>:/<container_data_dir_path>
