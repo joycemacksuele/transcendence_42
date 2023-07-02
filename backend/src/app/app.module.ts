@@ -11,19 +11,18 @@
 */
 
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-
-import { ExampleController } from './example.controller';   // added jaka
-import { ExampleButton } from './exampleButton.controller';   // added jaka
-import { DatabaseModule } from './database/database.module';   // added jaka
-import { UserService } from './user/user.service';        // added jaka
+import { DatabaseModule } from '../database/database.module';
+import { UserService } from '../user/user.service';
+import { ExampleController } from '../example.controller';   // added jaka
+import { ExampleButton } from '../exampleButton.controller';   // added jaka
 
 // Import newly created database Controller and Entity
-import { DatabaseController } from './database/database.controller';
-import { UserController } from './user/user.controller';
-import { myUser } from './user/user.entity';
+import { DatabaseController } from '../database/database.controller';
+import { UserController } from '../user/user.controller';
+import { myUser } from '../user/user.entity';
 import Console from "console";
 
 @Module({

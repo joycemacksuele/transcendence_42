@@ -6,6 +6,10 @@ WORKDIR /backend
 
 # Copy the package.json and package-lock.json files to the container
 COPY package*.json ./
+RUN chmod 777 ./package.json
+# chmod as an attempt to get rid of this error:
+# npm ERR! enoent ENOENT: no such file or directory, open '/backend/package.json'
+# npm ERR! enoent This is related to npm not being able to find a file.
 
 # Install dependencies
 RUN npm install
@@ -19,3 +23,4 @@ EXPOSE 3001
 # Start the Nest.js application
 # CMD [ "npm", "run", "start:prod" ]
 CMD [ "npm", "run", "start:dev" ]
+# To create a production build, use npm run build.

@@ -2,63 +2,68 @@ version: '3.7'
 
 # service: A running container with definitions and configurations about how each container image will run.
 services:
-    # --------------------------------------------- nestJS
-    nest_app:
-        container_name: backend
-        build:
-            context: ./backend
-            dockerfile: Dockerfile
-        env_file:
-            - ./.env
-        restart: on-failure
-        depends_on:
-            database:
-                condition: service_healthy
-        volumes:
-            - ./_backend_volume:/backend
-            # - ./_backend_volume:/myapp:rw,uid=<501>,gid=<20>
-        ports:
-            - 3001:3001
-            # - "${BACKEND_PORT}:${BACKEND_PORT}"
-        environment:
-            - POSTGRES_HOST=database_host
-            - POSTGRES_PORT=5432
-            - POSTGRES_USER=jaka
-            - POSTGRES_PASSWORD=***REMOVED***
-            - POSTGRES_DB=mydb
-
     # --------------------------------------------- ReactJS
     react_app:
         container_name: frontend
         build:
             context: ./frontend
             dockerfile: Dockerfile
-        restart: on-failure
-        depends_on:
-            nest_app:
-                condition: service_started
-            database:
-                condition: service_healthy
-        volumes:
-            - ./_frontend_volume:/frontend
-            # - ./_frontend_volume:/myapp:rw,uid=<501>,gid=<20>
-            # - ./path/on/host:/myapp/node_modules/.cache
         ports:
             - 3000:3000
             # - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+        volumes:
+            - ./frontend/_frontend_volume:/nonsense
+            # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
+            # - ./_frontend_volume:/myapp:rw,uid=<501>,gid=<20>
+            # - ./path/on/host:/myapp/node_modules/.cache
+#        restart: on-failure
+        depends_on:
+            - nest_app
+            - postgres_db
+#            nest_app:
+#                condition: service_started
+#            postgres_db:
+#                condition: service_started
+
+    # --------------------------------------------- nestJS
+    nest_app:
+        container_name: backend
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        ports:
+            - 3001:3001
+            # - "${BACKEND_PORT}:${BACKEND_PORT}"
+        volumes:
+            - ./backend/_backend_volume:/nonsense
+            # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
+              # - ./_backend_volume:/myapp:rw,uid=<501>,gid=<20>
+#        env_file:
+#            - ./.env
+#        restart: on-failure
+        depends_on:
+            - postgres_db
+#            postgres_db:
+#                condition: service_healthy
+        environment:
+            - POSTGRES_HOST=database_host
+            - POSTGRES_PORT=5432
+            - POSTGRES_USER=transcendence_user
+            - POSTGRES_PASSWORD=***REMOVED***
+            - POSTGRES_DB=mydb
 
     # --------------------------------------------- PostgreSQL
-    database:
+    postgres_db:
         container_name: database
         image: postgres
-        env_file:
-            - ./.env
-        restart: unless-stopped
-        volumes:
-            - ./backend/_database_volume:/var/lib/postgresql/data
         ports:
             - 5432:5432
             # - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+        volumes:
+            - ./backend/_database_volume:/var/lib/postgresql/data
+#        env_file:
+#            - ./.env
+#        restart: unless-stopped
         environment:
             - POSTGRES_USER=transcendence_user
             - POSTGRES_PASSWORD=***REMOVED***

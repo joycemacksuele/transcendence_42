@@ -6,12 +6,12 @@ const MyComponent = () => {
   const myMargin = { marginTop: '5%' };
 
   const [name, setName] = useState('');
-  const [city, setCity] = useState('');
+  // const [city, setCity] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/users', { name, city });
+      const response = await axios.post('http://localhost:3000/users', { name });
       console.log(response.data); // Handle the response as needed
     } catch (error) {
       console.error(error);
@@ -27,12 +27,12 @@ const MyComponent = () => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Name"
           />
-          <input
-              type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="City"
-          />
+          {/*<input*/}
+          {/*    type="text"*/}
+          {/*    value={city}*/}
+          {/*    onChange={(e) => setCity(e.target.value)}*/}
+          {/*    placeholder="City"*/}
+          {/*/>*/}
           <button type="submit">Submit</button>
         </form>
       </div>
