@@ -11,8 +11,10 @@ const MyComponent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/users', { name });
-      console.log(response.data); // Handle the response as needed
+      const response = await axios.post('http://localhost:3001/users', { name });
+      // console.log(response.data); // Handle the response as needed
+      console.log('Jaka: JSON: ', JSON.stringify(response));
+      console.log('Jaka: from myForm test.');
     } catch (error) {
       console.error(error);
     }
