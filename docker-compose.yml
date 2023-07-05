@@ -11,7 +11,8 @@ services:
         ports:
             - 3000:3000
             # - "${FRONTEND_PORT}:${FRONTEND_PORT}"
-#        volumes: -> DO WE WANT TO SAVE THINGS FROM THE FRONTEND CONTAINER?
+        volumes: #-> DO WE WANT TO SAVE THINGS FROM THE FRONTEND CONTAINER?
+            - ./frontend:/frontend
 #            - ./frontend/_frontend_volume:/nonsense
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
             # - ./_frontend_volume:/myapp:rw,uid=<501>,gid=<20>
@@ -34,8 +35,8 @@ services:
         ports:
             - 3001:3001
             # - "${BACKEND_PORT}:${BACKEND_PORT}"
-#        volumes: -> DO WE WANT TO SAVE THINGS FROM THE BACKEND CONTAINER?
-#            - ./backend/_backend_volume:/nonsense
+        volumes: #-> DO WE WANT TO SAVE THINGS FROM THE BACKEND CONTAINER?
+            - ./backend:/backend
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
               # - ./_backend_volume:/myapp:rw,uid=<501>,gid=<20>
 #        env_file:
@@ -46,7 +47,7 @@ services:
 #            postgres_db:
 #                condition: service_healthy
         environment:
-            - POSTGRES_HOST=database_host
+            - POSTGRES_HOST=postgres_db
             - POSTGRES_PORT=5432
             - POSTGRES_USER=transcendence_user
             - POSTGRES_PASSWORD=***REMOVED***
