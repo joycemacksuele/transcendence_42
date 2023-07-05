@@ -26,21 +26,21 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async getUsers(): Promise<myUser[]> {
-    Console.log('LOG getUsers');
+  async getAllUsers(): Promise<myUser[]> {
+    Console.log('LOG getAllUsers');
     return this.userRepository.find();
   }
 
-  async getUserById(id: number): Promise<myUser> {
-    return this.userRepository.findOne({ where: { id} });
-  }
+  // async getUserById(id: number): Promise<myUser> {
+  //   return this.userRepository.findOne({ where: { id} });
+  // }
 
-  async updateUser(id: number, updateUserDto: CreateUserDto): Promise<myUser> {
-    await this.userRepository.update(id, updateUserDto);
-    return this.userRepository.findOne({ where: { id } });
-  }
+  // async updateUser(id: number, updateUserDto: CreateUserDto): Promise<myUser> {
+  //   await this.userRepository.update(id, updateUserDto);
+  //   return this.userRepository.findOne({ where: { id } });
+  // }
 
-  async deleteUser(id: number): Promise<void> {
-    await this.userRepository.delete(id);
-  }
+  // async deleteUser(id: number): Promise<void> {
+  //   await this.userRepository.delete(id);
+  // }
 }
