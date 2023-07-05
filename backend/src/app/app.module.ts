@@ -30,9 +30,10 @@ import Console from "console";
     TypeOrmModule.forRoot({
       // Database configuration
       type: 'postgres',
-      host: 'database_host', // Replace with the appropriate hostname if needed
+      host: 'postgres_db', // Replace with the appropriate hostname if needed
       port: 5432,
-      username: 'jaka',
+      // username: 'jaka',
+      username: 'transcendence_user',
       password: 'novogeslo1',
       database: 'mydb',
       entities: [myUser],
