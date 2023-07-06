@@ -21,7 +21,8 @@ import App00 from './myFile00';
 import App01 from './myFile01';
 import MyButton from './myFileButtons';
 import MyForm from './myForm';
-import AllUsers from './getAllUsers';
+import AllUsers from './displayAllUsers';
+import DeleteAllUsers from './deleteAllUsers';
 
 /*
     ReactDOM is a library with functions, like 'render()'
@@ -39,4 +40,5 @@ ReactDOM.render(<MyButton />, document.getElementById('myButton00'));
 
 ReactDOM.render(<MyForm />, document.getElementById('myForm00'));
 
-ReactDOM.render(<AllUsers />, document.getElementById('allUsers'));
+ReactDOM.render(<AllUsers />, document.getElementById('ShowAllUsers'));
+ReactDOM.render(<DeleteAllUsers />, document.getElementById('deleteAllUsrs'));
