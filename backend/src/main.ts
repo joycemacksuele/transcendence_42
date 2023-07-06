@@ -7,7 +7,7 @@ import { NestFactory } from '@nestjs/core';
 import { myAppModule } from './app/app.module';
 import Console from "console";
 
-async function bootstrap() {
+async function main() {
   Console.log('LOG MAIN');
 
   const app = await NestFactory.create(myAppModule);
@@ -16,4 +16,4 @@ async function bootstrap() {
 
   await app.listen(3001);
 }
-bootstrap();
+main();
