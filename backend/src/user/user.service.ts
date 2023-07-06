@@ -31,6 +31,17 @@ export class UserService {
     return this.userRepository.find();
   }
 
+  async deleteAllUsers(): Promise<void> {
+    try {
+      await this.userRepository.clear();
+      console.log('LOG from nest user.service: All users deleted.');
+    } catch (error) {
+      console.error('LOG from nest user.service: Error deleting all users.', error);
+      // throw new InternalServerErrorException('Unable to delete all users');
+    }
+  }
+
+
   // async getUserById(id: number): Promise<myUser> {
   //   return this.userRepository.findOne({ where: { id} });
   // }
