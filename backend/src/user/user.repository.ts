@@ -13,8 +13,13 @@ export class UserRepository extends Repository<myUser> {
 	// Find users by their email, fetch users based on specific criteria, or perform complex database queries related to users.
 	async findByName(name: string): Promise<myUser | undefined> {
 		Console.log('LOG findByName');
-
 		const options: FindOneOptions<myUser> = { where: { name } };
 		return this.findOne( options );
-	  }
+	}
+
+	async findById(id: number): Promise<myUser | undefined> {
+		Console.log('LOG findByName');
+		const options: FindOneOptions<myUser> = { where: { id } };
+		return this.findOne( options );
+	}
 }
