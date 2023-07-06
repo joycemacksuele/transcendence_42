@@ -13,13 +13,15 @@ const functionButtons = () => {
 
   const [response00, setResponse00] = useState('');
   const [response01, setResponse01] = useState('');
+  const [responseUsers, setResponseUsers] = useState('');
+
   const [showResponses, setShowResponses] = useState(false);
 
 
   const handleClick00 = () => {
     axios
       .get('http://localhost:3001/example') // This goes to nest, example controller
-      .then((res) => setResponse00(res.data))
+      .then((response) => setResponse00(response.data))
       .catch((err) => console.error(err));
   };
 
@@ -27,18 +29,29 @@ const functionButtons = () => {
   const handleClick01 = () => {
     axios
       .get('http://localhost:3001/exampleButton') // This goes to nest, example controller
-      .then((res) => { 
-        setResponse01(res.data);
+      .then((response) => { 
+        setResponse01(response.data);
         setShowResponses(true);
       })
       .catch((err) => console.error(err));
   };
+
+  // const clickShowUsers = () => {
+  //   axios
+  //     .get('http://localhost:3001/users')
+  //     .then((response) => { 
+  //       setResponse01(response.data);
+  //       setShowResponses(true);
+  //     })
+  //     .catch((err) => console.error(err));
+  // };
 
 
   const handleReset = () => {
     setShowResponses(false);
     setResponse00('');
     setResponse01('');
+    setResponseUsers('');
   };
 
   return (
@@ -58,6 +71,16 @@ const functionButtons = () => {
             </div>
             )}
       </div>
+
+      {/* <div>
+        <button onClick={clickShowUsers}>Show all users</button> { 
+          // showResponses && responseUsers && (
+            responseUsers && (
+            <div>
+              <p style={myStyle01}>  { responseUsers }  </p>
+            </div>
+            )}
+      </div> */}
     
     </div>
   );
