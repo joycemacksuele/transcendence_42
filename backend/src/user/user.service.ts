@@ -7,6 +7,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserRepository } from './user.repository';
 import { CreateUserDto } from './create-user.dto';
 import { myUser } from './user.entity';
 import Console from "console";
@@ -14,8 +15,9 @@ import Console from "console";
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(myUser)
-    private userRepository: Repository<myUser>,
+    // @InjectRepository(myUser)
+    // private userRepository: Repository<myUser>,
+    private readonly userRepository: UserRepository
   ) {
     Console.log('LOG UserService constructor');
   }
@@ -29,6 +31,10 @@ export class UserService {
   async getAllUsers(): Promise<myUser[]> {
     Console.log('LOG getAllUsers');
     return this.userRepository.find();
+  }
+
+  async getUserById(id: number): Promise<myUser> {
+    return this.userRepository.findById(id);
   }
 
   async deleteAllUsers(): Promise<void> {
