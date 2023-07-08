@@ -60,15 +60,15 @@ if [[ $1 = 'build' ]] ; then
   ################### Downloading npm dependencies ###################
   echo -ne "$bold_white -> Downloading dependencies for the backend:\n"
   echo -e "$reset ------------------------------------"
-  cd ./backend/
+  cd ./backend/ || echo -ne "$red Can't cd to ./backend\n"
   npm install
 
   echo -ne "\n$bold_white -> Downloading dependencies for the frontend:\n"
   echo -e "$reset ------------------------------------"
-  cd ../frontend/
+  cd ../frontend/ || echo -ne "$red Can't cd to ./frontend\n"
   npm install
 
-  cd ../
+  cd ../ || echo -ne "$red Can't cd to ../\n"
 
   ################### Building docker compose ###################
   echo -ne "$bold_white -> Building docker compose:\n"
@@ -81,12 +81,12 @@ if [[ $1 = 'build' ]] ; then
 fi
 
 ###################################### Run transcendence #######################################
-if [[ $1 = 'build' ]] ; then
+if [[ $1 = 'run' ]] ; then
 	\clear
   ################### Running docker compose ###################
   echo -ne "$bold_white -> Running docker compose:\n"
   echo -e "$reset ------------------------------------\n"
-  docker compose up --remove-orphans
+  docker compose up
   exit
 fi
 

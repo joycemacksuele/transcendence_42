@@ -4,11 +4,13 @@
 	the User entity.
 */
 
-import {InjectRepository} from "@nestjs/typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, FindOneOptions } from 'typeorm';
 import Console from "console";
 import { MyUser } from './user.entity';
 
+@Injectable()
 export class UserRepository extends Repository<MyUser> {
 
 	constructor() {

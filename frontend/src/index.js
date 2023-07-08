@@ -33,12 +33,8 @@ import DeleteAllUsers from './deleteAllUsers';
 */
 
 ReactDOM.render(<App00 />, document.getElementById('myApp_00'));
-
 ReactDOM.render(<App01 />, document.getElementById('myApp_01'));
-
 ReactDOM.render(<MyButton />, document.getElementById('myButton00'));
-
 ReactDOM.render(<MyForm />, document.getElementById('myForm00'));
-
 ReactDOM.render(<AllUsers />, document.getElementById('ShowAllUsers'));
 ReactDOM.render(<DeleteAllUsers />, document.getElementById('deleteAllUsrs'));

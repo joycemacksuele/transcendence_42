@@ -16,29 +16,30 @@ import { UserRepository } from './user.repository';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserRepository)
-    // private userRepository: Repository<MyUser>,
-    public readonly userRepository: UserRepository
+      @InjectRepository(MyUser)
+      public readonly userRepository: UserRepository,
   ) {
     Console.log('[LOG] UserService constructor');
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<MyUser> {
-    Console.log('[LOG] createUser');
+    Console.log('[LOG] UserService.createUser');
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
 
   async getAllUsers(): Promise<MyUser[]> {
-    Console.log('[LOG] getAllUsers');
+    Console.log('[LOG] UserService.getAllUsers');
     return this.userRepository.find();
   }
 
   async getUserById(id: number): Promise<MyUser> {
+    Console.log('[LOG] UserService.getUserById');
     return this.userRepository.findById(id);
   }
 
   async deleteAllUsers(): Promise<void> {
+    Console.log('[LOG] UserService.deleteAllUsers');
     try {
       await this.userRepository.clear();
       console.log('[LOG] from nest user.service: All users deleted.');
