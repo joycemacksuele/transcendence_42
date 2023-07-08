@@ -7,12 +7,12 @@ import Console from "console";
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {
-    Console.log('LOG AppController constructor');
+    Console.log('[LOG] AppController constructor');
   }
 
   @Get('/')
   getHello(): string {
-    Console.log('LOG getHello AppController');
+    Console.log('[LOG] getHello AppController');
     return this.appService.getHello();
   }
 }

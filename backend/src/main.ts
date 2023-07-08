@@ -4,13 +4,13 @@
 */
 
 import { NestFactory } from '@nestjs/core';
-import { myAppModule } from './app/app.module';
+import { MyAppModule } from './app/app.module';
 import Console from "console";
 
 async function main() {
-  Console.log('LOG MAIN');
+  Console.log('[LOG] main');
 
-  const app = await NestFactory.create(myAppModule);
+  const app = await NestFactory.create(MyAppModule);
 
   app.enableCors(); // added jaka: Enable CORS for all routes
 

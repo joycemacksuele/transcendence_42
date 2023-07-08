@@ -4,7 +4,7 @@ import Console from "console";
 @Controller()
 export class ExampleButton {
   constructor() {
-    Console.log('LOG ExampleButton constructor');
+    Console.log('[LOG] ExampleButton constructor');
   }
   @Get('/exampleButton')
   getExample(): string {

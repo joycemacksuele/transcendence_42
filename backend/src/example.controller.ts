@@ -5,7 +5,7 @@ import Console from "console";
 @Controller()
 export class ExampleController {
   constructor() {
-    Console.log('LOG ExampleController constructor');
+    Console.log('[LOG] ExampleController constructor');
   }
   @Get('/example')
   getExample(): string {
