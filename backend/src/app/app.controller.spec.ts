@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import Console from "console";
 
 describe('AppController', () => {
-  Console.log('LOG AppController spec STARTING');
+  Console.log('[LOG] AppController spec STARTING');
 
   let appController: AppController;
 
@@ -18,7 +18,7 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    Console.log('LOG AppController spec');
+    Console.log('[LOG] AppController spec');
     it('should return "Hello World!"', () => {
       expect(appController.getHello()).toBe('Hello World!');
     });
