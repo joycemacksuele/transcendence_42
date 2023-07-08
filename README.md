@@ -39,4 +39,37 @@ to run the application (i.e.: the website + client and server webpack inn this c
 
 -----------------------------
 
-- yarn is another package manager as npm, I saw in one tutorial that its more secure than npm?
+`yarn`
+is another package manager as npm, I saw in one tutorial that its more secure than npm?
+
+--------------------------------------------------------------------------------------------------------------------
+
+## Javascript
+`.ts`
+is used for pure TypeScript files.
+
+`.jsx` 
+is an extension to javascript that allow it to process html syntax that would not be recognized otherwise (syntax sugar)
+obs.: even though it looks like markup html syntax, it's not. Under the table  jsx is transforming it in what
+javascript recognizes, and same to tsx and typescript.
+
+`.tsx` 
+is the extension typescript created to process files containing JSX.
+
+For example, a React component would be .tsx, but a file containing helper functions would be .ts.
+Previous to jsx, a .html and .js file would have to be provided to controllers and views.
+After jsx, a .html and a .jsx (or .tsx) can be provided.
+
+* example (not real typescript code):
+  * without .tsx:
+    `let var: React.createElemet("p", {}, "Hello");`
+  * with .tsx:
+        `let var: <p>Hello</p>;`
+
+# P.s.: Should we use .tsx??
+
+--------------------------------------------------------------------------------------------------------------------
+
+## Redux
+
+What is it?
