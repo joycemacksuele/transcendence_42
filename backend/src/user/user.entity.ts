@@ -15,7 +15,12 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class myUser {
+export class MyUser {
+
+	constructor() {
+		console.log('[LOG] MyUser constructor');
+	}
+	
 	@PrimaryGeneratedColumn()
 	id: number;
 

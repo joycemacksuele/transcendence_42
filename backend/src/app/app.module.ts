@@ -12,18 +12,19 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from '../database/database.module';
+import { UserRepository } from '../user/user.repository';
 import { UserService } from '../user/user.service';
-import { ExampleController } from '../example.controller';   // added jaka
-import { ExampleButton } from '../exampleButton.controller';   // added jaka
+import { MyUser } from '../user/user.entity';
+import Console from "console";
 
 // Import newly created database Controller and Entity
+import { AppController } from './app.controller';
 import { DatabaseController } from '../database/database.controller';
 import { UserController } from '../user/user.controller';
-import { myUser } from '../user/user.entity';
-import Console from "console";
+import { ExampleController } from '../example.controller';
+import { ExampleButton } from '../exampleButton.controller';
 
 @Module({
   imports: [ 
@@ -36,12 +37,12 @@ import Console from "console";
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
-      entities: [myUser],
+      entities: [MyUser],
       synchronize: true,
     }),
     
-    TypeOrmModule.forFeature([myUser]),
-    DatabaseModule,
+    TypeOrmModule.forFeature([MyUser]),
+    DatabaseModule
   ],
 
   controllers: [
@@ -57,8 +58,8 @@ import Console from "console";
       UserService
   ],
 })
-export class myAppModule {
+export class MyAppModule {
     constructor() {
-        Console.log('LOG myAppModule constructor');
+        Console.log('[LOG] MyAppModule constructor');
     }
 }

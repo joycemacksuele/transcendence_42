@@ -34,6 +34,6 @@ import Console from "console";
 })
 export class DatabaseModule {
 	constructor() {
-		Console.log('LOG DatabaseModule constructor');
+		Console.log('[LOG] DatabaseModule constructor');
 	}
 }
