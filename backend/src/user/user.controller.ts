@@ -41,7 +41,7 @@ export class UserController {
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     console.log('[LOG] createUser');
-    this.logger.log('[LOG] Jaka: received user data:', JSON.stringify(createUserDto));
+    this.logger.log('[LOG] Received user data:', JSON.stringify(createUserDto));
     return this.userService.createUser(createUserDto);
   }
   

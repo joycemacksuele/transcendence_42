@@ -51,11 +51,12 @@ import { ExampleButton } from '../exampleButton.controller';
       ExampleButton,
       DatabaseController,
       UserController
-  ], // added jaka
+  ],
                 
   providers: [
       AppService,
-      UserService
+      UserService,
+      UserRepository//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
   ],
 })
 export class MyAppModule {
