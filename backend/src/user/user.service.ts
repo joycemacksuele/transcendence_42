@@ -8,7 +8,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import Console from "console";
 import { CreateUserDto } from './create-user.dto';
 import { MyUser } from './user.entity';
 import { UserRepository } from './user.repository';
@@ -19,27 +18,27 @@ export class UserService {
       @InjectRepository(MyUser)
       public readonly userRepository: UserRepository,
   ) {
-    Console.log('[LOG] UserService constructor');
+    console.log('[LOG] UserService constructor');
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<MyUser> {
-    Console.log('[LOG] UserService.createUser');
+    console.log('[LOG] UserService.createUser');
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
 
   async getAllUsers(): Promise<MyUser[]> {
-    Console.log('[LOG] UserService.getAllUsers');
+    console.log('[LOG] UserService.getAllUsers');
     return this.userRepository.find();
   }
 
   async getUserById(id: number): Promise<MyUser> {
-    Console.log('[LOG] UserService.getUserById');
+    console.log('[LOG] UserService.getUserById');
     return this.userRepository.findById(id);
   }
 
   async deleteAllUsers(): Promise<void> {
-    Console.log('[LOG] UserService.deleteAllUsers');
+    console.log('[LOG] UserService.deleteAllUsers');
     try {
       await this.userRepository.clear();
       console.log('[LOG] from nest user.service: All users deleted.');
