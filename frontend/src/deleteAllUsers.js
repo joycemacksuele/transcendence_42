@@ -26,7 +26,6 @@ const DeleteAllUsers = () => {
 		</div>	
 	);
 	
-	};
-
+};
 
 export default DeleteAllUsers;

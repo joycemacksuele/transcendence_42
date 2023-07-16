@@ -1,10 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
-import Console from "console";
 
 @Controller()
 export class ExampleButton {
   constructor() {
-    Console.log('[LOG] ExampleButton constructor');
+    console.log('[LOG] ExampleButton constructor');
   }
   @Get('/exampleButton')
   getExample(): string {

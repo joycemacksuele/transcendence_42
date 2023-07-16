@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import Console from "console";
+
+// TODO This seems to be for testing, I think we can delete it
 
 describe('AppController', () => {
-  Console.log('[LOG] AppController spec STARTING');
+  console.log('[LOG] AppController spec STARTING');
 
   let appController: AppController;
 
@@ -18,7 +19,7 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    Console.log('[LOG] AppController spec');
+    console.log('[LOG] AppController spec');
     it('should return "Hello World!"', () => {
       expect(appController.getHello()).toBe('Hello World!');
     });

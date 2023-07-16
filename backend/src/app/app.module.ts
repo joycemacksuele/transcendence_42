@@ -17,7 +17,6 @@ import { DatabaseModule } from '../database/database.module';
 import { UserRepository } from '../user/user.repository';
 import { UserService } from '../user/user.service';
 import { MyUser } from '../user/user.entity';
-import Console from "console";
 
 // Import newly created database Controller and Entity
 import { AppController } from './app.controller';
@@ -61,6 +60,6 @@ import { ExampleButton } from '../exampleButton.controller';
 })
 export class MyAppModule {
     constructor() {
-        Console.log('[LOG] MyAppModule constructor');
+        console.log('[LOG] MyAppModule constructor');
     }
 }

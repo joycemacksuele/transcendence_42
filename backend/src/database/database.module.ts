@@ -3,7 +3,10 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Console from "console";
+
+// Tutorials
+// Setting up Nestjs with PostgreSQL: https://blog.devgenius.io/setting-up-nestjs-with-postgresql-ac2cce9045fe
+// Build a Secure NestJS API with Postgres (and Auth with OKTA + cookies + photo controller): https://developer.okta.com/blog/2020/02/26/build-a-secure-nestjs-api-with-postgres
 
 /*
 	AppModule is the core module of the application, the entry point for configuring the application.
@@ -34,6 +37,6 @@ import Console from "console";
 })
 export class DatabaseModule {
 	constructor() {
-		Console.log('[LOG] DatabaseModule constructor');
+		console.log('[LOG] DatabaseModule constructor');
 	}
 }
