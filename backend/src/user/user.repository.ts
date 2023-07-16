@@ -7,7 +7,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, FindOneOptions } from 'typeorm';
-import Console from "console";
 import { MyUser } from './user.entity';
 
 @Injectable()
@@ -22,13 +21,13 @@ export class UserRepository extends Repository<MyUser> {
 	// Added custom methods:
 	// Find users by their email, fetch users based on specific criteria, or perform complex database queries related to users.
 	async findByName(name: string): Promise<MyUser | undefined> {
-		Console.log('[LOG] findByName');
+		console.log('[LOG] findByName');
 		const options: FindOneOptions<MyUser> = { where: { name } };
 		return this.findOne( options );
 	}
 
 	async findById(id: number): Promise<MyUser | undefined> {
-		Console.log('[LOG] findById');
+		console.log('[LOG] findById');
 		const options: FindOneOptions<MyUser> = { where: { id } };
 		return this.findOne( options );
 	}

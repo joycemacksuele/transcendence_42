@@ -5,10 +5,9 @@
 
 import { NestFactory } from '@nestjs/core';
 import { MyAppModule } from './app/app.module';
-import Console from "console";
 
 async function main() {
-  Console.log('[LOG] main');
+  console.log('[LOG] main');
 
   const app = await NestFactory.create(MyAppModule);
 
