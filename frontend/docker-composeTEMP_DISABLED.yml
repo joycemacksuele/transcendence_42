@@ -1,0 +1,16 @@
+version: "3.4"
+services:
+ vite_docker:
+  #  image: node:alpine
+   image: node:18.16.0
+   container_name: vite_docker
+   command: sh -c "npm install && npm run dev"
+  #  entrypoint: /bin/sh
+   ports:
+     - 3000:8000
+   working_dir: /frontend
+   volumes:
+     - type: bind
+       source: ./
+       target: /frontend
+   tty: true
