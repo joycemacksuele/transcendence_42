@@ -3,10 +3,9 @@ version: '3.7'
 # service: A running container with definitions and configurations about how each container image will run.
 services:
     # --------------------------------------------- ReactJS
-    frontend_malik:
-        # container_name: frontend
+    react_app:
+        container_name: frontend
         image: node:18.16.0
-        container_name: vite_docker
         command: sh -c "npm install && npm run dev"
         # build:
         #     # context: ./frontend
