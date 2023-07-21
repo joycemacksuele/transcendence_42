@@ -21,7 +21,7 @@ const functionButtons: React.FC = () => {
 
   const handleClick00 = () => {
     axios
-      .get('http://localhost:3001/example') // This goes to nest, example controller
+      .get('http://localhost:3001/example') // This goes to nest, example controller....
       .then((response) => setResponse00(response.data))
       .catch((err) => console.error(err));
   };
