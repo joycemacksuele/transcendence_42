@@ -10,12 +10,12 @@ export class DatabaseController {
       @InjectRepository(MyUser)
       private readonly userRepository: UserRepository,
   ) {
-    console.log('[LOG] DatabaseController constructor');
+    console.log('[BACKEND LOG] DatabaseController constructor');
   }
 
   @Get()
   async getDataFromDatabase() {
-    console.log('[LOG] getDataFromDatabase');
+    console.log('[BACKEND LOG] getDataFromDatabase');
     const data = await this.userRepository.find(); // Perform a database query
     return data;
   }
