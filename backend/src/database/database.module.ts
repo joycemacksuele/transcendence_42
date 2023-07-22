@@ -37,6 +37,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 })
 export class DatabaseModule {
 	constructor() {
-		console.log('[LOG] DatabaseModule constructor');
+		console.log('[BACKEND LOG] DatabaseModule constructor');
 	}
 }
