@@ -12,7 +12,7 @@ RUN chmod 777 ./package.json
 
 # Install dependencies
 # NPM (Node Package Manager) is a package manager for JavaScript. It is the
-# default package manager for Node.js (a runtime environment 
+# default package manager for Node.js (a runtime environment
 # for executing JavaScript code outside of a web browser.)
 # The packages include libraries, frameworks, tools, and other dependencies
 # that help with building web applications, server-side applications, or command-line tools.
