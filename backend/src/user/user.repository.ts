@@ -13,7 +13,7 @@ import { MyUser } from './user.entity';
 export class UserRepository extends Repository<MyUser> {
 
 	constructor() {
-		console.log('[LOG] UserRepository constructor');
+		console.log('[BACKEND LOG] UserRepository constructor');
 		// @ts-ignore
 		super();
 	}
@@ -21,13 +21,13 @@ export class UserRepository extends Repository<MyUser> {
 	// Added custom methods:
 	// Find users by their email, fetch users based on specific criteria, or perform complex database queries related to users.
 	async findByName(name: string): Promise<MyUser | undefined> {
-		console.log('[LOG] findByName');
+		console.log('[BACKEND LOG] findByName');
 		const options: FindOneOptions<MyUser> = { where: { name } };
 		return this.findOne( options );
 	}
 
 	async findById(id: number): Promise<MyUser | undefined> {
-		console.log('[LOG] findById');
+		console.log('[BACKEND LOG] findById');
 		const options: FindOneOptions<MyUser> = { where: { id } };
 		return this.findOne( options );
 	}

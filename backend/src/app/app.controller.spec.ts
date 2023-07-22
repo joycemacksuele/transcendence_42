@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 // TODO This seems to be for testing, I think we can delete it
 
 describe('AppController', () => {
-  console.log('[LOG] AppController spec STARTING');
+  console.log('[BACKEND LOG] AppController spec STARTING');
 
   let appController: AppController;
 
@@ -19,7 +19,7 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    console.log('[LOG] AppController spec');
+    console.log('[BACKEND LOG] AppController spec');
     it('should return "Hello World!"', () => {
       expect(appController.getHello()).toBe('Hello World!');
     });
