@@ -6,7 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "typeRoots":["node_modules/@types", "src/types"], // added jaka, for npm install axios and npm install @types/axios
-    "types": ["styled-components"], // added jaka, for Form Input Field
+//    "types": ["styled-components"], // added jaka, for Form Input Field
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -22,6 +22,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
+  "exclude": [
+    "node_modules"
+  ],
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
