@@ -34,7 +34,8 @@ const App_jaka = () => {
 
 	return (
 	  <React.StrictMode>
-		{isLoggedIn ? <MainPage /> : <LoginPage />}
+		{/* {isLoggedIn ? <MainPage /> : <LoginPage />} */}
+		<MainPage />
 	  </React.StrictMode>
 );
 
