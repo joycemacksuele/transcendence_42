@@ -18,32 +18,32 @@ export class UserService {
       @InjectRepository(MyUser)
       public readonly userRepository: UserRepository,
   ) {
-    console.log('[LOG] UserService constructor');
+    console.log('[BACKEND LOG] UserService constructor');
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<MyUser> {
-    console.log('[LOG] UserService.createUser');
+    console.log('[BACKEND LOG] UserService.createUser');
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
 
   async getAllUsers(): Promise<MyUser[]> {
-    console.log('[LOG] UserService.getAllUsers');
+    console.log('[BACKEND LOG] UserService.getAllUsers');
     return this.userRepository.find();
   }
 
   async getUserById(id: number): Promise<MyUser> {
-    console.log('[LOG] UserService.getUserById');
+    console.log('[BACKEND LOG] UserService.getUserById');
     return this.userRepository.findById(id);
   }
 
   async deleteAllUsers(): Promise<void> {
-    console.log('[LOG] UserService.deleteAllUsers');
+    console.log('[BACKEND LOG] UserService.deleteAllUsers');
     try {
       await this.userRepository.clear();
-      console.log('[LOG] from nest user.service: All users deleted.');
+      console.log('[BACKEND LOG] from nest user.service: All users deleted.');
     } catch (error) {
-      console.error('[LOG] from nest user.service: Error deleting all users.', error);
+      console.error('[BACKEND LOG] from nest user.service: Error deleting all users.', error);
       // throw new InternalServerErrorException('Unable to delete all users');
     }
   }

@@ -5,19 +5,28 @@ services:
     # --------------------------------------------- ReactJS
     react_app:
         container_name: frontend
-        build:
-            context: ./frontend
-            dockerfile: Dockerfile
+        image: node:18.16.0
+        command: sh -c "npm install && npm run dev"
+        # build:
+        #     # context: ./frontend
+        #     context: ./frontend_tsx
+        #     dockerfile: Dockerfile
         ports:
-            - 3000:3000
-            # - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+            - 3000:8000
+            # - "${FRONTEND_PORT}:${FRONTEND_PORT}"    
+        working_dir: /frontend
+
         volumes: #-> DO WE WANT TO SAVE THINGS FROM THE FRONTEND CONTAINER?
-            - ./frontend:/frontend
-#            - ./frontend/_frontend_volume:/nonsense
+            - type: bind
+              source: ./frontend
+              target: /frontend
+            # - ./frontend:/frontend
+            # - ./frontend_tsx:/frontend_tsx
+            # - ./frontend/_frontend_volume:/nonsense
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
             # - ./_frontend_volume:/myapp:rw,uid=<501>,gid=<20>
             # - ./path/on/host:/myapp/node_modules/.cache
-#        restart: on-failure
+        # restart: on-failure
         depends_on:
             - nest_app
             - postgres_db
@@ -25,6 +34,7 @@ services:
 #                condition: service_started
 #            postgres_db:
 #                condition: service_started
+        tty: true
 
     # --------------------------------------------- nestJS
     nest_app:
