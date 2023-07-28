@@ -1,6 +1,6 @@
 import "../css/App_jaka.css";
 import Header from "../Header/Header.tsx";
-import Sidebar from "../Sidebar/Sidebar.tsx";
+// import Sidebar from "../Sidebar/Sidebar.tsx";
 import Center from "../Center/Center.tsx";
 
 
@@ -9,7 +9,7 @@ const MainPage = () => {
 	<div>
 	  <Header />
 	  <div className="main-grid-container">
-		<Sidebar />
+		{/* <Sidebar /> */}
 		<Center />
 	  </div>
 	</div>
