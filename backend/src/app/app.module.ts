@@ -13,15 +13,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
-import { DatabaseModule } from '../database/database.module';
-import { UserRepository } from '../user/user.repository';
-import { UserService } from '../user/user.service';
-import { MyUser } from '../user/user.entity';
-
-// Import newly created database Controller and Entity
 import { AppController } from './app.controller';
+import { DatabaseModule } from '../database/database.module';
 import { DatabaseController } from '../database/database.controller';
+import { UserService } from '../user/user.service';
 import { UserController } from '../user/user.controller';
+import { UserRepository } from '../user/user.repository';
+import { MyUser } from '../user/user.entity';
 import { ExampleController } from '../example.controller';
 import { ExampleButton } from '../exampleButton.controller';
 
@@ -60,6 +58,6 @@ import { ExampleButton } from '../exampleButton.controller';
 })
 export class MyAppModule {
     constructor() {
-        console.log('[LOG] MyAppModule constructor');
+        console.log('[BACKEND LOG] MyAppModule constructor');
     }
 }

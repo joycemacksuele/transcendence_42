@@ -18,7 +18,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 export class MyUser {
 
 	constructor() {
-		console.log('[LOG] MyUser constructor');
+		console.log('[BACKEND LOG] MyUser constructor');
 	}
 	
 	@PrimaryGeneratedColumn()
