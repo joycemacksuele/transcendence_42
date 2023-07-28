@@ -3,7 +3,7 @@ import { StrictMode } from 'react';
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import "./index.css";
+// import "./index.css";
 import './utils/styles/index.css'
 import "./App_jaka/css/App_jaka.css";
 import App_jaka from "./App_jaka/App_jaka.tsx";

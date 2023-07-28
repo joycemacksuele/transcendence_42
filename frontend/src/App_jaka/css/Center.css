@@ -2,7 +2,9 @@
 	background-color: grey;
 	border: 1px grey solid;
 	color: red;
-	padding: 2%;
+	padding: 1%;
+	margin: 1px;
+	width: 97%;
 }
 
 #div-center {

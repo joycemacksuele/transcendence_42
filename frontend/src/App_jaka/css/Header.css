@@ -1,8 +1,44 @@
 .header {
-	width: 98%;
+	width: 97%;
+	/* height: auto; */
 	background-color: rgb(171, 165, 165);
 	border: 1px grey solid;
 	color: rgb(117, 15, 15);
-	margin: 1%;
+	margin: 1px;
 	padding: 1%;
+}
+
+
+#user-image {
+	float: left;
+	/* height: 3%; */
+}
+
+#header-items {
+	float: center;
+}
+
+
+#header-item-user {
+	padding: 0 2% 0 2%;
+	/* display: block; */
+	float: left;
+}
+
+#header-item-link {
+	padding: 0 2% 0 2%;
+	/* display: inline-block; */
+	float: left;
+}
+
+#header-item-logout {
+	padding: 0 2% 0 2%;
+	/* display: block; */
+	float: right;
+}
+
+.header::after {
+	content: "";
+	display: table;
+	clear: both;
   }
