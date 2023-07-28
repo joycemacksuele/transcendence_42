@@ -6,7 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "typeRoots":["node_modules/@types", "src/types"], // added jaka, for npm install axios and npm install @types/axios
-//    "types": ["styled-components"], // added jaka, for Form Input Field
+    "types": ["react", "react-dom", "react-router-dom"], // added jaka, for Form Input Field
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -22,9 +22,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
+  "include": ["src", "src/App_jaka"],
   "exclude": [
     "node_modules"
   ],
-  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

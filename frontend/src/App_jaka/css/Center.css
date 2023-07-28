@@ -1,0 +1,18 @@
+.main-field {
+	background-color: grey;
+	border: 1px grey solid;
+	color: red;
+	padding: 1%;
+	margin: 1px;
+	width: 97%;
+}
+
+#div-center {
+	margin: auto;
+	width: 30%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 300px;
+	/* border: 3px solid green; */
+}
