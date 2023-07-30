@@ -3,14 +3,15 @@ import avatarImage from '../../images/avatar_default.png'
 import '../../css/Header.css'
 
 
-type HeaderProps = {
-  setActiveContent: (content: string) => void;
+type PropsHeader = {
+  functionToCall: (content: string) => void;  // setActiveContent() in main_page
 };
 
-const Header: React.FC<HeaderProps> = ({ setActiveContent }) => {
+
+const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 
   const handleClick = (content: string) => {
-    setActiveContent(content);
+    functionToCall(content);  // setActiveContent() in main_page
   };
 
   return (
@@ -23,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ setActiveContent }) => {
 
       <div id='header-item-user'><button onClick={ () => handleClick('Play Game Page')}>Play</button></div>
 
-      <div id='header-item-user'><button onClick={ () => handleClick('Stats_Page')}>Stats</button></div>
+      <div id='header-item-user'><button onClick={ () => handleClick('Statistics Page')}>Stats</button></div>
 
       <div id='header-item-user'><button onClick={ () => handleClick('Logout Page')}>Logout</button></div>
 
