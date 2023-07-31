@@ -19,8 +19,8 @@
 }
 
 #user-page {
-	height: 50%;
-	width: 50%;
+	height: 90%;
+	width: 90%;
 	border: 2px solid black;
 	background-color: green;
 }
@@ -36,7 +36,7 @@
 	height: 50%;
 	width: 50%;
 	border: 1px solid black;
-	background-color: blue;
+	background-color: rgb(88, 88, 201);
 }
 
 #logout-page {

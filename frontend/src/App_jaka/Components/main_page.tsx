@@ -12,7 +12,7 @@ import Center from "./Center/Center.tsx";
 
 const MainPage = () => {
 
-	const [activeContent, setActiveContent] = useState<null | string>('User Profile Page');
+	const [activeContent, setActiveContent] = useState<string>('User Profile Page');
 
 	const handleSetActiveContent = (content: string) => {
 		setActiveContent(content);
@@ -20,8 +20,7 @@ const MainPage = () => {
 
   return (
 	<div>
-		<Header setActiveContent={handleSetActiveContent}/>
-
+		<Header functionToCall={handleSetActiveContent}/>
 
 		<Center activeContent={activeContent} />
 
