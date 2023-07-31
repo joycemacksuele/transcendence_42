@@ -21,6 +21,9 @@ COPY . .
 EXPOSE 3001
 
 # Start the Nest.js application
-# CMD [ "npm", "run", "start:prod" ]
+# Development:
+# CMD [ "npm", "run", "start" ]
+# Watch mode:
 CMD [ "npm", "run", "start:dev" ]
-# To create a production build, use npm run build.
+# Production mode:
+# CMD [ "npm", "run", "start:prod" ]
