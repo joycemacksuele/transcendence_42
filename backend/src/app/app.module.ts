@@ -22,6 +22,9 @@ import { UserRepository } from '../user/user.repository';
 import { MyUser } from '../user/user.entity';
 import { ExampleController } from '../example.controller';
 import { ExampleButton } from '../exampleButton.controller';
+// import { AuthController } from 'src/auth/auth.controller';
+// import { AuthService } from 'src/auth/auth.service';
+import { TestButton } from 'src/test_button/test.controller';
 
 @Module({
   imports: [ 
@@ -47,13 +50,16 @@ import { ExampleButton } from '../exampleButton.controller';
       ExampleController,
       ExampleButton,
       DatabaseController,
-      UserController
+      UserController,
+      // AuthController,
+      TestButton
   ],
                 
   providers: [
       AppService,
       UserService,
-      UserRepository//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
+      UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
+      // AuthService
   ],
 })
 export class MyAppModule {

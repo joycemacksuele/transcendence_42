@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import "../css/App_jaka.css";
+import { useState } from 'react';
 import Header from "./Header/Header.tsx";
 import Center from "./Center/Center.tsx";
 
@@ -19,12 +18,11 @@ const MainPage = () => {
 	};
 
   return (
-	<div>
+	<>
 		<Header functionToCall={handleSetActiveContent}/>
 
 		<Center activeContent={activeContent} />
-
-	</div>
+	</>
   );
 };
 
