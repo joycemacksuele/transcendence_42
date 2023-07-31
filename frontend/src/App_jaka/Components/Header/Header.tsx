@@ -22,6 +22,8 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 
       <div id='header-item-user'><button onClick={ () => handleClick('User Profile Page')}>Edit</button></div>
 
+      <div id='header-item-user'><button onClick={ () => handleClick('Chat Page')}>Chat</button></div>
+
       <div id='header-item-user'><button onClick={ () => handleClick('Play Game Page')}>Play</button></div>
 
       <div id='header-item-user'><button onClick={ () => handleClick('Statistics Page')}>Stats</button></div>
