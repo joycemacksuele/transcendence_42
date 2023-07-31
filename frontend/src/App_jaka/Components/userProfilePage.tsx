@@ -1,6 +1,6 @@
-import "../css/App_jaka.css";
 
 import InputUserName from './InputUserName';
+import UploadAvatar from './UploadAvatar';
 
 const UserPage = () => {
 	return (
@@ -8,6 +8,7 @@ const UserPage = () => {
 			<p>USER PAGE</p>
 			{/* <p>Change your username: </p> */}
 			<InputUserName />
+			<UploadAvatar />
 		</div>
 	);
 };
