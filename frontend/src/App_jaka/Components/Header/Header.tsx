@@ -21,6 +21,8 @@ const Header: React.FC<HeaderProps> = ({ setActiveContent }) => {
 
       <div id='header-item-user'><button onClick={ () => handleClick('User Profile Page')}>Edit</button></div>
 
+      <div id='header-item-user'><button onClick={ () => handleClick('Chat Page')}>Chat</button></div>
+
       <div id='header-item-user'><button onClick={ () => handleClick('Play Game Page')}>Play</button></div>
 
       <div id='header-item-user'><button onClick={ () => handleClick('Stats_Page')}>Stats</button></div>
