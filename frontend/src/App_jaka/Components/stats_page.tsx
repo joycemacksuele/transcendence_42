@@ -1,4 +1,3 @@
-import "../css/App_jaka.css";
 
 const StatsPage = () => {
 	return (

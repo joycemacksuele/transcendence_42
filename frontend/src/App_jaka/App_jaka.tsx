@@ -1,13 +1,11 @@
 // import React from "react";
-import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-
-
-import "./css/App_jaka.css";
-
 import LoginPage from "./Components/login_page.tsx";
+import LoginAuth from "./Components/login_auth.tsx";
 import MainPage from "./Components/main_page.tsx";
+import PageNotFound from './Components/PageNotFound.tsx';
 // import Header from "./Header/Header.tsx";
 // import Sidebar from "./Sidebar/Sidebar.tsx";
 // import Center from "./Center/Center.tsx";
@@ -29,12 +27,14 @@ import MainPage from "./Components/main_page.tsx";
 
 const App_jaka: React.FC = () => {
 	return (
-		<div>
+		<>
 			<Routes>
 				<Route path="/" element={<LoginPage />} />
+				{/* <Route path="/" element={<LoginAuth />} /> */}
 				<Route path="/main_page" element={<MainPage />} />
+				<Route path="*" element={<PageNotFound/>}/>
 			</Routes>
-		</div>
+		</>
 	);
 };
 
