@@ -9,13 +9,15 @@
 	height: 100%;
 }
 
+/*TODO: make it automatically change depending on screen size */
 #div-center {
 	margin: auto;
 	width: 80%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 90%;
+	/* height: 90%; */
+	height: 550px;
 	/* border: 3px solid green; */
 }
 

@@ -12,14 +12,18 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppService } from './app.service';
+
 import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
 import { DatabaseModule } from '../database/database.module';
 import { DatabaseController } from '../database/database.controller';
-import { UserService } from '../user/user.service';
+
 import { UserController } from '../user/user.controller';
+import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { MyUser } from '../user/user.entity';
+
 import { ExampleController } from '../example.controller';
 import { ExampleButton } from '../exampleButton.controller';
 // import { AuthController } from 'src/auth/auth.controller';
@@ -47,12 +51,13 @@ import { TestButton } from 'src/test_button/test.controller';
 
   controllers: [
       AppController,
-      ExampleController,
-      ExampleButton,
+      UserController,
       DatabaseController,
       UserController,
       // AuthController,
-      TestButton
+      TestButton,
+      ExampleController,
+      ExampleButton
   ],
                 
   providers: [
@@ -62,8 +67,8 @@ import { TestButton } from 'src/test_button/test.controller';
       // AuthService
   ],
 })
-export class MyAppModule {
+export class AppModule {
     constructor() {
-        console.log('[BACKEND LOG] MyAppModule constructor');
+        console.log('[BACKEND LOG] AppModule constructor');
     }
 }
