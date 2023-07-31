@@ -12,14 +12,18 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppService } from './app.service';
+
 import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
 import { DatabaseModule } from '../database/database.module';
 import { DatabaseController } from '../database/database.controller';
-import { UserService } from '../user/user.service';
+
 import { UserController } from '../user/user.controller';
+import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { MyUser } from '../user/user.entity';
+
 import { ExampleController } from '../example.controller';
 import { ExampleButton } from '../exampleButton.controller';
 
@@ -44,10 +48,10 @@ import { ExampleButton } from '../exampleButton.controller';
 
   controllers: [
       AppController,
-      ExampleController,
-      ExampleButton,
+      UserController,
       DatabaseController,
-      UserController
+      ExampleController,
+      ExampleButton
   ],
                 
   providers: [
@@ -56,8 +60,8 @@ import { ExampleButton } from '../exampleButton.controller';
       UserRepository//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
   ],
 })
-export class MyAppModule {
+export class AppModule {
     constructor() {
-        console.log('[BACKEND LOG] MyAppModule constructor');
+        console.log('[BACKEND LOG] AppModule constructor');
     }
 }

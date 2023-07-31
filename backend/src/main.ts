@@ -4,14 +4,14 @@
 */
 
 import { NestFactory } from '@nestjs/core';
-import { MyAppModule } from './app/app.module';
+import { AppModule } from './app/app.module';
 // const { Server } = require("socket.io"); JOYCE ?? socket.io tutorial
 // const io = new Server(server); JOYCE ?? socket.io tutorial
 
 async function main() {
   console.log('[BACKEND LOG] Backend main');
 
-  const app = await NestFactory.create(MyAppModule);
+  const app = await NestFactory.create(AppModule);
 
   // Enable CORS for all routes (this app will turn on port 3001, but the frontend and database will
   // run on a different port, so its good to add all other origin ports running (i.e.: that will
