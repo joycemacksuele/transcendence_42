@@ -1,10 +1,12 @@
 .main-field {
+	display: inline-block;
 	background-color: grey;
 	border: 1px grey solid;
 	color: red;
 	padding: 1%;
 	margin: 1px;
 	width: 97%;
+	height: 100%;
 }
 
 /*TODO: make it automatically change depending on screen size */
@@ -14,6 +16,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	/* height: 90%; */
 	height: 550px;
 	/* border: 3px solid green; */
 }
