@@ -2,7 +2,7 @@
 // import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-// import LoginPage from "./Components/login_page.tsx";
+import LoginPage from "./Components/login_page.tsx";
 import LoginAuth from "./Components/login_auth.tsx";
 import MainPage from "./Components/main_page.tsx";
 import PageNotFound from './Components/PageNotFound.tsx';
@@ -29,8 +29,8 @@ const App_jaka: React.FC = () => {
 	return (
 		<>
 			<Routes>
-				{/* <Route path="/" element={<LoginPage />} /> */}
-				<Route path="/" element={<LoginAuth />} />
+				<Route path="/" element={<LoginPage />} />
+				{/* <Route path="/" element={<LoginAuth />} /> */}
 				<Route path="/main_page" element={<MainPage />} />
 				<Route path="*" element={<PageNotFound/>}/>
 			</Routes>
