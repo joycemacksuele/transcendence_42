@@ -52,7 +52,11 @@ async makeApiRequest(access_token: string, secret: string, res: Response) {
       throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
     });
 
-  const hashedSecret = await this.generateHashSecret(secret);
+  
+// TEMP OUTCOMMENTED  
+    // const hashedSecret = await this.generateHashSecret(secret);
+
+
   // return await this.generateUser(login, +userId, hashedSecret, res, avatar);
 }
 
@@ -63,15 +67,19 @@ async makeApiRequest(access_token: string, secret: string, res: Response) {
   //The ideal authentication platform would integrate these two processes, hashing and salting, seamlessly.
   //At Auth0, the integrity and security of our data are one of our highest priorities. 
   //We use the industry-grade and battle-tested bcrypt algorithm to securely hash and salt passwords. 
-  async generateHashSecret(secret: string) {
-		const saltOrRounds = 10;
-		try {
-			return await bcrypt.hash(secret, saltOrRounds);
-		}
-		catch (err) {
-			this.logger.error(err);
-		}
-	}
+
+
+
+// TEMPORRAY OUTCOMMENTED
+  // async generateHashSecret(secret: string) {
+	// 	const saltOrRounds = 10;
+	// 	try {
+	// 		return await bcrypt.hash(secret, saltOrRounds);
+	// 	}
+	// 	catch (err) {
+	// 		this.logger.error(err);
+	// 	}
+	// }
 
   // signout 
   // signout(req: Request, response: Response) {

@@ -21,6 +21,9 @@ async function main() {
     // 3000 -> ReactJS (frontend)
     // 5432 -> PostgreQSL (database)
   });
+  
+
+  // app.enableCors();
 
   // Backend will be listening (for incoming requests) on port 3001
   // TODO: change this value to a macro or from the .env
