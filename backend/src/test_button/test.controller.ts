@@ -10,6 +10,7 @@ export class TestButton {
 
   @Get('test')
   getExample(): string {
+    console.log('print from test button 01');
     return '[BACKEND] This is the response from "TEST" endpoint.';
   }
 

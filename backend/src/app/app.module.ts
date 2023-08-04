@@ -26,9 +26,12 @@ import { MyUser } from '../user/user.entity';
 
 import { ExampleController } from '../example.controller';
 import { ExampleButton } from '../exampleButton.controller';
-// import { AuthController } from 'src/auth/auth.controller';
-// import { AuthService } from 'src/auth/auth.service';
+import { AuthController } from 'src/auth/auth.controller';
+import { AuthService } from 'src/auth/auth.service';
 import { TestButton } from 'src/test_button/test.controller';
+
+// added jaka to test API INTRA42
+import { GetUserName } from '../test_intra42_jaka/get_username.controller'; 
 
 @Module({
   imports: [ 
@@ -54,17 +57,18 @@ import { TestButton } from 'src/test_button/test.controller';
       UserController,
       DatabaseController,
       UserController,
-      // AuthController,
+      AuthController,
       TestButton,
       ExampleController,
-      ExampleButton
+      ExampleButton,
+      GetUserName     // jaka, testing
   ],
                 
   providers: [
       AppService,
       UserService,
       UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
-      // AuthService
+      AuthService
   ],
 })
 export class AppModule {
