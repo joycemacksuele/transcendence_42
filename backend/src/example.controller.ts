@@ -2,6 +2,8 @@ import {Controller, Post, Get, Body, Logger, Delete, Param, HttpCode} from '@nes
 import {AppService} from "./app/app.service";
 import { CreateUserDto } from './user/create-user.dto';
 
+
+
 @Controller()
 export class ExampleController {
   constructor() {
@@ -9,6 +11,7 @@ export class ExampleController {
   }
   @Get('/example')
   getExample(): string {
+    console.log('test print example in local terminal');
     return '[BACKEND] This is the response from "example" endpoint.';
   }
 
