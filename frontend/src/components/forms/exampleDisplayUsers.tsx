@@ -16,7 +16,9 @@ const UsersList: React.FC = () => {
       try {
         const response = await axios.get<User[]>('http://localhost:3001/users'); // Assuming the server is running on the same host and port
         setUsers(response.data);
+        console.log(response.data);
       } catch (error) {
+        
         console.error('Error retrieving users:', error);
       }
     };
