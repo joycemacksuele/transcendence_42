@@ -1,13 +1,12 @@
 .header {
-	width: 97%;
+	/*width: 97%;*/
 	/* height: auto; */
-	background-color: rgb(171, 165, 165);
-	border: 1px grey solid;
-	color: rgb(117, 15, 15);
-	margin: 1px;
-	padding: 1%;
+	/*background-color: dimgrey;*/
+	/*border: 1px grey solid;*/
+	/*color: rgb(117, 15, 15);*/
+	/*margin: 1px;*/
+	/*padding: 1%;*/
 }
-
 
 #user-image {
 	float: left;
@@ -18,7 +17,6 @@
 #header-items {
 	float: center;
 }
-
 
 #header-item-user {
 	padding: 0 2% 0 2%;
@@ -42,4 +40,4 @@
 	content: "";
 	display: table;
 	clear: both;
-  }
+}
