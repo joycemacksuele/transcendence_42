@@ -48,7 +48,7 @@ const UsersList: React.FC = () => {
 	return (
     <div style={myStyle}>
       <button onClick={handleClick}>
-				{ !displayList ? 'Show Users' : 'Hide Users' }
+				{ !displayList ? 'Show Dummy Users' : 'Hide Users' }
 			</button> {/* Button to trigger fetching the users */}
       {displayList && ( // Only render the list if showList is true
         <div>
