@@ -24,14 +24,16 @@ import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { MyUser } from '../user/user.entity';
 
-import { ExampleController } from '../example.controller';
-import { ExampleButton } from '../exampleButton.controller';
+import { ExampleController } from '../tests/exampleButtons/example.controller';
+import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
-import { TestButton } from 'src/test_button/test.controller';
+import { TestButton } from 'src/tests/exampleButtons/test.controller';
 
 // added jaka to test API INTRA42
-import { GetUserName } from '../test_intra42_jaka/get_username.controller'; 
+import { GetUserName } from '../tests/test_intra42_jaka/get_username.controller';
+// import { DummyUserService } from 'src/tests/dummyUsers/dummyUsers.service';
+import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
 
 @Module({
   imports: [ 
@@ -59,9 +61,10 @@ import { GetUserName } from '../test_intra42_jaka/get_username.controller';
       UserController,
       AuthController,
       TestButton,
-      ExampleController,
-      ExampleButton,
-      GetUserName     // jaka, testing
+      ExampleController,    // jaka, testing
+      ExampleButton,        // jaka, testing
+      GetUserName,          // jaka, testing
+      DummyUsersController  // jaka, testing
   ],
                 
   providers: [
