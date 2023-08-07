@@ -27,6 +27,6 @@ export class MyUser {
 	@Column()
 	name: string;
 
-	//@Column()
-	//city: string;
+	@Column({default: 'default profile name'})
+	profileName: string;
 }

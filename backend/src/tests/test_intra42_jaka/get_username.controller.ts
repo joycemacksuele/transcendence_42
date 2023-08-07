@@ -9,7 +9,7 @@ export class GetUserName {
 	@Header('Content-Type', 'application/json')
 	async getUserData(@Param('username') username: string) {
 		// const token = process.env.TOKEN;
-		const token = '1242d41a8d46c4c593556d3f490c760a194547e34c3d16acae984034dde99cf7';
+		const token = '7dc168fa615c262414829819e9afae7c1344c1f3b69242921dca42d0c533e766';
 		const apiUrl = `https://api.intra.42.fr/v2/users/${username}`; // ??? username from where?
 
 		// console.log('Jaka backend get_username: token: ', token);
