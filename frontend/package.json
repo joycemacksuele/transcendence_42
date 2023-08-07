@@ -10,14 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@types/axios": "^0.14.0",
+    "react": "^18.2.0",
     "axios": "^1.4.0",
-    "bootstrap": "^5.3.1",
     "jquery": "^3.7.0",
     "jquery-slim": "^3.0.0",
-    "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
+    "bootstrap": "^5.3.1",
+    "react-bootstrap": "^2.8.0",
     "socket.io": "^4.7.1"
   },
   "devDependencies": {
@@ -27,6 +27,7 @@
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react": "^4.0.1",
+    "@types/axios": "^0.14.0",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
