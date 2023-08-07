@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
 import avatarImage from '../../images/avatar_default.png'
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
@@ -197,3 +199,12 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 };
 
 export default Header;
+
+
+// Jaka, OLD CODE
+{/* <div id='header-item-user'> <p>Intra name:<b>{loginName}</b></p> */}
+                            {/* <p>Profile name:<b>{profileName}</b></p> */}
+                            // <p>Full name: <b>{userName}</b></p>
+                            // <p>Email: <b>{userEmail}</b> </p>
+                            // <p>Points: <b>100</b></p>
+// </div>

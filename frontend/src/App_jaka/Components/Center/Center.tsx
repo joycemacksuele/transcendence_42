@@ -1,18 +1,16 @@
-import React from 'react';
+import React from "react";
 
-import '../../css/Center.css'
+import "../../css/Center.css";
 
-import UserProfilePage from '../userProfilePage';
-import Chat from '../Chat/Chat';
-import PlayGamePage from '../playGamePage';
-import StatsPage from '../stats_page';
-import LogoutPage from '../logoutPage';
-
+import UserProfilePage from "./Profile_page/User_profile_page";
+import Chat from "../Chat/Chat";
+import PlayGamePage from "./Game_page/Game_page";
+import StatsPage from "../Other/stats_page";
+import LogoutPage from "../Login_page/logoutPage";
 
 type PropsCenter = {
   activeContent: string;
 };
-
 
 const Center: React.FC<PropsCenter> = ({ activeContent }) => {
   return (

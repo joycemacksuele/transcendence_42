@@ -14,17 +14,14 @@ const UsersList: React.FC = () => {
 
   const fetchUsers = async () => {
       try {
-        const response = await axios.get<User[]>('http://localhost:3001/users'); // Assuming the server is running on the same host and port
+        const response = await axios.get<User[]>('http://localhost:3001/users/all'); // Assuming the server is running on the same host and port
         setUsers(response.data);
         console.log(response.data);
       } catch (error) {
         
         console.error('Error retrieving users:', error);
       }
-    };
-
-
-
+  };
 
 	const handleClick = () => {
 		if (!displayList) {
@@ -34,10 +31,24 @@ const UsersList: React.FC = () => {
 	}
 
 
+  const deleteAllUsers = async () => {
+    try {
+      await axios.delete('http://localhost:3001/users');
+    }
+    catch (error) {
+      console.error('Error deleting all users: ', error);
+    }
+  };
+
+  const handleClickDeleteUsers = () => {
+    deleteAllUsers();
+  }
+
+
 	return (
     <div style={myStyle}>
       <button onClick={handleClick}>
-				{ !displayList ? 'Show Users' : 'Hide Users' }
+				{ !displayList ? 'Show Dummy Users' : 'Hide Users' }
 			</button> {/* Button to trigger fetching the users */}
       {displayList && ( // Only render the list if showList is true
         <div>
@@ -50,6 +61,11 @@ const UsersList: React.FC = () => {
           </ol>
         </div>
       )}
+
+      <button onClick={handleClickDeleteUsers}>Delete all users
+      </button>
+
+
     </div>
   );
 
