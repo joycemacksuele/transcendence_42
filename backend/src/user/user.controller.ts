@@ -54,7 +54,8 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
   
-  @Get()
+  // @Get()
+  @Get('all')
   async getAllUsers(): Promise<MyUser[]> {
     console.log('[BACKEND LOG] getAllUsers');
     return (this.userService.getAllUsers());

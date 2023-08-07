@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
 import avatarImage from '../../images/avatar_default.png'
 import '../../css/Header.css'
 
@@ -45,7 +47,12 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
     <div className='header'>
       <img id='user-image' src={userImage}></img>
 
-      <div id='header-item-user'> <p>Intra name: <b>{loginName}</b></p><p>Full name: <b>{userName}</b> </p> <p>Email: <b>{userEmail}</b> </p>Points: <b>100</b></div>
+      <div id='header-item-user'> <p>Intra name:<b>{loginName}</b></p>
+                                  {/* <p>Profile name:<b>{profileName}</b></p> */}
+                                  <p>Full name: <b>{userName}</b></p>
+                                  <p>Email: <b>{userEmail}</b> </p>
+                                  <p>Points: <b>100</b></p>
+      </div>
 
       <div id='header-item-user'><button onClick={ () => handleClick('User Profile Page')}>Edit</button></div>
 

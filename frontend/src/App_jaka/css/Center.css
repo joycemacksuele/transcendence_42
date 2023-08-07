@@ -43,7 +43,8 @@
 }
 
 #logout-page {
-	height: 50%;
+	height: 15%;
+	margin: 2%;
 	width: 50%;
 	border: 1px solid black;
 	background-color: brown;
