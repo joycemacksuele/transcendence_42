@@ -67,7 +67,13 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 
         // TODO dint a way to put the seach box on the right
         <Navbar defaultExpanded expand="md" className="bg-body-tertiary nav-justified">
-            <Container fluid class="justify-content-center">
+            
+
+            <img id='user-image' src={userImage}></img>
+
+
+
+            <Container fluid className="justify-content-center">
                 {/*<Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>*/}
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
 
@@ -81,7 +87,8 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         fill
                     >
 
-                        <Nav.Link eventKey="profile">Profile</Nav.Link>
+                        {/* <Nav.Link eventKey="profile">Profile</Nav.Link> */}
+                        <Nav.Link eventKey="profile">{loginName}</Nav.Link>
                         <Nav.Link eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>
                         <Nav.Link eventKey="game">Game</Nav.Link>
                     </Nav>

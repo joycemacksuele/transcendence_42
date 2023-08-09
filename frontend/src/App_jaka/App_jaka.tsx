@@ -28,11 +28,11 @@ import { callInsertData } from "./Components/Test/TestFunctions.tsx";
 const App_jaka: React.FC = () => {
 
 	// To insert Dummy Users into database, but only once, at the start
-	const { isDataInserted, setIsDataInserted, insertData } = callInsertData(); 
-	useEffect(() => {
-		insertData();
-		//insertDummyUsers();
-	}, [setIsDataInserted]);
+	// const { isDataInserted, setIsDataInserted, insertData } = callInsertData(); 
+	// useEffect(() => {
+	// 	insertData();
+	// 	//insertDummyUsers();
+	// }, [setIsDataInserted]);
 	
 
 
