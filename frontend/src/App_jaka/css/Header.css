@@ -12,6 +12,8 @@
 	float: left;
 	height: 7%;
 	width: 7%;
+	border-radius: 100%;
+	padding: 1%;
 }
 
 #header-items {

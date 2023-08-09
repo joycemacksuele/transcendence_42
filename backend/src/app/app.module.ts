@@ -34,6 +34,9 @@ import { TestButton } from 'src/tests/exampleButtons/test.controller';
 import { GetUserName } from '../tests/test_intra42_jaka/get_username.controller';
 // import { DummyUserService } from 'src/tests/dummyUsers/dummyUsers.service';
 import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
+// added jaka: to enable using .env 
+import { AppConfigModule } from '../config/config.module'; /* the Module containing ConfigService */
+
 
 @Module({
   imports: [ 
@@ -51,7 +54,8 @@ import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller
     }),
     
     TypeOrmModule.forFeature([MyUser]),
-    DatabaseModule
+    DatabaseModule,
+    AppConfigModule // added jaka: to enable .env to be visible globally
   ],
 
   controllers: [
