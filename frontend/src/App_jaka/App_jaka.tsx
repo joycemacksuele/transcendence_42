@@ -1,76 +1,60 @@
 // import React from "react";
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route } from "react-router-dom";
 
 // import LoginPage from "./Components/login_noAuth.tsx";
 import LoginAuth from "./Components/Login_page/Login_auth.tsx";
-import MainPage from "./Components/Main_page.tsx";
+import MainPage from "./Components/main_page.tsx";
 import PageNotFound from "./Components/Other/PageNotFound.tsx";
+import fetchFromIntra_CurrUser from './Components/Center/Profile_page/FetchFromIntra_CurrUser.tsx';
+// import { storeLoginName } from './Components/Login_page/ManageUserNames.tsx'; // jaka: not needed anymore
 
-import { callInsertData } from "./Components/Test/TestFunctions.tsx";
-// import Header from "./Header/Header.tsx";
-// import Sidebar from "./Sidebar/Sidebar.tsx";
-// import Center from "./Center/Center.tsx";
 
-// const MainPage = () => {
-//   return (
-// 	<div>
-// 	  <Header />
-// 	  <div className="main-grid-container">
-// 		<Sidebar />
-// 		<Center />
-// 	  </div>
-// 	</div>
-//   );
-// };
 
+// Context provides a way to pass data through the component tree without having to pass 
+// props down manually at every level. This is especially useful for sharing data that can 
+// be considered "global" or shared across multiple components, such as user authentication status, etc ...
+
+interface CurrUserData {
+	loginName:	string;
+	loginImage:	string;
+}
+
+export const CurrentUserContext = React.createContext<CurrUserData | null>(null);
 
 const App_jaka: React.FC = () => {
 
-	// To insert Dummy Users into database, but only once, at the start
+	const [currUserData, setCurrUserData] = useState <CurrUserData | null> (null);
+
+	// To store user intra login name into database, but only once, at the start
 	// const { isDataInserted, setIsDataInserted, insertData } = callInsertData(); 
-	// useEffect(() => {
-	// 	insertData();
-	// 	//insertDummyUsers();
-	// }, [setIsDataInserted]);
+	useEffect(() => {
+		// Jaka: For now it is fetching just the hardcoded loginname: 
+		fetchFromIntra_CurrUser('jmurovec').then((currUserData: any) => {
+			const mappedUserData: CurrUserData = {
+				loginName: currUserData.login,
+				loginImage: currUserData.image.versions.medium
+			}
+			console.log('From App_jaka: fetched login name: ', currUserData.login);
+			setCurrUserData(mappedUserData);
+		});
+	}, []);
 	
 
 
 	return (
 		<>
-		<Routes>
-			{/* <Route path="/" element={<LoginPage />} /> */}
-			<Route path="/" element={<LoginAuth />} />
-			<Route path="/main_page" element={<MainPage />} />
-			<Route path="*" element={<PageNotFound />} />
-		</Routes>
+		{/* <CurrentUserContext.Provider value={currUserData}> */}
+		<CurrentUserContext.Provider value={currUserData as CurrUserData}>
+				<Routes>
+					{/* <Route path="/" element={<LoginPage />} /> */}
+					<Route path="/" element={<LoginAuth />} />
+					<Route path="/main_page" element={<MainPage />} />
+					<Route path="*" element={<PageNotFound />} />
+				</Routes>
+		</CurrentUserContext.Provider>
 		</>
 	);
 };
-
-// OLD (CHANGED TO A SWITCH AND ROUTER)
-// const App_jaka: React.FC = () => {
-// 	const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-// 	useEffect(() => {
-// 		// Check if you have the access token or authorization code in your state or local storage
-// 		// For example, you can check localStorage or Redux store
-
-// 		setIsLoggedIn(false); // jaka: temporary so
-
-// 	  const hasAccessToken = localStorage.getItem('access_token');
-// 	  if (hasAccessToken) {
-// 		setIsLoggedIn(true);
-// 	  }
-// 	}, []);
-
-// 	return (
-// 	  <React.StrictMode>
-
-// 		{isLoggedIn ? <MainPage /> : <LoginPage />}
-// 		{/* <MainPage /> */}
-// 	  </React.StrictMode>
-// 	);
-// };
 
 export default App_jaka;

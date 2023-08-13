@@ -13,5 +13,19 @@ export function callInsertData() {
   		}
 	};
 	insertDummyUsers();
+	
+	
+	// const storeCurrUserToDataBs = async () => {
+	// 	try {
+	//   // Make an API call to the backend endpoint to insert dummy users
+	//   await axios.post('http://localhost:3001/store_curr_user_to_databs');
+	//   console.log('Current user stored to database successfully.');
+	// 	} catch (error: any) {
+	// 	  console.error('Error storing current user to database:', error.message);
+	// 	  throw error;
+	// 	}
+  	// };
+	// storeCurrUserToDataBs();
+	
 	return {};
 }
