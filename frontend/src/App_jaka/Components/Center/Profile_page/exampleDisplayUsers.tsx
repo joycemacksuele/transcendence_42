@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { callInsertData } from "../../Test/TestFunctions";
+// import { MyUser }
 
 interface User {
   id: number;
   name: string;
+  loginName: string;
+  profileName: string;
 }
 
 const UsersList: React.FC = () => {
@@ -27,7 +30,7 @@ const UsersList: React.FC = () => {
         "http://localhost:3001/users/all"
       ); // Assuming the server is running on the same host and port
       setUsers(response.data);
-      console.log(response.data);
+      console.log('Jaka, retreived users', response.data);
     } catch (error) {
       console.error("Error retrieving users:", error);
     }
@@ -66,7 +69,7 @@ const UsersList: React.FC = () => {
           <ol>
             {users.map((user) => (
               // <li key={user.id}> ... {user.name} </li>
-              <li key={user.id}> &nbsp; {user.name} </li>
+              <li key={user.id}> &nbsp; intra: {user.name}, &nbsp;&nbsp; profile: {user.profileName} </li>
             ))}
           </ol>
         </div>

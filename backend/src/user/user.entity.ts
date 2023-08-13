@@ -29,4 +29,7 @@ export class MyUser {
 
 	@Column({default: 'default profile name'})
 	profileName: string;
+
+	@Column()
+	loginName: string;
 }
