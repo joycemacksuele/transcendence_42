@@ -33,6 +33,7 @@
     to complete, improving the overall efficiency and responsiveness of the application.
 */
 
+// import { UserRepository } from './user.repository' ;
 import {Controller, Post, Get, Body, Logger, Delete, Param, HttpCode} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './create-user.dto';
@@ -43,8 +44,10 @@ export class UserController {
 
   private readonly logger = new Logger(UserController.name);
 
-  constructor(private readonly userService: UserService) {
-    console.log('[BACKEND LOG] UserController constructor');
+  constructor(  private readonly userService: UserService,
+                // public readonly userRepository: UserRepository // jaka: Controller should not interact with UserRepository
+              ) {
+      console.log('[BACKEND LOG] UserController constructor');
   }
 
   @Post()
@@ -54,24 +57,6 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
   
-  // @Get()
-  @Get('all')
-  async getAllUsers(): Promise<MyUser[]> {
-    console.log('[BACKEND LOG] getAllUsers');
-    return (this.userService.getAllUsers());
-  }
-
-
-  // GET USER BY ID
-  // :id  is a route parameter, matching the request /users/:id
-  // It needs the @Param decorator to be able to pass the arg to the function getUserById( id )'
-  @Get(':id')
-  async getUserById(@Param('id') id: number): Promise<MyUser> {
-    console.log('[BACKEND LOG] getUserById');
-    return this.userService.getUserById(id);
-  }
-
-
   @Delete()
   async deleteAllUsers(): Promise<void> {
     try {
@@ -82,4 +67,26 @@ export class UserController {
     }
   }
 
+
+  //////////////////////////////////////////////////////////////////////////
+  // UserRepository ///////////////////////////////////////////////////////
+  
+  // GET USER BY ID
+  // :id  is a route parameter, matching the request /users/:id
+  // It needs the @Param decorator to be able to pass the arg to the function getUserById( id )'
+  // @Get(':id')
+  // async findById(@Param('id') id: number): Promise<MyUser | undefined> {
+  //   console.log('[BACKEND LOG] findById');
+  //   return this.userService.getUserById(id);
+  // }
+  
+  
+  // GET ALL USERS
+  @Get('all')
+  async getAllUsers(): Promise<MyUser[]> {
+    console.log('[BACKEND LOG] getAllUsers');
+    return (this.userService.getAllUsers());
+  }
+
 }
+

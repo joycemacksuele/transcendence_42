@@ -31,11 +31,13 @@ import { AuthService } from 'src/auth/auth.service';
 import { TestButton } from 'src/tests/exampleButtons/test.controller';
 
 // added jaka to test API INTRA42
-import { GetUserName } from '../tests/test_intra42_jaka/get_username.controller';
+import { GetUserNameFromIntra } from '../tests/test_intra42_jaka/fetchFromIntra_userName.controller';
 // import { DummyUserService } from 'src/tests/dummyUsers/dummyUsers.service';
 import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
 // added jaka: to enable using .env 
 import { AppConfigModule } from '../config/config.module'; /* the Module containing ConfigService */
+// added jaka: to store current user to database
+import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 
 
 @Module({
@@ -67,8 +69,9 @@ import { AppConfigModule } from '../config/config.module'; /* the Module contain
       TestButton,
       ExampleController,    // jaka, testing
       ExampleButton,        // jaka, testing
-      GetUserName,          // jaka, testing
-      DummyUsersController  // jaka, testing
+      GetUserNameFromIntra,          // jaka, testing
+      DummyUsersController,  // jaka, testing
+      StoreCurrUserToDataBs,
   ],
                 
   providers: [
