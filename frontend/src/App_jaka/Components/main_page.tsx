@@ -11,6 +11,8 @@ import Center from "./Center/Center.tsx";
 
 const MainPage = () => {
 
+	// Todo Jaka: This used to imediately display the content, but now you need to first click ??
+	//		Maybe this is not needed anymore, nor functionnToCall() in 
 	const [activeContent, setActiveContent] = useState<string>('User Profile Page');
 
 	const handleSetActiveContent = (content: string) => {
