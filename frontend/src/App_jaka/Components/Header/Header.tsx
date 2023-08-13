@@ -38,63 +38,65 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
     const { loginName, loginImage } = currUserData;
 
     return (
+        <Navbar bg="light" data-bs-theme="light" sticky="top" defaultExpanded className="border-bottom">
+            <Container fluid>
+                <Col className='col-md-1'>
+                    <Navbar.Brand href="#profile">
+                        <img
+                            id='user-image'
+                            src={loginImage}
+                            width="30"
+                            height="30"
+                            className="d-inline-block align-top"
+                            alt="Unfriendly"
+                        />
+                    </Navbar.Brand>
+                </Col>
 
-        // Still trying to figure out if its better to use Tab.Container, Tabs, Nav, Navbars ...
-
-        // TODO dint a way to put the seach box on the right
-        // <Navbar defaultExpanded expand="md" className="bg-body-tertiary nav-justified">
-        <Navbar expand="md" className="bg-body-tertiary nav-justified">
-            
-
-            <img id='user-image' src={loginImage}></img>
-
-
-
-            <Container fluid className="justify-content-center">
-                {/* <Navbar.Brand href="#home">{loginName || 'React-Bootstrap'}</Navbar.Brand> */}
-                <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-
-                <Navbar.Collapse id="basic-navbar-nav">
+                <Col className='col-md-10'>
                     <Nav
-                        className="me-auto group-justified"
-                        // defaultActiveKey="game"
-                        defaultActiveKey="profile"
-                        style={{ maxHeight: '70px' }}
+                        defaultActiveKey="game"
                         onSelect={(k) => handleClick(k)}
-                        variant="pills"
                         fill
+                        variant="underline"
                     >
-                        {/* <Nav.Link eventKey="profile">Profile</Nav.Link> */}
-                        <Nav.Link eventKey="profile"> { loginName } </Nav.Link>
-
-                        <Nav.Link eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>
-                        
-                        <Nav.Link eventKey="game">Game</Nav.Link>
+                        <Nav.Item>
+                            <Nav.Link eventKey="profile">{loginName}</Nav.Link>
+                            {/*<Nav.Link eventKey="profile">Name</Nav.Link>*/}
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="chat">Chat</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            {/*<Nav.Link eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>*/}
+                            <Nav.Link eventKey="game">Game</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            {/*take a look for searching ui/engine: https://github.com/ericgio/react-bootstrap-typeahead*/}
+                            <Form.Group className='d-flex'>
+                                <Form.Control
+                                    className='me-auto form-control'
+                                    type="search"
+                                    placeholder="Search for a user"
+                                    aria-label="Search"
+                                    // onChange={(e) => setMessage(e.target.value)}
+                                />
+                                {/*<Button variant="outline-success" type="submit">Search</Button>*/}
+                            </Form.Group>
+                        </Nav.Item>
                     </Nav>
-                </Navbar.Collapse>
+                </Col>
 
-                {/* <Navbar.Collapse id="navbar-form"> */}
-                    {/*take a look for searching ui/engine: https://github.com/ericgio/react-bootstrap-typeahead*/}
-                    {/* <Form.Group className="d-flex">
-                        <Form.Control
-                            className="me-auto"
-                            type="search"
-                            placeholder="Search for a user"
-                            aria-label="Search"
-                            // onChange={(e) => setMessage(e.target.value)}
-                        /> */}
-                        {/*<Button variant="outline-success" type="submit">Search</Button>*/}
-                    {/* </Form.Group>
-                </Navbar.Collapse> */}
-
-                <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-                    <Button
-                        // onSelect={() => logout()}
-                        variant="outline-warning"
-                    >
-                        Logout
-                    </Button>
-                </Navbar.Collapse>
+                <Col className='col-md-1'>
+                    <Nav className="justify-content-end">
+                        <Button
+                            // onSelect={() => logout()}
+                            variant="outline-warning"
+                        >
+                            Logout
+                        </Button>
+                    </Nav>
+                </Col>
             </Container>
         </Navbar>
     );

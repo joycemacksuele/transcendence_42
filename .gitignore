@@ -1,5 +1,6 @@
-# Dev studies
-react-typescript-test/
+.DS_Store
+backend/.DS_Store
+frontend/.DS_Store
 
 #IDE
 .idea/
@@ -138,7 +139,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
 
 # Added Jaka (my own folder for temporary stuff):
 _jakaVarious

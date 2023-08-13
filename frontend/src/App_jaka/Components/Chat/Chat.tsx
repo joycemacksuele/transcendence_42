@@ -19,6 +19,7 @@ import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
 import Nav from 'react-bootstrap/Nav';
 
 /*
@@ -96,68 +97,73 @@ const Chat = () => {
     };
 
     return (
-        <Container fluid className='chat-page'>
+        <Container fluid className='h-100 w-100'>
+            <Row className='chat-page' text='dark'>
 
-            <Row md={10} gap={1}>
-
-                <Col gap={1} as={Card} className='bg-dark' id='chat-page-rooms' text='light'>
-                    <Card.Header>
-                        <Nav
-                            variant="tabs"
-                            // defaultActiveKey="recent"
-                            onSelect={(k) => cardClick(k)}
-                        >
-                            <Nav.Item>
-                                <Nav.Link eventKey="recent" href="#recent">Recent</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="rooms" href="#rooms">Rooms</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                    </Card.Header>
-                    <Card.Body>
-                        <Card.Text>
-                        {/*{ roomsTab &&*/}
-                        {/*<Stack gap={1}>*/}
-                        {/*    <div className="p-2">First room</div>*/}
-                        {/*    <div className="p-2">Second room</div>*/}
-                        {/*    <div className="p-2">Third room</div>*/}
-                        {/*</Stack>*/}
-                        {/*}*/}
-                        {/*    {variant.toLowerCase() === 'light' ? 'dark' : 'white'}*/}
-                            { roomsTab === true && <>eeeee</>}
-                            { recentTab === true && <>3332</>}
-
-                        </Card.Text>
-                    </Card.Body>
-                    <Card.Footer>
-                        <Button variant="primary">Create room</Button>
-                    </Card.Footer>
+                {/* Recent + Rooms column */}
+                <Col className='bg-white col-md-3'>
+                    <Row className='h-75'>
+                        <Card.Header>
+                            <Nav
+                                className="border-bottom"
+                                variant="underline"
+                                defaultActiveKey="recent"
+                                fill
+                                // onSelect={(k) => cardClick(k)}
+                            >
+                                <Nav.Item>
+                                    <Nav.Link eventKey="recent" href="#recent">Recent</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="rooms" href="#rooms">Rooms</Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                        </Card.Header>
+                        <Card.Body variant="top">
+                            {/*<Col>*/}
+                            {/*    <Stack gap={1}>*/}
+                            {/*        <div class="media" className="p-2">*/}
+                            {/*            <img src={avatarImage} alt="user" width="20" class="rounded-circle" />*/}
+                            {/*            Joyce*/}
+                            {/*            /!*<small class="small font-weight-bold">25 Dec</small>*!/*/}
+                            {/*        </div>*/}
+                            {/*        <div className="p-2">Jaka</div>*/}
+                            {/*        <div className="p-2">Corina</div>*/}
+                            {/*        <div className="p-2">Hokai</div>*/}
+                            {/*    </Stack>*/}
+                            {/*</Col>*/}
+                            <ListGroup className="list-group-flush">
+                                <ListGroup.Item>Cras justo odio</ListGroup.Item>
+                                <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
+                                <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
+                            </ListGroup>
+                            {/*<Card.Text>*/}
+                            {/*/!*<Stack gap={1}>*!/*/}
+                            {/*    { roomsTab === true && <>eeeee</>}*/}
+                            {/*    { recentTab === true && <>3332</>}*/}
+                            {/*    /!*    {variant.toLowerCase() === 'light' ? 'dark' : 'white'}*!/*/}
+                            {/*/!*</Stack>*!/*/}
+                            {/*</Card.Text>*/}
+                        </Card.Body>
+                    </Row>
+                    <Row className='h-25 align-items-center'>
+                        <Stack gap={2} className='align-self-center'>
+                            <Button variant="primary">Create room</Button>
+                        </Stack>
+                    </Row>
                 </Col>
 
-                {/*<Col id='chat-page-recent'>*/}
-                {/*    <h3>Recent</h3>*/}
-                {/*    <Stack gap={1}>*/}
-                {/*        <div class="media" className="p-2">*/}
-                {/*            <img src={avatarImage} alt="user" width="20" class="rounded-circle" />*/}
-                {/*            Joyce*/}
-                {/*            /!*<small class="small font-weight-bold">25 Dec</small>*!/*/}
-                {/*        </div>*/}
-                {/*        <div className="p-2">Jaka</div>*/}
-                {/*        <div className="p-2">Corina</div>*/}
-                {/*        <div className="p-2">Hokai</div>*/}
-                {/*    </Stack>*/}
-                {/*</Col>*/}
-
-                <Col as={Card} className='bg-dark' md={7} id='chat-page-chat-box'>
-                    <Card.Body>
-
-                    </Card.Body>
-                    <Card.Footer>
+                {/* Chat column */}
+                <Col className='bg-light col-md-6'>
+                    <Row className='h-75 align-items-center mx-auto'>
+                        chat
+                    </Row>
+                    <Row className='h-25 align-items-center'>
                         {/* what is controlId ?????*/}
-                        <Form.Group controlId="exampleForm.ControlInput1" value={message}>
+                        <Form.Group value={message}>
                             <Stack direction="horizontal">
                                 <Form.Control
+                                    as="textarea"
                                     className="me-2"
                                     type="text"
                                     placeholder={placeHolder}
@@ -167,28 +173,43 @@ const Chat = () => {
                                 <Button variant="primary" type="submit" onClick={handleSend}>Send</Button>
                             </Stack>
                         </Form.Group>
-                    </Card.Footer>
+                    </Row>
                 </Col>
 
-                <Col gap={2} as={Card} className='bg-dark' id='chat-page-members' text='light'>
-                    <Card.Header>
-                        Members
-                    </Card.Header>
-                    <Card.Body>
-                    {/*<Stack gap={1}>*/}
-                        <div className="p-2">First member</div>
-                        <div className="p-2">Second member</div>
-                    {/*</Stack>*/}
-                    </Card.Body>
-                    <Card.Footer>
-                        {/*use variant="outline-secondary" disabled for when we dont want this button to be enabled*/}
-                        {/* Play button is available only when we are on a private chat channel*/}
-                        {/*<Button variant="outline-secondary" disabled >Play</Button>*/}
-                        <Button variant="outline-secondary" disabled >Add user</Button>
-                        {/* Delete Room = when we are on a private chat channel*/}
-                        {/* Leave Room = when we are on a room chat channel*/}
-                        <Button variant="primary" >Leave Room</Button>
-                    </Card.Footer>
+                {/* Members column */}
+                <Col className='bg-white col-md-3' text='dark'>
+                    <Row className='h-75'>
+                        <Card.Header>
+                            <Nav
+                                className="border-bottom"
+                                activeKey="members"
+                                variant="underline"
+                                fill
+                                // onSelect={(k) => cardClick(k)}
+                            >
+                                <Nav.Item>
+                                    <Nav.Link href="members">Members</Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                        </Card.Header>
+                        <Card.Body>
+                            <Nav.Item>
+                                <Nav.Link>Recent</Nav.Link>
+                            </Nav.Item>
+                        </Card.Body>
+                    </Row>
+
+                    <Row className='h-25'>
+                        <Stack gap={2} className='align-self-center'>
+                            {/*use variant="outline-secondary" disabled for when we dont want this button to be enabled*/}
+                            {/* Play button is available only when we are on a private chat channel*/}
+                            {/*<Button variant="outline-secondary" disabled >Play</Button>*/}
+                            <Button variant="outline-secondary" disabled >Add user</Button>
+                            {/* Delete Room = when we are on a private chat channel*/}
+                            {/* Leave Room = when we are on a room chat channel*/}
+                            <Button variant="primary" >Leave Room</Button>
+                        </Stack>
+                    </Row>
                 </Col>
             </Row>
         </Container>
