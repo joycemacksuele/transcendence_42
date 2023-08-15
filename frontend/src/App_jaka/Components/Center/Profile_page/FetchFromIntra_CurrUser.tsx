@@ -2,7 +2,7 @@
 
 
 // FUNCTION TO FETCH USER DATA FROM BACKEND (BACKEND GETS IT FROM INTRA42 API)
-const fetchUserData = async (username: string) => { 
+const fetchFromIntra_CurrUser = async (username: string) => { 
 
 	try {
 		const response = await fetch(`http://localhost:3001/fetch_intra_userData/${username}`);
@@ -17,8 +17,8 @@ const fetchUserData = async (username: string) => {
 	}
 };
 
-const fetchFromIntra_CurrUser = (username: string) => {
-	return fetchUserData(username);
-};
+// const fetchFromIntra_CurrUser = (username: string) => {
+// 	return fetchUserData(username);
+// };
 
 export default fetchFromIntra_CurrUser;

@@ -11,15 +11,14 @@ import { MyUser } from '../../user/user.entity';
 // }
 
 
-// @Controller('store_curr_user_to_databs')
-@Controller('userName')
+@Controller('manage_curr_user_data')
 export class StoreCurrUserToDataBs {
 	// InsertUserDto class defined inside the TestController file
 	constructor(private readonly userService: UserService) {
   	}
 
-  @Post('storeLoginName')
-  async storeCurrUserName(@Body() data: { loginName: string }): Promise<{ message: string }> {
+  @Post('store_login_data')
+  async storeCurrUserName(@Body() data: { loginName: string, profilename: string, loginImage: string }): Promise<{ message: string }> {
     try {
       // Check if user with the same loginName already exists
       const existingUser = await this.userService.getUserByLoginName(data.loginName );
@@ -28,7 +27,7 @@ export class StoreCurrUserToDataBs {
         return { message: 'This loginName already exists in database == the current user.'};
       }
       const currUserName: MyUser[] = [
-        { id: 0, name: data.loginName, profileName: data.loginName, loginName: data.loginName },
+        { loginName: data.loginName, profileName: data.loginName, profileImage: data.loginImage },
       ];
 
       const promises = currUserName.map((user) => this.userService.createUser(user));
@@ -43,8 +42,8 @@ export class StoreCurrUserToDataBs {
 
 
 
-  @Post('changeProfileName')
-  async changeProfileName(@Body() data: { profileName: string }): Promise<{ message: string }> {
+  @Post('change_profile_name')
+  async changeProfileName(@Body() data: { profileName: string, loginName: string }): Promise<{ message: string }> {
     try {
       // Get the profile name of the Current User!
       // TODO jaka, how the current user profilename is hardcoded, it needs to be available somewhere, maybe as global var
@@ -53,7 +52,7 @@ export class StoreCurrUserToDataBs {
       // but that button name is loaded in the Header, directly from intra ...!
 
 
-      const user = await this.userService.getUserByProfileName('jmurovec (hardcoded)');
+      const user = await this.userService.getUserByLoginName(data.loginName);
       // console.log('Jaka, found profile name: ', user.profileName  );
       if (!user) {
         return {message: 'User with this profileName not found'};

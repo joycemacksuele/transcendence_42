@@ -16,20 +16,19 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class MyUser {
-
 	constructor() {
 		console.log('[BACKEND LOG] MyUser constructor');
 	}
 	
 	@PrimaryGeneratedColumn()
-	id: number;
+	id?: number;	// ? is optional -> it will be created automatically
 
 	@Column()
-	name: string;
+	loginName: string;
 
 	@Column({default: 'default profile name'})
 	profileName: string;
 
-	@Column()
-	loginName: string;
+	@Column({default: 'some path'})
+	profileImage?: string;
 }
