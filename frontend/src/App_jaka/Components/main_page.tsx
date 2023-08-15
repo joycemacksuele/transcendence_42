@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from "./Header/Header.tsx";
 import Center from "./Center/Center.tsx";
+import { CurrUserData } from './Center/Profile_page/contextCurrentUser.tsx';
 
 // import DummyPage from "./dummyPage"; // Import the actual components
 // import UserProfilePage from "./userProfilePage"; // Import the actual components
@@ -9,11 +10,16 @@ import Center from "./Center/Center.tsx";
 /* <div className="main-grid-container"> */
 /* </div> */
 
-const MainPage = () => {
+interface ContextProps {
+	updateContext: (updateUserData: CurrUserData ) => void;
+}
+
+
+const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 
 	// Todo Jaka: This used to imediately display the content, but now you need to first click ??
 	//		Maybe this is not needed anymore, nor functionnToCall() in 
-	const [activeContent, setActiveContent] = useState<string>('User Profile Page');
+	const [activeContent, setActiveContent] = useState<string>('game');
 
 	const handleSetActiveContent = (content: string) => {
 		setActiveContent(content);
@@ -23,7 +29,7 @@ const MainPage = () => {
 	<>
 		<Header functionToCall={handleSetActiveContent}/>
 
-		<Center activeContent={activeContent} />
+		<Center activeContent={activeContent} updateContext={ updateContext } />
 	</>
   );
 };

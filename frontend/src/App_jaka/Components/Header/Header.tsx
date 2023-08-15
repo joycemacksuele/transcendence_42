@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
-import avatarImage from '../../images/avatar_default.png'
+// import avatarImage from '../../images/avatar_default.png'
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -14,7 +14,9 @@ import '../../css/Header.css'
 import { Navbar, Container, Nav, Badge, Form, Button,
             Tab, Tabs, NavDropdown, Row, Col } from 'react-bootstrap';
 
-import { CurrentUserContext } from '../../App_jaka';
+import { CurrentUserContext } from '../Center/Profile_page/contextCurrentUser';
+// import { UserService } from '../../user/user.service';
+
 
 
 type PropsHeader = {
@@ -25,17 +27,19 @@ type PropsHeader = {
 //      Maybe this is not necessary each time
 const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 
+
     const handleClick = (content: string) => {
         functionToCall(content);  //    ( setActiveContent() in main_page )
     };
 
+    // Get Current User Info from CONTEXT
     const currUserData = useContext(CurrentUserContext);
     if (!currUserData) {
         console.log('Error from Header.tsx: no Current User Data');
         return null;
     }
+    const { profileName, loginImage } = currUserData;
 
-    const { loginName, loginImage } = currUserData;
 
     return (
 
@@ -65,11 +69,11 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         fill
                     >
                         {/* <Nav.Link eventKey="profile">Profile</Nav.Link> */}
-                        <Nav.Link eventKey="profile"> { loginName } </Nav.Link>
+                        <Nav.Link className="me-2" eventKey="profile"> { profileName } </Nav.Link>
 
-                        <Nav.Link eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>
+                        <Nav.Link className="me-2" eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>
                         
-                        <Nav.Link eventKey="game">Game</Nav.Link>
+                        <Nav.Link className="me-2" eventKey="game">Game</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
 

@@ -28,8 +28,8 @@ const InputUserName: React.FC = () => {
       setErrorMessage('');
       
       // console.log(response.data); // Handle the response as needed
-      console.log('Jaka: JSON: ', JSON.stringify(response));
-      console.log('Jaka: from myForm test.');
+      console.log('Jaka: from inputUserName, JSON: ', JSON.stringify(response));
+      // console.log('Jaka: from inputUserName.');
     } catch (error) {
       console.error(error);
     }

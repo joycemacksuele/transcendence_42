@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { callInsertData } from "../../Test/TestFunctions";
+import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 // import { MyUser }
 
 interface User {
@@ -21,7 +21,7 @@ const UsersList: React.FC = () => {
   };
 
   const handleInsertDataClick = () => {
-    callInsertData();
+    insertDummyUsers();
   };
 
   const fetchUsers = async () => {
@@ -69,7 +69,7 @@ const UsersList: React.FC = () => {
           <ol>
             {users.map((user) => (
               // <li key={user.id}> ... {user.name} </li>
-              <li key={user.id}> &nbsp; intra: {user.name}, &nbsp;&nbsp; profile: {user.profileName} </li>
+              <li key={user.id}> &nbsp; <b>intra:</b> {user.loginName}, &nbsp;&nbsp; <b>profile: </b> {user.profileName} </li>
             ))}
           </ol>
         </div>

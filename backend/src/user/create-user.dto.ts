@@ -9,7 +9,7 @@ import { IsNotEmpty } from 'class-validator';
 // will be sent in a post request body and response.
 export class CreateUserDto {
   // @IsNotEmpty()
-  name: string;
+  loginName: string;
 
   //@IsNotEmpty()
   //@IsEmail()
