@@ -19,7 +19,7 @@ export class MyUser {
 	constructor() {
 		console.log('[BACKEND LOG] MyUser constructor');
 	}
-	
+
 	@PrimaryGeneratedColumn()
 	id?: number;	// ? is optional -> it will be created automatically
 

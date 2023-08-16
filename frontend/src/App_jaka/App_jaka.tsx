@@ -8,6 +8,7 @@ import MainPage from "./Components/main_page.tsx";
 import PageNotFound from "./Components/Other/PageNotFound.tsx";
 import fetchFromIntra_CurrUser from './Components/Center/Profile_page/FetchFromIntra_CurrUser.tsx';
 
+import { checkIfUserExistsInDB } from './Components/Center/Profile_page/checkIfUserExistsInDB.tsx';
 import { storeCurrUserToDataBs } from './Components/Center/Profile_page/StoreCurrentUserData.tsx';
 import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_page/contextCurrentUser.tsx';
 
@@ -26,23 +27,55 @@ const App_jaka: React.FC = () => {
 
 	const updateContextValue = (updatedUserData: CurrUserData) => {
 		setCurrUserData(updatedUserData);
-	}
+	};
 
 	useEffect(() => {
+		const fetchCurrUserData = async () => {
+			try {
+				// CHECK IF CURRENT USER EXISTS IN THE DATABASE. IF YES, SKIP THIS storeCurrUserToDataBS
+				await checkIfUserExistsInDB('jmurovec')
+				.then((checkResponse) => {
+					if (checkResponse.exists) {
+						console.log('User exists in the database:', checkResponse.exists);
+						const mappedUserData: CurrUserData = {
+							loginName: checkResponse.user?.loginName ?? '', // ?? '' this is 'nullish operator'. To prevent error, because loginName must not be undefined, which checkResponse may be
+							profileName: checkResponse.user?.profileName ?? '',	// todo: profilename should not be set here ?? 
+							loginImage: checkResponse.user?.profileImage  ?? ''
+						};
+						setCurrUserData(mappedUserData);
+					}
+					else {
+				
+						// Jaka: For now it is fetching just the hardcoded loginname: 
+						fetchFromIntra_CurrUser('jmurovec') //.then((currUserData: any) => {
+						.then((currUserData) => {
+							const mappedUserData: CurrUserData = {
+								loginName: currUserData.login,
+								profileName: currUserData.login,	// todo: profilename should not be set here ?? 
+								loginImage: currUserData.image.versions.medium
+							};
+							console.log('From App_jaka: fetched loginName: ', mappedUserData.loginName, ', profileName: ', mappedUserData.profileName);
+							
+							setCurrUserData(mappedUserData);
+		
+							storeCurrUserToDataBs(mappedUserData.loginName, mappedUserData.profileName, mappedUserData.loginImage);
+						})
 
-		// Jaka: For now it is fetching just the hardcoded loginname: 
-		fetchFromIntra_CurrUser('jmurovec').then((currUserData: any) => {
-			const mappedUserData: CurrUserData = {
-				loginName: currUserData.login,
-				profileName: currUserData.login,
-				loginImage: currUserData.image.versions.medium
-			}
-			console.log('From App_jaka: fetched login name: ', currUserData.login);
-			
-			setCurrUserData(mappedUserData);
 
-			storeCurrUserToDataBs(mappedUserData.loginName, mappedUserData.profileName, mappedUserData.loginImage);
+
+			.catch((error) => {
+				console.error('Error ......... ', error);
+			});
+		}
+	})
+		.catch ((error) => {
+			console.error('Error ......... ', error);
 		});
+	} catch (error) {
+		console.error('Error ......... ', error);
+	}
+	};
+		fetchCurrUserData();
 	}, []);
 	
 
