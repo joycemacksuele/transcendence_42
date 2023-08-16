@@ -17,7 +17,7 @@ export class UserRepository extends Repository<MyUser> {
 		// @ts-ignore
 		super();
 	}
-	
+
 	// Added custom methods:
 	// Find users by their email, fetch users based on specific criteria, or perform complex database queries related to users.
 	// async findByName(name: string): Promise<MyUser | undefined> {
