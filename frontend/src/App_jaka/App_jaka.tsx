@@ -33,7 +33,7 @@ const App_jaka: React.FC = () => {
 		const fetchCurrUserData = async () => {
 			try {
 				// CHECK IF CURRENT USER EXISTS IN THE DATABASE. IF YES, SKIP THIS storeCurrUserToDataBS
-				await checkIfUserExistsInDB('jmurovec')
+				await checkIfUserExistsInDB('hman')
 				.then((checkResponse) => {
 					if (checkResponse.exists) {
 						console.log('User exists in the database:', checkResponse.exists);
@@ -42,43 +42,44 @@ const App_jaka: React.FC = () => {
 							profileName: checkResponse.user?.profileName ?? '',	// todo: profilename should not be set here ?? 
 							loginImage: checkResponse.user?.profileImage  ?? ''
 						};
+						console.log('From App_jaka: USER EXISTS, fetched loginName: ', mappedUserData.loginName, ', profileName: ', mappedUserData.profileName, ', loginImage: ', mappedUserData.loginImage);
+						
 						setCurrUserData(mappedUserData);
 					}
 					else {
 				
 						// Jaka: For now it is fetching just the hardcoded loginname: 
-						fetchFromIntra_CurrUser('jmurovec') //.then((currUserData: any) => {
+						fetchFromIntra_CurrUser('hman') //.then((currUserData: any) => {
 						.then((currUserData) => {
 							const mappedUserData: CurrUserData = {
 								loginName: currUserData.login,
 								profileName: currUserData.login,	// todo: profilename should not be set here ?? 
 								loginImage: currUserData.image.versions.medium
 							};
-							console.log('From App_jaka: fetched loginName: ', mappedUserData.loginName, ', profileName: ', mappedUserData.profileName);
+							console.log('From App_jaka: USER JUST CREATED: ', mappedUserData.loginName, ', profileName: ', mappedUserData.profileName, ', loginImage: ', mappedUserData.loginImage, );
 							
 							setCurrUserData(mappedUserData);
 		
 							storeCurrUserToDataBs(mappedUserData.loginName, mappedUserData.profileName, mappedUserData.loginImage);
 						})
-
-
-
 			.catch((error) => {
 				console.error('Error ......... ', error);
 			});
 		}
 	})
-		.catch ((error) => {
-			console.error('Error ......... ', error);
-		});
-	} catch (error) {
-		console.error('Error ......... ', error);
-	}
+		// .catch ((error) => {
+		// 	console.error('Error ......... ', error);
+		// });
+			} catch (error) {
+				console.error('Error ......... ', error);
+			}
 	};
 		fetchCurrUserData();
 	}, []);
 	
-
+	// - SOMETHING NOT GOOD WITH ALIGNMENT AND .catch ....
+	// - DIFFERENCE BETWEEN IF AND .then ...
+	// - FIRST FUNCTION HAS await, THE OTHER ONE DOESN'T
 
 	return (
 		<>
