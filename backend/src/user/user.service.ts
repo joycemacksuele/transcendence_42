@@ -62,6 +62,12 @@ export class UserService {
   async saveUser(user: MyUser): Promise<MyUser> {
     return this.userRepository.save(user);
   }
+
+  async updateProfileImage(loginName: string, profileImage: string) {
+    await this.userRepository.update({ loginName} , { profileImage });
+  }
+
+
   // async findById(id: number): Promise<MyUser | undefined> {
   //   console.log('[BACKEND LOG] UserService.getUserById');
   //   return this.userRepository.findById(id);

@@ -29,6 +29,10 @@ export class MyUser {
 	@Column({default: 'default profile name'})
 	profileName: string;
 
-	@Column({default: 'some path'})
+	@Column({default: ' ............... some path'})
 	profileImage?: string;
+
+	// static async updateProfileImage(id: number, profileImage: string) {
+	// 	await this.update(id, { profileImage });
+	// }
 }

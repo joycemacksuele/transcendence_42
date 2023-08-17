@@ -4,11 +4,6 @@ import { Controller, Post, Get, HttpStatus, HttpException, Body, Query } from '@
 import { UserService } from '../../user/user.service';
 import { MyUser } from '../../user/user.entity';
 
-// export class DummyUserDto {
-//   intraName: string;
-//   profileName: string;
-//   // Add any other properties related to user insertion as needed
-// }
 
 
 @Controller('manage_curr_user_data')
@@ -18,33 +13,27 @@ export class StoreCurrUserToDataBs {
   }
 
 
-//   @Get('check_if_user_in_db')
-//   async checkIfCurrUserIsInBB(@Param('loginName') loginName: string)
-// azzzz
 
 
-
-
-@Get('check_if_user_in_db')
-async checkIfCurrUserIsInBB(@Query('loginName') loginName: string) {
-  try {
-    // Check if user with the same loginName already exists
-    const existingUser = await this.userService.getUserByLoginName(loginName);
-    if (existingUser) {
-      console.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
-      console.log('CHECK: This loginName already exists in databs, ProfileImage:', existingUser.profileImage);
-      return { exists: true, user: existingUser};
-      // throw new HttpException('This loginName already exists in database --> the current user.', HttpStatus.CONFLICT);
-      // return { message: 'This loginName already exists in database == the current user.'};
-      // FOUND EXISTING USER IN DB, NOT SURE IF THIS IS THE OPTIMAL WAY TO CHECK
+  @Get('check_if_user_in_db')
+  async checkIfCurrUserIsInBB(@Query('loginName') loginName: string) {
+    try {
+      // Check if user with the same loginName already exists
+      const existingUser = await this.userService.getUserByLoginName(loginName);
+      if (existingUser) {
+        console.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
+        return { exists: true, user: existingUser};
+        // throw new HttpException('This loginName already exists in database --> the current user.', HttpStatus.CONFLICT);
+        // return { message: 'This loginName already exists in database == the current user.'};
+        // FOUND EXISTING USER IN DB, NOT SURE IF THIS IS THE OPTIMAL WAY TO CHECK
+      }
+      return { exists: false }; 
+      // return { message: 'CHECK User does not exist in the database.' };
+    } catch (error) {
+      console.error('Error...', error);
+      throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return { exists: false }; 
-    // return { message: 'CHECK User does not exist in the database.' };
-  } catch (error) {
-    console.error('Error...', error);
-    throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
   }
-}
 
 
 
