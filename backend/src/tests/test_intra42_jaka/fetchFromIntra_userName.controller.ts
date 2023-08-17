@@ -13,7 +13,7 @@ export class GetUserNameFromIntra {
 
 	@Get(':username')
 	@Header('Content-Type', 'application/json')
-	async getUserData(@Param('username') username: string) {
+	async getUserData( @Param('username') username: string ) {
 
 		const token = this.appService.getIntraToken(); // jaka: get value from .env
 		const apiUrl = `https://api.intra.42.fr/v2/users/${username}`;

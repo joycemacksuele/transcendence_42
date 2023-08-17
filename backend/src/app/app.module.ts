@@ -38,7 +38,7 @@ import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller
 import { AppConfigModule } from '../config/config.module'; /* the Module containing ConfigService */
 // added jaka: to store current user to database
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
-
+import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
 
 @Module({
   imports: [ 
@@ -72,6 +72,7 @@ import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_n
       GetUserNameFromIntra,          // jaka, testing
       DummyUsersController,  // jaka, testing
       StoreCurrUserToDataBs,
+      UploadImageController,
   ],
                 
   providers: [
