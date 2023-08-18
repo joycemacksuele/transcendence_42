@@ -2,6 +2,7 @@ import { Injectable, Logger, HttpException, HttpStatus} from '@nestjs/common';
 import { Request, Response, response } from 'express';
 import axios from 'axios';
 import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs'; // added jaka: Importing bcryptjs
 import { CreateUserDto } from 'src/user/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
@@ -94,8 +95,9 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 		const saltOrRounds = 7; // can be changed 
 		this.logger.log('Salt : ' + saltOrRounds + ' Secret: ' +  secret); // testing purpose - TO BE REMOVED!
 		try {
+			return await bcryptjs.hash(secret, saltOrRounds); // added jaka to try instead of bcrypt
 			// return await bcrypt.hash(secret, saltOrRounds);
-			return ('temporary to test ....');	// todo, jaka, remove this
+			//return ('temporary to test ....');	// todo, jaka, remove this
 		}
 		catch (err) {
 			this.logger.error('\x1b[31mHash secret error: \x1b[0m' + err);

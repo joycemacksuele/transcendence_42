@@ -60,8 +60,10 @@ export class StoreCurrUserToDataBs {
         { loginName: data.loginName,
           profileName: data.loginName,
           profileImage: data.loginImage,
-          intraId: data.intraId,
-          hashedSecret: data.hashedSecret },
+          intraId: 0,                             // todo jaka: change back, and obtain the real intraId
+          hashedSecret: 'dummy hashed secret' },  // todo jaka: change back, and obtain the real intraId
+          // intraId: data.intraId,
+          // hashedSecret: data.hashedSecret },
       ];
 
       const promises = currUserName.map((user) => this.userService.createUser(user));
