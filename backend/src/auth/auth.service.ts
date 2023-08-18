@@ -61,7 +61,8 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
   const dto: CreateUserDto = {
 	loginName: login,
 	profileName: login,  // profileName
-	intraId: +id,
+	// intraId: +id,	// todo, jaka, change back 
+	intraId: 0,
 	hashedSecret: hash,
 	profileImage: avatar
 	};
@@ -93,7 +94,8 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 		const saltOrRounds = 7; // can be changed 
 		this.logger.log('Salt : ' + saltOrRounds + ' Secret: ' +  secret); // testing purpose - TO BE REMOVED!
 		try {
-			return await bcrypt.hash(secret, saltOrRounds);
+			// return await bcrypt.hash(secret, saltOrRounds);
+			return ('temporary to test ....');	// todo, jaka, remove this
 		}
 		catch (err) {
 			this.logger.error('\x1b[31mHash secret error: \x1b[0m' + err);

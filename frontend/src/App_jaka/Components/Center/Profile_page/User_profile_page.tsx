@@ -1,7 +1,4 @@
 // import InputUserName from "../../Other/InputUserName";
-import UsersList from "./exampleDisplayUsers";
-import ChangeProfileName from "./changeProfileName";
-import { CurrUserData } from "./contextCurrentUser";
 import ImageUpload from "./changeImageAvatar";
 import UploadAvatar from "../../Other/UploadAvatar";
 import UsersList from "./exampleDisplayUsers";

@@ -14,5 +14,5 @@ export class CreateUserDto {
   profileName: string; //profileName
   intraId: number;
   hashedSecret: string;
-  profileImage: string;
+  profileImage?: string;
 }

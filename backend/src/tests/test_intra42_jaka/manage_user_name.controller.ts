@@ -41,7 +41,12 @@ export class StoreCurrUserToDataBs {
 
 
   @Post('store_login_data')
-  async storeCurrUserName(@Body() data: { loginName: string, profilename: string, loginImage: string }): Promise<{ message: string }> {
+  async storeCurrUserName(@Body() data: { loginName: string,
+                                          profilename: string,
+                                          loginImage: string,
+                                          profileImage: string,
+                                          intraId: number,
+                                          hashedSecret: string }): Promise<{ message: string }> {
     try {
       // Check if user with the same loginName already exists
       const existingUser = await this.userService.getUserByLoginName(data.loginName );
@@ -52,7 +57,11 @@ export class StoreCurrUserToDataBs {
         // throw new HttpException('This loginName already exists in database --> the current user.', HttpStatus.CONFLICT);
       }
       const currUserName: MyUser[] = [
-        { loginName: data.loginName, profileName: data.loginName, profileImage: data.loginImage },
+        { loginName: data.loginName,
+          profileName: data.loginName,
+          profileImage: data.loginImage,
+          intraId: data.intraId,
+          hashedSecret: data.hashedSecret },
       ];
 
       const promises = currUserName.map((user) => this.userService.createUser(user));

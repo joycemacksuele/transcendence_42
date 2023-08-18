@@ -20,7 +20,7 @@ import { CurrentUserContext } from '../Center/Profile_page/contextCurrentUser';
 
 
 type PropsHeader = {
-  functionToCall: (content: string) => void;  // setActiveContent() in main_page
+  functionToCall: (content: null | string) => void;  // setActiveContent() in main_page
 };
 
 // When Header component is (re)loaded, user data is pulled from Intra.
@@ -28,7 +28,7 @@ type PropsHeader = {
 const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 
 
-    const handleClick = (content: string) => {
+    const handleClick = (content: null | string) => {
         functionToCall(content);  //    ( setActiveContent() in main_page )
     };
 
