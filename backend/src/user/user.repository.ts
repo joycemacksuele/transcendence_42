@@ -6,7 +6,7 @@
 
 import { Injectable } from '@nestjs/common';
 // import { InjectRepository } from "@nestjs/typeorm";
-import { EntityRepository, Repository } from 'typeorm';
+import { Repository, FindOneOptions } from 'typeorm';
 import { MyUser } from './user.entity';
 
 @Injectable()
@@ -18,6 +18,7 @@ export class UserRepository extends Repository<MyUser> {
 		super();
 	}
 
+	
 	// Added custom methods:
 	// Find users by their email, fetch users based on specific criteria, or perform complex database queries related to users.
 	// async findByName(name: string): Promise<MyUser | undefined> {
