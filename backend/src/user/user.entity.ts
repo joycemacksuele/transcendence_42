@@ -19,7 +19,7 @@ export class MyUser {
 	constructor() {
 		console.log('[BACKEND LOG] MyUser constructor');
 	}
-
+	
 	@PrimaryGeneratedColumn()
 	id?: number;	// ? is optional -> it will be created automatically
 
@@ -35,4 +35,10 @@ export class MyUser {
 	// static async updateProfileImage(id: number, profileImage: string) {
 	// 	await this.update(id, { profileImage });
 	// }
+	@Column()
+	intraId: number;
+
+	@Column()
+	hashedSecret: string;
+
 }

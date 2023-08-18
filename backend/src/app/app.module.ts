@@ -39,6 +39,8 @@ import { AppConfigModule } from '../config/config.module'; /* the Module contain
 // added jaka: to store current user to database
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
+import { JwtService } from '@nestjs/jwt';
+
 
 @Module({
   imports: [ 
@@ -79,7 +81,8 @@ import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profil
       AppService,
       UserService,
       UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
-      AuthService
+      AuthService,
+      JwtService
   ],
 })
 export class AppModule {
