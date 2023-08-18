@@ -27,11 +27,11 @@ export class DummyUsersController {
 
       // Dummy user data (for testing)
       const dummyUsers: MyUser[] = [
-        { loginName: 'dummy 1', profileName: 'default name 1'},
-        { loginName: 'dummy 2', profileName: 'default name 2' },
-        { loginName: 'dummy 3', profileName: 'default name 3' },
-        { loginName: 'dummy 4', profileName: 'default name 4' },
-        { loginName: 'dummy 5', profileName: 'default name 5' },
+        { loginName: 'dummy 1', profileName: 'default name 1', intraId: 1, hashedSecret: 'hashedSecret1'},
+        { loginName: 'dummy 2', profileName: 'default name 2', intraId: 2, hashedSecret: 'hashedSecret2' },
+        { loginName: 'dummy 3', profileName: 'default name 3', intraId: 3, hashedSecret: 'hashedSecret3' },
+        { loginName: 'dummy 4', profileName: 'default name 4', intraId: 4, hashedSecret: 'hashedSecret4' },
+        { loginName: 'dummy 5', profileName: 'default name 5', intraId: 5, hashedSecret: 'hashedSecret5' },
 
       ];
 
