@@ -8,14 +8,11 @@ import { IsNotEmpty } from 'class-validator';
 // DTOs are short Data Transfer Objects. They can be interfaces objects that determine how data
 // will be sent in a post request body and response.
 export class CreateUserDto {
-  // @IsNotEmpty()
-  name: string;
+  // loginName: string;
 
-  //@IsNotEmpty()
-  //@IsEmail()
-  //email: string;
-
-  //@IsNotEmpty()
-  //@MinLength(8)
-  //password: string;
+  loginName: string;
+  profileName: string; //profileName
+  intraId: number;
+  hashedSecret: string;
+  profileImage?: string;
 }

@@ -15,6 +15,7 @@ export class AppService {
 
   // Jaka: to get values from the .env file
   getIntraToken(): string {
+    console.log('Current access token from .env: ', this.configService.get<string>('TOKEN'));
     return this.configService.get<string>('TOKEN');
   }
 }
