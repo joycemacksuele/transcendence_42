@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-
-
 /*
 	React.ChangeEvent<>
 		It is a React data type. Represents an event object. It has many properties: target.value ...

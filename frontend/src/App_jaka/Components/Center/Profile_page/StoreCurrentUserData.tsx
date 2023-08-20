@@ -13,5 +13,5 @@ export const storeCurrUserToDataBs = async (loginName: string,
 		throw error;
 	}
 };
-// storeCurrUserToDataBs();
+
 

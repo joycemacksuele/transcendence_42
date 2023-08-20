@@ -62,7 +62,7 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
   const dto: CreateUserDto = {
 	loginName: login,
 	profileName: login,  // profileName
-	// intraId: +id,	// todo, jaka, change back 
+	// intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
 	intraId: 0,
 	hashedSecret: hash,
 	profileImage: avatar
@@ -109,7 +109,8 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
     	let token: string; 
 
 		this.logger.log('test create/find user ');
-		let player = await this.userService.getUserByLoginName(data.intraLogin);
+		// let player = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
+		let player = await this.userService.getUserByLoginName(data.loginName);
 		// this.logger.log('find player: ' + player.loginName);
 
 		if (!player) {
@@ -119,12 +120,18 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 				// this.logger.log('made new player: ' + newPlayer.loginName);
 			}
 			catch (err) {
-				this.logger.error('Create new player: ' + err);
+				this.logger.error('Error creating new player: ' + err);
 				return ;
 			}
-			const test = await this.userService.getUserByLoginName(data.intraLogin);
-			this.logger.log('test: ' + test.loginName);
+			// const test = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
+			const test = await this.userService.getUserByLoginName(data.loginName);
+			this.logger.log('test: Created a new user:' + test.loginName);
 		}
+		
+		this.logger.log('test: Current User: data.intraLogin:' + data.intraLogin);
+		this.logger.log('test: Current User: data.loginName:' + data.loginName);
+		this.logger.log('test: Current User: player.loginName:' + player.loginName);
+		
 	
 		// token = !player ? await this.signToken(newPlayer.loginName, newPlayer.intraId) : await this.signToken(newPlayer.loginName, newPlayer.intraId);
 		// token = !player ? await this.signToken(player) : await this.signToken(player);
@@ -137,7 +144,8 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 		response.setHeader('Set-Cookie', 'token='+token); // {} = options
 
 		console.log('trying to print token: ' + response.getHeader("Cookie"));
-		return response.redirect('http://localhost:3000/main_page');
+		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
+		return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
 	}
 
 	// JWT Token

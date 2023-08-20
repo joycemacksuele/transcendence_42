@@ -61,7 +61,7 @@ export class StoreCurrUserToDataBs {
           profileName: data.loginName,
           profileImage: data.loginImage,
           intraId: 0,                             // todo jaka: change back, and obtain the real intraId
-          hashedSecret: 'dummy hashed secret' },  // todo jaka: change back, and obtain the real intraId
+          hashedSecret: 'dummy hashed secret' },  // todo jaka: change back, and obtain the real hashedSecret
           // intraId: data.intraId,
           // hashedSecret: data.hashedSecret },
       ];
