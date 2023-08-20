@@ -18,7 +18,6 @@ import { CurrentUserContext } from '../Center/Profile_page/contextCurrentUser';
 // import { UserService } from '../../user/user.service';
 
 
-
 type PropsHeader = {
   functionToCall: (content: null | string) => void;  // setActiveContent() in main_page
 };
@@ -27,19 +26,22 @@ type PropsHeader = {
 //      Maybe this is not necessary each time
 const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 
-
+    console.log('Start Header ...');
+    
     const handleClick = (content: null | string) => {
         functionToCall(content);  //    ( setActiveContent() in main_page )
     };
-
+    
     // Get Current User Info from CONTEXT
     const currUserData = useContext(CurrentUserContext);
     if (!currUserData) {
         console.log('Error from Header.tsx: no Current User Data');
-        return null;
+        return null;  // will this be needed ?
     }
-    const { profileName, loginImage } = currUserData;
-
+    
+    console.log('Header: currUserData.loginName: ', currUserData?.loginName);
+    console.log('Header: currUserData.profileName: ', currUserData?.profileName);
+    console.log('Header: currUserData.loginImage: ', currUserData?.loginImage);
 
     return (
 
@@ -50,9 +52,7 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
         <Navbar expand="md" className="bg-body-tertiary nav-justified">
             
 
-            <img id='user-image' src={loginImage}></img>
-
-
+            <img id='user-image' src={currUserData?.loginImage ?? ''} alt='image placeholder'></img>
 
             <Container fluid className="justify-content-center">
                 {/* <Navbar.Brand href="#home">{loginName || 'React-Bootstrap'}</Navbar.Brand> */}
@@ -69,7 +69,8 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         fill
                     >
                         {/* <Nav.Link eventKey="profile">Profile</Nav.Link> */}
-                        <Nav.Link className="me-2" eventKey="profile"> { profileName } </Nav.Link>
+                        {/* <Nav.Link className="me-2" eventKey="profile"> { profileName } </Nav.Link> */}
+                        <Nav.Link className="me-2" eventKey="profile"> { currUserData?.profileName } </Nav.Link>
 
                         <Nav.Link className="me-2" eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>
                         

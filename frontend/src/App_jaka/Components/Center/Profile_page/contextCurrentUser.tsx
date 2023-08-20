@@ -7,9 +7,9 @@ import React from 'react';
 */
 
 export interface CurrUserData {
-	loginName:	string;
-	profileName: string;
-	loginImage:	string;
+	loginName:	string | null;
+	profileName: string | null;
+	loginImage:	string | null;
 }
 
 export const CurrentUserContext = React.createContext<CurrUserData | null> (null);

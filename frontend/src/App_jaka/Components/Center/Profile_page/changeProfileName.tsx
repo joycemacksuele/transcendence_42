@@ -8,7 +8,6 @@ type ContextProps = {
 };
 
 
-
 const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
   const myMargin = { margin: '5% 0 5% 0', padding: '3%', backgroundColor: 'beige', width: '70%', color: 'blue'};
@@ -17,21 +16,6 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
   // Get loginName from the 'global' context struct 
   const currUserData = useContext(CurrentUserContext) as CurrUserData;
   const loginName = currUserData.loginName;
-
-  // THE QUESTION IS: 
-  //  IF THE PROFILE NAME IS UPDATED/CHANGED IN THE DATABASE, THEN THIS NAME NEEDS TO BE CHANGED EVERYEHERE IN THE APP. DOES THIS MEAN THAT IT NEEDS TO BE PULLED FROM THE DATABASE, AFTER IT HAS BEEN CHANGED?
-  // DOES IT NEED TO BE PULLED IN EVERY FILE WHERE IT APPEARS??
-  // IS IT BETTER TO UPDATE THE CONTEXT, IN THE SAME FILE WHERE IT IS BEING CHANGED?
-  // IF THE CONTEXT IS CHANGED, WHERE DOES THJIS WRAP NEEDS TO BE?
-  //     <CurrentUserContext.Provider value={updatedContextValue}>
-  
-  // HERE I COULD ETHER UPDATE THE CONTEXT profileName, OR PU
-  // const updateContextValue: CurrUserData {
-  //     const newProfileName = profileName;
-  // };
-
-
-
 
   const [profileName, setProfileName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -52,15 +36,6 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
     try {
       // const loginName =
       const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name', { profileName, loginName });
-      
-      // const updatedContextValue: CurrUserData = {
-      //   ...currUserData,
-      //   profileName: profileName,
-      // };
-      // setCurrUserData(updatedContextValue);
-
-
-
 
       setProfileName('');
       setErrorMessage('');

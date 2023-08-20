@@ -39,6 +39,7 @@ export class AuthController {
 	//		STEP 2 - GET request with temporary "code"
 	@Get('token') // 'token' - end point of address 
 	async getAuthorizationToken(@Request() request: any, @Response() response: any) {
+
 		const reqUrl = request['url'];
 		const requestCode = reqUrl.split('code=')[1];
 		this.logger.log('OAuth code received: ' + requestCode);
@@ -51,6 +52,10 @@ export class AuthController {
 		parameters.append('code', requestCode);
 		parameters.append('redirect_uri', 'http://localhost:3001/auth/token');
 		try {
+
+
+			this.logger.log('Jaka: response: ' + response);
+
 			return await this.authService.exchangeCodeForAccessToken(parameters, response);
 		} catch (err) {
 			this.logger.log('getAuthToken: ' + err);
