@@ -1,0 +1,59 @@
+.header {
+	/*width: 97%;*/
+	/* height: auto; */
+	/*background-color: dimgrey;*/
+	/*border: 1px grey solid;*/
+	/*color: rgb(117, 15, 15);*/
+	/*margin: 1px;*/
+	/*padding: 1%;*/
+}
+
+#user-image {
+	/*float: left;*/
+	/*height: 27%;*/
+	/*width: 27%;*/
+	/*border-radius: 100%;*/
+	/*padding: 1%;*/
+}
+
+#header-items {
+	float: center;
+}
+
+#header-item-user {
+	padding: 0 2% 0 2%;
+	/* display: block; */
+	float: left;
+}
+
+#header-item-link {
+	padding: 0 2% 0 2%;
+	/* display: inline-block; */
+	float: left;
+}
+
+#header-item-logout {
+	padding: 0 2% 0 2%;
+	/* display: block; */
+	float: right;
+}
+
+.header::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+/* Custom hover styling for Nav.Link */
+.nav-link {
+  background-color: #caf1d4;
+}
+
+/* Custom hover styling for Nav.Link */
+.nav-link:hover {
+	background-color: #f9d63a; /* Your desired hover background color */
+	color: #000000; /* Your desired hover text color */
+	/* Other hover styles... */
+  }
+
+

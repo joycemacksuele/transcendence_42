@@ -1,16 +1,16 @@
 import { Injectable, Logger, HttpException, HttpStatus} from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request, Response, response } from 'express';
 import axios from 'axios';
 import * as bcrypt from 'bcrypt';
-// import { JwtService } from '@nestjs/jwt';  // JWT token
+import * as bcryptjs from 'bcryptjs'; // added jaka: Importing bcryptjs
+import { CreateUserDto } from 'src/user/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-//   oAuth(): string {
-//     return 'https://api.intra.42.fr/oauth/authorize';
-//   }
-
-  logger: Logger = new Logger('Auth Service');
+	constructor(private readonly userService: UserService, private jwtService: JwtService) {}
+	logger: Logger = new Logger('Auth Services');
 
   //    STEP 3 - make POST request to exchange the code for an access token 
   // This request needs to be performed on the server side, over a secure connection
@@ -20,44 +20,67 @@ export class AuthService {
 			.post('https://api.intra.42.fr/oauth/token', clientData)
 			.then((response) => {
 				access_token = response.data['access_token'];
+				this.logger.log('Access Token received: ' + access_token); //
 			})
-			.catch(() => {
-				this.logger.error('An Error in 42 API');
+			.catch((error) => {
+				this.logger.error('\x1b[31mAn Error in 42 API: post request\x1b[0m' + error.response.data);
 				throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 			});
-		await this.makeApiRequest(access_token, clientData.client_secret, res);
+		await this.getTokenOwnerData(access_token, clientData.get('client_secret'), res);
 	}
 
 //    STEP 4 - Make API requests with token 
 // GET request to the current token owner with the bearer token - get user info in response
-async makeApiRequest(access_token: string, secret: string, res: Response) {
-  const authorizationHeader: string = 'Bearer ' + access_token;
-  let login: string;
-  let userId: string;
-  let avatar: string;
+async getTokenOwnerData(access_token: string, secret: string, res: Response) {
+	const authorizationHeader: string = 'Bearer ' + access_token;
+	let login: string;
+	let id: string;
+	let avatar: string;
 
-  const userInfo = await axios
-    .get('https://api.intra.42.fr/v2/me', {
-      headers: {
-        Authorization: authorizationHeader
-      } // fetch the current token owner 
+	const userInfo = await axios
+	.get('https://api.intra.42.fr/v2/me', {
+		headers: {
+			Authorization: authorizationHeader
+		} // fetch the current token owner 
     })
     .then((response) => {
-      login = response['data'].login;
-      userId = response['data'].id;
-      avatar = response['data'].image.link;
+		login = response['data'].login;
+		id = response['data'].id;
+		avatar = response['data'].image.link;
+		this.logger.log('Token owner data received: login:' + login + ' id: ' + response['data'].id);
+		this.logger.log('Token owner data received: image: ' + avatar);
+
     })  // save the token owner info 
     .catch(() => {
-      this.logger.error('An Error in 42 API');
+      this.logger.error('\x1b[31mAn Error in 42 API: get token owner data\x1b[0m');
       throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
     });
 
-  
-// TEMP OUTCOMMENTED  
-    // const hashedSecret = await this.generateHashSecret(secret);
+  const hash = await this.hashSecret(secret);
+  this.logger.log('Hash: ' + hash);  // testing purposes - TO BE REMOVED!  
+
+  const dto: CreateUserDto = {
+	loginName: login,
+	profileName: login,  // profileName
+	// intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
+	intraId: 0,
+	hashedSecret: hash,
+	profileImage: avatar
+	};
+
+	this.logger.log('dto:  intraLogin: ' + dto.loginName + ' intraId: ' + dto.intraId); // testing purpose - TO BE REMOVED!
+
+	return await this.getOrCreateUser(dto, res);
+	// return await this.getOrCreateUser(login, id, hash, image);
 
 
-  // return await this.generateUser(login, +userId, hashedSecret, res, avatar);
+
+
+	// return await this.getOrCreateUser(login, id, avatar, hash);
+	// find user in repository 
+	// if user exists response.redirect(http://localhost:3000/profile)
+	// if user doesn't exist 
+//   return await this.generateUser(login, res, avatar);
 }
 
   // generate hash 
@@ -68,18 +91,91 @@ async makeApiRequest(access_token: string, secret: string, res: Response) {
   //At Auth0, the integrity and security of our data are one of our highest priorities. 
   //We use the industry-grade and battle-tested bcrypt algorithm to securely hash and salt passwords. 
 
+	async hashSecret(secret: string) {
+		const saltOrRounds = 7; // can be changed 
+		this.logger.log('Salt : ' + saltOrRounds + ' Secret: ' +  secret); // testing purpose - TO BE REMOVED!
+		try {
+			return await bcryptjs.hash(secret, saltOrRounds); // added jaka to try instead of bcrypt
+			// return await bcrypt.hash(secret, saltOrRounds);
+			//return ('temporary to test ....');	// todo, jaka, remove this
+		}
+		catch (err) {
+			this.logger.error('\x1b[31mHash secret error: \x1b[0m' + err);
+		}
+	}
 
+	async getOrCreateUser(data: any, response: Response) {
+		let newPlayer: CreateUserDto;
+    	let token: string; 
 
-// TEMPORRAY OUTCOMMENTED
-  // async generateHashSecret(secret: string) {
-	// 	const saltOrRounds = 10;
-	// 	try {
-	// 		return await bcrypt.hash(secret, saltOrRounds);
-	// 	}
-	// 	catch (err) {
-	// 		this.logger.error(err);
-	// 	}
-	// }
+		this.logger.log('test create/find user ');
+		// let player = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
+		let player = await this.userService.getUserByLoginName(data.loginName);
+		// this.logger.log('find player: ' + player.loginName);
+
+		if (!player) {
+			try {
+				player = await this.userService.createUser(data);
+				this.logger.log('made new player: ' + player.loginName);
+				// this.logger.log('made new player: ' + newPlayer.loginName);
+			}
+			catch (err) {
+				this.logger.error('Error creating new player: ' + err);
+				return ;
+			}
+			// const test = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
+			const test = await this.userService.getUserByLoginName(data.loginName);
+			this.logger.log('test: Created a new user:' + test.loginName);
+		}
+		
+		this.logger.log('test: Current User: data.intraLogin:' + data.intraLogin);
+		this.logger.log('test: Current User: data.loginName:' + data.loginName);
+		this.logger.log('test: Current User: player.loginName:' + player.loginName);
+		
+	
+		// token = !player ? await this.signToken(newPlayer.loginName, newPlayer.intraId) : await this.signToken(newPlayer.loginName, newPlayer.intraId);
+		// token = !player ? await this.signToken(player) : await this.signToken(player);
+		token = await this.signToken(player);
+		if (!token) {
+			throw new HttpException('Signing token failed.', HttpStatus.SERVICE_UNAVAILABLE);
+		}
+
+		this.logger.log('token: ' + token);
+		response.setHeader('Set-Cookie', 'token='+token); // {} = options
+
+		console.log('trying to print token: ' + response.getHeader("Cookie"));
+		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
+		return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
+	}
+
+	// JWT Token
+	// In its compact form, JSON Web Tokens consist of three parts separated by dots (.), which are: Header, Payload, Signature
+
+	// The header typically consists of two parts: the type of the token, which is JWT, and the signing algorithm being used, such as HMAC SHA256 or RSA.
+
+	// The second part of the token is the payload, which contains the claims. 
+	// Claims are statements about an entity (typically, the user) and additional data. 
+	// There are three types of claims: registered, public, and private claims.
+
+	// To create the signature part you have to take the encoded header, the encoded payload, a secret, the algorithm specified in the header, and sign that.
+	// The signature is used to verify the message wasn't changed along the way, and, 
+	// in the case of tokens signed with a private key, it can also verify that the sender of the JWT is who it says it is.
+
+  async signToken(player: CreateUserDto) {
+		let token: string;
+
+		const payload = { sub: player.intraId, username:player.loginName };  // https://docs.nestjs.com/security/authentication
+
+		try {
+			token = await this.jwtService.signAsync(payload, {
+				secret: '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'
+			});
+		}
+		catch (err) {
+			throw new HttpException('Signing JWT token failed.', HttpStatus.SERVICE_UNAVAILABLE);
+		}
+		return token;
+	}
 
   // signout 
   // signout(req: Request, response: Response) {

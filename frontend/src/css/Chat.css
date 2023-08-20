@@ -1,0 +1,6 @@
+/* # is used inside id='' */
+.chat-page {
+    width: auto;
+    height: 100%;
+    /*overflow-y: scroll;*/
+}

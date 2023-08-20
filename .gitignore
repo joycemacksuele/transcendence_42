@@ -52,6 +52,9 @@ frontend/node_modules/
 backend/node_modules/
 jspm_packages/
 backend/_database_volume
+package-lock.json
+frontend/package-lock.json
+backend/package-lock.json
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -143,3 +146,4 @@ dist
 # Added Jaka (my own folder for temporary stuff):
 _jakaVarious
 _jaka_notes.c
+/Users/jmb/Desktop/transcendence/trans_06aug/backend/.env
