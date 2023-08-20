@@ -1,5 +1,6 @@
-# Dev studies
-react-typescript-test/
+.DS_Store
+backend/.DS_Store
+frontend/.DS_Store
 
 #IDE
 .idea/
@@ -51,6 +52,9 @@ frontend/node_modules/
 backend/node_modules/
 jspm_packages/
 backend/_database_volume
+package-lock.json
+frontend/package-lock.json
+backend/package-lock.json
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

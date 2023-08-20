@@ -16,7 +16,7 @@ import axios from 'axios';
 
 const ImageUpload = () => {
 
-	const myMargin = { margin: '5% 0 5% 0', padding: '3%', backgroundColor: 'beige', width: '70%', color: 'blue'};
+	const myMargin = { margin: '5% 0 5% 0', padding: '2%', backgroundColor: 'beige', width: '70%', color: 'blue'};
 
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
