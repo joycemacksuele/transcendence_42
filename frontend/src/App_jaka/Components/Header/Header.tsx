@@ -12,7 +12,7 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 
 import '../../css/Header.css'
 import { Navbar, Container, Nav, Badge, Form, Button,
-            Tab, Tabs, NavDropdown, Row, Col } from 'react-bootstrap';
+            Tab, Tabs, NavDropdown, Row, Col, Image } from 'react-bootstrap';
 
 import { CurrentUserContext } from '../Center/Profile_page/contextCurrentUser';
 // import { UserService } from '../../user/user.service';
@@ -44,62 +44,68 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
     console.log('Header: currUserData.loginImage: ', currUserData?.loginImage);
 
     return (
+        <Navbar bg="light" data-bs-theme="light" sticky="top" defaultExpanded className="border-bottom">
+            <Container fluid>
 
-        // Still trying to figure out if its better to use Tab.Container, Tabs, Nav, Navbars ...
-
-        // TODO dint a way to put the seach box on the right
-        // <Navbar defaultExpanded expand="md" className="bg-body-tertiary nav-justified">
-        <Navbar expand="md" className="bg-body-tertiary nav-justified">
-            
-
-            <img id='user-image' src={currUserData?.loginImage ?? ''} alt='image placeholder'></img>
-
-            <Container fluid className="justify-content-center">
-                {/* <Navbar.Brand href="#home">{loginName || 'React-Bootstrap'}</Navbar.Brand> */}
-                <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav
-                        className="me-auto group-justified"
-                        // defaultActiveKey="game"
-                        defaultActiveKey="profile"
-                        style={{ maxHeight: '70px' }}
-                        onSelect={(k) => handleClick(k)}
-                        variant="pills"
-                        fill
-                    >
-                        {/* <Nav.Link eventKey="profile">Profile</Nav.Link> */}
-                        {/* <Nav.Link className="me-2" eventKey="profile"> { profileName } </Nav.Link> */}
-                        <Nav.Link className="me-2" eventKey="profile"> { currUserData?.profileName } </Nav.Link>
-
-                        <Nav.Link className="me-2" eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>
-                        
-                        <Nav.Link className="me-2" eventKey="game">Game</Nav.Link>
-                    </Nav>
-                </Navbar.Collapse>
-
-                {/* <Navbar.Collapse id="navbar-form"> */}
-                    {/*take a look for searching ui/engine: https://github.com/ericgio/react-bootstrap-typeahead*/}
-                    {/* <Form.Group className="d-flex">
-                        <Form.Control
+                {/* Profile Image */}
+                <Col className='col-md-1 position-relative'>
+                    <Navbar.Brand href="#profile" className="position-absolute top-50 start-50 translate-middle">
+                        <Image
+                            id='user-image'
+                            src={currUserData?.loginImage ?? ''}
                             className="me-auto"
-                            type="search"
-                            placeholder="Search for a user"
-                            aria-label="Search"
-                            // onChange={(e) => setMessage(e.target.value)}
-                        /> */}
-                        {/*<Button variant="outline-success" type="submit">Search</Button>*/}
-                    {/* </Form.Group>
-                </Navbar.Collapse> */}
+                            width={50}
+                            height={50}
+                            alt="image"
+                            roundedCircle
+                        />
+                    </Navbar.Brand>
+                </Col>
 
-                <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-                    <Button
-                        // onSelect={() => logout()}
-                        variant="outline-warning"
+                {/* Header Center */}
+                <Col className='col-md-10'>
+                    <Nav
+                        defaultActiveKey="game"
+                        onSelect={(k) => handleClick(k)}
+                        fill
+                        variant="underline"
                     >
-                        Logout
-                    </Button>
-                </Navbar.Collapse>
+                        <Nav.Item>
+                            <Nav.Link eventKey="profile">{currUserData?.profileName}</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="chat">Chat</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            {/*<Nav.Link eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>*/}
+                            <Nav.Link eventKey="game">Game</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            {/*take a look for searching ui/engine: https://github.com/ericgio/react-bootstrap-typeahead*/}
+                            <Form.Group className='d-flex'>
+                                <Form.Control
+                                    className='me-auto form-control'
+                                    type="search"
+                                    placeholder="Search for a user"
+                                    aria-label="Search"
+                                    // onChange={(e) => setMessage(e.target.value)}
+                                />
+                                {/*<Button variant="outline-success" type="submit">Search</Button>*/}
+                            </Form.Group>
+                        </Nav.Item>
+                    </Nav>
+                </Col>
+
+                <Col className='col-md-1'>
+                    <Nav className="justify-content-end">
+                        <Button
+                            // onSelect={() => logout()}
+                            variant="outline-warning"
+                        >
+                            Logout
+                        </Button>
+                    </Nav>
+                </Col>
             </Container>
         </Navbar>
     );
