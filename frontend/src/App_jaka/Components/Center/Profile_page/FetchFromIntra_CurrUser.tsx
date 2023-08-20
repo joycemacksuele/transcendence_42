@@ -17,8 +17,4 @@ const fetchFromIntra_CurrUser = async (username: string) => {
 	}
 };
 
-// const fetchFromIntra_CurrUser = (username: string) => {
-// 	return fetchUserData(username);
-// };
-
 export default fetchFromIntra_CurrUser;
