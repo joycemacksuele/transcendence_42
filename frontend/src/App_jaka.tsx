@@ -13,8 +13,11 @@ import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_pa
 
 const App_jaka: React.FC = () => {
 
+	/*
+		The mechanism for updating the info about the current user in the database, ie: custom profileName.
+		THe function updateContextValue() is passed as a prop to the sub-components, where it can be used later.
+	*/
 	const [currUserData, setCurrUserData] = useState <CurrUserData | null> (null);
-
 	const updateContextValue = (updatedUserData: CurrUserData) => {
 		setCurrUserData(updatedUserData);
 	};
@@ -23,10 +26,9 @@ const App_jaka: React.FC = () => {
 		<>
 		<CurrentUserContext.Provider value={currUserData as CurrUserData}>
 			<Routes>
-				{/* <Route path="/" element={<LoginPage />} /> */}
 				<Route path="/"				element={<LoginAuth />} />
 				<Route path="*"				element={<PageNotFound />} />
-				<Route path="/main_page"	element={< MainPage updateContext={ updateContextValue }  />} />
+				<Route path="/main_page"	element={<MainPage updateContext={ updateContextValue } />} />
 			</Routes>
 		</CurrentUserContext.Provider>
 		</>
