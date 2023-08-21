@@ -3,6 +3,8 @@ import { Controller, Post, HttpStatus, HttpException } from '@nestjs/common';
 // import { DummyUserService } from './dummyUsers.service';
 import { UserService } from '../../user/user.service';
 import { MyUser } from '../../user/user.entity';
+import { OpenAccess } from 'src/auth/guards/auth.openaccess';
+
 
 // export class DummyUserDto {
 //   intraName: string;
@@ -11,6 +13,7 @@ import { MyUser } from '../../user/user.entity';
 // }
 
 
+@OpenAccess()
 @Controller('insert-dummy-users')
 export class DummyUsersController {
 	// InsertUserDto class defined inside the TestController file
