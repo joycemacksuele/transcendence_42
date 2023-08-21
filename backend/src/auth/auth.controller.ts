@@ -5,11 +5,14 @@ import { UserService } from 'src/user/user.service';
 import { UserRepository } from 'src/user/user.repository';
 import { request } from 'http';
 import { response } from 'express';
+import { AuthGuard } from './guards/auth.guard';
+import { OpenAccess } from './guards/auth.openaccess';
 
 //.env 
 // Dotenv is a library used to inject environment variables from a file into your program 
 
 
+@OpenAccess()  // this allows it to work without being logged in 
 @Controller('auth')
 export class AuthController {
 	logger: Logger = new Logger('Auth Controllers');
@@ -37,6 +40,7 @@ export class AuthController {
 
 
 	//		STEP 2 - GET request with temporary "code"
+	@OpenAccess()
 	@Get('token') // 'token' - end point of address 
 	async getAuthorizationToken(@Request() request: any, @Response() response: any) {
 
@@ -52,8 +56,6 @@ export class AuthController {
 		parameters.append('code', requestCode);
 		parameters.append('redirect_uri', 'http://localhost:3001/auth/token');
 		try {
-
-
 			this.logger.log('Jaka: response: ' + response);
 
 			return await this.authService.exchangeCodeForAccessToken(parameters, response);
@@ -61,6 +63,17 @@ export class AuthController {
 			this.logger.log('getAuthToken: ' + err);
 			this.logger.log('getAuthToken response: ' + response.get('location'));
 
+		}
+	}
+
+	@Get('logout')   // to be connected with frontend
+	async logOut(@Request() req:any, @Response() res:any){
+		// find the user, change status, 2fa
+		try{
+			this.authService.logout(req, res);
+		}
+		catch(err){
+			this.logger.log(err);
 		}
 	}
 }
