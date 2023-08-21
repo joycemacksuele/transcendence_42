@@ -69,7 +69,7 @@ export class AuthController {
 	@Get('logout')   // to be connected with frontend
 	async logOut(@Request() req:any, @Response() res:any){
 		// find the user, change status, 2fa
-		try{
+		try {
 			this.authService.logout(req, res);
 		}
 		catch(err){
