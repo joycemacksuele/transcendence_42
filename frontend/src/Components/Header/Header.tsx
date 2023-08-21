@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react';
+import { handleLogout } from '../Center/Profile_page/handleLogout';
 
 // import avatarImage from '../../images/avatar_default.png'
 
@@ -101,6 +102,7 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         <Button
                             // onSelect={() => logout()}
                             variant="outline-warning"
+                            onClick={ handleLogout }
                         >
                             Logout
                         </Button>
