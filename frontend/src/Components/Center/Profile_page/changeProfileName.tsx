@@ -37,18 +37,21 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
       // const loginName =
       const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name', { profileName, loginName });
 
-      setProfileName('');
+      setProfileName(''); // Resetting the inout field
       setErrorMessage('');
-      
+    
       
       // To grab a specific value (profileName) from the incoming Json response:
       const data = JSON.parse(response.config.data);
       console.log('Jaka: from ChangeProfileName, JSON: ', JSON.stringify(response));
       console.log('Jaka: from ChangeProfileName, response...profileName: ', data.profileName );
       const newProfileName = data.profileName;
-
-      // Update the userContext
-      if (currUserData) {
+       
+      /*
+        Update the userContext:
+          ...currUserData: ...is a 'spread operator'm it creates a shallow copy of the currUserData object.
+      */
+        if (currUserData) {
         const updatedUserData = { ...currUserData, profileName: newProfileName  };
         updateContext(updatedUserData);
       }
