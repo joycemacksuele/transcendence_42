@@ -4,7 +4,10 @@
 */
 
 import { NestFactory } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { Reflector } from '@nestjs/core';
 import { AppModule } from './app/app.module';
+import { AuthGuard } from './auth/guards/auth.guard';
 // const { Server } = require("socket.io"); JOYCE ?? socket.io tutorial
 // const io = new Server(server); JOYCE ?? socket.io tutorial
 
@@ -21,6 +24,10 @@ async function main() {
     // 3000 -> ReactJS (frontend)
     // 5432 -> PostgreQSL (database)
   });
+
+  
+  // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
+  app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));  
   
 
   // app.enableCors();
