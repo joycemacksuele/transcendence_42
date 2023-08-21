@@ -143,7 +143,7 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 		this.logger.log('token: ' + token);
 		response.setHeader('Set-Cookie', 'token='+token); // {} = options
 
-		console.log('trying to print token: ' + response.getHeader("Cookie"));
+		// console.log('trying to print token: ' + response.getHeader("Cookie"));
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
 		return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
 	}
@@ -177,8 +177,14 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 		return token;
 	}
 
-  // signout 
-  // signout(req: Request, response: Response) {
-  //   response.clearCookie('token');
-  //   return response.send({ message: 'Sign out succeeded' });
+  logout(req: Request, response: Response) {
+	try{
+		response.clearCookie('token');
+		return response.send({ message: 'Sign out succeeded' });
+	}
+	catch{
+		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
+	}
+  }
+
 }
