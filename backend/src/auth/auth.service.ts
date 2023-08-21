@@ -179,12 +179,12 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 
   logout(req: Request, response: Response) {
 	try{
+		this.logger.log('Jaka: logging out ...');
 		response.clearCookie('token');
-		return response.send({ message: 'Sign out succeeded' });
+		return response.send({ message: 'Logout succeeded' });
 	}
 	catch{
 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
 	}
   }
-
 }

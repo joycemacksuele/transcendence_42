@@ -24,8 +24,11 @@ export class AuthGuard implements CanActivate {
             context.getHandler(),
             context.getClass(),
         ]);
+        console.log('Jaka, AuthGuard controler A)');
         if (open)
             return true;
+
+        console.log('Jaka, AuthGuard controler B)');
 
         // decode and verify the JWT token   
         const request = context.switchToHttp().getRequest();
