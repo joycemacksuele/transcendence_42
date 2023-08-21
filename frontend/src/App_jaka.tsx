@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import LoginAuth from "./Components/Login_page/Login_auth.tsx";
 import MainPage from "./Components/main_page.tsx";
 import PageNotFound from "./Components/Other/PageNotFound.tsx";
+import LogoutPage from './Components/Login_page/logoutPage.tsx';
 import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_page/contextCurrentUser.tsx';
 
 // 'Context' provides a way to pass data through the component tree without having to pass 
@@ -29,6 +30,7 @@ const App_jaka: React.FC = () => {
 				<Route path="/"				element={<LoginAuth />} />
 				<Route path="*"				element={<PageNotFound />} />
 				<Route path="/main_page"	element={<MainPage updateContext={ updateContextValue } />} />
+				<Route path="logout"		element={<LogoutPage />} />
 			</Routes>
 		</CurrentUserContext.Provider>
 		</>

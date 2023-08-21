@@ -1,6 +1,6 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 import React, { useContext, useEffect, useState } from 'react';
-import { handleLogout } from '../Center/Profile_page/handleLogout';
 
 // import avatarImage from '../../images/avatar_default.png'
 
@@ -32,6 +32,15 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
     const handleClick = (content: null | string) => {
         functionToCall(content);  //    ( setActiveContent() in main_page )
     };
+
+    // Logging out button: 
+    //      The path '/logout' starts the component <LogoutPage>, there it goes to backend /auth/logout,
+    //      After returning from backend, it navigates to '/' LoginPage        
+    const navigate = useNavigate();
+    const handleLogoutClick = () => {
+        navigate('/logout');
+    }
+
 
     // Get Current User Info from CONTEXT
     const currUserData = useContext(CurrentUserContext);
@@ -102,7 +111,7 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         <Button
                             // onSelect={() => logout()}
                             variant="outline-warning"
-                            onClick={ handleLogout }
+                            onClick={ handleLogoutClick }
                         >
                             Logout
                         </Button>
