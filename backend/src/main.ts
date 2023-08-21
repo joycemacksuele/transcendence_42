@@ -27,7 +27,7 @@ async function main() {
 
   
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
-  app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));  
+  // app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));  // jaka, temp disabled 
   
 
   // app.enableCors();
