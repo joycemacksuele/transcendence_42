@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { CurrUserData, CurrentUserContext } from './contextCurrentUser';
+
+axios.defaults.withCredentials = true;
 
 /*
 	React.ChangeEvent<>
@@ -18,34 +21,58 @@ const ImageUpload = () => {
 
 	const myMargin = { margin: '5% 0 5% 0', padding: '2%', backgroundColor: 'beige', width: '70%', color: 'blue'};
 
+	// Get loginName from the 'global' context struct 
+	const currUserData = useContext(CurrentUserContext) as CurrUserData;
+	// const loginName = currUserData.loginName;
+
+	const [loginName, setLoginName] = useState<string | undefined>('');
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+	
+	useEffect(() => {
+		setLoginName(currUserData.loginName);
+		// console.log('Selected image: ', selectedImage);
+	}, [loginName]);
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {	 // e === event object
 		const inputValue = e.target.value;
-		console.log('Jaka: input value of image: ', inputValue);
+		console.log('Jaka: current loginName: ', loginName);
+		console.log('Jaka:    new image name: ', inputValue);
 		if (e.target.files && e.target.files.length  > 0) {
 			setSelectedImage(e.target.files[0]); // first file, if more selected
+			// console.log('ChangeImage try, start: selected image: ', selectedImage);
 		}
 	};
 
 	const handleUpload = async () => {
 
 		try {
-			console.log('ChangeImage try, start: selected image: ', selectedImage);
+			console.log('handleUpload: loginName: ', loginName);
+        	console.log('handleUpload: selectedImage: ', selectedImage);
+
 			if (!selectedImage) {
 				console.error('No image selected.');
 				return;
 			}
 			const formData = new FormData();
 			formData.append('image', selectedImage);
-		
-			// todo: loginName is now hardcoded, for testing, needs to be changed
-			// const loginName = 'hman';
-			const response = await axios.post('http://localhost:3001/change_image/change_profile_image/hman', formData, {
+			
+			console.log('ChangeImage: selected image A): ', selectedImage);
+			console.log('ChangeImage: loginName A): ', loginName);
+			console.log('ChangeImage: selected image B): ', selectedImage);
+
+			// The URL string needs to be inside backticks `...`
+			const response = await axios.post(`http://localhost:3001/change_image/change_profile_image/${loginName}`, formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data',
 				},
 			});
+			// const response = await axios.post(`http://localhost:3001/change_image/change_profile_image`);
+			// const response = await axios.post('http://localhost:3001/change_image/change_profile_image');
+			// const response = await axios.post('http://localhost:3001/manage_curr_user_data/just_test');
+
+			
+
 			console.log('Image uploaded successfully: ', response.data.path);
 		} catch (error: any) {
 			console.error('Error uploading the image: ', error.response ? error.response.data : error.message);

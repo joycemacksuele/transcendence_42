@@ -6,6 +6,12 @@ import * as bcryptjs from 'bcryptjs'; // added jaka: Importing bcryptjs
 import { CreateUserDto } from 'src/user/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
+import { serialize } from 'cookie';
+
+
+
+// Jaka, for testing
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 @Injectable()
 export class AuthService {
@@ -21,11 +27,13 @@ export class AuthService {
 			.then((response) => {
 				access_token = response.data['access_token'];
 				this.logger.log('Access Token received: ' + access_token); //
+				
 			})
 			.catch((error) => {
 				this.logger.error('\x1b[31mAn Error in 42 API: post request\x1b[0m' + error.response.data);
 				throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 			});
+		await sleep(2000);	// jaka, remove
 		await this.getTokenOwnerData(access_token, clientData.get('client_secret'), res);
 	}
 
@@ -125,7 +133,7 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 			}
 			// const test = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
 			const test = await this.userService.getUserByLoginName(data.loginName);
-			this.logger.log('test: Created a new user:' + test.loginName);
+			this.logger.log('test: Just created a new user:' + test.loginName);
 		}
 		
 		this.logger.log('test: Current User: data.intraLogin:' + data.intraLogin);
@@ -140,8 +148,20 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 			throw new HttpException('Signing token failed.', HttpStatus.SERVICE_UNAVAILABLE);
 		}
 
-		this.logger.log('token: ' + token);
-		response.setHeader('Set-Cookie', 'token='+token); // {} = options
+		this.logger.log('Set-Cookie token: ' + token);
+
+		// Added jaka:
+		// These attributs should be included when the the App is ready for 'production' 
+		// const cookieAttributes = {
+			// httpOnly: true,
+			// secure: true,
+			// maxAge: 60 * 60 * 1000;	// 60 minutes
+		// };
+
+
+		// response.setHeader('Set-Cookie', 'token='+token); // {} = options
+		response.setHeader('Set-Cookie', `tokenx=${token}`); // {} = options
+		// response.setHeader('Set-Cookie', serialize('token', token, cookieAttributes));
 
 		// console.log('trying to print token: ' + response.getHeader("Cookie"));
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
@@ -188,3 +208,4 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 	}
   }
 }
+
