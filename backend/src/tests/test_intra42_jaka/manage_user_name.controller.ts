@@ -87,22 +87,38 @@ export class StoreCurrUserToDataBs {
       // should be get current UserByLoginName() and then change the profile name, but then the profile name on the button should be also replaced,
       // but that button name is loaded in the Header, directly from intra ...!
 
-
+      console.log('Changing the profile name ...');
       const user = await this.userService.getUserByLoginName(data.loginName);
       // console.log('Jaka, found profile name: ', user.profileName  );
       if (!user) {
         return {message: 'User with this profileName not found'};
       }
-
+      
       user.profileName = data.profileName; // updating the name
       await this.userService.saveUser(user);
-
+      
       return {message: 'Profile name updated successfully.'};
     } catch (error) {
       console.error('Error updating the profile name: ', error.message);
       throw error;
     }
   }
+  
+  
+  @Post('just_test')
+  async justTest() {
+    console.log('From manage user name, just test ...A');
+    try {
+      console.log('From manage user name, just test ...B');
+
+    } catch (error) {
+      console.error('Error in just test: ', error.message);
+      throw error;
+    }
+  }
+
+
+
 
 
 } // End Class

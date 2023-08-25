@@ -18,7 +18,11 @@ const App_jaka: React.FC = () => {
 		The mechanism for updating the info about the current user in the database, ie: custom profileName.
 		THe function updateContextValue() is passed as a prop to the sub-components, where it can be used later.
 	*/
-	const [currUserData, setCurrUserData] = useState <CurrUserData | null> (null);
+	const [currUserData, setCurrUserData] = useState <CurrUserData | null> ({
+		loginName: '',
+		profileName: '',
+		loginImage: '',
+	});
 	const updateContextValue = (updatedUserData: CurrUserData) => {
 		setCurrUserData(updatedUserData);
 	};
