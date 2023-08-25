@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { CurrentUserContext, CurrUserData } from './contextCurrentUser'; 
 
+axios.defaults.withCredentials = true;
 
 type ContextProps = {
   updateContext: (updateUserData: CurrUserData ) => void;

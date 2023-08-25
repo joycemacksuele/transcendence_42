@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+axios.defaults.withCredentials = true; // jaka, is it needed here?
 
 const LoginPage: React.FC = () => {
 	// const [response, setResponse] = useState<string>('');

@@ -20,9 +20,10 @@ async function main() {
   // run on a different port, so its good to add all other origin ports running (i.e.: that will
   // try to access/send requests to the backend) as a Cors option).
   app.enableCors({
-    origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432']// TODO: change 3000 for a macro or from .env
+    origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432'],// TODO: change 3000 for a macro or from .env
     // 3000 -> ReactJS (frontend)
     // 5432 -> PostgreQSL (database)
+    credentials: true,  // added jaka
   });
 
   
@@ -30,7 +31,6 @@ async function main() {
   // app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));  // jaka, temp disabled 
   
 
-  // app.enableCors();
 
   // Backend will be listening (for incoming requests) on port 3001
   // TODO: change this value to a macro or from the .env
