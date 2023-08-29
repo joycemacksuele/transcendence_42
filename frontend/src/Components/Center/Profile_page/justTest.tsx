@@ -5,6 +5,7 @@ const JustTest = () => {
 
   const handleSubmit = async () => {
     // e.preventDefault(); // jaka: what is this?
+    alert('Just test ...'); // Display a pop-up alert
     
     try {
       const loginName = 'jmurovec';

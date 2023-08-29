@@ -67,8 +67,12 @@ export class AuthController {
 		parameters.append('code', requestCode);
 		parameters.append('redirect_uri', 'http://localhost:3001/auth/token');
 		try {
-			console.log('Jaka, whole AUTH response:\n', response);
+			// console.log('Jaka, whole AUTH response:\n', response);
 			console.log('Jaka, AUTH response HEADERS:\n', response.getHeaders());
+
+			// IT DOES COME TO HERE , BUT IN BROWSER THE JSON DATA IS SEEN ???
+
+
 			return await this.authService.exchangeCodeForAccessToken(parameters, response);
 		} catch (err) {
 			this.logger.log('getAuthToken: ' + err);
