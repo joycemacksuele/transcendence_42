@@ -18,6 +18,21 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 	console.log('Frontend: main_page, loginName: ' + freshLoginName + ', loginImage: ' + freshLoginImage);
 
 
+	// LOCAL STORAGE NEEDS TO BE UPDATED, IF THE USERNAME IS CHANGED ...
+	// CAN LOCAL STORAGE BE IN THE useState() SO THAT IT ALWAYS RE-RENDERS?
+
+	// Storing loginName into the browser's Local Storage
+	const hasStoredLoginName = localStorage.getItem('hasStoredLoginName');
+	if (!hasStoredLoginName) {
+		localStorage.setItem('loginName', freshLoginName);
+		localStorage.setItem('profileName', freshLoginName);
+		localStorage.setItem('loginImage', freshLoginImage);
+		localStorage.setItem('hasStoredLoginName', 'true');
+	}
+	// - ISSUE, IF IN URL YOU PUT IN THE URL QUERY A RANDOM LOGINNAME, THER WILL BE INFINITE LOOP 
+	// - ALSO, BETTER TO PUT THE LOGINNAME FROM THE INITAL REPSONSE INTO THE BODY THAN THE QUERY STRING
+
+
 	// MAYBE SOLUTION:
 	// IF THE loginName IS FOUND IN URL, THIS MIGHT BE THE USERS'S LOGIN MOMENT
 	// NOW IT NEEDS TO CHECK THE DATABASE, IF loginName IS THERE.
@@ -30,13 +45,16 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 				if (response.exists) {
 					console.log('Jaka, MainPage: Check if user is in DB: ', response.user);
 					console.log('Jaka, MainPage: User context will be updated ...');
-							const updatedUserData = {
-								...currUserData,
-								loginName:		response.user?.loginName,
-								profileName:	response.user?.profileName,
-								loginImage:		response.user?.profileImage
-							};
-							updateContext(updatedUserData);
+						const updatedUserData = {
+							...currUserData,
+							loginName:		response.user?.loginName,
+							profileName:	response.user?.profileName,
+							loginImage:		response.user?.profileImage
+						};
+						// Update Local Storage:
+						localStorage.setItem('profileName', response.user?.profileName || '' ); // jaka, maybe not needed
+						localStorage.setItem('profileImage', response.user?.profileImage || '' );
+						updateContext(updatedUserData);
 				} else {
 					console.log('Jaka, this user not yet in DB: ');
 					// - THERE IS NO WAY TO GET THE CURRENT USER, IF THERE IS NO QUERY STRING, 
@@ -50,9 +68,9 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 						if (freshLoginName) {
 							const updatedUserData = {
 								...currUserData,
-								loginName:		freshLoginName,
-								profileName:	freshLoginName,
-								loginImage:		freshLoginImage
+								loginName:		localStorage.getItem('loginName') || undefined,
+								profileName:	localStorage.getItem('loginName') || undefined,
+								loginImage:		localStorage.getItem('loginImage') || undefined,
 						};
 						updateContext(updatedUserData);
 						console.log('Jaka, MainPage: User context should be updated ...');
@@ -60,8 +78,15 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 					}
 				});
 			}
-		}, [freshLoginImage, updateContext]);
+		// }, [freshLoginImage, updateContext]);	// this was causing infinite loop
+		}, []);
 	// Update the userContext
+
+
+		const cookies = document.cookie;
+		console.log('COOKIES: ', cookies);
+
+
 
 	// Todo Jaka: Now it first shows the Game component 
 	//		Maybe 'setActiveContent' is not needed anymore ??? 

@@ -9,6 +9,15 @@ import { UserService } from 'src/user/user.service';
 import { serialize } from 'cookie';
 
 
+// jaka, added interface, to be sent back to the frontend via .json()
+interface UserData {
+	loginName: string;
+	loginImage: string;
+	loginTest: string;
+	// ...
+}
+
+
 
 // Jaka, for testing
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -64,16 +73,16 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
       throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
     });
 
-  const hash = await this.hashSecret(secret);
-  this.logger.log('Hash: ' + hash);  // testing purposes - TO BE REMOVED!  
+  	const hash = await this.hashSecret(secret);
+  	this.logger.log('Hash: ' + hash);  // testing purposes - TO BE REMOVED!  
 
-  const dto: CreateUserDto = {
-	loginName: login,
-	profileName: login,  // profileName
-	// intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
-	intraId: 0,
-	hashedSecret: hash,
-	profileImage: avatar
+  	const dto: CreateUserDto = {
+		loginName: login,
+		profileName: login,  // profileName
+		// intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
+		intraId: 0,
+		hashedSecret: hash,
+		profileImage: avatar
 	};
 
 	this.logger.log('dto:  intraLogin: ' + dto.loginName + ' intraId: ' + dto.intraId); // testing purpose - TO BE REMOVED!
@@ -160,12 +169,33 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 
 
 		// response.setHeader('Set-Cookie', 'token='+token); // {} = options
-		response.setHeader('Set-Cookie', `tokenx=${token}`); // {} = options
-		// response.setHeader('Set-Cookie', serialize('token', token, cookieAttributes));
+		response.setHeader('Set-Cookie', `token=${token}`); // {} = options
 
-		// console.log('trying to print token: ' + response.getHeader("Cookie"));
-		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
+		// Jaka, create a response structure, to be sent via .json()
+		const userData: UserData = {
+			loginName: player.loginName,
+			loginImage: player.profileImage,
+			loginTest: 'test string',
+			// ...
+		}
+
+		console.log('trying to print token: ' + response.getHeader("Cookie"));
+		// const util = require('util');
+		// console.log('trying to print response: ', util.inspect(response, { depth: null }));
+		console.log('Response status code ', response.statusCode);
+		// console.log('trying to print response: ', response.data );
 		return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
+
+		// return response.status(HttpStatus.OK).json(userData);
+
+		// return response.status(302).json({
+		// 	redirect: 'http://localhost:3000/main_page',
+		// 	userData: {
+		// 		loginName: player.loginName,
+		// 		loginImage: player.profileImage,
+		// 	}
+		// })
+
 	}
 
 	// JWT Token

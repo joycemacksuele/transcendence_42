@@ -8,9 +8,10 @@ import { UserService } from 'src/user/user.service';
 @Controller('change_image')
 export class UploadImageController {
 	constructor(private readonly userService: UserService) {
-		console.log('Change image: A)');
+		console.log('Change image COPY');
 	}
 	
+
 	@Post('change_profile_image')
 	// @UseInterceptors(
 	// 	FileInterceptor('image', {
@@ -27,10 +28,10 @@ export class UploadImageController {
 	// )
 		
 	async uploadFile(
-		// @Param('loginName', ParseIntPipe) loginName: string,		// ParseIntPipe: to extract parameter from the URL, 
+		@Param('loginName', ParseIntPipe) loginName: string,		// ParseIntPipe: to extract parameter from the URL, 
 		// @UploadedFile() image: Express.Multer.File,
 	) {
-		console.log('Change Image, Request received');
+		console.log('Change Image, Request received: ', loginName);
 		
 		// const imagePath = image.path;
 		// console.log('Image path:', imagePath);

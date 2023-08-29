@@ -1,33 +1,51 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+// Jaka, for testing
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 axios.defaults.withCredentials = true; // jaka, is it needed here?
 
 const LoginPage: React.FC = () => {
-	// const [response, setResponse] = useState<string>('');
-	const [response00, setResponse00] = useState<string>('');
-	const [response01, setResponse01] = useState<string>('');
+	const [response, setResponse] = useState<string>('');
+	// const [response00, setResponse00] = useState<string>('');
 
-	// const handleClickAuth = () => {
-	// 	axios
-	// 	  .get('http://localhost:3001/auth') // This goes to nest, auth controller....
-	// 	  .then((response) => setResponse(response.data))
-	// 	  .catch((err) => console.error(err));
-	// };
+	console.log('LoginPage ...');
+	const handleClickAuth = async () => {
+		await sleep(2000);	// jaka, remove
+		try {
+			console.log('Try going to backend ...');
+			alert ('Try going to backend ...')
+			const response = await axios.get('http://localhost:3001/auth/login'); // This goes to nest, auth controller....
+			console.log(response);
+			// const userData = response.data;
+			// console.log(userData);
+			// JAKA, HERE SAVE USER DATA TO LOCAL STORAGE
+			// ...
+			// THIS DOES NOT COME TO BROWSER CONSOLE ...LoginPage.
+			console.log('Jaka, Should redirect to main page ...');
 
-	const handleClickTest00 = () => {
-		axios
-		  .get('http://localhost:3001/example') // This goes to nest, example controller....
-		  .then((response00) => setResponse00(response00.data))
-		  .catch((err) => console.error(err));
-	  };
+			window.location.href = 'http://localhost:3000/main_page';
+		} catch(error) {
+			console.error('An error occured', error);
+			setResponse('An error occured');
+		}
+
+		// axios.get('http://localhost:3001/auth/login')
+		// 	.then((response) => {
+		// 		console.log(response);
+		// 		const userData = response.data.userData;
+		// 		console.log(userData);
+		// 		//setUserData(userData);
+		// 		//setRedirectToMainPage(true);
+		// 	})
+		// 	.catch((error) => {
+		// 		console.error('An error occurred', error);
+		// 		setResponse('An error occurred');
+		// 	});
 
 
-	const handleClickTest01 = () => {
-		axios
-		  .get('http://localhost:3001/test') // This goes to nest, test controller....
-		  .then((response01) => setResponse01(response01.data))
-		  .catch((err) => console.error(err));
+
 	};
 
 
@@ -36,16 +54,12 @@ const LoginPage: React.FC = () => {
     <div>
       <h1>This is Login Page for Aouth</h1>
       {/* <button onClick={handleClickAuth}>Login with OAuth</button> { response } */}
-	  <a href='http://localhost:3001/auth/login'>Click to Login</a>
       {/* <button onClick={handleClickAuth}>Login with OAuth</button> */}
+	  <a href='http://localhost:3001/auth/login'>Click to Login</a>
     </div>
 	{/* <div>
 		<button onClick={handleClickTest00}>Test Button 00</button> { response00 }
-	</div>
-
-	<div>
-		<button onClick={handleClickTest01}>Test Button 01</button> { response01 }
-	</div> */}
+  		</div>*/}
 	</>
   );
 };

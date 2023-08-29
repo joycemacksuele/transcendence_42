@@ -40,7 +40,8 @@ import { AppConfigModule } from '../config/config.module'; /* the Module contain
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
 import { JwtService } from '@nestjs/jwt';
-
+// import { NestExpressApplication } from '@nestjs/platform-express'; // jaka, to enable sending response in body
+// import * as cors from 'cors'; // jaka, to enable sending response in body
 
 @Module({
   imports: [ 
@@ -49,7 +50,6 @@ import { JwtService } from '@nestjs/jwt';
       type: 'postgres',
       host: 'postgres_db', // Replace with the appropriate hostname if needed
       port: 5432,
-      // username: 'jaka',
       username: 'transcendence_user',
       password: 'novogeslo1',
       database: 'mydb',
