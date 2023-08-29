@@ -47,7 +47,7 @@ const ImageUpload = () => {
 	const handleUpload = async () => {
 
 		try {
-			console.log('handleUpload: loginName: ', loginName);
+			console.log('handleUpload: loginName:     ', loginName);
         	console.log('handleUpload: selectedImage: ', selectedImage);
 
 			if (!selectedImage) {
@@ -57,9 +57,8 @@ const ImageUpload = () => {
 			const formData = new FormData();
 			formData.append('image', selectedImage);
 			
-			console.log('ChangeImage: selected image A): ', selectedImage);
-			console.log('ChangeImage: loginName A): ', loginName);
 			console.log('ChangeImage: selected image B): ', selectedImage);
+			console.log('ChangeImage: loginName B):      ', loginName);
 
 			// The URL string needs to be inside backticks `...`
 			const response = await axios.post(`http://localhost:3001/change_image/change_profile_image/${loginName}`, formData, {
@@ -74,6 +73,7 @@ const ImageUpload = () => {
 			
 
 			console.log('Image uploaded successfully: ', response.data.path);
+			localStorage.setItem('profileImage', response.data.path);
 		} catch (error: any) {
 			console.error('Error uploading the image: ', error.response ? error.response.data : error.message);
 		}
@@ -83,9 +83,9 @@ const ImageUpload = () => {
 	return (
 		<div style={myMargin}>
 			Change the image:
-			<form>
+			<form onSubmit={e => e.preventDefault()}>
 				<input type='file' accept='image/*' onChange={handleImageChange} />
-				<button onClick={handleUpload}> Submit </button>
+				<button onClick={handleUpload}> Upload </button>
 			</form>
 		</div>
 	);

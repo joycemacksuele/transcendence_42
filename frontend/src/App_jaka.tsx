@@ -14,6 +14,8 @@ import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_pa
 
 const App_jaka: React.FC = () => {
 
+
+
 	/*
 		The mechanism for updating the info about the current user in the database, ie: custom profileName.
 		THe function updateContextValue() is passed as a prop to the sub-components, where it can be used later.
