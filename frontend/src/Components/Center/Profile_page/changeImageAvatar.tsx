@@ -44,6 +44,10 @@ const ImageUpload = () => {
 		}
 	};
 
+	// TODO:
+	// THE UPLOADED IMAGE IS ONLY VISIBLE AFTER RELOADING THE PAGE.
+    // IT NEEDS TO BE USED AS CONTEXT, TO CHANGE IMMEDIATELLY 
+	
 	const handleUpload = async () => {
 
 		try {
@@ -66,10 +70,6 @@ const ImageUpload = () => {
 					'Content-Type': 'multipart/form-data',
 				},
 			});
-			// const response = await axios.post(`http://localhost:3001/change_image/change_profile_image`);
-			// const response = await axios.post('http://localhost:3001/change_image/change_profile_image');
-			// const response = await axios.post('http://localhost:3001/manage_curr_user_data/just_test');
-
 			
 
 			console.log('Image uploaded successfully: ', response.data.path);

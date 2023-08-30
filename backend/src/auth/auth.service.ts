@@ -42,7 +42,7 @@ export class AuthService {
 				this.logger.error('\x1b[31mAn Error in 42 API: post request\x1b[0m' + error.response.data);
 				throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 			});
-		await sleep(2000);	// jaka, remove
+		//await sleep(2000);	// jaka, remove
 		await this.getTokenOwnerData(access_token, clientData.get('client_secret'), res);
 	}
 
@@ -179,14 +179,16 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 			// ...
 		}
 
-		console.log('trying to print token: ' + response.getHeader("Cookie"));
+		console.log('Trying to print token: ' + response.getHeader("Set-Cookie"));
 		// const util = require('util');
 		// console.log('trying to print response: ', util.inspect(response, { depth: null }));
 		console.log('Response status code ', response.statusCode);
 		// console.log('trying to print response: ', response.data );
-		return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
+		// return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
 
-		// return response.status(HttpStatus.OK).json(userData);
+		// return response.status(HttpStatus.OK);
+		return response.status(HttpStatus.OK).json(userData);
+		// return response
 
 		// return response.status(302).json({
 		// 	redirect: 'http://localhost:3000/main_page',

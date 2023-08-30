@@ -26,12 +26,12 @@ async function main() {
     origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432'],// TODO: change 3000 for a macro or from .env
     // 3000 -> ReactJS (frontend)
     // 5432 -> PostgreQSL (database)
-    methods: ['GET', 'POST', 'DELETE'],
+    // methods: ['GET', 'POST', 'DELETE'],  // added jaka
     credentials: true,  // added jaka
   });
 
 
-  // Enable backend server to serve static files from the folder where uploaded images are stored
+  // To enable backend server to serve static files from the folder where uploaded images are stored
   app.use('/uploads', express.static('uploads'));
 
 

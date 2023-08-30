@@ -56,10 +56,8 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
     console.log('Header: currUserData.profileName: ', currUserData?.profileName);
     console.log('Header: currUserData.loginImage: ', currUserData?.loginImage);
 
-    THE UPLOADED IMAGE IS ONLY VISIBLE AFTER RELOADING THE PAGE.
-    IT NEEDS TO BE USED AS CONTEXT, TO CHANGE IMMEDIATELLY 
-
-    // THE CORRECT PATH FOR STORED IMAGES:
+    
+    // THE CORRECT PATH FOR STORED IMAGES, EXAMPLE:
     //  src={`http://localhost:3001/uploads/jmurovec-4d1c6f5c-2f78-49fc-9f11-0a3488e2c665.jpg`}
     //  IN main.ts NEEDS TO BE ENABLED THE CORRECT FOLDER: app.use(...)
     const image = 'http://localhost:3001/' + localStorage.getItem('profileImage') || undefined;
