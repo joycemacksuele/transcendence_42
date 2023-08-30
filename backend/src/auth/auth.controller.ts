@@ -35,11 +35,6 @@ export class AuthController {
 		302
 	)
 
-	/*
-		Jaka: Actual URL, seen in the browser - a bit different than the one above. Includes 'state'
-		https://auth.42.fr/auth/realms/students-42/protocol/openid-connect/auth?client_id=intra&redirect_uri=https%3A%2F%2Fprofile.intra.42.fr%2Fusers%2Fauth%2Fkeycloak_student%2Fcallback&response_type=code&state=ea28bd6ecf485cb378d8d2728efc5008fea607d6f70e504d
-	*/
-
 	redirect() {
 		this.logger.log('Redirecting to OAuth...');
 	}
