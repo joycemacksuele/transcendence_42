@@ -17,21 +17,22 @@ axios.defaults.withCredentials = true;
 
 */
 
-// type ContextProps = { 
-// 	updateContext: (updateUserData: CurrUserData) => void;
-// }
+type ContextProps = { 
+	updateContext: (updateUserData: CurrUserData) => void;
+}
 
-const ImageUpload = () => {
+// const ImageUpload = () => {
+const ImageUpload: React.FC<ContextProps> = ({ updateContext }) => {
 
 	const myMargin = { margin: '5% 0 5% 0', padding: '2%', backgroundColor: 'beige', width: '70%', color: 'blue'};
 
+	
+	const [loginName, setLoginName] = useState<string | undefined>('');
+	const [selectedImage, setSelectedImage] = useState<File | null>(null);
+	
 	// Get loginName from the 'global' context struct 
 	const currUserData = useContext(CurrentUserContext) as CurrUserData;
 	// const loginName = currUserData.loginName;
-
-	const [loginName, setLoginName] = useState<string | undefined>('');
-	const [selectedImage, setSelectedImage] = useState<File | null>(null);
-
 	
 	useEffect(() => {
 		setLoginName(currUserData.loginName);
@@ -81,9 +82,10 @@ const ImageUpload = () => {
 
 
 			// jaka try: update Context
-			// const updatedUserData = { ... currUserData, profileImage: response.data.path};
-			// updateContext(updatedUserData);
-
+			if (currUserData) {
+				const updatedUserData = { ... currUserData, loginImage: response.data.path};
+				updateContext(updatedUserData);
+			}
 
 		} catch (error: any) {
 			console.error('Error uploading the image: ', error.response ? error.response.data : error.message);

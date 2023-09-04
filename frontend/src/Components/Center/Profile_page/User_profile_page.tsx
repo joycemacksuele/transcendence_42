@@ -1,6 +1,6 @@
 // import InputUserName from "../../Other/InputUserName";
 import ImageUpload from "./changeImageAvatar";
-import UploadAvatar from "../../Other/UploadAvatar";
+// import UploadAvatar from "../../Other/UploadAvatar"; // NOT USED ???
 import UsersList from "./exampleDisplayUsers";
 import ChangeProfileName from "./changeProfileName";
 import { CurrUserData } from "./contextCurrentUser";
@@ -18,8 +18,8 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
       {/* <InputUserName /> */}
       <ChangeProfileName updateContext={ updateContext } />
       <JustTest/>
-      <ImageUpload />
-      <UploadAvatar />
+      <ImageUpload updateContext={ updateContext }/>
+      {/* <UploadAvatar /> */}  
       <UsersList />
     </div>
   );
