@@ -30,6 +30,7 @@ export class AuthService {
   //    STEP 3 - make POST request to exchange the code for an access token 
   // This request needs to be performed on the server side, over a secure connection
 	async exchangeCodeForAccessToken(clientData: any, res: Response) {
+		console.log('Jaka, start Exchange Code for token');
 		let access_token: string;
 		await axios
 			.post('https://api.intra.42.fr/oauth/token', clientData)
@@ -39,7 +40,9 @@ export class AuthService {
 				
 			})
 			.catch((error) => {
-				this.logger.error('\x1b[31mAn Error in 42 API: post request\x1b[0m' + error.response.data);
+				// this.logger.error('\x1b[31mAn Error in 42 API: post request: response: \x1b[0m' + JSON.stringify(response));
+				// this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response: \x1b[0m' + JSON.stringify(error.response));
+				this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response.data: \x1b[0m' + JSON.stringify(error.response.data));
 				throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 			});
 		//await sleep(2000);	// jaka, remove
@@ -49,6 +52,8 @@ export class AuthService {
 //    STEP 4 - Make API requests with token 
 // GET request to the current token owner with the bearer token - get user info in response
 async getTokenOwnerData(access_token: string, secret: string, res: Response) {
+	console.log('Jaka, start Get token owner data');
+
 	const authorizationHeader: string = 'Bearer ' + access_token;
 	let login: string;
 	let id: string;
@@ -161,15 +166,26 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 
 		// Added jaka:
 		// These attributs should be included when the the App is ready for 'production' 
-		// const cookieAttributes = {
-			// httpOnly: true,
+		const cookieAttributes = {
+			httpOnly: true,
+			path: '/'
 			// secure: true,
 			// maxAge: 60 * 60 * 1000;	// 60 minutes
-		// };
+		};
 
+		// added jaka: appending attributes to a cookie
+		let cookieString = `token=${token};`;
+		for (let attribute in cookieAttributes) {
+			if (cookieAttributes[attribute] === true) {
+				cookieString += ` ${attribute};`;
+			} else {
+				cookieString += ` ${attribute}=${cookieAttributes[attribute]};`;
+			}
+		}
+		response.setHeader('Set-Cookie', cookieString);
 
 		// response.setHeader('Set-Cookie', 'token='+token); // {} = options
-		response.setHeader('Set-Cookie', `token=${token}`); // {} = options
+		// response.setHeader('Set-Cookie', `token=${token}`); // {} = options
 
 		// Jaka, create a response structure, to be sent via .json()
 		const userData: UserData = {
@@ -179,16 +195,16 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 			// ...
 		}
 
-		console.log('Trying to print token: ' + response.getHeader("Set-Cookie"));
+		console.log('Print cookie token: ' + response.getHeader("Set-Cookie"));
 		// const util = require('util');
 		// console.log('trying to print response: ', util.inspect(response, { depth: null }));
 		console.log('Response status code ', response.statusCode);
 		// console.log('trying to print response: ', response.data );
-		// return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
+		return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
 
 		// return response.status(HttpStatus.OK);
-		return response.status(HttpStatus.OK).json(userData);
-		// return response
+		// return response.status(HttpStatus.OK).json(userData);
+		// return response.send();
 
 		// return response.status(302).json({
 		// 	redirect: 'http://localhost:3000/main_page',

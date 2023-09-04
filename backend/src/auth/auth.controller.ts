@@ -14,7 +14,7 @@ import { OpenAccess } from './guards/auth.openaccess';
 
 
 
-@OpenAccess()  // this allows it to work without being logged in 
+@OpenAccess()  // this allows it to work without being logged in // jaka, to remove ??
 @Controller('auth')
 export class AuthController {
 	logger: Logger = new Logger('Auth Controllers');
@@ -51,6 +51,7 @@ export class AuthController {
 		const requestCode = reqUrl.split('code=')[1];
 		// this.logger.log('OAuth code received: ' + requestCode);
 		console.log('Jaka: The whole request URL: ', reqUrl);
+		console.log('Jaka:           requestCode: ', requestCode);
 		// console.log('Jaka: The whole request: ', request);
 
 
@@ -58,9 +59,10 @@ export class AuthController {
 		const parameters = new URLSearchParams();
 		parameters.append('grant_type', 'authorization_code');
 		parameters.append('client_id', '***REMOVED***');
-		parameters.append('client_secret', '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');
+		parameters.append('client_secret', '***REMOVED***');
 		parameters.append('code', requestCode);
 		parameters.append('redirect_uri', 'http://localhost:3001/auth/token');
+		// parameters.append('redirect_uri', 'http://localhost:3000/auth-callback');
 		try {
 			// console.log('Jaka, whole AUTH response:\n', response);
 			console.log('Jaka, AUTH response HEADERS:\n', response.getHeaders());

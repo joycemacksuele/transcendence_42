@@ -17,6 +17,10 @@ axios.defaults.withCredentials = true;
 
 */
 
+// type ContextProps = { 
+// 	updateContext: (updateUserData: CurrUserData) => void;
+// }
+
 const ImageUpload = () => {
 
 	const myMargin = { margin: '5% 0 5% 0', padding: '2%', backgroundColor: 'beige', width: '70%', color: 'blue'};
@@ -74,6 +78,13 @@ const ImageUpload = () => {
 
 			console.log('Image uploaded successfully: ', response.data.path);
 			localStorage.setItem('profileImage', response.data.path);
+
+
+			// jaka try: update Context
+			// const updatedUserData = { ... currUserData, profileImage: response.data.path};
+			// updateContext(updatedUserData);
+
+
 		} catch (error: any) {
 			console.error('Error uploading the image: ', error.response ? error.response.data : error.message);
 		}
