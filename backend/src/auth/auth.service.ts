@@ -173,7 +173,7 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 			// maxAge: 60 * 60 * 1000;	// 60 minutes
 		};
 
-		// added jaka: appending attributes to a cookie
+		// added jaka: appending the Attributes to the cookie
 		let cookieString = `token=${token};`;
 		for (let attribute in cookieAttributes) {
 			if (cookieAttributes[attribute] === true) {
