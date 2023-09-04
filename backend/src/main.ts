@@ -26,14 +26,13 @@ async function main() {
     origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432'],// TODO: change 3000 for a macro or from .env
     // 3000 -> ReactJS (frontend)
     // 5432 -> PostgreQSL (database)
-    // methods: ['GET', 'POST', 'DELETE'],  // added jaka
+    methods: ['GET', 'POST', 'DELETE'],  // added jaka
     credentials: true,  // added jaka
   });
 
 
   // To enable backend server to serve static files from the folder where uploaded images are stored
   app.use('/uploads', express.static('uploads'));
-
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
   // app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));  // jaka, temp disabled 

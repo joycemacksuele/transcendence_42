@@ -7,6 +7,7 @@ import MainPage from "./Components/main_page.tsx";
 import PageNotFound from "./Components/Other/PageNotFound.tsx";
 import LogoutPage from './Components/Login_page/logoutPage.tsx';
 import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_page/contextCurrentUser.tsx';
+import AuthCallbackPage from './Components/Login_page/AuthCallbackPage.tsx';
 
 // 'Context' provides a way to pass data through the component tree without having to pass 
 // props down manually at every level. This is especially useful for sharing data that can 
@@ -33,10 +34,11 @@ const App_jaka: React.FC = () => {
 		<>
 		<CurrentUserContext.Provider value={currUserData as CurrUserData}>
 			<Routes>
-				<Route path="/"				element={<LoginAuth />} />
-				<Route path="*"				element={<PageNotFound />} />
-				<Route path="/main_page"	element={<MainPage updateContext={ updateContextValue } />} />
-				<Route path="logout"		element={<LogoutPage />} />
+				<Route path="/"					element={<LoginAuth />} />
+				<Route path="/auth-callback"	element={<AuthCallbackPage />}/>
+				<Route path="/main_page"		element={<MainPage updateContext={ updateContextValue } />} />
+				<Route path="logout"			element={<LogoutPage />} />
+				<Route path="*"					element={<PageNotFound />} />
 			</Routes>
 		</CurrentUserContext.Provider>
 		</>
