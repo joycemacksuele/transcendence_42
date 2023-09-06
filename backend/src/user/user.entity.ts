@@ -26,15 +26,27 @@ export class MyUser {
 	@Column()
 	loginName: string;
 
+	@Column({default: 'default profile name'})
+	profileName: string;
+
+	@Column({default: ' ............... some path'})
+	profileImage?: string;
+
+	// static async updateProfileImage(id: number, profileImage: string) {
+	// 	await this.update(id, { profileImage });
+	// }
 	@Column()
 	intraId: number;
+
+	@Column({default: 'default some email'})
+	email: string;
 
 	@Column()
 	hashedSecret: string;
 
-	@Column({default: 'default profile name'})
-	profileName: string;
+	@Column({default: false})
+	tfaEnabled: boolean;
 
-	@Column({default: 'some path'})
-	profileImage: string;
+	@Column({default: 'default'})
+	tfaCode: string;
 }

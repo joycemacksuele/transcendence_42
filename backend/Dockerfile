@@ -1,8 +1,15 @@
 # Specify the base image
 FROM node:lts
 
+ARG CLIENT_ID=test
+ARG SECRET=test
+ARG REDIRECT=test
+
 # Set the working directory to the app folder
 WORKDIR /backend
+
+
+
 
 # Copy the package.json and package-lock.json files to the container
 COPY package*.json ./
