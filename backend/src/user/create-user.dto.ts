@@ -13,6 +13,9 @@ export class CreateUserDto {
   loginName: string;
   profileName: string; //profileName
   intraId: number;
+  email: string;
   hashedSecret: string;
-  profileImage: string;
+  tfaEnabled: boolean;
+  tfaCode: string;
+  profileImage?: string;
 }

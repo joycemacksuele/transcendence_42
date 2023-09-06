@@ -22,7 +22,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/App_jaka"],
+  "include": ["src"],
   "exclude": [
     "node_modules"
   ],

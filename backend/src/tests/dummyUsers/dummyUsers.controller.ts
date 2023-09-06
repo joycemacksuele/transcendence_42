@@ -3,6 +3,7 @@ import { Controller, Post, HttpStatus, HttpException } from '@nestjs/common';
 // import { DummyUserService } from './dummyUsers.service';
 import { UserService } from '../../user/user.service';
 import { MyUser } from '../../user/user.entity';
+import { OpenAccess } from 'src/auth/guards/auth.openaccess';
 
 // export class DummyUserDto {
 //   intraName: string;
@@ -11,6 +12,7 @@ import { MyUser } from '../../user/user.entity';
 // }
 
 
+@OpenAccess()
 @Controller('insert-dummy-users')
 export class DummyUsersController {
 	// InsertUserDto class defined inside the TestController file
@@ -19,7 +21,7 @@ export class DummyUsersController {
   	}
 
 
-
+  @OpenAccess()
   @Post()
   async insertDummyUsers(): Promise<{ message: string }> {
     try {
@@ -27,11 +29,11 @@ export class DummyUsersController {
 
       // Dummy user data (for testing)
       const dummyUsers: MyUser[] = [
-        // { loginName: 'dummy 1', profileName: 'default name 1'},
-        // { loginName: 'dummy 2', profileName: 'default name 2' },
-        // { loginName: 'dummy 3', profileName: 'default name 3' },
-        // { loginName: 'dummy 4', profileName: 'default name 4' },
-        // { loginName: 'dummy 5', profileName: 'default name 5' },
+        { loginName: 'dummy 1', profileName: 'default name 1', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
+        { loginName: 'dummy 2', profileName: 'default name 2', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
+        { loginName: 'dummy 3', profileName: 'default name 3', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
+        { loginName: 'dummy 4', profileName: 'default name 4', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
+        { loginName: 'dummy 5', profileName: 'default name 5', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
 
       ];
 
