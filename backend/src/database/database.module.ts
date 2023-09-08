@@ -31,7 +31,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 			password: process.env.POSTGRES_PASSWORD || 'postgres',
 			database: process.env.POSTGRES_DB || 'mydb',
 			autoLoadEntities: true,
-			synchronize: true,
+			synchronize: true,	
 		}),
 	],
 })
