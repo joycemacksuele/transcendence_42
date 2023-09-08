@@ -14,11 +14,11 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
   return (
     <div id="user-page">
       <p>USER PROFILE PAGE</p>
+      <ChangeProfileName updateContext={ updateContext } />
+      <ImageUpload updateContext={ updateContext }/>
       {/* <p>Change your username: </p> */}
       {/* <InputUserName /> */}
-      <ChangeProfileName updateContext={ updateContext } />
-      <JustTest/>
-      <ImageUpload updateContext={ updateContext }/>
+      {/* <JustTest/> */}
       {/* <UploadAvatar /> */}  
       <UsersList />
     </div>

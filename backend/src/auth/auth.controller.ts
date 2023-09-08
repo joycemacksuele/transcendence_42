@@ -7,6 +7,7 @@ import { request } from 'http';
 import { response } from 'express';
 import { AuthGuard } from './guards/auth.guard';
 import { OpenAccess } from './guards/auth.openaccess';
+import { ConfigService } from '@nestjs/config';
 
 //.env 
 // Dotenv is a library used to inject environment variables from a file into your program 
@@ -20,9 +21,16 @@ export class AuthController {
 	logger: Logger = new Logger('Auth Controllers');
 
 	constructor(
-		private readonly authService: AuthService
+		private readonly authService: AuthService,
+		private readonly configService: ConfigService
 		// private readonly userService: UserService
-	) {}
+	) {
+		this.logger.log('CORINA,         SECRET: ' + configService.get<string>('MYSECRET'));
+		this.logger.log('CORINA,   BACKEND_PORT: ' + configService.get<string>('BACKEND_PORT'));
+		this.logger.log('CORINA,  POSTGRES_PORT: ' + configService.get<string>('POSTGRES_PORT'));
+		this.logger.log('CORINA,    POSTGRES_DB: ' + configService.get<string>('POSTGRES_DB'));
+		this.logger.log('CORINA,           JAKA: ' + process.env.JAKA);
+	}
 
 	//		STEP 1: LOGIN - redirect 
 	//--------------------------------------------------

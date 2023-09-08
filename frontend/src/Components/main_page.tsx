@@ -9,7 +9,22 @@ interface ContextProps {
 }
 
 
+function getCookie(name: string) {
+	const value = "; " + document.cookie;
+	const parts = value.split("; " + name + "=");
+	if (parts.length == 2) 
+		return parts.pop()?.split(";").shift();
+}
+
+
+
 const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
+
+	// Read the Cookie Username-Cookie:
+	const cookieUsername = getCookie('cookieUsername');
+	console.log('From CookieUsername: ', cookieUsername);
+
+
 
 	// Read the login info from the current URL query string 
 	const urlParams = new URLSearchParams(window.location.search);

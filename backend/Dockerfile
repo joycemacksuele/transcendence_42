@@ -4,6 +4,8 @@ FROM node:lts
 # Set the working directory to the app folder
 WORKDIR /backend
 
+ARG MYSECRET=test
+
 # Copy the package.json and package-lock.json files to the container
 COPY package*.json ./
 RUN chmod 777 ./package.json

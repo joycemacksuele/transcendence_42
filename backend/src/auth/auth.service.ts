@@ -164,25 +164,36 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 
 		this.logger.log('Set-Cookie token: ' + token);
 
-		// Added jaka:
+		// Added jaka: ////////////////////////////////////////////////////////////////
 		// These attributs should be included when the the App is ready for 'production' 
 		const cookieAttributes = {
 			httpOnly: true,
-			path: '/'
+			path: '/',
+			// sameSite: 'none',
 			// secure: true,
 			// maxAge: 60 * 60 * 1000;	// 60 minutes
 		};
 
+		// Variant A)
+		let cookieA = require('cookie');
+		const serializedCookie = cookieA.serialize('tokenA', token, cookieAttributes);
+		response.setHeader('Set-Cookie', cookieA);
+		
+		
+		// Variant B)
 		// added jaka: appending the Attributes to the cookie
-		let cookieString = `token=${token};`;
+		let cookieB = `tokenB=${token};`;
 		for (let attribute in cookieAttributes) {
 			if (cookieAttributes[attribute] === true) {
-				cookieString += ` ${attribute};`;
-			} else {
-				cookieString += ` ${attribute}=${cookieAttributes[attribute]};`;
-			}
+				cookieB += ` ${attribute};`;
+			} else
+				cookieB += ` ${attribute}=${cookieAttributes[attribute]};`;
 		}
-		response.setHeader('Set-Cookie', cookieString);
+		response.append('Set-Cookie', cookieB);
+
+		// Separate cookie with the username, without httpOnly
+		let cookieUsername = `cookieUsername=${player.loginName}; path=/;`;
+		response.append('Set-Cookie', cookieUsername);
 
 		// response.setHeader('Set-Cookie', 'token='+token); // {} = options
 		// response.setHeader('Set-Cookie', `token=${token}`); // {} = options
@@ -194,6 +205,7 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 			loginTest: 'test string',
 			// ...
 		}
+		/////////////////////////////////////////////////////////////////////////////
 
 		console.log('Print cookie token: ' + response.getHeader("Set-Cookie"));
 		// const util = require('util');
