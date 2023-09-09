@@ -1,35 +1,12 @@
 import { Injectable, Logger, HttpException, HttpStatus} from '@nestjs/common';
 import { Request, Response } from 'express';
 import axios from 'axios';
-<<<<<<< HEAD
 import * as bcryptjs from 'bcryptjs';
 import { CreateUserDto } from 'src/user/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { TwoFactorAuthService } from './2fa/2fa.service';
-=======
-import * as bcrypt from 'bcrypt';
-import * as bcryptjs from 'bcryptjs'; // added jaka: Importing bcryptjs
-import { CreateUserDto } from 'src/user/create-user.dto';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
-import { serialize } from 'cookie';
-
-
-// jaka, added interface, to be sent back to the frontend via .json()
-interface UserData {
-	loginName: string;
-	loginImage: string;
-	loginTest: string;
-	// ...
-}
-
-
-
-// Jaka, for testing
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
->>>>>>> jaka
 
 @Injectable()
 export class AuthService {
@@ -64,7 +41,6 @@ export class AuthService {
 		await this.getTokenOwnerData(access_token, clientData.get('client_secret'), res);
 	}
 
-<<<<<<< HEAD
 	//    STEP 4 - Make API requests with token 
 	//--------------------------------------------------------------------------------
 	// GET request to the current token owner with the bearer token - get user info in response
@@ -109,46 +85,6 @@ export class AuthService {
 		hashedSecret: hash,
 		tfaEnabled: false,
 		tfaCode: 'default',
-=======
-//    STEP 4 - Make API requests with token 
-// GET request to the current token owner with the bearer token - get user info in response
-async getTokenOwnerData(access_token: string, secret: string, res: Response) {
-	console.log('Jaka, start Get token owner data');
-
-	const authorizationHeader: string = 'Bearer ' + access_token;
-	let login: string;
-	let id: string;
-	let avatar: string;
-
-	const userInfo = await axios
-	.get('https://api.intra.42.fr/v2/me', {
-		headers: {
-			Authorization: authorizationHeader
-		} // fetch the current token owner 
-    })
-    .then((response) => {
-		login = response['data'].login;
-		id = response['data'].id;
-		avatar = response['data'].image.link;
-		this.logger.log('Token owner data received: login:' + login + ' id: ' + response['data'].id);
-		this.logger.log('Token owner data received: image: ' + avatar);
-
-    })  // save the token owner info 
-    .catch(() => {
-      this.logger.error('\x1b[31mAn Error in 42 API: get token owner data\x1b[0m');
-      throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
-    });
-
-  	const hash = await this.hashSecret(secret);
-  	this.logger.log('Hash: ' + hash);  // testing purposes - TO BE REMOVED!  
-
-  	const dto: CreateUserDto = {
-		loginName: login,
-		profileName: login,  // profileName
-		// intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
-		intraId: 0,
-		hashedSecret: hash,
->>>>>>> jaka
 		profileImage: avatar
 	};
 
@@ -170,13 +106,7 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 		const saltOrRounds = 7; // can be changed 
 		this.logger.log('Salt : ' + saltOrRounds + ' Secret: ' +  secret); // testing purpose - TO BE REMOVED!
 		try {
-<<<<<<< HEAD
 			return await bcryptjs.hash(secret, saltOrRounds);
-=======
-			return await bcryptjs.hash(secret, saltOrRounds); // added jaka to try instead of bcrypt
-			// return await bcrypt.hash(secret, saltOrRounds);
-			//return ('temporary to test ....');	// todo, jaka, remove this
->>>>>>> jaka
 		}
 		catch (err) {
 			this.logger.error('\x1b[31mHash secret error: \x1b[0m' + err);
@@ -185,15 +115,9 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 
 	async getOrCreateUser(data: any, response: Response) {
     	let token: string; 
-<<<<<<< HEAD
-		let player = await this.userService.getUserByLoginName(data.loginName);
-=======
 
 		this.logger.log('test create/find user ');
-		// let player = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
 		let player = await this.userService.getUserByLoginName(data.loginName);
-		// this.logger.log('find player: ' + player.loginName);
->>>>>>> jaka
 
 		if (!player) {
 			try {
@@ -204,7 +128,6 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 				this.logger.error('Error creating new player: ' + err);
 				return ;
 			}
-<<<<<<< HEAD
 			const test = await this.userService.getUserByLoginName(data.loginName);
 			this.logger.log('test: Created a new user:' + test.loginName);
 		}
@@ -215,20 +138,6 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 		this.logger.log('getOrCreateUser: Current User: player.email:' + player.email);
 		this.logger.log('getOrCreateUser: Current User: player.2fa:' + player.tfaEnabled);
 
-=======
-			// const test = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
-			const test = await this.userService.getUserByLoginName(data.loginName);
-			this.logger.log('test: Just created a new user:' + test.loginName);
-		}
-		
-		this.logger.log('test: Current User: data.intraLogin:' + data.intraLogin);
-		this.logger.log('test: Current User: data.loginName:' + data.loginName);
-		this.logger.log('test: Current User: player.loginName:' + player.loginName);
-		
-	
-		// token = !player ? await this.signToken(newPlayer.loginName, newPlayer.intraId) : await this.signToken(newPlayer.loginName, newPlayer.intraId);
-		// token = !player ? await this.signToken(player) : await this.signToken(player);
->>>>>>> jaka
 		token = await this.signToken(player);
 		if (!token) {
 			throw new HttpException('Signing token failed.', HttpStatus.SERVICE_UNAVAILABLE);
@@ -357,23 +266,13 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 
   logout(req: Request, response: Response) {
 	try{
-<<<<<<< HEAD
 		response.clearCookie('token');
 		// disable 2fa ? 
 		return response.send({ message: 'Sign out succeeded' });
-=======
-		this.logger.log('Jaka: logging out ...');
-		response.clearCookie('token');
-		return response.send({ message: 'Logout succeeded' });
->>>>>>> jaka
 	}
 	catch{
 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
 	}
   }
-<<<<<<< HEAD
-
-=======
->>>>>>> jaka
 }
 
