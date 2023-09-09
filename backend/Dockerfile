@@ -8,8 +8,12 @@ ARG REDIRECT=test
 # Set the working directory to the app folder
 WORKDIR /backend
 
+<<<<<<< HEAD
 
 
+=======
+ARG MYSECRET=test
+>>>>>>> jaka
 
 # Copy the package.json and package-lock.json files to the container
 COPY package*.json ./

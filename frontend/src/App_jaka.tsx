@@ -5,7 +5,9 @@ import { Routes, Route } from "react-router-dom";
 import LoginAuth from "./Components/Login_page/Login_auth.tsx";
 import MainPage from "./Components/main_page.tsx";
 import PageNotFound from "./Components/Other/PageNotFound.tsx";
+import LogoutPage from './Components/Login_page/logoutPage.tsx';
 import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_page/contextCurrentUser.tsx';
+import AuthCallbackPage from './Components/Login_page/AuthCallbackPage.tsx';
 
 // 'Context' provides a way to pass data through the component tree without having to pass 
 // props down manually at every level. This is especially useful for sharing data that can 
@@ -13,8 +15,17 @@ import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_pa
 
 const App_jaka: React.FC = () => {
 
-	const [currUserData, setCurrUserData] = useState <CurrUserData | null> (null);
 
+
+	/*
+		The mechanism for updating the info about the current user in the database, ie: custom profileName.
+		THe function updateContextValue() is passed as a prop to the sub-components, where it can be used later.
+	*/
+	const [currUserData, setCurrUserData] = useState <CurrUserData | null> ({
+		loginName: '',
+		profileName: '',
+		loginImage: '',
+	});
 	const updateContextValue = (updatedUserData: CurrUserData) => {
 		setCurrUserData(updatedUserData);
 	};
@@ -23,10 +34,11 @@ const App_jaka: React.FC = () => {
 		<>
 		<CurrentUserContext.Provider value={currUserData as CurrUserData}>
 			<Routes>
-				{/* <Route path="/" element={<LoginPage />} /> */}
-				<Route path="/"				element={<LoginAuth />} />
-				<Route path="*"				element={<PageNotFound />} />
-				<Route path="/main_page"	element={< MainPage updateContext={ updateContextValue }  />} />
+				<Route path="/"					element={<LoginAuth />} />
+				<Route path="/auth-callback"	element={<AuthCallbackPage />}/>
+				<Route path="/main_page"		element={<MainPage updateContext={ updateContextValue } />} />
+				<Route path="logout"			element={<LogoutPage />} />
+				<Route path="*"					element={<PageNotFound />} />
 			</Routes>
 		</CurrentUserContext.Provider>
 		</>
