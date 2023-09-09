@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
+import React, { useContext, useEffect, useState } from 'react';
 
 // import avatarImage from '../../images/avatar_default.png'
 
@@ -27,10 +28,22 @@ type PropsHeader = {
 const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 
     console.log('Start Header ...');
-
+    // alert('Start header ...'); // Jaka, remove
+    
+    
     const handleClick = (content: null | string) => {
         functionToCall(content);  //    ( setActiveContent() in main_page )
     };
+    
+    // Logging out button: 
+    //      The path '/logout' starts the component <LogoutPage>, there it goes to backend /auth/logout,
+    //      After returning from backend, it navigates to '/' LoginPage        
+    const navigate = useNavigate();
+    const handleLogoutClick = () => {
+        alert('Logout ...'); // Jaka, remove
+        navigate('/logout');
+    }
+
 
     // Get Current User Info from CONTEXT
     const currUserData = useContext(CurrentUserContext);
@@ -43,6 +56,13 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
     console.log('Header: currUserData.profileName: ', currUserData?.profileName);
     console.log('Header: currUserData.loginImage: ', currUserData?.loginImage);
 
+    
+    // THE CORRECT PATH FOR STORED IMAGES, EXAMPLE:
+    //  src={`http://localhost:3001/uploads/jmurovec-4d1c6f5c-2f78-49fc-9f11-0a3488e2c665.jpg`}
+    //  IN main.ts NEEDS TO BE ENABLED THE CORRECT FOLDER: app.use(...)
+    const image = 'http://localhost:3001/' + localStorage.getItem('profileImage') || undefined;
+    console.log('Local Storage Image: ', image);
+
     return (
         <Navbar bg="light" data-bs-theme="light" sticky="top" defaultExpanded className="border-bottom">
             <Container fluid>
@@ -52,11 +72,13 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                     <Navbar.Brand href="#profile" className="position-absolute top-50 start-50 translate-middle">
                         <Image
                             id='user-image'
-                            src={currUserData?.loginImage ?? ''}
+                             src={image}
+                            // src={`http://localhost:3001/uploads/jmurovec-4d1c6f5c-2f78-49fc-9f11-0a3488e2c665.jpg`}
+                            // src={currUserData?.loginImage ?? ''}
                             className="me-auto"
                             width={50}
                             height={50}
-                            alt="image"
+                            alt="MyImage"
                             roundedCircle
                         />
                     </Navbar.Brand>
@@ -71,7 +93,9 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         variant="underline"
                     >
                         <Nav.Item>
-                            <Nav.Link eventKey="profile">{currUserData?.profileName}</Nav.Link>
+                            {/* <Nav.Link eventKey="profile">{currUserData?.profileName}</Nav.Link> */}
+                            {/* <Nav.Link eventKey="profile">  { localStorage.getItem('loginName') }   </Nav.Link> */}
+                            <Nav.Link eventKey="profile">  { localStorage.getItem('profileName') }   </Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
                             <Nav.Link eventKey="chat">Chat</Nav.Link>
@@ -101,6 +125,7 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         <Button
                             // onSelect={() => logout()}
                             variant="outline-warning"
+                            onClick={ handleLogoutClick }
                         >
                             Logout
                         </Button>

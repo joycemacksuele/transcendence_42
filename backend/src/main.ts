@@ -6,13 +6,21 @@
 import { NestFactory } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
+<<<<<<< HEAD
 import { ConfigModule } from '@nestjs/config';
 import { AppModule } from './app/app.module';
 import { AuthGuard } from './auth/guards/auth.guard';
 import cookieParser from 'cookie-parser';
 
+=======
+import { AppModule } from './app/app.module';
+import { AuthGuard } from './auth/guards/auth.guard';
+import { NestExpressApplication } from '@nestjs/platform-express';  // jaka, to enable sending data in body
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'; // jaka, to enable sending data in body
+>>>>>>> jaka
 // const { Server } = require("socket.io"); JOYCE ?? socket.io tutorial
 // const io = new Server(server); JOYCE ?? socket.io tutorial
+import * as express from 'express';
 
 async function main() {
   console.log('[BACKEND LOG] Backend main');
@@ -25,12 +33,14 @@ async function main() {
 
 
   app.enableCors({
-    origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432']// TODO: change 3000 for a macro or from .env
+    origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432'],// TODO: change 3000 for a macro or from .env
     // 3000 -> ReactJS (frontend)
     // 5432 -> PostgreQSL (database)
+    methods: ['GET', 'POST', 'DELETE'],  // added jaka
+    credentials: true,  // added jaka
   });
-  
 
+<<<<<<< HEAD
   // app.enableCors({
   //   // origin: true,
   //   origin: ['http://localhost:3000/','http://localhost:3001/', 'http://localhost:5432']// TODO: change 3000 for a macro or from .env
@@ -49,6 +59,15 @@ async function main() {
   //   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   //   next();
   // });
+=======
+
+  // To enable backend server to serve static files from the folder where uploaded images are stored
+  app.use('/uploads', express.static('uploads'));
+
+  // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
+  // app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));  // jaka, temp disabled 
+
+>>>>>>> jaka
 
   await app.listen(3001);
 
