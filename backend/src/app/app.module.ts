@@ -45,15 +45,12 @@ import { AppConfigModule } from '../config/config.module'; /* the Module contain
 // added jaka: to store current user to database
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
-<<<<<<< HEAD
 import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 
-=======
 import { JwtService } from '@nestjs/jwt';
 // import { NestExpressApplication } from '@nestjs/platform-express'; // jaka, to enable sending response in body
 // import * as cors from 'cors'; // jaka, to enable sending response in body
->>>>>>> jaka
 
 @Module({
   imports: [ 
@@ -93,10 +90,7 @@ import { JwtService } from '@nestjs/jwt';
       DummyUsersController,  // jaka, testing
       StoreCurrUserToDataBs,
       UploadImageController,
-<<<<<<< HEAD
       TwoFactorAuthController,
-=======
->>>>>>> jaka
   ],
                 
   providers: [

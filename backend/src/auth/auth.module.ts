@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from './guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
-<<<<<<< HEAD
 import { UserService } from 'src/user/user.service';
 import { TwoFactorAuthService } from './2fa/2fa.service';
 import { UserModule } from 'src/user/user.module';
@@ -30,21 +29,6 @@ import { MyUser } from 'src/user/user.entity';
   }, 
   UserService, 
   TwoFactorAuthService,],
-=======
-
-@Module({
-  imports: [JwtModule.register({
-    global: true
-  })],
-
-  controllers: [AuthController],
-  
-  providers: [AuthService,
-  {
-    provide: APP_GUARD,
-    useClass: AuthGuard, 
-  }],
->>>>>>> jaka
 })
 export class AuthModule {
   constructor() {
