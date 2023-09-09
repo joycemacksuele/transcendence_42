@@ -5,20 +5,43 @@ import { UserService } from 'src/user/user.service';
 import { UserRepository } from 'src/user/user.repository';
 import { response } from 'express';
 import { AuthGuard } from './guards/auth.guard';
+<<<<<<< HEAD
 import config from '../config/config';
+=======
+import { OpenAccess } from './guards/auth.openaccess';
+import { ConfigService } from '@nestjs/config';
+>>>>>>> jaka
 
 //.env 
 // Dotenv is a library used to inject environment variables from a file into your program 
 
 
+<<<<<<< HEAD
 @OpenAccess()  // this allows it to work without being logged in 
+=======
+
+
+@OpenAccess()  // this allows it to work without being logged in // jaka, to remove ??
+>>>>>>> jaka
 @Controller('auth')
 export class AuthController {
 	logger: Logger = new Logger('Auth Controllers');
 	
 	constructor(
 		private readonly authService: AuthService,
+<<<<<<< HEAD
 		) {}		
+=======
+		private readonly configService: ConfigService
+		// private readonly userService: UserService
+	) {
+		this.logger.log('CORINA,         SECRET: ' + configService.get<string>('MYSECRET'));
+		this.logger.log('CORINA,   BACKEND_PORT: ' + configService.get<string>('BACKEND_PORT'));
+		this.logger.log('CORINA,  POSTGRES_PORT: ' + configService.get<string>('POSTGRES_PORT'));
+		this.logger.log('CORINA,    POSTGRES_DB: ' + configService.get<string>('POSTGRES_DB'));
+		this.logger.log('CORINA,           JAKA: ' + process.env.JAKA);
+	}
+>>>>>>> jaka
 
 	//		STEP 1: LOGIN - redirect 
 	//--------------------------------------------------------------------------------
@@ -26,6 +49,7 @@ export class AuthController {
 	// @Redirect() takes two arguments, url and statusCode, both are optional. The default value of statusCode is 302 (Found) if omitted.
 	
 	@Get('login')
+<<<<<<< HEAD
 	async getLoginPage(@Request() request:any, @Response() response: any){
 		let id = process.env.CLIENT_ID;
 		let path = `https://api.intra.42.fr/oauth/authorize?client_id=${id}&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth%2Ftoken&response_type=code`;
@@ -37,24 +61,42 @@ export class AuthController {
 		catch(err){
 			this.logger.log('getAuthLogin: ' + err);
 		}
+=======
+	@Redirect(
+		'https://api.intra.42.fr/oauth/authorize?client_id=***REMOVED***&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth%2Ftoken&response_type=code',
+		// `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.UID}&redirect_uri=https%3A%2F%2Flocalhost%3A3001%2Fauth%2Ftoken&response_type=code`,
+		302
+	)
+
+	redirect() {
+		this.logger.log('Redirecting to OAuth...');
+>>>>>>> jaka
 	}
 	// // if approved it will be redirected to your "redirect_uri" (API settings) with a temporary code in a GET "code" 
 	// // as well as the state you provided in the previous step in a "state" parameter
 
 
 	//		STEP 2 - GET request with temporary "code"
+<<<<<<< HEAD
 	//--------------------------------------------------------------------------------
+=======
+>>>>>>> jaka
 	@OpenAccess()
 	@Get('token') // 'token' - end point of address 
 	async getAuthorizationToken(@Request() request: any, @Response() response: any) {
 
 		const reqUrl = request['url'];
 		const requestCode = reqUrl.split('code=')[1];
-		this.logger.log('OAuth code received: ' + requestCode);
+		// this.logger.log('OAuth code received: ' + requestCode);
+		console.log('Jaka: The whole request URL: ', reqUrl);
+		console.log('Jaka:           requestCode: ', requestCode);
+		// console.log('Jaka: The whole request: ', request);
+
 
 		//https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
 		const parameters = new URLSearchParams();
 		parameters.append('grant_type', 'authorization_code');
+<<<<<<< HEAD
 		parameters.append('client_id', process.env.CLIENT_ID);
 		parameters.append('client_secret', process.env.SECRET);
 		parameters.append('redirect_uri', process.env.REDIRECT);
@@ -62,6 +104,20 @@ export class AuthController {
 
 		try {
 			this.logger.log('getAuthorizationToken: ' + response);
+=======
+		parameters.append('client_id', '***REMOVED***');
+		parameters.append('client_secret', '***REMOVED***');
+		parameters.append('code', requestCode);
+		parameters.append('redirect_uri', 'http://localhost:3001/auth/token');
+		// parameters.append('redirect_uri', 'http://localhost:3000/auth-callback');
+		try {
+			// console.log('Jaka, whole AUTH response:\n', response);
+			console.log('Jaka, AUTH response HEADERS:\n', response.getHeaders());
+
+			// IT DOES COME TO HERE , BUT IN BROWSER THE JSON DATA IS SEEN ???
+
+
+>>>>>>> jaka
 			return await this.authService.exchangeCodeForAccessToken(parameters, response);
 		} catch (err) {
 			this.logger.log('getAuthToken: ' + err);
@@ -78,4 +134,18 @@ export class AuthController {
 			this.logger.log('getAuthorizationLogout: ' + err);
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	@Get('logout')   // to be connected with frontend
+	async logOut(@Request() req:any, @Response() res:any){
+		// find the user, change status, 2fa
+		try {
+			this.authService.logout(req, res);
+		}
+		catch(err){
+			this.logger.log(err);
+		}
+	}
+>>>>>>> jaka
 }

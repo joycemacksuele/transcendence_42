@@ -46,9 +46,12 @@ export class StoreCurrUserToDataBs {
                                           loginImage: string,
                                           profileImage: string,
                                           intraId: number,
+<<<<<<< HEAD
                                           email: string,
                                           tfaEnabled: boolean,
                                           tfaCode: string,
+=======
+>>>>>>> jaka
                                           hashedSecret: string }): Promise<{ message: string }> {
     try {
       // Check if user with the same loginName already exists
@@ -64,9 +67,12 @@ export class StoreCurrUserToDataBs {
           profileName: data.loginName,
           profileImage: data.loginImage,
           intraId: 0,                             // todo jaka: change back, and obtain the real intraId
+<<<<<<< HEAD
           email: data.email,
           tfaEnabled: false,
           tfaCode: 'default',
+=======
+>>>>>>> jaka
           hashedSecret: 'dummy hashed secret' },  // todo jaka: change back, and obtain the real hashedSecret
           // intraId: data.intraId,
           // hashedSecret: data.hashedSecret },
@@ -93,22 +99,41 @@ export class StoreCurrUserToDataBs {
       // should be get current UserByLoginName() and then change the profile name, but then the profile name on the button should be also replaced,
       // but that button name is loaded in the Header, directly from intra ...!
 
-
+      console.log('Changing the profile name ...');
       const user = await this.userService.getUserByLoginName(data.loginName);
       // console.log('Jaka, found profile name: ', user.profileName  );
       if (!user) {
         return {message: 'User with this profileName not found'};
       }
-
+      
       user.profileName = data.profileName; // updating the name
       await this.userService.saveUser(user);
-
+      
       return {message: 'Profile name updated successfully.'};
     } catch (error) {
       console.error('Error updating the profile name: ', error.message);
       throw error;
     }
   }
+<<<<<<< HEAD
+=======
+  
+  
+  @Post('just_test')
+  async justTest() {
+    console.log('From manage user name, just test ...A');
+    try {
+      console.log('From manage user name, just test ...B');
+
+    } catch (error) {
+      console.error('Error in just test: ', error.message);
+      throw error;
+    }
+  }
+
+
+
+>>>>>>> jaka
 
 
 } // End Class

@@ -4,6 +4,10 @@ import { Controller, Post, HttpStatus, HttpException } from '@nestjs/common';
 import { UserService } from '../../user/user.service';
 import { MyUser } from '../../user/user.entity';
 import { OpenAccess } from 'src/auth/guards/auth.openaccess';
+<<<<<<< HEAD
+=======
+
+>>>>>>> jaka
 
 // export class DummyUserDto {
 //   intraName: string;
@@ -29,11 +33,19 @@ export class DummyUsersController {
 
       // Dummy user data (for testing)
       const dummyUsers: MyUser[] = [
+<<<<<<< HEAD
         { loginName: 'dummy 1', profileName: 'default name 1', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
         { loginName: 'dummy 2', profileName: 'default name 2', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
         { loginName: 'dummy 3', profileName: 'default name 3', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
         { loginName: 'dummy 4', profileName: 'default name 4', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
         { loginName: 'dummy 5', profileName: 'default name 5', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
+=======
+        { loginName: 'dummy 1', profileName: 'default name 1', intraId: 1, hashedSecret: 'hashedSecret1'},
+        { loginName: 'dummy 2', profileName: 'default name 2', intraId: 2, hashedSecret: 'hashedSecret2' },
+        { loginName: 'dummy 3', profileName: 'default name 3', intraId: 3, hashedSecret: 'hashedSecret3' },
+        { loginName: 'dummy 4', profileName: 'default name 4', intraId: 4, hashedSecret: 'hashedSecret4' },
+        { loginName: 'dummy 5', profileName: 'default name 5', intraId: 5, hashedSecret: 'hashedSecret5' },
+>>>>>>> jaka
 
       ];
 

@@ -3,6 +3,8 @@ import axios from "axios";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 // import { MyUser }
 
+axios.defaults.withCredentials = true;
+
 interface User {
   id: number;
   name: string;

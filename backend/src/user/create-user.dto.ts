@@ -15,7 +15,10 @@ export class CreateUserDto {
   intraId: number;
   email: string;
   hashedSecret: string;
+<<<<<<< HEAD
   tfaEnabled: boolean;
   tfaCode: string;
+=======
+>>>>>>> jaka
   profileImage?: string;
 }

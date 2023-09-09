@@ -67,6 +67,7 @@ export class UserService {
     await this.userRepository.update({ loginName} , { profileImage });
   }
 
+<<<<<<< HEAD
   async updateStoredTFACode(loginName: string, tfaCode: string) {
     await this.userRepository.update({ loginName} , { tfaCode });
   }
@@ -74,6 +75,8 @@ export class UserService {
   async enableTFA(loginName: string, tfaEnabled: boolean) {
     await this.userRepository.update({ loginName} , { tfaEnabled });
   }
+=======
+>>>>>>> jaka
 
   // async findById(id: number): Promise<MyUser | undefined> {
   //   console.log('[BACKEND LOG] UserService.getUserById');
