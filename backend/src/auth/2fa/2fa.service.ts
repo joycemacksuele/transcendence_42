@@ -22,12 +22,14 @@ export class TwoFactorAuthService {
         code = String(this.createCode());
 		this.userService.updateStoredTFACode(player.loginName, code);
 
-		this.mailerService.sendMail({
-			to: 'email',
-			from: 'email',
-			subject: 'text',
-			text: 'Your verification code is: ' + code,
-			html: '<b> really not sure what this does </b>',
-		});
+
+		// JAKA: TEMP. DISABLED, IT WAS GIVING ERROR AT LOGIN
+		// this.mailerService.sendMail({
+		// 	to: 'email',
+		// 	from: 'email',
+		// 	subject: 'text',
+		// 	text: 'Your verification code is: ' + code,
+		// 	html: '<b> really not sure what this does </b>',
+		// });
 	}
 }
