@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-const Logout = () => {
-=======
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -24,17 +20,11 @@ const LogoutPage = () => {
 	}, [navigate]);
 
 	
->>>>>>> jaka
 	return (
 		<div id='logout-page'>
 			<p>LOGOUT PAGE</p>
 		</div>
 	);
 };
-<<<<<<< HEAD
-
-export default Logout;
-=======
 	
 export default LogoutPage;
->>>>>>> jaka

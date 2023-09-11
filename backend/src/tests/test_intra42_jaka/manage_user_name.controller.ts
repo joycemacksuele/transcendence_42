@@ -46,12 +46,9 @@ export class StoreCurrUserToDataBs {
                                           loginImage: string,
                                           profileImage: string,
                                           intraId: number,
-<<<<<<< HEAD
                                           email: string,
                                           tfaEnabled: boolean,
                                           tfaCode: string,
-=======
->>>>>>> jaka
                                           hashedSecret: string }): Promise<{ message: string }> {
     try {
       // Check if user with the same loginName already exists
@@ -67,12 +64,9 @@ export class StoreCurrUserToDataBs {
           profileName: data.loginName,
           profileImage: data.loginImage,
           intraId: 0,                             // todo jaka: change back, and obtain the real intraId
-<<<<<<< HEAD
           email: data.email,
           tfaEnabled: false,
           tfaCode: 'default',
-=======
->>>>>>> jaka
           hashedSecret: 'dummy hashed secret' },  // todo jaka: change back, and obtain the real hashedSecret
           // intraId: data.intraId,
           // hashedSecret: data.hashedSecret },
@@ -115,26 +109,19 @@ export class StoreCurrUserToDataBs {
       throw error;
     }
   }
-<<<<<<< HEAD
-=======
   
-  
-  @Post('just_test')
-  async justTest() {
-    console.log('From manage user name, just test ...A');
-    try {
-      console.log('From manage user name, just test ...B');
+  // Added Jaka
+  // @Post('just_test')
+  // async justTest() {
+  //   console.log('From manage user name, just test ...A');
+  //   try {
+  //     console.log('From manage user name, just test ...B');
 
-    } catch (error) {
-      console.error('Error in just test: ', error.message);
-      throw error;
-    }
-  }
-
-
-
->>>>>>> jaka
-
+  //   } catch (error) {
+  //     console.error('Error in just test: ', error.message);
+  //     throw error;
+  //   }
+  // }
 
 } // End Class
 
