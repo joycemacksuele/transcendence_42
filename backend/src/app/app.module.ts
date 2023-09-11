@@ -30,7 +30,6 @@ import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller'
 
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtService } from '@nestjs/jwt';
 import { TwoFactorAuthController } from 'src/auth/2fa/2fa.controller';
 import { TwoFactorAuthService } from 'src/auth/2fa/2fa.service';
 
