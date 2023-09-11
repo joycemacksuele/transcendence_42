@@ -143,11 +143,39 @@ export class AuthService {
 			throw new HttpException('Signing token failed.', HttpStatus.SERVICE_UNAVAILABLE);
 		}
 
-<<<<<<< HEAD
-		this.logger.log('token: ' + token);
+
+		this.logger.log('Set-Cookie token: ' + token);
+
+		// Added jaka: ////////////////////////////////////////////////////////////////
+		// These attributs should be included when the the App is ready for 'production' 
+		const cookieAttributes = {
+			httpOnly: true,
+			path: '/',
+			// sameSite: 'none',
+			// secure: true,
+			// maxAge: 60 * 60 * 1000;	// 60 minutes
+		};
+
+		// Variant B)
+		// added jaka: appending the Attributes to the cookie
+		let cookieB = `tokenB=${token};`;
+		for (let attribute in cookieAttributes) {
+			if (cookieAttributes[attribute] === true) {
+				cookieB += ` ${attribute};`;
+			} else
+				cookieB += ` ${attribute}=${cookieAttributes[attribute]};`;
+		}
+		response.append('Set-Cookie', cookieB);
+
+		// Jaka: Just for test: Separate cookie with the username, without httpOnly
+		let cookieUsername = `cookieUsername=${player.loginName}; path=/;`;
+		response.append('Set-Cookie', cookieUsername);
+
+
 		// response.cookie('jwt', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
-		const jwt = 'token=' + token + ' ; HttpOnly; Secure; SameSite=Strict';
-		response.setHeader('Set-Cookie', jwt);
+		// Temp. disabled by Jaka
+		// const jwt = 'token=' + token + ' ; HttpOnly; Secure; SameSite=Strict';
+		// response.setHeader('Set-Cookie', jwt);
 
 		// response.cookie('token', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
 		console.log('print token inside request: ' + response.getHeader("set-cookie"));  // test 
@@ -167,72 +195,6 @@ export class AuthService {
 		return response.redirect(path + player.loginName + '&loginImage=' + player.profileImage);
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
 		// return response.redirect('http://localhost:3001/2faAuth' + const parameters? )
-=======
-		this.logger.log('Set-Cookie token: ' + token);
-
-		// Added jaka: ////////////////////////////////////////////////////////////////
-		// These attributs should be included when the the App is ready for 'production' 
-		const cookieAttributes = {
-			httpOnly: true,
-			path: '/',
-			// sameSite: 'none',
-			// secure: true,
-			// maxAge: 60 * 60 * 1000;	// 60 minutes
-		};
-
-		// Variant A)
-		let cookieA = require('cookie');
-		const serializedCookie = cookieA.serialize('tokenA', token, cookieAttributes);
-		response.setHeader('Set-Cookie', cookieA);
-		
-		
-		// Variant B)
-		// added jaka: appending the Attributes to the cookie
-		let cookieB = `tokenB=${token};`;
-		for (let attribute in cookieAttributes) {
-			if (cookieAttributes[attribute] === true) {
-				cookieB += ` ${attribute};`;
-			} else
-				cookieB += ` ${attribute}=${cookieAttributes[attribute]};`;
-		}
-		response.append('Set-Cookie', cookieB);
-
-		// Separate cookie with the username, without httpOnly
-		let cookieUsername = `cookieUsername=${player.loginName}; path=/;`;
-		response.append('Set-Cookie', cookieUsername);
-
-		// response.setHeader('Set-Cookie', 'token='+token); // {} = options
-		// response.setHeader('Set-Cookie', `token=${token}`); // {} = options
-
-		// Jaka, create a response structure, to be sent via .json()
-		const userData: UserData = {
-			loginName: player.loginName,
-			loginImage: player.profileImage,
-			loginTest: 'test string',
-			// ...
-		}
-		/////////////////////////////////////////////////////////////////////////////
-
-		console.log('Print cookie token: ' + response.getHeader("Set-Cookie"));
-		// const util = require('util');
-		// console.log('trying to print response: ', util.inspect(response, { depth: null }));
-		console.log('Response status code ', response.statusCode);
-		// console.log('trying to print response: ', response.data );
-		return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
-
-		// return response.status(HttpStatus.OK);
-		// return response.status(HttpStatus.OK).json(userData);
-		// return response.send();
-
-		// return response.status(302).json({
-		// 	redirect: 'http://localhost:3000/main_page',
-		// 	userData: {
-		// 		loginName: player.loginName,
-		// 		loginImage: player.profileImage,
-		// 	}
-		// })
-
->>>>>>> jaka
 	}
 
 	// JWT Token

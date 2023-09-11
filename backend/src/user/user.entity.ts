@@ -44,12 +44,9 @@ export class MyUser {
 	@Column()
 	hashedSecret: string;
 
-<<<<<<< HEAD
 	@Column({default: false})
 	tfaEnabled: boolean;
 
 	@Column({default: 'default'})
 	tfaCode: string;
-=======
->>>>>>> jaka
 }
