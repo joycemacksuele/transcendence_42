@@ -12,6 +12,7 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -26,8 +27,12 @@ import { MyUser } from '../user/user.entity';
 
 import { ExampleController } from '../tests/exampleButtons/example.controller';
 import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
+
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
+import { TwoFactorAuthController } from 'src/auth/2fa/2fa.controller';
+import { TwoFactorAuthService } from 'src/auth/2fa/2fa.service';
+
 import { TestButton } from 'src/tests/exampleButtons/test.controller';
 
 // added jaka to test API INTRA42
@@ -39,27 +44,36 @@ import { AppConfigModule } from '../config/config.module'; /* the Module contain
 // added jaka: to store current user to database
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
-import { JwtService } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 
+import { JwtService } from '@nestjs/jwt';
+// import { NestExpressApplication } from '@nestjs/platform-express'; // jaka, to enable sending response in body
+// import * as cors from 'cors'; // jaka, to enable sending response in body
 
 @Module({
   imports: [ 
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // envFilePath: '.env',
+      // load: [config],
+    }),
     TypeOrmModule.forRoot({
       // Database configuration
       type: 'postgres',
       host: 'postgres_db', // Replace with the appropriate hostname if needed
       port: 5432,
-      // username: 'jaka',
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
       entities: [MyUser],
       synchronize: true,
-    }),
-    
+    }),    
     TypeOrmModule.forFeature([MyUser]),
     DatabaseModule,
-    AppConfigModule // added jaka: to enable .env to be visible globally
+    MailerModule,
+    TwoFactorAuthModule,
+    // AppConfigModule // added jaka: to enable .env to be visible globally
   ],
 
   controllers: [
@@ -75,6 +89,7 @@ import { JwtService } from '@nestjs/jwt';
       DummyUsersController,  // jaka, testing
       StoreCurrUserToDataBs,
       UploadImageController,
+      TwoFactorAuthController,
   ],
                 
   providers: [
@@ -82,7 +97,8 @@ import { JwtService } from '@nestjs/jwt';
       UserService,
       UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
       AuthService,
-      JwtService
+      JwtService,
+      TwoFactorAuthService,
   ],
 })
 export class AppModule {

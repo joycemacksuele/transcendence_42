@@ -59,6 +59,8 @@ export class UserController {
   
   @Delete()
   async deleteAllUsers(): Promise<void> {
+    console.log('DELETE Al lUsers');
+
     try {
       await this.userService.deleteAllUsers();
       console.log('[BACKEND LOG] from nest user.controller: All users deleted.');

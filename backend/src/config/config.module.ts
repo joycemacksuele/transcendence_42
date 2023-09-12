@@ -10,7 +10,9 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Make the configuration module global
+      envFilePath: '../../.env'
     }),
   ],
 })
 export class AppConfigModule {}
+
