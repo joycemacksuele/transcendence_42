@@ -1,86 +1,97 @@
 import { Injectable, Logger, HttpException, HttpStatus} from '@nestjs/common';
-import { Request, Response, response } from 'express';
+import { Request, Response } from 'express';
 import axios from 'axios';
-import * as bcrypt from 'bcrypt';
-import * as bcryptjs from 'bcryptjs'; // added jaka: Importing bcryptjs
+import * as bcryptjs from 'bcryptjs';
 import { CreateUserDto } from 'src/user/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
+import { ConfigService } from '@nestjs/config';
+import { TwoFactorAuthService } from './2fa/2fa.service';
 
 @Injectable()
 export class AuthService {
-	constructor(private readonly userService: UserService, private jwtService: JwtService) {}
+	constructor(
+		private readonly userService: UserService,
+		private readonly jwtService: JwtService, 
+		private readonly tfaService: TwoFactorAuthService
+		) {}
 	logger: Logger = new Logger('Auth Services');
 
-  //    STEP 3 - make POST request to exchange the code for an access token 
-  // This request needs to be performed on the server side, over a secure connection
+	//    STEP 3 - make POST request to exchange the code for an access token 
+	//--------------------------------------------------------------------------------
+	// This request needs to be performed on the server side, over a secure connection
+
 	async exchangeCodeForAccessToken(clientData: any, res: Response) {
+		console.log('Jaka, start Exchange Code for token');
 		let access_token: string;
 		await axios
 			.post('https://api.intra.42.fr/oauth/token', clientData)
 			.then((response) => {
 				access_token = response.data['access_token'];
 				this.logger.log('Access Token received: ' + access_token); //
+				
 			})
 			.catch((error) => {
-				this.logger.error('\x1b[31mAn Error in 42 API: post request\x1b[0m' + error.response.data);
+				// this.logger.error('\x1b[31mAn Error in 42 API: post request: response: \x1b[0m' + JSON.stringify(response));
+				// this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response: \x1b[0m' + JSON.stringify(error.response));
+				this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response.data: \x1b[0m' + JSON.stringify(error.response.data));
 				throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 			});
+		//await sleep(2000);	// jaka, remove
 		await this.getTokenOwnerData(access_token, clientData.get('client_secret'), res);
 	}
 
-//    STEP 4 - Make API requests with token 
-// GET request to the current token owner with the bearer token - get user info in response
-async getTokenOwnerData(access_token: string, secret: string, res: Response) {
-	const authorizationHeader: string = 'Bearer ' + access_token;
-	let login: string;
-	let id: string;
-	let avatar: string;
+	//    STEP 4 - Make API requests with token 
+	//--------------------------------------------------------------------------------
+	// GET request to the current token owner with the bearer token - get user info in response
 
-	const userInfo = await axios
-	.get('https://api.intra.42.fr/v2/me', {
-		headers: {
-			Authorization: authorizationHeader
-		} // fetch the current token owner 
-    })
-    .then((response) => {
-		login = response['data'].login;
-		id = response['data'].id;
-		avatar = response['data'].image.link;
-		this.logger.log('Token owner data received: login:' + login + ' id: ' + response['data'].id);
-		this.logger.log('Token owner data received: image: ' + avatar);
+	async getTokenOwnerData(access_token: string, secret: string, res: Response) {
+		const authorizationHeader: string = 'Bearer ' + access_token;
+		let login: string;
+		let id: string;
+		let avatar: string;
+		let email: string;
 
-    })  // save the token owner info 
-    .catch(() => {
-      this.logger.error('\x1b[31mAn Error in 42 API: get token owner data\x1b[0m');
-      throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
-    });
+		const userInfo = await axios
+		.get('https://api.intra.42.fr/v2/me', {
+			headers: {
+				Authorization: authorizationHeader
+			} // fetch the current token owner 
+		})
+		.then((response) => {
+			login = response['data'].login;
+			id = response['data'].id;
+			avatar = response['data'].image.link;
+			email = response['data'].email;
+			this.logger.log('Token owner data received: login:' + login + ' id: ' + response['data'].id);
+			this.logger.log('Token owner data received: image: ' + avatar);
+			this.logger.log('E-mail: ' + email);
 
-  const hash = await this.hashSecret(secret);
-  this.logger.log('Hash: ' + hash);  // testing purposes - TO BE REMOVED!  
+		})  // save the token owner info 
+		.catch(() => {
+		this.logger.error('\x1b[31mAn Error in 42 API: get token owner data\x1b[0m');
+		throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
+		});
 
-  const dto: CreateUserDto = {
-	loginName: login,
-	profileName: login,  // profileName
-	// intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
-	intraId: 0,
-	hashedSecret: hash,
-	profileImage: avatar
+	const hash = await this.hashSecret(secret);
+	this.logger.log('Hash: ' + hash);  // testing purposes - TO BE REMOVED!  
+
+	const dto: CreateUserDto = {
+		loginName: login,
+		profileName: login,  // profileName
+		intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
+		// intraId: 0,
+		email: email,
+		hashedSecret: hash,
+		tfaEnabled: false,
+		tfaCode: 'default',
+		profileImage: avatar
 	};
 
 	this.logger.log('dto:  intraLogin: ' + dto.loginName + ' intraId: ' + dto.intraId); // testing purpose - TO BE REMOVED!
 
 	return await this.getOrCreateUser(dto, res);
-	// return await this.getOrCreateUser(login, id, hash, image);
-
-
-
-
-	// return await this.getOrCreateUser(login, id, avatar, hash);
-	// find user in repository 
 	// if user exists response.redirect(http://localhost:3000/profile)
-	// if user doesn't exist 
-//   return await this.generateUser(login, res, avatar);
 }
 
   // generate hash 
@@ -95,9 +106,7 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 		const saltOrRounds = 7; // can be changed 
 		this.logger.log('Salt : ' + saltOrRounds + ' Secret: ' +  secret); // testing purpose - TO BE REMOVED!
 		try {
-			return await bcryptjs.hash(secret, saltOrRounds); // added jaka to try instead of bcrypt
-			// return await bcrypt.hash(secret, saltOrRounds);
-			//return ('temporary to test ....');	// todo, jaka, remove this
+			return await bcryptjs.hash(secret, saltOrRounds);
 		}
 		catch (err) {
 			this.logger.error('\x1b[31mHash secret error: \x1b[0m' + err);
@@ -105,47 +114,87 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 	}
 
 	async getOrCreateUser(data: any, response: Response) {
-		let newPlayer: CreateUserDto;
     	let token: string; 
 
 		this.logger.log('test create/find user ');
-		// let player = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
 		let player = await this.userService.getUserByLoginName(data.loginName);
-		// this.logger.log('find player: ' + player.loginName);
 
 		if (!player) {
 			try {
 				player = await this.userService.createUser(data);
 				this.logger.log('made new player: ' + player.loginName);
-				// this.logger.log('made new player: ' + newPlayer.loginName);
 			}
 			catch (err) {
 				this.logger.error('Error creating new player: ' + err);
 				return ;
 			}
-			// const test = await this.userService.getUserByLoginName(data.intraLogin);	// jaka, outcommentedm used loginName instead
 			const test = await this.userService.getUserByLoginName(data.loginName);
 			this.logger.log('test: Created a new user:' + test.loginName);
 		}
 		
-		this.logger.log('test: Current User: data.intraLogin:' + data.intraLogin);
-		this.logger.log('test: Current User: data.loginName:' + data.loginName);
-		this.logger.log('test: Current User: player.loginName:' + player.loginName);
-		
-	
-		// token = !player ? await this.signToken(newPlayer.loginName, newPlayer.intraId) : await this.signToken(newPlayer.loginName, newPlayer.intraId);
-		// token = !player ? await this.signToken(player) : await this.signToken(player);
+		this.logger.log('getOrCreateUser: Current User: player.intraLogin:' + player.loginName);
+		this.logger.log('getOrCreateUser: Current User: player.profileName:' + player.profileName);
+		this.logger.log('getOrCreateUser: Current User: player.intrId:' + player.intraId);
+		this.logger.log('getOrCreateUser: Current User: player.email:' + player.email);
+		this.logger.log('getOrCreateUser: Current User: player.2fa:' + player.tfaEnabled);
+
 		token = await this.signToken(player);
 		if (!token) {
 			throw new HttpException('Signing token failed.', HttpStatus.SERVICE_UNAVAILABLE);
 		}
 
-		this.logger.log('token: ' + token);
-		response.setHeader('Set-Cookie', 'token='+token); // {} = options
 
-		// console.log('trying to print token: ' + response.getHeader("Cookie"));
+		this.logger.log('Set-Cookie token: ' + token);
+
+		// Added jaka: ////////////////////////////////////////////////////////////////
+		// These attributs should be included when the the App is ready for 'production' 
+		const cookieAttributes = {
+			httpOnly: true,
+			path: '/',
+			// sameSite: 'none',
+			// secure: true,
+			// maxAge: 60 * 60 * 1000;	// 60 minutes
+		};
+
+		// Variant B)
+		// added jaka: appending the Attributes to the cookie
+		let cookieB = `tokenB=${token};`;
+		for (let attribute in cookieAttributes) {
+			if (cookieAttributes[attribute] === true) {
+				cookieB += ` ${attribute};`;
+			} else
+				cookieB += ` ${attribute}=${cookieAttributes[attribute]};`;
+		}
+		response.append('Set-Cookie', cookieB);
+
+		// Jaka: Just for test: Separate cookie with the username, without httpOnly
+		let cookieUsername = `cookieUsername=${player.loginName}; path=/;`;
+		response.append('Set-Cookie', cookieUsername);
+
+
+		// response.cookie('jwt', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
+		// Temp. disabled by Jaka
+		// const jwt = 'token=' + token + ' ; HttpOnly; Secure; SameSite=Strict';
+		// response.setHeader('Set-Cookie', jwt);
+
+		// response.cookie('token', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
+		console.log('print token inside request: ' + response.getHeader("set-cookie"));  // test 
+
+		// if 2fa true display profile else redirect to 2fa 
+		let path: string;
+		if (player.tfaEnabled === true)
+			path = `${process.env.DOMAIN}/main_page?loginName=`;
+		else
+		{
+			path = `${process.env.DOMAIN}/main_page?loginName=`; //once implemented this changes to: 
+			// path = `${process.env.DOMAIN}/login_2fa`;
+			this.tfaService.sendVerificationMail(player);
+		}	
+
+		response.status(200);
+		return response.redirect(path + player.loginName + '&loginImage=' + player.profileImage);
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
-		return response.redirect('http://localhost:3000/main_page?loginName=' + player.loginName + '&loginImage=' + player.profileImage);
+		// return response.redirect('http://localhost:3001/2faAuth' + const parameters? )
 	}
 
 	// JWT Token
@@ -168,7 +217,7 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 
 		try {
 			token = await this.jwtService.signAsync(payload, {
-				secret: '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'
+				secret: process.env.SECRET
 			});
 		}
 		catch (err) {
@@ -179,12 +228,13 @@ async getTokenOwnerData(access_token: string, secret: string, res: Response) {
 
   logout(req: Request, response: Response) {
 	try{
-		this.logger.log('Jaka: logging out ...');
 		response.clearCookie('token');
-		return response.send({ message: 'Logout succeeded' });
+		// disable 2fa ? 
+		return response.send({ message: 'Sign out succeeded' });
 	}
 	catch{
 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
 	}
   }
 }
+
