@@ -12,7 +12,10 @@ export class CreateUserDto {
 
   loginName: string;
   profileName: string; //profileName
-  intraId: number;
-  hashedSecret: string;
   profileImage?: string;
+  intraId: number;
+  email: string;
+  hashedSecret: string;
+  tfaEnabled: boolean;
+  tfaCode: string;
 }
