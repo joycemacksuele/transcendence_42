@@ -20,46 +20,35 @@ function getCookie(name: string) {
 
 const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 
+	console.log('MAIN PAGE: ');
 	// Read the Cookie Username-Cookie:
-	const cookieUsername = getCookie('cookieUsername');
-	console.log('From CookieUsername: ', cookieUsername);
-
-
-
-	// Read the login info from the current URL query string 
-	const urlParams = new URLSearchParams(window.location.search);
-	const freshLoginName = urlParams.get('loginName') || '';
-	const freshLoginImage = urlParams.get('loginImage') || ''; 
-	console.log('Frontend: main_page, loginName: ' + freshLoginName + ', loginImage: ' + freshLoginImage);
-
+	const cookieProfileName = getCookie('cookieProfileName') || '';
+	const cookieProfileImage = getCookie('cookieProfileImage') || '';
+	console.log('   CookieProfileName: ', cookieProfileName, '\n   CookieProfileImage:', cookieProfileImage);
 
 	// LOCAL STORAGE NEEDS TO BE UPDATED, IF THE USERNAME IS CHANGED ...
 	// CAN LOCAL STORAGE BE IN THE useState() SO THAT IT ALWAYS RE-RENDERS?
 
 	// Storing loginName into the browser's Local Storage
-	const hasStoredLoginName = localStorage.getItem('hasStoredLoginName');
-	if (!hasStoredLoginName) {
-		localStorage.setItem('loginName', freshLoginName);
-		localStorage.setItem('profileName', freshLoginName);
-		localStorage.setItem('loginImage', freshLoginImage);
-		localStorage.setItem('hasStoredLoginName', 'true');
+	const hasStoredProfileName = localStorage.getItem('hasStoredProfileName');
+	console.log('   Local storage: ', hasStoredProfileName);
+	if (!hasStoredProfileName) {
+		console.log('   Local storage has no loginName yet. Now setting ...');
+		localStorage.setItem('profileName', cookieProfileName);
+		localStorage.setItem('profileImage', cookieProfileImage);
+		localStorage.setItem('hasStoredProfileName', 'true');
 	}
-	// - ISSUE, IF IN URL YOU PUT IN THE URL QUERY A RANDOM LOGINNAME, THER WILL BE INFINITE LOOP 
-	// - ALSO, BETTER TO PUT THE LOGINNAME FROM THE INITAL REPSONSE INTO THE BODY THAN THE QUERY STRING
+	console.log('      profilename:: ', localStorage.getItem('profileName'));
 
-
-	// MAYBE SOLUTION:
-	// IF THE loginName IS FOUND IN URL, THIS MIGHT BE THE USERS'S LOGIN MOMENT
-	// NOW IT NEEDS TO CHECK THE DATABASE, IF loginName IS THERE.
-	// IF THE USER RELOADS THE PAGE, THE USER CONTEXT IS LOST
 	const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
 	useEffect(() => {
-		if (freshLoginName && currUserData.loginName !== freshLoginName) {
-			checkIfUserExistsInDB(freshLoginName).then((response) => {
+		console.log('   Check if user is in DB: ');
+		if (cookieProfileName && currUserData.loginName !== cookieProfileName) {
+			checkIfUserExistsInDB(cookieProfileName).then((response) => {
+				console.log('      Response:', response.user);
 				if (response.exists) {
-					console.log('Jaka, MainPage: Check if user is in DB: ', response.user);
-					console.log('Jaka, MainPage: User context will be updated ...');
+					console.log('      Context will be updated ...');
 						const updatedUserData = {
 							...currUserData,
 							loginName:		response.user?.loginName,
@@ -71,24 +60,19 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 						localStorage.setItem('profileImage', response.user?.profileImage || '' );
 						updateContext(updatedUserData);
 				} else {
-					console.log('Jaka, this user not yet in DB: ');
-					// - THERE IS NO WAY TO GET THE CURRENT USER, IF THERE IS NO QUERY STRING, 
-					// IN CASE URL IS  JUST main_page
-					// - USERNAME OR SOME OTHER ID HAS TO BE STORED IN THE COOKIE OR IN THE BRPOWSER ...
-					// 	MAYBE IN SO CALLED LOCAL STORAGE ...
+					console.log('   ??? ??? This user is not yet in DB: ');
 						// UPDATE ONLY IF THE USER DOES NOT EXISTS YET, 
 						// BECAUSE OTHERWISE IT RESETS THE PROFILENAME BACK TO USERNAME!
 						// OTHERWISE THE CONTEXT SHOULD ALREADY CONTAIN THE profileName ...etc ...
-						// 
-						if (freshLoginName) {
+						if (cookieProfileName) {
 							const updatedUserData = {
 								...currUserData,
 								loginName:		localStorage.getItem('loginName') || undefined,
 								profileName:	localStorage.getItem('loginName') || undefined,
 								loginImage:		localStorage.getItem('loginImage') || undefined,
 						};
+						console.log('   Updating context ... \n      login and profile name should be the same');
 						updateContext(updatedUserData);
-						console.log('Jaka, MainPage: User context should be updated ...');
 						}
 					}
 				});
