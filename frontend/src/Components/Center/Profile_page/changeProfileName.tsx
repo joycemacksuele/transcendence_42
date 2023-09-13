@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { CurrentUserContext, CurrUserData } from './contextCurrentUser'; 
 
+axios.defaults.withCredentials = true;
 
 type ContextProps = {
   updateContext: (updateUserData: CurrUserData ) => void;
@@ -46,12 +47,15 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
       console.log('Jaka: from ChangeProfileName, JSON: ', JSON.stringify(response));
       console.log('Jaka: from ChangeProfileName, response...profileName: ', data.profileName );
       const newProfileName = data.profileName;
-       
+      
+      // Update Local Storage
+      localStorage.setItem('profileName', newProfileName);
+
       /*
         Update the userContext:
           ...currUserData: ...is a 'spread operator'm it creates a shallow copy of the currUserData object.
       */
-        if (currUserData) {
+      if (currUserData) {
         const updatedUserData = { ...currUserData, profileName: newProfileName  };
         updateContext(updatedUserData);
       }

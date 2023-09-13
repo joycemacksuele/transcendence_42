@@ -38,7 +38,15 @@ export class MyUser {
 	@Column()
 	intraId: number;
 
+	@Column({default: 'default some email'})
+	email: string;
+
 	@Column()
 	hashedSecret: string;
 
+	@Column({default: false})
+	tfaEnabled: boolean;
+
+	@Column({default: 'default'})
+	tfaCode: string;
 }

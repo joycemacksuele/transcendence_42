@@ -42,6 +42,9 @@ services:
         build:
             context: ./backend
             dockerfile: Dockerfile
+            args:
+                MYSECRET: ${SECRET}
+                JAKA: ${JAKA}
         ports:
             - 3001:3001
             # - "${BACKEND_PORT}:${BACKEND_PORT}"
@@ -49,8 +52,8 @@ services:
             - ./backend:/backend
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
               # - ./_backend_volume:/myapp:rw,uid=<501>,gid=<20>
-#        env_file:
-#            - ./.env
+        env_file:
+            - ./.env
 #        restart: on-failure
         depends_on:
             - postgres_db
@@ -62,6 +65,14 @@ services:
             - POSTGRES_USER=transcendence_user
             - POSTGRES_PASSWORD=***REMOVED***
             - POSTGRES_PORT=5432
+            - CLIENT_ID=${CLIENT_ID}
+            - SECRET=${SECRET}
+            - REDIRECT=${REDIRECT}
+            - DOMAIN=${DOMAIN}
+            - FRONTEND=${FRONTEND}
+            - BACKEND=${BACKEND}
+            - DATABASE=${DATABASE}
+
 
     # --------------------------------------------- PostgreSQL
     postgres_db:
@@ -73,8 +84,8 @@ services:
         volumes:
             - ./backend/_database_volume:/var/lib/postgresql/data
             # TODO: Check if this is the real path from postgres with data we want to save
-#        env_file:
-#            - ./.env
+        env_file:
+            - ./.env
 #        restart: unless-stopped
         environment:
             - POSTGRES_DB=mydb
