@@ -13,6 +13,9 @@ import { CreateUserDto } from './create-user.dto';
 import { MyUser } from './user.entity';
 import { UserRepository } from './user.repository';
 import { Repository, FindOneOptions } from 'typeorm';
+import { createWriteStream } from 'fs';   // added jaka, to save the orig user image to folder ./uploads
+import axios from 'axios';
+
 
 @Injectable()
 export class UserService {
@@ -73,6 +76,24 @@ export class UserService {
 
   async enableTFA(loginName: string, tfaEnabled: boolean) {
     await this.userRepository.update({ loginName} , { tfaEnabled });
+  }
+
+  // added jaka:
+  async downloadAndSaveImage(imageUrl: string, savePath: string): Promise<void> {
+    const writer = createWriteStream(savePath); 
+
+    const response = await axios({
+      url: imageUrl,
+      method: 'GET',
+      responseType: 'stream'
+    });
+
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
   }
 
   // async findById(id: number): Promise<MyUser | undefined> {
