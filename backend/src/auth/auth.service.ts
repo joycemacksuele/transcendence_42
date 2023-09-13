@@ -123,6 +123,19 @@ export class AuthService {
 			try {
 				player = await this.userService.createUser(data);
 				this.logger.log('made new player: ' + player.loginName);
+
+				// ADDED JAKA: 							//	SAVE ORIG USER IMAGE TO THE ./uploads/ FOLDER
+				const imageUrl = data.profileImage;	// 	AND STORE THE PATH TO THE DATABASE
+				console.log("Jaka: ImageURL: ", imageUrl);
+
+            	const imagePath = `./uploads/${player.loginName}.jpg`;
+				await this.userService.downloadAndSaveImage(imageUrl, imagePath);
+				try {
+					await this.userService.updateProfileImage(player.loginName,	"uploads/" + player.loginName + ".jpg");
+					console.log("User image saved.");
+				} catch(err) {
+					this.logger.error('Error updating profile image for player: ' + err);					
+				}
 			}
 			catch (err) {
 				this.logger.error('Error creating new player: ' + err);
@@ -134,6 +147,7 @@ export class AuthService {
 		
 		this.logger.log('getOrCreateUser: Current User: player.intraLogin:' + player.loginName);
 		this.logger.log('getOrCreateUser: Current User: player.profileName:' + player.profileName);
+		this.logger.log('getOrCreateUser: Current User: player.profileName:' + player.profileImage);
 		this.logger.log('getOrCreateUser: Current User: player.intrId:' + player.intraId);
 		this.logger.log('getOrCreateUser: Current User: player.email:' + player.email);
 		this.logger.log('getOrCreateUser: Current User: player.2fa:' + player.tfaEnabled);
@@ -167,9 +181,13 @@ export class AuthService {
 		}
 		response.append('Set-Cookie', cookieB);
 
-		// Jaka: Just for test: Separate cookie with the username, without httpOnly
-		let cookieUsername = `cookieUsername=${player.loginName}; path=/;`;
+		// Jaka: Just for test: Separate cookies with user data, without httpOnly
+		let cookieUsername = `cookieUserName=${player.loginName}; path=/;`;
 		response.append('Set-Cookie', cookieUsername);
+		let cookieProfileName = `cookieProfileName=${player.profileName}; path=/;`;
+		response.append('Set-Cookie', cookieProfileName);
+		let cookieProfileImage = `cookieProfileImage=${player.profileImage}; path=/;`;
+		response.append('Set-Cookie', cookieProfileImage);
 
 
 		// response.cookie('jwt', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
@@ -192,7 +210,8 @@ export class AuthService {
 		}	
 
 		response.status(200);
-		return response.redirect(path + player.loginName + '&loginImage=' + player.profileImage);
+		// return response.redirect(path + player.loginName + '&loginImage=' + player.profileImage);  // jaka, temp. disabled
+		return response.redirect(path); 														   // jaka, temp. added
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
 		// return response.redirect('http://localhost:3001/2faAuth' + const parameters? )
 	}
