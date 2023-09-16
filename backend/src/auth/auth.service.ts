@@ -129,8 +129,8 @@ export class AuthService {
 				console.log("Jaka: ImageURL: ", imageUrl);
 
             	const imagePath = `./uploads/${player.loginName}.jpg`;
-				await this.userService.downloadAndSaveImage(imageUrl, imagePath);
 				try {
+					await this.userService.downloadAndSaveImage(imageUrl, imagePath);
 					await this.userService.updateProfileImage(player.loginName,	"uploads/" + player.loginName + ".jpg");
 					console.log("User image saved.");
 				} catch(err) {
