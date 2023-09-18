@@ -25,8 +25,8 @@ import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { MyUser } from '../user/user.entity';
 
-import { ExampleController } from '../tests/exampleButtons/example.controller';
-import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
+// import { ExampleController } from '../tests/exampleButtons/example.controller';
+// import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
 
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
@@ -36,20 +36,15 @@ import { TwoFactorAuthService } from 'src/auth/2fa/2fa.service';
 import { TestButton } from 'src/tests/exampleButtons/test.controller';
 
 // added jaka to test API INTRA42
-import { GetUserNameFromIntra } from '../tests/test_intra42_jaka/fetchFromIntra_userName.controller';
+// import { GetUserNameFromIntra } from '../tests/test_intra42_jaka/fetchFromIntra_userName.controller';
 // import { DummyUserService } from 'src/tests/dummyUsers/dummyUsers.service';
 import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
-// added jaka: to enable using .env 
-import { AppConfigModule } from '../config/config.module'; /* the Module containing ConfigService */
 // added jaka: to store current user to database
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
-
 import { JwtService } from '@nestjs/jwt';
-// import { NestExpressApplication } from '@nestjs/platform-express'; // jaka, to enable sending response in body
-// import * as cors from 'cors'; // jaka, to enable sending response in body
 
 @Module({
   imports: [ 
@@ -73,7 +68,6 @@ import { JwtService } from '@nestjs/jwt';
     DatabaseModule,
     MailerModule,
     TwoFactorAuthModule,
-    // AppConfigModule // added jaka: to enable .env to be visible globally
   ],
 
   controllers: [
@@ -82,11 +76,11 @@ import { JwtService } from '@nestjs/jwt';
       DatabaseController,
       UserController,
       AuthController,
-      TestButton,
-      ExampleController,    // jaka, testing
-      ExampleButton,        // jaka, testing
-      GetUserNameFromIntra,          // jaka, testing
-      DummyUsersController,  // jaka, testing
+      // TestButton,           // jaka, testing
+      // ExampleController,    // jaka, testing
+      // ExampleButton,        // jaka, testing
+      // GetUserNameFromIntra, // jaka, testing
+      DummyUsersController, // jaka, testing
       StoreCurrUserToDataBs,
       UploadImageController,
       TwoFactorAuthController,

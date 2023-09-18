@@ -15,9 +15,9 @@ import * as path from 'path';         // added jaka, to delete old profile image
 
 // added jaka
 async function deleteOldProfileImages(loginName: string) {
-	const uploadsDir = path.join(__dirname, '../../../uploads'); // Jaka todo: fetch from.env
+	const uploadsDir = path.join(__dirname,  `../../../${process.env.UPLOADS}`); // pulled from.env
 	try {
-		console.log('Deleting old profile image ...')
+		console.log('Deleting old profile image of userName: ', loginName);
 		const images = await fs.readdir(uploadsDir);
 
 		const imagesToDelete = images.filter(file => file.includes(loginName));
@@ -35,7 +35,8 @@ async function deleteOldProfileImages(loginName: string) {
   
 const storage = {
 	storage: diskStorage({
-		destination: './uploads',		// jaka todo: pull from .env
+		destination: `./${process.env.UPLOADS}`,		// pulled from .env
+
 		filename: async function (req, file, cb) {
 			const user = req.params.loginName;
 			const sanitizedUserName = user.replace(/\s+/g, '_');  // Replacing spaces with underscores
@@ -66,7 +67,7 @@ export class UploadImageController {
 		@Param('loginName') loginName: string,		// ParseIntPipe: to extract parameter from the URL
 			@UploadedFile() file:any 
 	) {
-		console.log('\n\nChange Image, Request received');
+		console.log('\n\nChange Image, Request received for userName: ', loginName);
 		const imagePath = file.path;
 		console.log('New image path:', imagePath);
 		
