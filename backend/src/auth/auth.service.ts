@@ -22,7 +22,7 @@ export class AuthService {
 	// This request needs to be performed on the server side, over a secure connection
 
 	async exchangeCodeForAccessToken(clientData: any, res: Response) {
-		console.log('Jaka, start Exchange Code for token');
+		// console.log('Start Exchange Code for token');
 		let access_token: string;
 		await axios
 			.post('https://api.intra.42.fr/oauth/token', clientData)
@@ -37,7 +37,6 @@ export class AuthService {
 				this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response.data: \x1b[0m' + JSON.stringify(error.response.data));
 				throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 			});
-		//await sleep(2000);	// jaka, remove
 		await this.getTokenOwnerData(access_token, clientData.get('client_secret'), res);
 	}
 
@@ -125,7 +124,7 @@ export class AuthService {
 				this.logger.log('made new player: ' + player.loginName);
 
 				// ADDED JAKA: 							//	SAVE ORIG USER IMAGE TO THE ./uploads/ FOLDER
-				const imageUrl = data.profileImage;	// 	AND STORE THE PATH TO THE DATABASE
+				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
 				console.log("Jaka: ImageURL: ", imageUrl);
 
             	const imagePath = `./uploads/${player.loginName}.jpg`;
@@ -145,12 +144,13 @@ export class AuthService {
 			this.logger.log('test: Created a new user:' + test.loginName);
 		}
 		
-		this.logger.log('getOrCreateUser: Current User: player.intraLogin:' + player.loginName);
-		this.logger.log('getOrCreateUser: Current User: player.profileName:' + player.profileName);
-		this.logger.log('getOrCreateUser: Current User: player.profileName:' + player.profileImage);
-		this.logger.log('getOrCreateUser: Current User: player.intrId:' + player.intraId);
-		this.logger.log('getOrCreateUser: Current User: player.email:' + player.email);
-		this.logger.log('getOrCreateUser: Current User: player.2fa:' + player.tfaEnabled);
+		this.logger.log('getOrCreateUser: Current User:');
+		this.logger.log('                          player.intraLogin:' + player.loginName);
+		this.logger.log('                          player.profileName:' + player.profileName);
+		this.logger.log('                          player.profileName:' + player.profileImage);
+		this.logger.log('                          player.intrId:' + player.intraId);
+		this.logger.log('                          player.email:' + player.email);
+		this.logger.log('                          player.2fa:' + player.tfaEnabled);
 
 		token = await this.signToken(player);
 		if (!token) {
@@ -172,14 +172,14 @@ export class AuthService {
 
 		// Variant B)
 		// added jaka: appending the Attributes to the cookie
-		let cookieB = `tokenB=${token};`;
+		let cookieToken = `token=${token};`;
 		for (let attribute in cookieAttributes) {
 			if (cookieAttributes[attribute] === true) {
-				cookieB += ` ${attribute};`;
+				cookieToken += ` ${attribute};`;
 			} else
-				cookieB += ` ${attribute}=${cookieAttributes[attribute]};`;
+				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
 		}
-		response.append('Set-Cookie', cookieB);
+		response.append('Set-Cookie', cookieToken);
 
 		// Jaka: Just for test: Separate cookies with user data, without httpOnly
 		let cookieUsername = `cookieUserName=${player.loginName}; path=/;`;
@@ -210,7 +210,6 @@ export class AuthService {
 		}	
 
 		response.status(200);
-		// return response.redirect(path + player.loginName + '&loginImage=' + player.profileImage);  // jaka, temp. disabled
 		return response.redirect(path); 														   // jaka, temp. added
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
 		// return response.redirect('http://localhost:3001/2faAuth' + const parameters? )

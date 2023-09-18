@@ -8,10 +8,10 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true, // Make the configuration module global
-      envFilePath: '../../.env'
-    }),
+    // ConfigModule.forRoot({
+    //   isGlobal: true, // Make the configuration module global
+    //   envFilePath: '../../.env'
+    // }),
   ],
 })
 export class AppConfigModule {}
