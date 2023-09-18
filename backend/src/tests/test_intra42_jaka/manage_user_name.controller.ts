@@ -87,9 +87,6 @@ export class StoreCurrUserToDataBs {
   @Post('change_profile_name')
   async changeProfileName(@Body() data: { profileName: string, loginName: string }): Promise<{ message: string }> {
     try {
-      // Get the profile name of the Current User!
-      // TODO jaka, how the current user profilename is hardcoded, it needs to be available somewhere, maybe as global var
-      
       // should be get current UserByLoginName() and then change the profile name, but then the profile name on the button should be also replaced,
       // but that button name is loaded in the Header, directly from intra ...!
 
