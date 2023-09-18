@@ -4,6 +4,7 @@ FROM node:lts
 ARG CLIENT_ID=test
 ARG SECRET=test
 ARG REDIRECT=test
+ARG UPLOADS=test
 
 # Set the working directory to the app folder
 WORKDIR /backend

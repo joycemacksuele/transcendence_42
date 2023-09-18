@@ -44,7 +44,6 @@ services:
             dockerfile: Dockerfile
             args:
                 MYSECRET: ${SECRET}
-                JAKA: ${JAKA}
         ports:
             - 3001:3001
             # - "${BACKEND_PORT}:${BACKEND_PORT}"
@@ -72,6 +71,7 @@ services:
             - FRONTEND=${FRONTEND}
             - BACKEND=${BACKEND}
             - DATABASE=${DATABASE}
+            - UPLOADS=${UPLOADS}
 
 
     # --------------------------------------------- PostgreSQL
