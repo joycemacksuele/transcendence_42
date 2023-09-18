@@ -71,7 +71,7 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 								profileName:	localStorage.getItem('loginName') || undefined,
 								loginImage:		localStorage.getItem('loginImage') || undefined,
 						};
-						console.log('   Updating context ... \n      login and profile name should be the same');
+						console.log('   Updating context ... \n      First time login - login and profile name should be the same');
 						updateContext(updatedUserData);
 						}
 					}
