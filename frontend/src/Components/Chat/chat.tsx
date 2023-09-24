@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { Socket, io } from "socket.io-client";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -44,34 +44,54 @@ import Nav from 'react-bootstrap/Nav';
     Extra extra large	 xxl	        ≥1400px
  */
 
+export enum ChatType {
+    PUBLIC,
+    PRIVATE,
+    PROTECTED,//by a password
+}
+
 const Chat = () => {
 
-    const [privateChat, setPrivateChat] = useState(false);
+    const [socket, setSocket] = useState<Socket | null>(null);
+
+    const [chatType, setChatType] = useState(ChatType.PUBLIC);
 
     const [message, setMessage] = useState('');
-    const [placeHolder, setPlaceHolder] = useState('Write a message...');
+    const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
 
-    const handleSend = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (message.trim() == '') {
-            setPlaceHolder('Please write a message.');
-            return;
-        }
-        else {
-            try {
-                console.log('BEFORE SENDING TO BACKEND');// TODO I never see this log too I THINK FRONTEND IS NOT LOGGING
+    useEffect(() => {
+        const newSocket = io("http://localhost:3001");
+        setSocket(newSocket);
+        //disconnect socket to clean up
+        return () => {
+            console.log(`socket disconnecting`);
+            socket?.disconnect();
+        };
+    }, []);
 
-                const response = await axios.post('http://localhost:3001/chat', { message });
+    useEffect(() => {
+        socket?.on("connect", () => {
+            console.log(`connected to the backend -? socket id: ${socket.id}`);
+        });
 
-                setMessage('');
-                setPlaceHolder('Write a message...');
+        //clean up
+        return () => {
+            socket?.removeAllListeners();
+            socket?.disconnect();
+        };
+    }, [socket]);
 
-                // console.log(response.data); // Handle the response as needed
-                console.log('Response from the backend in JSON: ', JSON.stringify(response));// TODO I never see this log
-            } catch (error) {
-                console.error('[FRONTEND ERROR] ', error);
-            }
-        }
+
+    const createRoom = () => {
+        console.log("[FRONTNED LOG] createRoom called");
+        socket?.emit("createRoom", );
+        // to create a room:
+
+        // name of the room
+        // id: automatically created
+        // admin of the room ?
+        // creator of the room ?
+        // members of the room?
     };
 
     // Trying socket.io
@@ -85,6 +105,33 @@ const Chat = () => {
     //         console.log('user disconnected');
     //     });
     // });
+
+
+    const handleSend = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (message.trim() == '') {
+            setMessageBoxPlaceHolder('Please write a message.');
+            return;
+        }
+        else {
+            try {
+                console.log('BEFORE SENDING TO BACKEND');// TODO I never see this log too I THINK FRONTEND IS NOT LOGGING
+
+                const response = await axios.post('http://localhost:3001/chat', { message });
+                // make this via socket?.emit("SendMessage");
+                // how to send data? send the message + userId to send the message to (or roomId?)
+
+                setMessage('');
+                setMessageBoxPlaceHolder('Write a message...');
+
+                // console.log(response.data); // Handle the response as needed
+                console.log('Response from the backend in JSON: ', JSON.stringify(response));// TODO I never see this log
+            } catch (error) {
+                console.error('[FRONTEND ERROR] ', error);
+            }
+        }
+    };
+
 
     const [roomsTab, setRoomsTab] = useState(false);
     const [recentTab, setRecentTab] = useState(false);
@@ -148,7 +195,8 @@ const Chat = () => {
                     </Row>
                     <Row className='h-25 align-items-center'>
                         <Stack gap={2} className='align-self-center'>
-                            <Button variant="primary">Create room</Button>
+                            <Button variant="primary" type="submit" onClick={createRoom}>Create room</Button>
+                            {/* this has to be a button that opens a screen to get data to creat the room */}
                         </Stack>
                     </Row>
                 </Col>
@@ -166,7 +214,7 @@ const Chat = () => {
                                     as="textarea"
                                     className="me-2"
                                     type="text"
-                                    placeholder={placeHolder}
+                                    placeholder={messageBoxPlaceHolder}
                                     onChange={(e) => setMessage(e.target.value)}
                                 />
                                 {/* TODO onClik erase the message from the form box*/}

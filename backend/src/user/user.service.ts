@@ -2,7 +2,7 @@
 	Defining the 'UserService' class and implementing the necessary methods for handling user-related operations.
 	The UserService class is defined as an 'injectable provider' ???, using the @Injectable() decorator.
 	The class has a constructor that injects the User repository, which is obtained using the
-	@InjectRepository(User) decorator.
+	@InjectRepository(UserEntity) decorator.
 
   The functions that access data are better located in the file user.repository
 */
@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './create-user.dto';
-import { MyUser } from './user.entity';
+import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 import { Repository, FindOneOptions } from 'typeorm';
 import { createWriteStream } from 'fs';   // added jaka, to save the orig user image to folder ./uploads
@@ -20,15 +20,15 @@ import axios from 'axios';
 @Injectable()
 export class UserService {
   constructor(
-      // @InjectRepository(Repository)
-      @InjectRepository(MyUser)
+      @InjectRepository(UserEntity)
       public readonly userRepository: UserRepository,
-      // public readonly justRepository: Repository<MyUser>
+      // private userRepository: Repository<UserEntity>,
+      // public readonly justRepository: Repository<UserEntity>
   ) {
       console.log('[BACKEND LOG] UserService constructor');
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<MyUser> {
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     console.log('[BACKEND LOG] UserService.createUser');
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
@@ -45,24 +45,24 @@ export class UserService {
     }
   }
 
-  async getAllUsers(): Promise<MyUser[]> {
+  async getAllUsers(): Promise<UserEntity[]> {
     console.log('[BACKEND LOG] UserService.getAllUsers');
     return this.userRepository.find();
     // return this.userRepository.getAllUsers();
   }
 
 
-  async getUserByLoginName(loginName: string): Promise<MyUser> {
-    const options: FindOneOptions<MyUser> = { where: { loginName } };
+  async getUserByLoginName(loginName: string): Promise<UserEntity> {
+    const options: FindOneOptions<UserEntity> = { where: { loginName } };
 	  return this.userRepository.findOne( options );
   }
 
-  async getUserByProfileName(profileName: string): Promise<MyUser> {
-    const options: FindOneOptions<MyUser> = { where: { profileName } };
+  async getUserByProfileName(profileName: string): Promise<UserEntity> {
+    const options: FindOneOptions<UserEntity> = { where: { profileName } };
 	  return this.userRepository.findOne( options );
   }
 
-  async saveUser(user: MyUser): Promise<MyUser> {
+  async saveUser(user: UserEntity): Promise<UserEntity> {
     return this.userRepository.save(user);
   }
 
@@ -96,18 +96,18 @@ export class UserService {
     });
   }
 
-  // async findById(id: number): Promise<MyUser | undefined> {
+  // async findById(id: number): Promise<UserEntity | undefined> {
   //   console.log('[BACKEND LOG] UserService.getUserById');
   //   return this.userRepository.findById(id);
   // }
 
 
 
-  // async getUserById(id: number): Promise<MyUser> {
+  // async getUserById(id: number): Promise<UserEntity> {
   //   return this.userRepository.findOne({ where: { id} });
   // }
 
-  // async updateUser(id: number, updateUserDto: CreateUserDto): Promise<MyUser> {
+  // async updateUser(id: number, updateUserDto: CreateUserDto): Promise<UserEntity> {
   //   await this.userRepository.update(id, updateUserDto);
   //   return this.userRepository.findOne({ where: { id } });
   // }
