@@ -84,7 +84,8 @@ export class AuthService {
 		hashedSecret: hash,
 		tfaEnabled: false,
 		tfaCode: 'default',
-		profileImage: avatar
+		profileImage: avatar,
+		roomsCreated: [1, 2]
 	};
 
 	this.logger.log('dto:  intraLogin: ' + dto.loginName + ' intraId: ' + dto.intraId); // testing purpose - TO BE REMOVED!

@@ -6,7 +6,7 @@ import { AuthService } from '../auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MyUser } from 'src/user/user.entity';
+import { UserEntity } from 'src/user/user.entity';
 
 @Module({
     imports: [MailerModule.forRoot({
@@ -17,7 +17,7 @@ import { MyUser } from 'src/user/user.entity';
                 pass: 'password',
             }
         },
-    }), TypeOrmModule.forFeature([MyUser])],
+    }), TypeOrmModule.forFeature([UserEntity])],
   
     controllers: [TwoFactorAuthController],
     
