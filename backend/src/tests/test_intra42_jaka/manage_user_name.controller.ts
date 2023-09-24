@@ -2,7 +2,7 @@
 import { Controller, Post, Get, HttpStatus, HttpException, Body, Query } from '@nestjs/common';
 // import { DummyUserService } from './dummyUsers.service';
 import { UserService } from '../../user/user.service';
-import { MyUser } from '../../user/user.entity';
+import { UserEntity } from '../../user/user.entity';
 
 
 
@@ -49,7 +49,9 @@ export class StoreCurrUserToDataBs {
                                           email: string,
                                           tfaEnabled: boolean,
                                           tfaCode: string,
-                                          hashedSecret: string }): Promise<{ message: string }> {
+                                          hashedSecret: string,
+                                          roomsCreated: number[],
+  }): Promise<{ message: string }> {
     try {
       // Check if user with the same loginName already exists
       const existingUser = await this.userService.getUserByLoginName(data.loginName );
@@ -59,7 +61,7 @@ export class StoreCurrUserToDataBs {
         // FOUND EXISTING USER IN DB, NOT SURE IF THIS IS THE OPTIMAL WAY TO CHECK
         // throw new HttpException('This loginName already exists in database --> the current user.', HttpStatus.CONFLICT);
       }
-      const currUserName: MyUser[] = [
+      const currUserName: UserEntity[] = [
         { loginName: data.loginName,
           profileName: data.loginName,
           profileImage: data.loginImage,
@@ -67,9 +69,11 @@ export class StoreCurrUserToDataBs {
           email: data.email,
           tfaEnabled: false,
           tfaCode: 'default',
-          hashedSecret: 'dummy hashed secret' },  // todo jaka: change back, and obtain the real hashedSecret
-          // intraId: data.intraId,
+          hashedSecret: 'dummy hashed secret',  // todo jaka: change back, and obtain the real hashedSecret
+          roomsCreated: [2, 5, 44],
+        // intraId: data.intraId,
           // hashedSecret: data.hashedSecret },
+        },
       ];
 
       const promises = currUserName.map((user) => this.userService.createUser(user));
@@ -96,17 +100,17 @@ export class StoreCurrUserToDataBs {
       if (!user) {
         return {message: 'User with this profileName not found'};
       }
-      
+
       user.profileName = data.profileName; // updating the name
       await this.userService.saveUser(user);
-      
+
       return {message: 'Profile name updated successfully.'};
     } catch (error) {
       console.error('Error updating the profile name: ', error.message);
       throw error;
     }
   }
-  
+
   // Added Jaka
   // @Post('just_test')
   // async justTest() {
