@@ -9,8 +9,8 @@ export enum ChatType {
 export class CreateChatDto {
     @IsNotEmpty({ message: 'Required' })
     @IsString()
-    @MinLength(5)
-    @MaxLength(10)
+    @MinLength(2)
+    @MaxLength(20)
     roomName: string;
 
     @IsNotEmpty({ message: 'Required' })
@@ -31,4 +31,7 @@ export class CreateChatDto {
     @MinLength(5)
     @MaxLength(10)
     roomPassword: string;
+
+    @IsNotEmpty({ message: 'Required' })
+    members: number[];
 }
