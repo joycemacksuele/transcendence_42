@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
 import { Logger } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
-import { MyUser } from "src/user/user.entity";
+import { UserEntity } from "src/user/user.entity";
 
 @Injectable()
 export class TwoFactorAuthService {
@@ -16,7 +16,7 @@ export class TwoFactorAuthService {
 		return code;
 	}
 
-	sendVerificationMail(player: MyUser)
+	sendVerificationMail(player: UserEntity)
 	{
 		let code :string;
         code = String(this.createCode());
