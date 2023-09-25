@@ -85,6 +85,12 @@ const Chat = () => {
     const createRoom = () => {
         console.log("[FRONTNED LOG] createRoom called");
         socket?.emit("createRoom");
+        // to create a room:
+        // name of the room
+        // id: automatically created
+        // admin of the room ?
+        // creator of the room ?
+        // members of the room?
     };
 
     // Trying socket.io
@@ -111,6 +117,8 @@ const Chat = () => {
                 console.log('BEFORE SENDING TO BACKEND');// TODO I never see this log too I THINK FRONTEND IS NOT LOGGING
 
                 const response = await axios.post('http://localhost:3001/chat', { message });
+                // make this via socket?.emit("SendMessage");
+                // how to send data? send the message + userId to send the message to (or roomId?)
 
                 setMessage('');
                 setMessageBoxPlaceHolder('Write a message...');
@@ -187,6 +195,7 @@ const Chat = () => {
                     <Row className='h-25 align-items-center'>
                         <Stack gap={2} className='align-self-center'>
                             <Button variant="primary" type="submit" onClick={createRoom}>Create room</Button>
+                            {/* this has to be a button that opens a screen to get data to creat the room */}
                         </Stack>
                     </Row>
                 </Col>
