@@ -84,9 +84,8 @@ const Chat = () => {
 
     const createRoom = () => {
         console.log("[FRONTNED LOG] createRoom called");
-        socket?.emit("createRoom", );
+        socket?.emit("createRoom");
         // to create a room:
-
         // name of the room
         // id: automatically created
         // admin of the room ?
