@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { ChatType } from '../dto/create-chat.dto'
 
 // Read: https://orkhan.gitbook.io/typeorm/docs/entities#column-types-for-postgres
+// Entity reflects exactly one table in the database
 
 @Entity()
 export class ChatEntity {

@@ -88,6 +88,7 @@ services:
             - ./.env
 #        restart: unless-stopped
         environment:
+#            // TODO Align it with .env
             - POSTGRES_DB=mydb
             - POSTGRES_HOST=postgres_db
             - POSTGRES_USER=transcendence_user
