@@ -21,6 +21,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Nav from 'react-bootstrap/Nav';
+import Modal from 'react-bootstrap/Modal';
 
 /*
     When should use React-Bootstrap vs Bootstrap alone?
@@ -54,10 +55,30 @@ const Chat = () => {
 
     const [socket, setSocket] = useState<Socket | null>(null);
 
-    const [chatType, setChatType] = useState(ChatType.PUBLIC);
+    // const [chatType, setChatType] = useState(ChatType.PUBLIC);
 
     const [message, setMessage] = useState('');
     const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [roomName, setRoomName] = useState('');
+    const [members, setMembers] = useState('');
+
+    const createRoom = () => {
+        console.log("[FRONTNED LOG] createRoom called");
+        socket?.emit("createRoom", {roomName: roomName, members: members});
+        // to create a room:
+        // name of the room
+        // socket id: automatically created
+        // members of the room
+        // admin of the room
+        // creator of the room -> current user (to be added on the backend)
+    };
+
 
     useEffect(() => {
         const newSocket = io("http://localhost:3001");
@@ -80,18 +101,6 @@ const Chat = () => {
             socket?.disconnect();
         };
     }, [socket]);
-
-
-    const createRoom = () => {
-        console.log("[FRONTNED LOG] createRoom called");
-        socket?.emit("createRoom");
-        // to create a room:
-        // name of the room
-        // id: automatically created
-        // admin of the room ?
-        // creator of the room ?
-        // members of the room?
-    };
 
     // Trying socket.io
     // io.on('connection', (socket) => {
@@ -194,8 +203,45 @@ const Chat = () => {
                     </Row>
                     <Row className='h-25 align-items-center'>
                         <Stack gap={2} className='align-self-center'>
-                            <Button variant="primary" type="submit" onClick={createRoom}>Create room</Button>
-                            {/* this has to be a button that opens a screen to get data to creat the room */}
+                            <Button variant="primary" type="submit" onClick={handleShow}>Create room</Button>
+                            <Modal show={show} onHide={handleClose}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Modal heading</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form>
+                                        <Form.Group className="mb-3" controlId="roomForm.roomName">
+                                            <Form.Label>Room name</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                placeholder="Room name"
+                                                autoFocus
+                                                onChange={(e) => setRoomName(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group
+                                            className="mb-3"
+                                            controlId="roomForm.members"
+
+                                        >
+                                            <Form.Label>Members</Form.Label>
+                                            <Form.Control
+                                                as="textarea"
+                                                rows={3}
+                                                onChange={(e) => setMembers(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                    <Button variant="primary" onClick={createRoom}>
+                                        Save Changes
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
                         </Stack>
                     </Row>
                 </Col>

@@ -68,7 +68,7 @@ import { JwtService } from '@nestjs/jwt';
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
-      entities: [UserEntity],
+      entities: [UserEntity],// Add ChatEntity (and others) here?????????
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
     }),
     TypeOrmModule.forFeature([UserEntity]),
