@@ -54,7 +54,7 @@ export class UserController {
   async createUser(@Body() createUserDto: CreateUserDto) {
     this.logger.log('[BACKEND LOG] createUser');
     this.logger.log('[BACKEND LOG] Received user data:', JSON.stringify(createUserDto));
-    return this.userService.createUser(createUserDto);
+    return this.userService.createUser(createUserDto);// UserEntity
   }
   
   @Delete()
