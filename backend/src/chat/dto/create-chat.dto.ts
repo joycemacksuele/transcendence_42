@@ -3,10 +3,10 @@
 
 import { IsNotEmpty, IsOptional, IsString, MinLength, MaxLength } from 'class-validator';
 
-export enum ChatType {
-    PUBLIC,
-    PRIVATE,
-    PROTECTED,//by a password
+export enum RoomType {
+    PRIVATE = 0,// max 2 people (DM)
+    PUBLIC,// Can have > 2
+    PROTECTED,//Can have > 2 AND has a password
 }
 
 export class CreateChatDto {
@@ -17,24 +17,21 @@ export class CreateChatDto {
     roomName: string;
 
     // @IsNotEmpty({ message: 'Required' })
-    // roomId: number;
+    // creatorId: number;// We can get from the backend since its the current user
 
     // @IsNotEmpty({ message: 'Required' })
-    // creatorId: number;
+    // adminId: number;// We can get from the backend since its the current user
 
-    // @IsNotEmpty({ message: 'Required' })
-    // adminId: number;
-
-    // @IsNotEmpty({ message: 'Required' })
-    // roomType: ChatType;
+    @IsNotEmpty({ message: 'Required' })
+    roomType: RoomType;
 
     // Only has a password if its a type PROTECTED
-    // @IsOptional()
-    // @IsString()
-    // @MinLength(5)
-    // @MaxLength(10)
-    // roomPassword: string;
+    @IsOptional()
+    @IsString()
+    @MinLength(5)
+    @MaxLength(20)
+    roomPassword: string;
 
-    // @IsNotEmpty({ message: 'Required' })
-    members: number[];
+    // // @IsNotEmpty({ message: 'Required' })
+    // members: number[];// nt in the create room screen
 }

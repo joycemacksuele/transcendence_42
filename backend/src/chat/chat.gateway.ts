@@ -40,6 +40,7 @@ export class ChatGateway {
   @SubscribeMessage('createRoom')
   // createRoom(@MessageBody() createChatDto: CreateChatDto, @ConnectedSocket() clientSocket: Socket) {
   createRoom(@MessageBody() createChatDto: CreateChatDto) {
+    {/* TODO: roomType IS ALWAYS BEING SET TO Q ON THE BACKEND */}
     this.logger.log('[BACKEND LOG] ChatGateway -> createRoom called', createChatDto);
     // return this.chatService.createRoom(createChatDto);
     return this.chatService.createRoom();
