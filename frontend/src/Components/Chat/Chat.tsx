@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Socket, io } from "socket.io-client";
+import $ from "jquery";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -45,40 +46,17 @@ import Modal from 'react-bootstrap/Modal';
     Extra extra large	 xxl	        ≥1400px
  */
 
-export enum ChatType {
-    PUBLIC,
-    PRIVATE,
-    PROTECTED,//by a password
-}
+// export enum RoomType {
+//     PRIVATE,// max 2 people (DM)
+//     PUBLIC,// Can have > 2
+//     PROTECTED,//Can have > 2 AND has a password
+// }
 
 const Chat = () => {
 
+    ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
+
     const [socket, setSocket] = useState<Socket | null>(null);
-
-    // const [chatType, setChatType] = useState(ChatType.PUBLIC);
-
-    const [message, setMessage] = useState('');
-    const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
-
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-    const [roomName, setRoomName] = useState('');
-    const [members, setMembers] = useState('');
-
-    const createRoom = () => {
-        console.log("[FRONTNED LOG] createRoom called");
-        socket?.emit("createRoom", {roomName: roomName, members: members});
-        // to create a room:
-        // name of the room
-        // socket id: automatically created
-        // members of the room
-        // admin of the room
-        // creator of the room -> current user (to be added on the backend)
-    };
-
 
     useEffect(() => {
         const newSocket = io("http://localhost:3001");
@@ -90,33 +68,59 @@ const Chat = () => {
         };
     }, []);
 
-    useEffect(() => {
+    useEffect(() => {// setSocket func
         socket?.on("connect", () => {
             console.log(`connected to the backend -? socket id: ${socket.id}`);
         });
 
         //clean up
         return () => {
+            console.log(`socket disconnecting AND removeAllListeners`);
             socket?.removeAllListeners();
             socket?.disconnect();
         };
     }, [socket]);
 
-    // Trying socket.io
-    // io.on('connection', (socket) => {
-    //     console.log('a user connected');
-    //     socket.on('chat message', (msg) => {
-    //         io.emit('chat message', msg);
-    //         console.log('message: ' + msg);
-    //     });
-    //     socket.on('disconnect', () => {
-    //         console.log('user disconnected');
-    //     });
-    // });
+    ////////////////////////////////////////////////////////////////////// CREATE CHAT ROOM
 
+    enum RoomType {
+        PRIVATE,// max 2 people (DM)
+        PUBLIC,// Can have > 2
+        PROTECTED,//Can have > 2 AND has a password
+    }
 
-    const handleSend = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const [roomName, setRoomName] = useState('');
+    const [roomType, setRoomType] = useState(RoomType.PUBLIC);
+    const [roomPassword, setRoomPassword] = useState('');
+    // const [roomMembers, setMembers] = useState('');
+
+    const createRoom = () => {
+        console.log("[FRONTNED LOG] createRoom called");
+        {/* TODO: roomType IS ALWAYS BEING SET TO Q ON THE BACKEND */}
+        socket?.emit("createRoom", {roomName: roomName, roomType: roomType, roomPassword: roomPassword});
+        setShow(false)
+        // - Dto to send in order to create a room:
+        // name
+        // type (RoomType -> private is a DM, public is just saved as public, protected will ask for a password)
+        // password (if type == protected)
+        
+        // - What does not need to be in the Dto because the backend has access to it:
+        // socket id: automatically created
+        // owner of the room (creator / current user)
+        // admin of the room (it's the owner (creator) when the room is created -> later on in another screen the admin will be able to add more admins to the room)
+        // PS.: members of the room will be added later on on the "members" colunm in the chat tab
+    };
+
+    ////////////////////////////////////////////////////////////////////// SEND MESSAGE
+
+    const [message, setMessage] = useState('');
+    const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
+
+    const sendMessage = async (event: React.FormEvent) => {
+        event.preventDefault();
         if (message.trim() == '') {
             setMessageBoxPlaceHolder('Please write a message.');
             return;
@@ -141,15 +145,15 @@ const Chat = () => {
     };
 
 
-    const [roomsTab, setRoomsTab] = useState(false);
-    const [recentTab, setRecentTab] = useState(false);
-    const cardClick = (content: tab) => {
-        if (tab == 'rooms') {
-            setRoomsTab(true)
-        } else {
-            setRecentTab(true)
-        }
-    };
+    // const [roomsTab, setRoomsTab] = useState(false);
+    // const [recentTab, setRecentTab] = useState(false);
+    // const cardClick = (content: tab) => {<Form.Group className="mb-3" controlId="roomForm.type">
+    //     if (tab == 'rooms') {
+    //         setRoomsTab(true)
+    //     } else {
+    //         setRecentTab(true)
+    //     }
+    // };
 
     return (
         <Container fluid className='h-100 w-100'>
@@ -201,7 +205,7 @@ const Chat = () => {
                             {/*</Card.Text>*/}
                         </Card.Body>
                     </Row>
-                    <Row className='h-25 align-items-center'>
+                    <Row className='h-25 align-items-center'>import $ from "jquery";
                         <Stack gap={2} className='align-self-center'>
                             <Button variant="primary" type="submit" onClick={handleShow}>Create room</Button>
                             <Modal show={show} onHide={handleClose}>
@@ -210,26 +214,40 @@ const Chat = () => {
                                 </Modal.Header>
                                 <Modal.Body>
                                     <Form>
-                                        <Form.Group className="mb-3" controlId="roomForm.roomName">
-                                            <Form.Label>Room name</Form.Label>
+                                        <Form.Group className="mb-3" controlId="roomForm.name">
+                                            {/* <Form.Label>Room name</Form.Label> */}
                                             <Form.Control
                                                 type="text"
                                                 placeholder="Room name"
                                                 autoFocus
-                                                onChange={(e) => setRoomName(e.target.value)}
+                                                onChange={(event) => setRoomName(event.target.value)}
                                             />
                                         </Form.Group>
-                                        <Form.Group
+                                        <Form.Select
+                                            aria-label="Default select example"
+                                            id="roomForm.type"
                                             className="mb-3"
-                                            controlId="roomForm.members"
-
                                         >
-                                            <Form.Label>Members</Form.Label>
+                                            <option>Choose the chat type</option>
+                                            {/* <option value="" selected="true"></option> */}
+                                            {/* TODO: THIS IS ALWAYS BEING SET TO Q ON THE BACKEND */}
+                                            <option value="form_1" onChange={() => setRoomType(RoomType.PUBLIC)}>Public</option>
+                                            <option value="form_2" onChange={() => setRoomType(RoomType.PRIVATE)}>Private (DM)</option>
+                                            <option value="form_3" onChange={() => setRoomType(RoomType.PROTECTED)}>Protected</option>
+                                        </Form.Select>
+                                        <Form.Group className="mb-3">
+                                            {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
                                             <Form.Control
-                                                as="textarea"
-                                                rows={3}
-                                                onChange={(e) => setMembers(e.target.value)}
+                                                type="password"
+                                                placeholder="Protected chat password"
+                                                id="inputPassword5"
+                                                aria-describedby="passwordHelpBlock"
+                                                onChange={(event) => setRoomPassword(event.target.value)}
                                             />
+                                            <Form.Text id="passwordHelpBlock" muted>
+                                                Your password must be 5-20 characters long, contain letters and numbers,
+                                                and must not contain spaces, special characters, or emoji.
+                                            </Form.Text>
                                         </Form.Group>
                                     </Form>
                                 </Modal.Body>
@@ -252,18 +270,19 @@ const Chat = () => {
                         chat
                     </Row>
                     <Row className='h-25 align-items-center'>
-                        {/* what is controlId ?????*/}
-                        <Form.Group value={message}>
+                        <Form.Group>
+                            {/* what is controlId ?????*/}
+                            {/* value={message} */}
                             <Stack direction="horizontal">
                                 <Form.Control
                                     as="textarea"
                                     className="me-2"
                                     type="text"
                                     placeholder={messageBoxPlaceHolder}
-                                    onChange={(e) => setMessage(e.target.value)}
+                                    onChange={(event) => setMessage(event.target.value)}
                                 />
                                 {/* TODO onClik erase the message from the form box*/}
-                                <Button variant="primary" type="submit" onClick={handleSend}>Send</Button>
+                                <Button variant="primary" type="submit" onClick={sendMessage}>Send</Button>
                             </Stack>
                         </Form.Group>
                     </Row>

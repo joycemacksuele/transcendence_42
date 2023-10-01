@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { ChatType } from '../dto/create-chat.dto'
+import { RoomType } from '../dto/create-chat.dto'
 
 // Read: https://orkhan.gitbook.io/typeorm/docs/entities#column-types-for-postgres
 // Entity reflects exactly one table in the database
@@ -12,10 +12,10 @@ export class ChatEntity {
 
     @Column({
         type: "enum",
-        enum: ChatType,
-        default: ChatType.PUBLIC,
+        enum: RoomType,
+        default: RoomType.PUBLIC,
     })
-    chatType: ChatType;
+    roomType: RoomType;
 
     // @Column("simple-json")
     // profile: { name: string; nickname: string }

@@ -14,7 +14,6 @@
 */
 
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { ChatType } from '../chat/dto/create-chat.dto'
 
 @Entity()
 export class UserEntity {// Joyce -> I named it from MyUser to UserEntity because it was tricky for me to remember that the MyUser keyword was an entity -> we can change it back later if you want
@@ -56,10 +55,4 @@ export class UserEntity {// Joyce -> I named it from MyUser to UserEntity becaus
 	// @Column({type: json})
 	@Column({type: "integer", array: true})
 	roomsCreated: number[];
-
-	// @Column()
-	// roomsJoined: Map<number, string>;// Map<roomId, roomType>
-
-	// @Column({default: ChatType.PUBLIC})
-	// roomsAdministrating: Tuple<number, string, ChatType>;// Map<roomId, roomType>
 }
