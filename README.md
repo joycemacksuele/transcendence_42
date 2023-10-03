@@ -1,30 +1,30 @@
 # transcendence_42
 
 `npm install <package_name> -D`
-the -D flag adds it as a dev dependency on the package.json file
+The -D flag adds it as a dev dependency on the package.json file
 
 `package-lock.json`
-stores all the dependencies for the libraries we added to the package.json
+Stores all the dependencies for the libraries we added to the package.json
 
 `npm install typescript -D`
-as we will use typescript only to develop, it goes into the dev dependencies
+As we will use typescript only to develop, it goes into the dev dependencies
 
 -----------------------------
 
 `tsc --init`
-to add a typescript config file
+To add a typescript config file
 
 - `     "jsx": "preserve",                                /* Specify what JSX code is generated. */`
-change this to `"jsx": "react",`
+Change this to `"jsx": "react",`
 
 - `"sourceMap": true,`
-for debugging purposes
+For debugging purposes
 
 - `"outDir": "./", `
-used to keep the compiled files
+Used to keep the compiled files
 
 - `"removeComments": true,`
-so final output has not comments
+Final output without comments
 
 `index.tsx`
 .tsx file will be the first react code using typescript language
@@ -32,36 +32,87 @@ so final output has not comments
 -----------------------------
 
 `npm i --save-dev @types/react @types/react-dom -D`
-as we are using typescript, the .tsx file can complain about some imports, so we have to add the types to react and react-dom (don't understand what is it - but its necessary)
+As we are using typescript, the .tsx file can complain about some imports, so we have to add the types to react and react-dom (don't understand what is it - but its necessary)
 
 `npm start`
-to run the application (i.e.: the website + client and server webpack inn this case)
+To run the application (i.e.: the website + client and server webpack inn this case)
 
 -----------------------------
 
 `yarn`
-is another package manager as npm, I saw in one tutorial that its more secure than npm?
+Is another package manager as npm, I saw in one tutorial that its more secure than npm?
+
+--------------------------------------------------------------------------------------------------------------------
+
+## NestJS
+
+`main.ts`
+Is the entry point of your application (i.e.: the first file that gets executed when you start your NestJS application).
+It's responsible for setting up various configurations.
+
+`Module`
+Is a fundamental building block that helps you organize and compartmentalize your application into smaller, manageable pieces.
+Each module encapsulates related components, such as controllers, providers (services, repositories), and other related modules.
+Modules promote modularity, re-usability, and maintainability in your application’s codebase.
+
+`Controller`
+Is a fundamental building block that handles incoming HTTP requests, processes them, and returns appropriate HTTP responses.
+Controllers are responsible for handling the routing logic and interacting with the service layer to perform various operations.
+
+`Service`
+Is a TypeScript class that encapsulates the business logic of your application.
+Services are responsible for handling data-related operations, interacting with databases, third-party APIs,
+or other external resources, and performing tasks that are required by your application’s modules or controllers.
+
+`Entity (Model)`
+Serves as a model that defines both the structure and functionality of the data within the application’s domain. 
+This model acts as a representation of real-world objects and guides how specific data entities are organized and stored.
+Ultimately, entities lay the groundwork for efficient data storage and interactions within the application.
+
+`DTO ((Data Transfer Objects)`
+Play a crucial role similar to a validation checkpoint, ensuring the accuracy and consistency of data as it traverses
+different components of the application.
+I.e.: Just as a validation process in a real-world scenario scrutinizes input quality, DTOs serve as validators,
+scrutinizing incoming data to guarantee it conforms to predefined rules before proceeding.
+
+`Decorator`
+In NestJS, you can create custom decorators to access any information from the request object.
+These decorators can extract user-related data, such as the user’s ID, roles, or any other relevant information,
+from the incoming HTTP request.
+
+`Guard`
+Protects routes and endpoints by implementing custom logic to control access to certain parts of your application based
+on various conditions, such as authentication, authorization, role-based access, and more.
+One commonly used guard is the JWT (JSON Web Token) guard, which is often used for authentication.
+More: https://medium.com/@mohitu531/nestjs-7c0eb5655bde -> Guards
+
+`Routing`
+Is an essential aspect of defining how incoming requests are handled and directed to the appropriate parts of your application.
+It allows you to map specific routes to controller methods that handle the corresponding business logic.
+NestJS provides a built-in module called @nestjs/router to facilitate routing.
+
+*From: https://medium.com/@mohitu531/nestjs-7c0eb5655bde*
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## File extensions
 
 `.ts`
-is used for pure TypeScript files.
+Is used for pure TypeScript files.
 
 `.jsx` 
-is an extension to javascript that allow it to process html syntax that would not be recognized otherwise (syntax sugar)
+Is an extension to javascript that allow it to process html syntax that would not be recognized otherwise (syntax sugar)
 obs.: even though it looks like markup html syntax, it's not. Under the table  jsx is transforming it in what
 javascript recognizes, and same to tsx and typescript.
 
 `.tsx` 
-is the extension typescript created to process files containing JSX.
+Is the extension typescript created to process files containing JSX.
 
 For example, a React component would be .tsx, but a file containing helper functions would be .ts.
 Previous to jsx, a .html and .js file would have to be provided to controllers and views.
 After jsx, a .html and a .jsx (or .tsx) can be provided.
 
-* example (not real typescript code):
+* Example (not real typescript code):
   * without .tsx:
     `let var: React.createElemet("p", {}, "Hello");`
   * with .tsx:

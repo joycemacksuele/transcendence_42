@@ -5,8 +5,9 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "typeRoots":["node_modules/@types", "src/types"], // added jaka, for npm install axios and npm install @types/axios
-    "types": ["react", "react-dom", "react-router-dom"], // added jaka, for Form Input Field
+    "typeRoots":["node_modules/@types", "src/types"], // for npm install axios and npm install @types/axios
+    "types": ["react", "react-dom", "react-router-dom", "jquery"], // for Form Input Field
+    "allowSyntheticDefaultImports": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
