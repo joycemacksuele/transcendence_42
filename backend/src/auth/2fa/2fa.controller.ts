@@ -3,7 +3,7 @@ import { Logger } from "@nestjs/common";
 import { TwoFactorAuthService } from "./2fa.service";
 import { JwtService } from "@nestjs/jwt";
 import { UserService } from "src/user/user.service";
-import { MyUser } from "src/user/user.entity";
+import { UserEntity } from "src/user/user.entity";
 
 @Controller('2fa')
 export class TwoFactorAuthController {

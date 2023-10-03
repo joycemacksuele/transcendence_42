@@ -20,10 +20,15 @@ import { AppService } from './app.service';
 import { DatabaseModule } from '../database/database.module';
 import { DatabaseController } from '../database/database.controller';
 
+import { UserModule } from '../user/user.module';
 import { UserController } from '../user/user.controller';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
-import { MyUser } from '../user/user.entity';
+import { UserEntity } from '../user/user.entity';
+
+import { ChatModule } from '../chat/chat.module';
+import { ChatService } from '../chat/chat.service';
+// import { ChatGateway } from '../chat/chat.gateway';
 
 // import { ExampleController } from '../tests/exampleButtons/example.controller';
 // import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
@@ -46,6 +51,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
 
+// To read: https://docs.nestjs.com/techniques/database
+
 @Module({
   imports: [ 
     ConfigModule.forRoot({
@@ -61,20 +68,22 @@ import { JwtService } from '@nestjs/jwt';
       username: 'transcendence_user',
       password: 'novogeslo1',
       database: 'mydb',
-      entities: [MyUser],
-      synchronize: true,
-    }),    
-    TypeOrmModule.forFeature([MyUser]),
+      entities: [UserEntity],// Add ChatEntity (and others) here?????????
+      synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
+    }),
+    TypeOrmModule.forFeature([UserEntity]),
+    UserModule,
     DatabaseModule,
     MailerModule,
     TwoFactorAuthModule,
+    ChatModule,
   ],
 
   controllers: [
       AppController,
       UserController,
       DatabaseController,
-      UserController,
+      // ChatGateway,
       AuthController,
       // TestButton,           // jaka, testing
       // ExampleController,    // jaka, testing
@@ -90,6 +99,7 @@ import { JwtService } from '@nestjs/jwt';
       AppService,
       UserService,
       UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
+      ChatService,
       AuthService,
       JwtService,
       TwoFactorAuthService,
