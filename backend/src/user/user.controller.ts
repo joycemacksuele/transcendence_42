@@ -20,15 +20,15 @@
     When working with asynchronous functions, Promises are used to handle operations that may take a
     longer time to complete.
 
-    The Promise<MyUser[]> is used to handle the result of an asynchronous function getAllUsers().
-    This function will fetch a collection of MyUser objects from a database.
+    The Promise<UserEntity[]> is used to handle the result of an asynchronous function getAllUsers().
+    This function will fetch a collection of User objects from a database.
 
-    A Promise<MyUser[]> allows the function to start retrieving the users asynchronously.
+    A Promise<UserEntity[]> allows the function to start retrieving the users asynchronously.
     The Promise object represents the eventual completion of retreiving.
-    The Promise will become an array of MyUser objects.
+    The Promise will become an array of User objects.
 
     The code that calls getAllUsers() can then handle the Promise using methods like .then() or await to
-    access the resolved value (the array of MyUser objects) when it becomes available.
+    access the resolved value (the array of User objects) when it becomes available.
     This way, the code can continue executing other tasks while waiting for the asynchronous operation
     to complete, improving the overall efficiency and responsiveness of the application.
 */
@@ -37,24 +37,24 @@
 import {Controller, Post, Get, Body, Logger, Delete, Param, HttpCode} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './create-user.dto';
-import { MyUser } from './user.entity';
+import { UserEntity } from './user.entity';
 
-@Controller('users')    // the name must correspond to the path in frontend function get in userList
+@Controller('users')// the name must correspond to the path in frontend function get in userList
 export class UserController {
 
   private readonly logger = new Logger(UserController.name);
 
-  constructor(  private readonly userService: UserService,
-                // public readonly userRepository: UserRepository // jaka: Controller should not interact with UserRepository
-              ) {
-      console.log('[BACKEND LOG] UserController constructor');
+  constructor(private readonly userService: UserService,
+    // public readonly userRepository: UserRepository // jaka: Controller should not interact with UserRepository
+  ) {
+    this.logger.log('[BACKEND LOG] UserController constructor');
   }
 
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    console.log('[BACKEND LOG] createUser');
+    this.logger.log('[BACKEND LOG] createUser');
     this.logger.log('[BACKEND LOG] Received user data:', JSON.stringify(createUserDto));
-    return this.userService.createUser(createUserDto);
+    return this.userService.createUser(createUserDto);// UserEntity
   }
   
   @Delete()
@@ -63,9 +63,9 @@ export class UserController {
 
     try {
       await this.userService.deleteAllUsers();
-      console.log('[BACKEND LOG] from nest user.controller: All users deleted.');
+      this.logger.log('[BACKEND LOG] from nest user.controller: All users deleted.');
     } catch (error) {
-      console.error('[BACKEND LOG] from nest user.controller: Error deleting all users.', error);
+      this.logger.error('[BACKEND LOG] from nest user.controller: Error deleting all users.', error);
     }
   }
 
@@ -77,16 +77,16 @@ export class UserController {
   // :id  is a route parameter, matching the request /users/:id
   // It needs the @Param decorator to be able to pass the arg to the function getUserById( id )'
   // @Get(':id')
-  // async findById(@Param('id') id: number): Promise<MyUser | undefined> {
-  //   console.log('[BACKEND LOG] findById');
+  // async findById(@Param('id') id: number): Promise<UserEntity | undefined> {
+  //   this.logger.log('[BACKEND LOG] findById');
   //   return this.userService.getUserById(id);
   // }
   
   
   // GET ALL USERS
   @Get('all')
-  async getAllUsers(): Promise<MyUser[]> {
-    console.log('[BACKEND LOG] getAllUsers');
+  async getAllUsers(): Promise<UserEntity[]> {
+    this.logger.log('[BACKEND LOG] getAllUsers');
     return (this.userService.getAllUsers());
   }
 

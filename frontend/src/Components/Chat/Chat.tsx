@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { Socket, io } from "socket.io-client";
+import $ from "jquery";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -21,6 +22,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Nav from 'react-bootstrap/Nav';
+import Modal from 'react-bootstrap/Modal';
 
 /*
     When should use React-Bootstrap vs Bootstrap alone?
@@ -44,17 +46,83 @@ import Nav from 'react-bootstrap/Nav';
     Extra extra large	 xxl	        ≥1400px
  */
 
+// export enum RoomType {
+//     PRIVATE,// max 2 people (DM)
+//     PUBLIC,// Can have > 2
+//     PROTECTED,//Can have > 2 AND has a password
+// }
+
 const Chat = () => {
 
-    const [privateChat, setPrivateChat] = useState(false);
+    ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
+
+    const [socket, setSocket] = useState<Socket | null>(null);
+
+    useEffect(() => {
+        const newSocket = io("http://localhost:3001");
+        setSocket(newSocket);
+        //disconnect socket to clean up
+        return () => {
+            console.log(`socket disconnecting`);
+            socket?.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {// setSocket func
+        socket?.on("connect", () => {
+            console.log(`connected to the backend -? socket id: ${socket.id}`);
+        });
+
+        //clean up
+        return () => {
+            console.log(`socket disconnecting AND removeAllListeners`);
+            socket?.removeAllListeners();
+            socket?.disconnect();
+        };
+    }, [socket]);
+
+    ////////////////////////////////////////////////////////////////////// CREATE CHAT ROOM
+
+    enum RoomType {
+        PRIVATE,// max 2 people (DM)
+        PUBLIC,// Can have > 2
+        PROTECTED,//Can have > 2 AND has a password
+    }
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const [roomName, setRoomName] = useState('');
+    const [roomType, setRoomType] = useState(RoomType.PUBLIC);
+    const [roomPassword, setRoomPassword] = useState('');
+    // const [roomMembers, setMembers] = useState('');
+
+    const createRoom = () => {
+        console.log("[FRONTNED LOG] createRoom called");
+        {/* TODO: roomType IS ALWAYS BEING SET TO Q ON THE BACKEND */}
+        socket?.emit("createRoom", {roomName: roomName, roomType: roomType, roomPassword: roomPassword});
+        setShow(false)
+        // - Dto to send in order to create a room:
+        // name
+        // type (RoomType -> private is a DM, public is just saved as public, protected will ask for a password)
+        // password (if type == protected)
+        
+        // - What does not need to be in the Dto because the backend has access to it:
+        // socket id: automatically created
+        // owner of the room (creator / current user)
+        // admin of the room (it's the owner (creator) when the room is created -> later on in another screen the admin will be able to add more admins to the room)
+        // PS.: members of the room will be added later on on the "members" colunm in the chat tab
+    };
+
+    ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
     const [message, setMessage] = useState('');
-    const [placeHolder, setPlaceHolder] = useState('Write a message...');
+    const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
 
-    const handleSend = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const sendMessage = async (event: React.FormEvent) => {
+        event.preventDefault();
         if (message.trim() == '') {
-            setPlaceHolder('Please write a message.');
+            setMessageBoxPlaceHolder('Please write a message.');
             return;
         }
         else {
@@ -62,9 +130,11 @@ const Chat = () => {
                 console.log('BEFORE SENDING TO BACKEND');// TODO I never see this log too I THINK FRONTEND IS NOT LOGGING
 
                 const response = await axios.post('http://localhost:3001/chat', { message });
+                // make this via socket?.emit("SendMessage");
+                // how to send data? send the message + userId to send the message to (or roomId?)
 
                 setMessage('');
-                setPlaceHolder('Write a message...');
+                setMessageBoxPlaceHolder('Write a message...');
 
                 // console.log(response.data); // Handle the response as needed
                 console.log('Response from the backend in JSON: ', JSON.stringify(response));// TODO I never see this log
@@ -74,27 +144,16 @@ const Chat = () => {
         }
     };
 
-    // Trying socket.io
-    // io.on('connection', (socket) => {
-    //     console.log('a user connected');
-    //     socket.on('chat message', (msg) => {
-    //         io.emit('chat message', msg);
-    //         console.log('message: ' + msg);
-    //     });
-    //     socket.on('disconnect', () => {
-    //         console.log('user disconnected');
-    //     });
-    // });
 
-    const [roomsTab, setRoomsTab] = useState(false);
-    const [recentTab, setRecentTab] = useState(false);
-    const cardClick = (content: tab) => {
-        if (tab == 'rooms') {
-            setRoomsTab(true)
-        } else {
-            setRecentTab(true)
-        }
-    };
+    // const [roomsTab, setRoomsTab] = useState(false);
+    // const [recentTab, setRecentTab] = useState(false);
+    // const cardClick = (content: tab) => {<Form.Group className="mb-3" controlId="roomForm.type">
+    //     if (tab == 'rooms') {
+    //         setRoomsTab(true)
+    //     } else {
+    //         setRecentTab(true)
+    //     }
+    // };
 
     return (
         <Container fluid className='h-100 w-100'>
@@ -146,9 +205,61 @@ const Chat = () => {
                             {/*</Card.Text>*/}
                         </Card.Body>
                     </Row>
-                    <Row className='h-25 align-items-center'>
+                    <Row className='h-25 align-items-center'>import $ from "jquery";
                         <Stack gap={2} className='align-self-center'>
-                            <Button variant="primary">Create room</Button>
+                            <Button variant="primary" type="submit" onClick={handleShow}>Create room</Button>
+                            <Modal show={show} onHide={handleClose}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Modal heading</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form>
+                                        <Form.Group className="mb-3" controlId="roomForm.name">
+                                            {/* <Form.Label>Room name</Form.Label> */}
+                                            <Form.Control
+                                                type="text"
+                                                placeholder="Room name"
+                                                autoFocus
+                                                onChange={(event) => setRoomName(event.target.value)}
+                                            />
+                                        </Form.Group>
+                                        <Form.Select
+                                            aria-label="Default select example"
+                                            id="roomForm.type"
+                                            className="mb-3"
+                                        >
+                                            <option>Choose the chat type</option>
+                                            {/* <option value="" selected="true"></option> */}
+                                            {/* TODO: THIS IS ALWAYS BEING SET TO Q ON THE BACKEND */}
+                                            <option value="form_1" onChange={() => setRoomType(RoomType.PUBLIC)}>Public</option>
+                                            <option value="form_2" onChange={() => setRoomType(RoomType.PRIVATE)}>Private (DM)</option>
+                                            <option value="form_3" onChange={() => setRoomType(RoomType.PROTECTED)}>Protected</option>
+                                        </Form.Select>
+                                        <Form.Group className="mb-3">
+                                            {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
+                                            <Form.Control
+                                                type="password"
+                                                placeholder="Protected chat password"
+                                                id="inputPassword5"
+                                                aria-describedby="passwordHelpBlock"
+                                                onChange={(event) => setRoomPassword(event.target.value)}
+                                            />
+                                            <Form.Text id="passwordHelpBlock" muted>
+                                                Your password must be 5-20 characters long, contain letters and numbers,
+                                                and must not contain spaces, special characters, or emoji.
+                                            </Form.Text>
+                                        </Form.Group>
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                    <Button variant="primary" onClick={createRoom}>
+                                        Save Changes
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
                         </Stack>
                     </Row>
                 </Col>
@@ -159,18 +270,19 @@ const Chat = () => {
                         chat
                     </Row>
                     <Row className='h-25 align-items-center'>
-                        {/* what is controlId ?????*/}
-                        <Form.Group value={message}>
+                        <Form.Group>
+                            {/* what is controlId ?????*/}
+                            {/* value={message} */}
                             <Stack direction="horizontal">
                                 <Form.Control
                                     as="textarea"
                                     className="me-2"
                                     type="text"
-                                    placeholder={placeHolder}
-                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder={messageBoxPlaceHolder}
+                                    onChange={(event) => setMessage(event.target.value)}
                                 />
                                 {/* TODO onClik erase the message from the form box*/}
-                                <Button variant="primary" type="submit" onClick={handleSend}>Send</Button>
+                                <Button variant="primary" type="submit" onClick={sendMessage}>Send</Button>
                             </Stack>
                         </Form.Group>
                     </Row>
