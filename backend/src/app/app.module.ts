@@ -26,6 +26,8 @@ import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { UserEntity } from '../user/user.entity';
 
+import { DuplicateService } from '../duplicate/duplicate.service';
+
 import { ChatModule } from '../chat/chat.module';
 import { ChatService } from '../chat/chat.service';
 // import { ChatGateway } from '../chat/chat.gateway';
@@ -98,6 +100,7 @@ import { JwtService } from '@nestjs/jwt';
   providers: [
       AppService,
       UserService,
+      DuplicateService,
       UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
       ChatService,
       AuthService,

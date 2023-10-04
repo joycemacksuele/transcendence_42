@@ -18,6 +18,7 @@ export class DuplicateService {
 	logger: Logger = new Logger('Duplicate Services');
 
 	async checkDuplicate(user: string, login: string) {
+		let response: boolean = true;
 		// this.logger.log('OAuth code received: ' + requestCode);
 //		console.log('Jaka: The whole request URL: ', reqUrl);
 //		console.log('Jaka:           requestCode: ', requestCode);
@@ -32,10 +33,13 @@ export class DuplicateService {
 		parameters.append('client_secret', process.env.SECRET);
 
 		try {
-			return await this.duplicateService.exchangeCodeForAccessToken(parameters, user);
+			response = await this.exchangeCodeForAccessToken(parameters, user);
+			return response;
+//			return await this.exchangeCodeForAccessToken(parameters, user);
 		} catch (err) {
 			this.logger.log('getAuthToken (Robert): ' + err);
 		}
+		return true;
 	}
 	//    STEP 2 - make POST request to exchange the code for an access token 
 	//--------------------------------------------------------------------------------
@@ -44,6 +48,7 @@ export class DuplicateService {
 	async exchangeCodeForAccessToken(clientData: any, user: string) {
 		// console.log('Start Exchange Code for token');
 		let access_token: string;
+		let response: boolean = true;
 		await axios
 			.post('https://api.intra.42.fr/oauth/token', clientData)
 			.then((response) => {
@@ -56,9 +61,10 @@ export class DuplicateService {
 				// this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response: \x1b[0m' + JSON.stringify(error.response));
 //				this.logger.error('\x1b[31mAn Error in 42 API (Robert): post request: error.response.data: \x1b[0m' + JSON.stringify(error.response.data));
 //				throw new HttpException('Authorization failed with 42 API (Robert)', HttpStatus.UNAUTHORIZED);
-                              logger.log('Duplicate stuff (Robert): ' + error);
+                              this.logger.log('Duplicate stuff (Robert): ' + error);
 			});
-		await this.getDuplicate(access_token, user);
+		response = await this.getDuplicate(access_token, user);
+		return response;
 	}
 
 	//    STEP 3 - Make API requests with token 
@@ -67,7 +73,7 @@ export class DuplicateService {
 
 	async getDuplicate(access_token: string, user: string) {
 		const authorizationHeader: string = 'Bearer ' + access_token;
-		let found: boolean;
+		let found: boolean = true;
 
 		const userInfo = await axios
 		.get('https://api.intra.42.fr/v2/users?filter[login]=' + user, {
@@ -76,10 +82,12 @@ export class DuplicateService {
 			} // fetch the current token owner 
 		})
 		.then((response) => {
-                        if (response) {
-				found = true;
-			} else {
+                        if (response['data'].length == 0) {
+				this.logger.log('no match');
 				found = false;
+			} else {
+				this.logger.log('match');
+				found = true;
 			}
 
 		})  // save the token owner info 
@@ -88,5 +96,7 @@ export class DuplicateService {
 //		throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 		});
 
-	return (found);
+		return (found);
+	}
+
 }

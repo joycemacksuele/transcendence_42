@@ -9,7 +9,10 @@ import { DuplicateService } from '../../duplicate/duplicate.service';
 @Controller('manage_curr_user_data')
 export class StoreCurrUserToDataBs {
 	// InsertUserDto class defined inside the TestController file
-	constructor(private readonly userService: UserService) {
+	constructor(
+		private readonly userService: UserService,
+		private readonly duplicateService: DuplicateService
+	) {
   }
 
 
@@ -98,16 +101,19 @@ export class StoreCurrUserToDataBs {
       const user = await this.userService.getUserByLoginName(data.loginName);
       // console.log('Jaka, found profile name: ', user.profileName  );
       if (!user) {
-        return {message: 'User with this loginName not found'};
+	throw new HttpException('User with this loginName not found', HttpStatus.I_AM_A_TEAPOT);
+//        return {message: 'User with this loginName not found'};
       }
       const profile = await this.userService.getUserByProfileName(data.profileName);
       if (profile) {
-        return {message: 'User with this profileName already exists'};
+	throw new HttpException('User with this profileName already exists', HttpStatus.I_AM_A_TEAPOT);
+//        return {message: 'User with this profileName already exists'};
       }
 
       const duplicate = await this.duplicateService.checkDuplicate(data.profileName, data.loginName);
       if (duplicate) {
-        return {message: 'Another user with this profileName exists in Intra'};
+	throw new HttpException('Another user with this profileName exists in Intra', HttpStatus.I_AM_A_TEAPOT);
+//        return {message: 'Another user with this profileName exists in Intra'};
       }
 
       user.profileName = data.profileName; // updating the name

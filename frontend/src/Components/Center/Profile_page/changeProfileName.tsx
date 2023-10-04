@@ -37,7 +37,7 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
     
     try {
       // const loginName =
-      const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name', { profileName, loginName });
+      const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name', { profileName, loginName} , {validateStatus: () => true });
 
       setProfileName(''); // Resetting the inout field
       setErrorMessage('');
@@ -49,21 +49,31 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
       console.log('Jaka: from ChangeProfileName, response...profileName: ', data.profileName );
       const newProfileName = data.profileName;
       
-      // Update Local Storage
-      localStorage.setItem('profileName', newProfileName);
+      if (response.data.statusCode == 418) {
+	setProfileName('');
+        setErrorMessage(response.data.message);
+      } else if (response.data.statusCode < 200 || response.data.statusCode >= 300) {
+	setProfileName('');
+        setErrorMessage(response.data.message);
+      } else {
+        // Update Local Storage
+        localStorage.setItem('profileName', newProfileName);
 
-      /*
-        Update the userContext:
-          ...currUserData: ...is a 'spread operator'm it creates a shallow copy of the currUserData object.
-      */
-      if (currUserData) {
-        const updatedUserData = { ...currUserData, profileName: newProfileName  };
-        updateContext(updatedUserData);
+        /*
+          Update the userContext:
+            ...currUserData: ...is a 'spread operator'm it creates a shallow copy of the currUserData object.
+        */
+        if (currUserData) {
+          const updatedUserData = { ...currUserData, profileName: newProfileName  };
+          updateContext(updatedUserData);
+        }
       }
 
-
     } catch (error) {
-      console.error(error);
+      setProfileName(''); // Resetting the inout field
+      setErrorMessage(error.message);
+ 
+      console.error(error.message);
     }
   };
 
@@ -79,9 +89,9 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
           /> &nbsp; 
 
           <button type="submit">Submit</button>
-            { !profileName && <p style={{ color: 'red' }}> { errorMessage } </p> }
+            { !profileName && errorMessage && <p style={{ color: 'red' }}> { errorMessage } </p> }
             {  profileName && <p style={{ color: 'orange' }}>You are typing ...</p>} 
-            { !profileName && <p style={{ color: 'green' }}> { OkMessage } </p> } 
+            { !profileName && !errorMessage && <p style={{ color: 'green' }}> { OkMessage } </p> } 
         </form>
       </div>
   );
