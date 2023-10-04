@@ -3,7 +3,7 @@ import { Controller, Post, Get, HttpStatus, HttpException, Body, Query } from '@
 // import { DummyUserService } from './dummyUsers.service';
 import { UserService } from '../../user/user.service';
 import { UserEntity } from '../../user/user.entity';
-
+import { DuplicateService } from '../../duplicate/duplicate.service';
 
 
 @Controller('manage_curr_user_data')
@@ -98,7 +98,16 @@ export class StoreCurrUserToDataBs {
       const user = await this.userService.getUserByLoginName(data.loginName);
       // console.log('Jaka, found profile name: ', user.profileName  );
       if (!user) {
-        return {message: 'User with this profileName not found'};
+        return {message: 'User with this loginName not found'};
+      }
+      const profile = await this.userService.getUserByProfileName(data.profileName);
+      if (profile) {
+        return {message: 'User with this profileName already exists'};
+      }
+
+      const duplicate = await this.duplicateService.checkDuplicate(data.profileName, data.loginName);
+      if (duplicate) {
+        return {message: 'Another user with this profileName exists in Intra'};
       }
 
       user.profileName = data.profileName; // updating the name
