@@ -9,8 +9,8 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
 
-import '../../css/Chat.css'
-import avatarImage from '../../images/avatar_default.png'
+import '../../../css/Chat.css'
+// import avatarImage from '../../../images/avatar_default.png'
 
 // Importing bootstrap and other modules
 import Container from 'react-bootstrap/Container';
@@ -25,16 +25,6 @@ import Nav from 'react-bootstrap/Nav';
 import Modal from 'react-bootstrap/Modal';
 
 /*
-    When should use React-Bootstrap vs Bootstrap alone?
-
-    Whether you should use React-Bootstrap or simply Bootstrap depends on what you want, need, or expect from
-    your project, as well as how hands-on you want to be in its creation. Using the React-Bootstrap integration
-    saves you time because the JavaScript elements are already there, wrapped in neat little React-shaped bows.
-    If you opt to use Bootstrap as/is, you should be well-versed in JavaScript and JavaScript plug-ins, because
-    you’ll need to work with those components on your own.
- */
-
-/*
     Available breakpoints
     Bootstrap includes six default breakpoints, sometimes referred to as grid tiers, for building responsively.
     Breakpoint     	     Class infix	Dimensions
@@ -46,40 +36,62 @@ import Modal from 'react-bootstrap/Modal';
     Extra extra large	 xxl	        ≥1400px
  */
 
-// export enum RoomType {
-//     PRIVATE,// max 2 people (DM)
-//     PUBLIC,// Can have > 2
-//     PROTECTED,//Can have > 2 AND has a password
-// }
-
 const Chat = () => {
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
 
-    const [socket, setSocket] = useState<Socket | null>(null);
+    /*
+        function useEffect(effect: EffectCallback, deps?: DependencyList): void;
+            setup:
+                - The function with your Effect’s logic.
+                - Your setup function may also optionally return a cleanup function.
+                - When your component is added to the DOM, React will run your setup function.
+                - After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values.
+                - After your component is removed from the DOM, React will run your cleanup function.
+            deps (optional):
+                - The list of all reactive values referenced inside of the setup code.
+                - Reactive values include props, state, and all the variables and functions declared directly inside your component body.
+                - React will compare each dependency with its previous value using the Object.is comparison.
+                - If you omit this argument, your Effect will re-run after every re-render of the component.
 
+    */
+
+    const [socket, setSocket] = useState<Socket>();
+
+    // useEffect without dependencies
+    // When your component is added to the DOM, React will run your setup function
     useEffect(() => {
-        const newSocket = io("http://localhost:3001");
+        const newSocket = io("http://localhost:3001");// TODO GET FROM THE .ENV OR MACRO
         setSocket(newSocket);
-        //disconnect socket to clean up
+        console.log(`[Chat Component] socket created`);
+
+        newSocket?.on("connect", () => {
+            console.log(`[Chat Component] socket connected -> socket id: ${newSocket?.id}`);
+        });
+
+        // When your component is removed from the DOM, React will run your clean up function
         return () => {
-            console.log(`socket disconnecting`);
+            // console.log(`socket disconnected AND removeAllListeners`);
+            // socket.removeAllListeners();
             socket?.disconnect();
+            console.log(`[Chat Component] socket disconnected`);
         };
     }, []);
 
-    useEffect(() => {// setSocket func
-        socket?.on("connect", () => {
-            console.log(`connected to the backend -? socket id: ${socket.id}`);
-        });
+    // // useEffect with socket as a dependency
+    // useEffect(() => {
+    //     socket?.on("connect", () => {
+    //         console.log(`socket connected -> socket id: ${socket?.id}`);
+    //     });
+    //     // After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values
+    //     return () => {
+    //         // console.log(`socket disconnected AND removeAllListeners`);
+    //         // socket.removeAllListeners();
+    //         socket?.disconnect();
+    //         console.log(`socket disconnected`);
+    //     };
+    // }, [socket]);
 
-        //clean up
-        return () => {
-            console.log(`socket disconnecting AND removeAllListeners`);
-            socket?.removeAllListeners();
-            socket?.disconnect();
-        };
-    }, [socket]);
 
     ////////////////////////////////////////////////////////////////////// CREATE CHAT ROOM
 
@@ -99,8 +111,8 @@ const Chat = () => {
 
     const createRoom = () => {
         console.log("[FRONTNED LOG] createRoom called");
-        {/* TODO: roomType IS ALWAYS BEING SET TO Q ON THE BACKEND */}
-        socket?.emit("createRoom", {roomName: roomName, roomType: roomType, roomPassword: roomPassword});
+        {/* TODO: roomType IS ALWAYS BEING SET TO 1 ON THE BACKEND */}
+        socket.emit("createRoom", {roomName: roomName, roomType: roomType, roomPassword: roomPassword});
         setShow(false)
         // - Dto to send in order to create a room:
         // name
@@ -130,7 +142,7 @@ const Chat = () => {
                 console.log('BEFORE SENDING TO BACKEND');// TODO I never see this log too I THINK FRONTEND IS NOT LOGGING
 
                 const response = await axios.post('http://localhost:3001/chat', { message });
-                // make this via socket?.emit("SendMessage");
+                // make this via socket.emit("SendMessage");
                 // how to send data? send the message + userId to send the message to (or roomId?)
 
                 setMessage('');

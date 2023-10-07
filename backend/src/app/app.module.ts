@@ -4,12 +4,6 @@
   Path must match, but it can be without .ts suffix
 */
 
-/*
-  TypeOrm
-  TypeOrm is an Object Relational Mapper (ORM) typescript package that allows you to use both SQL
-  such as PostgreSQL, MySQL and NoSQL databases. More about typeorm is in its documentation.
-*/
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -54,6 +48,11 @@ import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
 
 // To read: https://docs.nestjs.com/techniques/database
+/*
+  TypeOrm
+  TypeOrm is an Object Relational Mapper (ORM) typescript package that allows you to use both SQL
+  such as PostgreSQL, MySQL and NoSQL databases. More about typeorm is in its documentation.
+*/
 
 @Module({
   imports: [ 
