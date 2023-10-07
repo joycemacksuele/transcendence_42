@@ -5,26 +5,18 @@ import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
-// - module is a configuration/header file
-//
-// - controller/gateway (has endpoints to receive requests from frontend) ->
-// service (application logic) ->
-// - repository (comunicates with the database or any service that contains data - its an entry point to the dabatabe - it
-// also creates a new entry to the already existend table (folowing the table model)) - repository can also use the Entity to automatically
-// map the database table to the specific entity(ies)
-//
-// - Entity object is a representation of ONE entry of the table on the database -> it can be used by the repository to .... or the service to ...
-// Entity tranforms an entry/row of a table in code that we can access
-// - dto is a data layer that we receive from the frontend or pass to the frontend -> it aggregates data for the response or to receive in a request
-
-
-// websocket allow the browser sessions to be asynchronous (i.e.: 2 or more users and see the data in real time - no refreshing needed)
-// each socket room should have its own entity/table so we can have data persistency since when the socket is closed, the data is lost.
-
-
-// frontend request (dato - request-dto) -> controller (dato - request-dto) -> service (request-dto) - repository (gets data) -> service (entities -> respose-dto) -> controler (respose-dto) -> frontend (objeto)
+// Websockets tips:
+//      Websocket allow the browser sessions to be asynchronous (i.e.: 2 or more users and see the data in real time - no refreshing needed)
+//      Each socket room should have its own entity/table so we can have data persistency since when the socket is closed, the data is lost.
 
 @WebSocketGateway({cors: {origin: '*'}})//!DEV
+// something like ????:
+// cors: {
+//   origin: process.env.BACKEND,
+//   methods: ["GET", "POST"],
+//   allowedHeaders: ["instant-chat-header"],
+//   credentials: true,
+// }
 export class ChatGateway {
   private readonly logger = new Logger(ChatGateway.name);
 
