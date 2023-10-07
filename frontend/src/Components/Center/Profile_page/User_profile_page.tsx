@@ -64,8 +64,8 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 							</div>
 						</Row>
 
-						<Row className='h-25 align-items-center'>
-						</Row>
+						{/* <Row className='h-25 align-items-center'> */}
+						{/* </Row> */}
 					</Col>
 
 					<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 mx-2 rounded'>
@@ -86,8 +86,8 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 							</div>
 						</Row>
 
-						<Row className='h-25 align-items-center'>
-						</Row>
+						{/* <Row className='h-25 align-items-center'> */}
+						{/* </Row> */}
 					</Col>
 				</Row>
 		</Container>

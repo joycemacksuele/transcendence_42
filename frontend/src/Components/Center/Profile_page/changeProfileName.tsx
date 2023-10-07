@@ -11,7 +11,7 @@ type ContextProps = {
 
 const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
-  const myMargin = { margin: '5% 0 5% 0', padding: '2%', backgroundColor: 'beige', width: '95%', color: 'black'};
+  const myMargin = { margin: '1% 0 1% 0', padding: '2%', backgroundColor: 'beige', width: '100%', color: 'black'};
 
 
   // Get loginName from the 'global' context struct 
