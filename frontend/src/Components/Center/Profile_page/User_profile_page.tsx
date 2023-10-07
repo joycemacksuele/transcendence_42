@@ -55,14 +55,14 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 					{/* Column 1*/}
 					{/* <Col className='bg-primary col-md-8'> */}
 					<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 rounded'>
-						<Row>
+						{/* <Row> */}
 							<div id="user-page">
 								<p>USER PROFILE PAGE</p>
 								<ChangeProfileName updateContext={ updateContext } />
 								<ImageUpload updateContext={ updateContext }/>
 								{/* <JustTest/> */}
 							</div>
-						</Row>
+						{/* </Row> */}
 
 						{/* <Row className='h-25 align-items-center'> */}
 						{/* </Row> */}
@@ -79,12 +79,12 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
 					<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 rounded'>
 						{/* <Row className='h-75'> */}
-						<Row>
+						{/* <Row> */}
 							<div id="user-page">
 								<p>LIST OF USERS</p>
 								<UsersList />
 							</div>
-						</Row>
+						{/* </Row> */}
 
 						{/* <Row className='h-25 align-items-center'> */}
 						{/* </Row> */}
