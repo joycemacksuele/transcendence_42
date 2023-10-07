@@ -4,12 +4,6 @@
   Path must match, but it can be without .ts suffix
 */
 
-/*
-  TypeOrm
-  TypeOrm is an Object Relational Mapper (ORM) typescript package that allows you to use both SQL
-  such as PostgreSQL, MySQL and NoSQL databases. More about typeorm is in its documentation.
-*/
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -25,6 +19,8 @@ import { UserController } from '../user/user.controller';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { UserEntity } from '../user/user.entity';
+
+import { DuplicateService } from '../duplicate/duplicate.service';
 
 import { ChatModule } from '../chat/chat.module';
 import { ChatService } from '../chat/chat.service';
@@ -52,6 +48,11 @@ import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
 
 // To read: https://docs.nestjs.com/techniques/database
+/*
+  TypeOrm
+  TypeOrm is an Object Relational Mapper (ORM) typescript package that allows you to use both SQL
+  such as PostgreSQL, MySQL and NoSQL databases. More about typeorm is in its documentation.
+*/
 
 @Module({
   imports: [ 
@@ -98,6 +99,7 @@ import { JwtService } from '@nestjs/jwt';
   providers: [
       AppService,
       UserService,
+      DuplicateService,
       UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
       ChatService,
       AuthService,
