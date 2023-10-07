@@ -15,7 +15,7 @@ interface User {
 const myStyle = {
 	padding: "2%",
 	width: "100%",
-	backgroundColor: "pink",
+	backgroundColor: "beige",
 	color: "black",
 };
 
@@ -23,7 +23,7 @@ const myStyle = {
 const UsersList: React.FC = () => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [displayList, setDisplayList] = useState(true);
-
+	
 
 	// const handleInsertDataClick = () => {
 	// 	insertDummyUsers();
@@ -41,16 +41,22 @@ const UsersList: React.FC = () => {
 		}
 	};
 
-	useEffect(() => {
-		fetchUsers();		// eternal loop
+	useEffect(() => {		
+		// Check if dummies have been inserted before using local storage
+		if (!localStorage.getItem("dummiesInserted")) {
+			insertDummyUsers();
+			// Set a flag in local storage to indicate dummies have been inserted
+			localStorage.setItem("dummiesInserted", "true");
+		}
+		fetchUsers();
 	}, []);
 
-	const handleClick = () => {
-		if (!displayList) {
-			fetchUsers();
-		}
-		setDisplayList(!displayList);
-	};
+	// const handleClick = () => {
+	// 	if (!displayList) {
+	// 		fetchUsers();
+	// 	}
+	// 	setDisplayList(!displayList);
+	// };
 
 	// const deleteAllUsers = async () => {
 	// 	try {
