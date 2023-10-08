@@ -29,11 +29,11 @@ export class DummyUsersController {
 
       // Dummy user data (for testing)
       const dummyUsers: UserEntity[] = [
-        { loginName: 'dummy 1', profileName: 'default name 1', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 5, 33]},
-        { loginName: 'dummy 2', profileName: 'default name 2', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 33]},
-        { loginName: 'dummy 3', profileName: 'default name 3', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default', roomsCreated: [5, 33]},
-        { loginName: 'dummy 4', profileName: 'default name 4', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 1, 2]},
-        { loginName: 'dummy 5', profileName: 'default name 5', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 5]},
+        { loginName: 'dummy1', profileName: 'dummy', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', onlineStatus: false, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 5, 33]},
+        { loginName: 'dummy2', profileName: 'dummy', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', onlineStatus: false, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 33]},
+        { loginName: 'dummy3', profileName: 'dummy', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', onlineStatus: false, tfaEnabled: true, tfaCode: 'default', roomsCreated: [5, 33]},
+        { loginName: 'dummy4', profileName: 'dummy', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', onlineStatus: false, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 1, 2]},
+        { loginName: 'dummy5', profileName: 'dummy', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', onlineStatus: false, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 5]},
       ];
 
       // Insert the dummy users into the database
@@ -47,4 +47,6 @@ export class DummyUsersController {
       throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
 }
