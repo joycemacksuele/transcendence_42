@@ -25,6 +25,8 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
+  onlineStatus: boolean;
+
   tfaEnabled: boolean;
 
   @IsString()
