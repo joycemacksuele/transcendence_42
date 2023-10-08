@@ -45,6 +45,18 @@ export class UserService {
     }
   }
 
+  // async deleteDummies(): Promise<void> {
+  //   console.log('[BACKEND LOG] UserService.deleteDummies');
+  //   try {
+  //     await this.userRepository.delete({ profileName: 'dummy' });
+  //     console.log('[BACKEND LOG] from nest user.service: All dummy users deleted.');
+  //   }
+  //   catch (error) {
+  //     console.error('[BACKEND LOG] from nest user.service: Error deleting dummy users.', error);
+  //     // throw new InternalServerErrorException('Unable to delete dummy users');
+  //   }
+  // }
+
   async getAllUsers(): Promise<UserEntity[]> {
     console.log('[BACKEND LOG] UserService.getAllUsers');
     return this.userRepository.find();
