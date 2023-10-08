@@ -49,14 +49,14 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
 
 	return (
-		<Container fluid className='h-100 w-100'>
+		<Container fluid>
 				<Row className='profile-page' text='dark'>
 					{/* <p>Top row</p> */}
 					{/* Column 1*/}
 					{/* <Col className='bg-primary col-md-8'> */}
-					<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 rounded'>
+					<Col className='bg-custom text-black justify-content-left align-items-left p-3 rounded'>
 						{/* <Row> */}
-							<div id="user-page">
+							<div>
 								<p>USER PROFILE PAGE</p>
 								<ChangeProfileName updateContext={ updateContext } />
 								<ImageUpload updateContext={ updateContext }/>
@@ -68,7 +68,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 						{/* </Row> */}
 					</Col>
 
-					<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 mx-2 rounded'>
+					<Col className='bg-custom text-black justify-content-left align-items-left p-3 mx-2 rounded'>
 							{/* <Row className='h-75'> */}
 							<Row>
 								<p>MY STATISTICS</p>
@@ -77,10 +77,10 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 							</Row> */}
 					</Col>
 
-					<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 rounded'>
+					<Col className='bg-custom text-black justify-content-left align-items-left p-3 rounded'>
 						{/* <Row className='h-75'> */}
 						{/* <Row> */}
-							<div id="user-page">
+							<div>
 								<p>LIST OF USERS</p>
 								<UsersList />
 							</div>
@@ -97,7 +97,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
 
 	// return (
-	//   <div id="user-page">
+	//   <div>
 	//     <p>USER PROFILE PAGE</p>
 	//     <ChangeProfileName updateContext={ updateContext } />
 	//     <ImageUpload updateContext={ updateContext }/>
