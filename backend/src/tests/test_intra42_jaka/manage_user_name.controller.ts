@@ -50,6 +50,7 @@ export class StoreCurrUserToDataBs {
                                           profileImage: string,
                                           intraId: number,
                                           email: string,
+                                          onlineStatus: boolean,
                                           tfaEnabled: boolean,
                                           tfaCode: string,
                                           hashedSecret: string,
@@ -70,6 +71,7 @@ export class StoreCurrUserToDataBs {
           profileImage: data.loginImage,
           intraId: 0,                             // todo jaka: change back, and obtain the real intraId
           email: data.email,
+          onlineStatus: true,
           tfaEnabled: false,
           tfaCode: 'default',
           hashedSecret: 'dummy hashed secret',  // todo jaka: change back, and obtain the real hashedSecret
