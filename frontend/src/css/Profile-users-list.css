@@ -1,0 +1,55 @@
+
+
+button#make-friend {
+    background-color: green;
+    margin: 0 0 0 0;
+    padding: 1%;
+	color: white;
+    border-radius: 5%;
+}
+
+#make-friend {
+	font-size: 10px;
+}
+/* #list-users li {
+    padding: 0 0 2% 0;
+} */
+/* The above is old, before adding span colomns */
+
+
+.list-users {
+    width: 100%;
+    list-style-type: decimal;
+    counter-reset: list-counter;
+}
+
+.list-users > li {
+    display: flex;
+    justify-content: space-between;
+}
+
+.list-users > li:not(.column-titles) {
+    counter-increment: list-counter;
+}
+
+.list-users > li:not(.column-titles)::before {
+    content: counter(list-counter) ". ";
+    margin-right: 10px;
+}
+
+.list-users > li > span {
+	flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    padding: 5px;
+    text-align: center;
+	border: none;
+	border-bottom: 1px solid #ddd;
+}
+
+.column-titles > span {
+    font-weight: bold;
+    background-color: rgb(212, 212, 186);
+}
