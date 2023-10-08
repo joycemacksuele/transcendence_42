@@ -56,11 +56,17 @@ export class UserController {
     this.logger.log('[BACKEND LOG] Received user data:', JSON.stringify(createUserDto));
     return this.userService.createUser(createUserDto);// UserEntity
   }
+
+    // GET ALL USERS
+    @Get('all')
+    async getAllUsers(): Promise<UserEntity[]> {
+      this.logger.log('[BACKEND LOG] getAllUsers');
+      return (this.userService.getAllUsers());
+    }
   
   @Delete()
   async deleteAllUsers(): Promise<void> {
     console.log('DELETE Al lUsers');
-
     try {
       await this.userService.deleteAllUsers();
       this.logger.log('[BACKEND LOG] from nest user.controller: All users deleted.');
@@ -69,6 +75,10 @@ export class UserController {
     }
   }
 
+  // @Post('delete-dummies')
+  // async deleteDummies(): Promise<void> {
+  //   return this.userService.deleteDummies();
+  // }
 
   //////////////////////////////////////////////////////////////////////////
   // UserRepository ///////////////////////////////////////////////////////
@@ -81,14 +91,7 @@ export class UserController {
   //   this.logger.log('[BACKEND LOG] findById');
   //   return this.userService.getUserById(id);
   // }
-  
-  
-  // GET ALL USERS
-  @Get('all')
-  async getAllUsers(): Promise<UserEntity[]> {
-    this.logger.log('[BACKEND LOG] getAllUsers');
-    return (this.userService.getAllUsers());
-  }
+
 
 }
 

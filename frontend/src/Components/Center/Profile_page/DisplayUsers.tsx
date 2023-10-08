@@ -3,6 +3,9 @@ import axios from "axios";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 // import { MyUser }
 
+// Custom CSS
+import '../../../css/Profile-users-list.css'
+
 axios.defaults.withCredentials = true;
 
 interface User {
@@ -10,11 +13,12 @@ interface User {
 	name: string;
 	loginName: string;
 	profileName: string;
+	onlineStatus: boolean;
 }
 
 const myStyle = {
-	padding: "2%",
-	width: "100%",
+	// padding: "2%",
+	// width: "100%",
 	backgroundColor: "beige",
 	color: "black",
 };
@@ -58,17 +62,18 @@ const UsersList: React.FC = () => {
 	// 	setDisplayList(!displayList);
 	// };
 
-	// const deleteAllUsers = async () => {
-	// 	try {
-	// 		await axios.delete("http://localhost:3001/users");
-	// 	} catch (error) {
-	// 		console.error("Error deleting all users: ", error);
-	// 	}
-	// };
+	const deleteUsers = async () => {
+		try {
+			await axios.delete("http://localhost:3001/users/");
+			console.log("Dummies deleted successfully");
+		} catch (error) {
+			console.error("Error deleting all users: ", error);
+		}
+	};
 
-	// const handleClickDeleteUsers = () => {
-	// 	deleteAllUsers();
-	// };
+	const handleClickDeleteUsers = () => {
+		deleteUsers();
+	};
 
 	return (
 		<div style={myStyle}>
@@ -82,17 +87,35 @@ const UsersList: React.FC = () => {
 			{/* Button to trigger fetching the users */}
 			{displayList && ( // Only render the list if showList is true
 				<div>
-					<h4>Users in the database:</h4>
-					<ol>
+					{/* <h4>Users in the database:</h4> */}
+					<ol className="list-users">
+						<li className="column-titles">
+							<span>Name</span>
+							<span>Online</span>
+							<span></span>
+						</li>
 						{users.map((user) => (
 							// <li key={user.id}> ... {user.name} </li>
-							<li key={user.id}> &nbsp; <b>intra:</b> {user.loginName}, &nbsp;&nbsp; <b>profile: </b> {user.profileName} </li>
+							<li key={user.id}>
+								<span>
+								{/* <b>intra:</b> {user.loginName}, &nbsp;&nbsp; */}
+									{user.profileName}
+								</span>
+								<span>
+									{/* yes/no */}
+									{/* {user.onlineStatus} */}
+									{user.onlineStatus ? "Yes" : "No"}
+								</span>
+								<span>
+									<button id="make-friend">Make friend</button>
+								</span>
+							</li>
 						))}
 					</ol>
 				</div>
 			)}
 
-			{/* <button onClick={handleClickDeleteUsers}>Delete all users</button> */}
+			<button onClick={handleClickDeleteUsers}>Delete users</button>
 		</div>
 	);
 };
