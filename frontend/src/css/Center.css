@@ -39,6 +39,12 @@
 /* CUSTOM BOOTSTRAP ADDED */
 .bg-custom {
 	background: rgb(255, 253, 239);
+	/* background: rgb(204, 200, 175); */
 	border: rgb(184, 183, 183) solid 1px;
 	margin: 1%;
+}
+
+button#make-friend {
+	background-color: rgb(41, 112, 38);
+	padding: 0 0 0 0;
 }

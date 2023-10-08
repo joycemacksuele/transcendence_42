@@ -42,6 +42,9 @@ export class UserEntity {// Joyce -> I named it from MyUser to UserEntity becaus
 	@Column({default: 'default some email'})
 	email: string;
 
+	@Column({default: false})
+	onlineStatus: boolean;
+
 	@Column()
 	hashedSecret: string;
 
