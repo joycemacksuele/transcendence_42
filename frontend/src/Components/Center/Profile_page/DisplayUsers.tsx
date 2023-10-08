@@ -82,6 +82,7 @@ const UsersList: React.FC = () => {
 			{/* Button to trigger fetching the users */}
 			{displayList && ( // Only render the list if showList is true
 				<div>
+					{/*TODO: This should be called "Friends" as by the evaluation sheet*/}
 					<h4>Users in the database:</h4>
 					<ol>
 						{users.map((user) => (
