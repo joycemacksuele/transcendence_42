@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Col, Row } from 'react-bootstrap';
-
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 // import { MyUser }
 
@@ -18,12 +16,12 @@ interface User {
 	onlineStatus: boolean;
 }
 
-// const myStyle = {
-// 	// padding: "2%",
-// 	// width: "100%",
-// 	backgroundColor: "beige",
-// 	color: "black",
-// };
+const myStyle = {
+	// padding: "2%",
+	// width: "100%",
+	backgroundColor: "beige",
+	color: "black",
+};
 
 
 const UsersList: React.FC = () => {
@@ -77,77 +75,52 @@ const UsersList: React.FC = () => {
 		deleteUsers();
 	};
 
-	const handleClickPlaceholder = () => {
-		;
-	};
-
-
 	return (
-		<Container fluid className='h-100 w-100'>
+		<div style={myStyle}>
+			{/* <button onClick={handleInsertDataClick}>Create Dummy Users</button> */}
+			&nbsp;
 
-			<Row className='profile-page' text='dark'>
+			{/* <button onClick={handleClick}>
+				{!displayList ? "Show Dummy Users" : "Hide Users"}
+			</button>{" "} */}
 
-				{/* <button onClick={handleInsertDataClick}>Create Dummy Users</button> */}
-				&nbsp;
-
-				{/* <button onClick={handleClick}>
-					{!displayList ? "Show Dummy Users" : "Hide Users"}
-				</button>{" "} */}
-
-				<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 rounded'>
-					{/* Button to trigger fetching the users */}
-					{displayList && ( // Only render the list if showList is true
+			{/* Button to trigger fetching the users */}
+			{displayList && ( // Only render the list if showList is true
+				<div>
+					{/* <h4>Users in the database:</h4> */}
 					<ol className="list-users">
-						<h4>Users in the database:</h4>
 						<li className="column-titles">
 							<span>Intra</span>
 							<span>Name</span>
 							<span>Online</span>
+							{/* <span></span> */}
 						</li>
 						{users.map((user) => (
+							// <li key={user.id}> ... {user.name} </li>
 							<li key={user.id}>
 								<span>
 									{user.loginName}
 								</span>
 								<span>
-								<a href="" className="list-user-link">
+								{/* <b>intra:</b> {user.loginName}, &nbsp;&nbsp; */}
 									{user.profileName}
-								</a>
 								</span>
 								<span>
+									{/* yes/no */}
+									{/* {user.onlineStatus} */}
 									{user.onlineStatus ? "Yes" : "No"}
 								</span>
+								{/* <span>
+									<button id="make-friend">Make friend</button>
+								</span> */}
 							</li>
 						))}
-						<button onClick={handleClickDeleteUsers}>Delete users</button>
 					</ol>
-					)}
-				</Col>
-		
-				<Col className='bg-custom text-black p-3 rounded'>
-					<Row className="mb-3">
-						<Col>
-							<h4>PROFILE OF THIS USER</h4>
-						</Col>
-					</Row>
-					<Row className="mb-5">
-						<Col><b>Image:</b> Dummy</Col>
-						<Col><b>Name:</b> Dummy</Col>
-					</Row>
-					<Row className="mb-5">
-						<Col><b>Best result:</b> 103</Col>
-						<Col><b>Games played:</b> 16</Col>
-					</Row>
-					<Row className="mb-5">
-						<Col>
-							<button onClick={handleClickPlaceholder}>Private Chat</button></Col>
-						<Col>
-							<button onClick={handleClickPlaceholder}>Make friend</button></Col>
-					</Row>
-				</Col>
+				</div>
+			)}
 
-			</Row>
-		</Container>
+			<button onClick={handleClickDeleteUsers}>Delete users</button>
+		</div>
 	);
 };
 
