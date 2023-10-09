@@ -10,6 +10,7 @@ export enum RoomType {
 }
 
 export class CreateChatDto {
+
     @IsNotEmpty({ message: 'Required' })
     @IsString()
     @MinLength(2)
@@ -26,12 +27,13 @@ export class CreateChatDto {
     roomType: RoomType;
 
     // Only has a password if its a type PROTECTED
+    // it has to be hashed before saved to the database
     @IsOptional()
     @IsString()
     @MinLength(5)
     @MaxLength(20)
     roomPassword: string;
 
-    // // @IsNotEmpty({ message: 'Required' })
-    // members: number[];// nt in the create room screen
+    // @IsNotEmpty({ message: 'Required' })
+    // roomMembers: number[];// nt in the create room screen
 }

@@ -93,6 +93,40 @@ After jsx, a .html and a .jsx (or .tsx) can be provided.
 
 <details>
 <summary>Frontend</summary>
+
+<details>
+<summary>React</summary>
+
+`function useEffect(effect: EffectCallback, deps?: DependencyList): void;`
+- **setup**:
+  - The function with your Effect’s logic.
+  - Your setup function may also optionally return a cleanup function.
+  - When your component is added to the DOM, React will run your setup function.
+  - After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values.
+   - After your component is removed from the DOM, React will run your cleanup function.
+- **deps** (optional):
+   - The list of all reactive values referenced inside of the setup code.
+  - Reactive values include props, state, and all the variables and functions declared directly inside your component body.
+  - React will compare each dependency with its previous value using the Object.is comparison.
+  - If you omit this argument, your Effect will re-run after every re-render of the component.
+</details>
+
+<details>
+<summary>ReactDOM</summary>
+Document Object Model, or DOM, is a set of APIs that allow programmes and scripts to access and manipulate the document
+tree (the DOM sees a web page as a tree of nodes).
+With these APIs, you can have access to the document tree (tree of nodes), and with that access, you can change or
+delete the content in that document.
+
+Before we had the ability to manipulate the DOM, web developers could only create a static web page.
+Now we can create highly responsive, dynamic and interactive web pages.
+
+One of the most used reactDOM functions is the 'render()' function. It renders the output of the imported function into
+a html <div> block (with the corresponding ID in the index.html).
+
+[To read.](https://www.copycat.dev/blog/reactdom/)
+</details>
+
 <details>
 <summary>UI</summary>
 
@@ -182,22 +216,6 @@ Is another package manager as npm, I saw in one tutorial that its more secure th
 </details>
 
 -----------------------------
-
-<details>
-<summary>ReactDOM</summary>
-Document Object Model, or DOM, is a set of APIs that allow programmes and scripts to access and manipulate the document
-tree (the DOM sees a web page as a tree of nodes).
-With these APIs, you can have access to the document tree (tree of nodes), and with that access, you can change or
-delete the content in that document.
-
-Before we had the ability to manipulate the DOM, web developers could only create a static web page.
-Now we can create highly responsive, dynamic and interactive web pages.
-
-One of the most used reactDOM functions is the 'render()' function. It renders the output of the imported function into
-a html <div> block (with the corresponding ID in the index.html).
-
-[To read.](https://www.copycat.dev/blog/reactdom/)
-</details>
 
 <details>
 <summary>Redux</summary>

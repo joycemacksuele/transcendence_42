@@ -72,8 +72,7 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                 <Col className='col-md-1 position-relative'>
                     <Navbar.Brand href="#profile" className="position-absolute top-50 start-50 translate-middle">
                         <Image
-                            id='user-image'
-                             src={image}
+                            src={image}
                             // src={`http://localhost:3001/uploads/jmurovec-4d1c6f5c-2f78-49fc-9f11-0a3488e2c665.jpg`}
                             // src={currUserData?.loginImage ?? ''}
                             className="me-auto"
@@ -100,10 +99,7 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         </Nav.Item>
                         <Nav.Item>
                             <Nav.Link eventKey="chat">Chat</Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
                             {/*<Nav.Link eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>*/}
-                            <Nav.Link eventKey="game">Game</Nav.Link>
                         </Nav.Item>
 
                         <Nav.Item>
@@ -111,21 +107,12 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                         </Nav.Item>
 
                         <Nav.Item>
-                            {/*take a look for searching ui/engine: https://github.com/ericgio/react-bootstrap-typeahead*/}
-                            <Form.Group className='d-flex'>
-                                <Form.Control
-                                    className='me-auto form-control'
-                                    type="search"
-                                    placeholder="Search for a user"
-                                    aria-label="Search"
-                                    // onChange={(e) => setMessage(e.target.value)}
-                                />
-                                {/*<Button variant="outline-success" type="submit">Search</Button>*/}
-                            </Form.Group>
+                            <Nav.Link eventKey="game">Game</Nav.Link>
                         </Nav.Item>
                     </Nav>
                 </Col>
 
+                {/* Logout */}
                 <Col className='col-md-1'>
                     <Nav className="justify-content-end">
                         <Button
