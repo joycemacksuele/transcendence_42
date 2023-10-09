@@ -1,3 +1,5 @@
+// TODO: EACH USER SHOWN ON THE CHAT SCREEN HAS TO BE CLICKABLE AND BRING THE USER TO THIS USER'S PUBLIC PROFILE PAGE
+
 import React, { useState, useEffect } from 'react';
 import { Socket, io } from "socket.io-client";
 import $ from "jquery";
@@ -22,109 +24,16 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Nav from 'react-bootstrap/Nav';
-import Modal from 'react-bootstrap/Modal';
+import Navbar from 'react-bootstrap/Nav';
 
-/*
-    Available breakpoints
-    Bootstrap includes six default breakpoints, sometimes referred to as grid tiers, for building responsively.
-    Breakpoint     	     Class infix	Dimensions
-    X-Small	             None	        <576px
-    Small	             sm	            ≥576px
-    Medium	             md	            ≥768px
-    Large	             lg	            ≥992px
-    Extra large	         xl	            ≥1200px
-    Extra extra large	 xxl	        ≥1400px
- */
+import RecentChats from "./RecentChats";
+import ChatGroups from "./ChatGroups";
 
-const Chat = () => {
+type PropsHeader = {
+    functionToCall: (content: null | string) => void;  // setActiveContent() in main_page
+};
 
-    ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
-
-    /*
-        function useEffect(effect: EffectCallback, deps?: DependencyList): void;
-            setup:
-                - The function with your Effect’s logic.
-                - Your setup function may also optionally return a cleanup function.
-                - When your component is added to the DOM, React will run your setup function.
-                - After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values.
-                - After your component is removed from the DOM, React will run your cleanup function.
-            deps (optional):
-                - The list of all reactive values referenced inside of the setup code.
-                - Reactive values include props, state, and all the variables and functions declared directly inside your component body.
-                - React will compare each dependency with its previous value using the Object.is comparison.
-                - If you omit this argument, your Effect will re-run after every re-render of the component.
-
-    */
-
-    const [socket, setSocket] = useState<Socket>();
-
-    // useEffect without dependencies
-    // When your component is added to the DOM, React will run your setup function
-    useEffect(() => {
-        const newSocket = io("http://localhost:3001");// TODO GET FROM THE .ENV OR MACRO
-        setSocket(newSocket);
-        console.log(`[Chat Component] socket created`);
-
-        newSocket?.on("connect", () => {
-            console.log(`[Chat Component] socket connected -> socket id: ${newSocket?.id}`);
-        });
-
-        // When your component is removed from the DOM, React will run your clean up function
-        return () => {
-            // console.log(`socket disconnected AND removeAllListeners`);
-            // socket.removeAllListeners();
-            socket?.disconnect();
-            console.log(`[Chat Component] socket disconnected`);
-        };
-    }, []);
-
-    // // useEffect with socket as a dependency
-    // useEffect(() => {
-    //     socket?.on("connect", () => {
-    //         console.log(`socket connected -> socket id: ${socket?.id}`);
-    //     });
-    //     // After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values
-    //     return () => {
-    //         // console.log(`socket disconnected AND removeAllListeners`);
-    //         // socket.removeAllListeners();
-    //         socket?.disconnect();
-    //         console.log(`socket disconnected`);
-    //     };
-    // }, [socket]);
-
-
-    ////////////////////////////////////////////////////////////////////// CREATE CHAT ROOM
-
-    enum RoomType {
-        PRIVATE,// max 2 people (DM)
-        PUBLIC,// Can have > 2
-        PROTECTED,//Can have > 2 AND has a password
-    }
-
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    const [roomName, setRoomName] = useState('');
-    const [roomType, setRoomType] = useState(RoomType.PUBLIC);
-    const [roomPassword, setRoomPassword] = useState('');
-    // const [roomMembers, setMembers] = useState('');
-
-    const createRoom = () => {
-        console.log("[FRONTNED LOG] createRoom called");
-        {/* TODO: roomType IS ALWAYS BEING SET TO 1 ON THE BACKEND */}
-        socket.emit("createRoom", {roomName: roomName, roomType: roomType, roomPassword: roomPassword});
-        setShow(false)
-        // - Dto to send in order to create a room:
-        // name
-        // type (RoomType -> private is a DM, public is just saved as public, protected will ask for a password)
-        // password (if type == protected)
-        
-        // - What does not need to be in the Dto because the backend has access to it:
-        // socket id: automatically created
-        // owner of the room (creator / current user)
-        // admin of the room (it's the owner (creator) when the room is created -> later on in another screen the admin will be able to add more admins to the room)
-        // PS.: members of the room will be added later on on the "members" colunm in the chat tab
-    };
+const Chat: React.FC<PropsHeader> = ({ functionToCall }) => {
 
     ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
@@ -157,6 +66,14 @@ const Chat = () => {
     };
 
 
+    ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
+
+    const [activeContent, setActiveContent] = useState<string>('recent');
+
+    const handleClick = (content: null | string) => {
+        setActiveContent(content || '');
+    };
+
     // const [roomsTab, setRoomsTab] = useState(false);
     // const [recentTab, setRecentTab] = useState(false);
     // const cardClick = (content: tab) => {<Form.Group className="mb-3" controlId="roomForm.type">
@@ -167,112 +84,36 @@ const Chat = () => {
     //     }
     // };
 
-    return (
-        <Container fluid className='h-100 w-100'>
-            <Row className='chat-page' text='dark'>
+    ////////////////////////////////////////////////////////////////////// UI OUTPUT
 
-                {/* Recent + Rooms column */}
-                <Col className='bg-white col-md-3'>
-                    <Row className='h-75'>
-                        <Card.Header>
-                            <Nav
-                                className="border-bottom"
-                                variant="underline"
-                                defaultActiveKey="recent"
-                                fill
-                                // onSelect={(k) => cardClick(k)}
-                            >
-                                <Nav.Item>
-                                    <Nav.Link eventKey="recent" href="#recent">Recent</Nav.Link>
-                                </Nav.Item>
-                                <Nav.Item>
-                                    <Nav.Link eventKey="rooms" href="#rooms">Rooms</Nav.Link>
-                                </Nav.Item>
-                            </Nav>
-                        </Card.Header>
-                        <Card.Body variant="top">
-                            {/*<Col>*/}
-                            {/*    <Stack gap={1}>*/}
-                            {/*        <div class="media" className="p-2">*/}
-                            {/*            <img src={avatarImage} alt="user" width="20" class="rounded-circle" />*/}
-                            {/*            Joyce*/}
-                            {/*            /!*<small class="small font-weight-bold">25 Dec</small>*!/*/}
-                            {/*        </div>*/}
-                            {/*        <div className="p-2">Jaka</div>*/}
-                            {/*        <div className="p-2">Corina</div>*/}
-                            {/*        <div className="p-2">Hokai</div>*/}
-                            {/*    </Stack>*/}
-                            {/*</Col>*/}
-                            <ListGroup className="list-group-flush">
-                                <ListGroup.Item>Cras justo odio</ListGroup.Item>
-                                <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
-                                <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
-                            </ListGroup>
-                            {/*<Card.Text>*/}
-                            {/*/!*<Stack gap={1}>*!/*/}
-                            {/*    { roomsTab === true && <>eeeee</>}*/}
-                            {/*    { recentTab === true && <>3332</>}*/}
-                            {/*    /!*    {variant.toLowerCase() === 'light' ? 'dark' : 'white'}*!/*/}
-                            {/*/!*</Stack>*!/*/}
-                            {/*</Card.Text>*/}
-                        </Card.Body>
+    return (
+        <Container fluid>
+            {/* I still dont understand why we need tihs Row here but it is not working without it*/}
+            <Row className='chat-page'>
+
+                {/* Recent + Groups column */}
+                <Col className='col-md-3'>
+                    <Row className='h-10'>
+                        {/* Recent + Groups header */}
+                        <Nav
+                            className="border-bottom p-0"
+                            activeKey="recent"
+                            variant="underline"
+                            fill
+                            onSelect={(k) => handleClick(k)}
+                        >
+                            <Nav.Item>
+                                <Nav.Link eventKey="recent">Recent</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="groups">Groups</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
                     </Row>
-                    <Row className='h-25 align-items-center'>import $ from "jquery";
-                        <Stack gap={2} className='align-self-center'>
-                            <Button variant="primary" type="submit" onClick={handleShow}>Create room</Button>
-                            <Modal show={show} onHide={handleClose}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Modal heading</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <Form>
-                                        <Form.Group className="mb-3" controlId="roomForm.name">
-                                            {/* <Form.Label>Room name</Form.Label> */}
-                                            <Form.Control
-                                                type="text"
-                                                placeholder="Room name"
-                                                autoFocus
-                                                onChange={(event) => setRoomName(event.target.value)}
-                                            />
-                                        </Form.Group>
-                                        <Form.Select
-                                            aria-label="Default select example"
-                                            id="roomForm.type"
-                                            className="mb-3"
-                                        >
-                                            <option>Choose the chat type</option>
-                                            {/* <option value="" selected="true"></option> */}
-                                            {/* TODO: THIS IS ALWAYS BEING SET TO Q ON THE BACKEND */}
-                                            <option value="form_1" onChange={() => setRoomType(RoomType.PUBLIC)}>Public</option>
-                                            <option value="form_2" onChange={() => setRoomType(RoomType.PRIVATE)}>Private (DM)</option>
-                                            <option value="form_3" onChange={() => setRoomType(RoomType.PROTECTED)}>Protected</option>
-                                        </Form.Select>
-                                        <Form.Group className="mb-3">
-                                            {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
-                                            <Form.Control
-                                                type="password"
-                                                placeholder="Protected chat password"
-                                                id="inputPassword5"
-                                                aria-describedby="passwordHelpBlock"
-                                                onChange={(event) => setRoomPassword(event.target.value)}
-                                            />
-                                            <Form.Text id="passwordHelpBlock" muted>
-                                                Your password must be 5-20 characters long, contain letters and numbers,
-                                                and must not contain spaces, special characters, or emoji.
-                                            </Form.Text>
-                                        </Form.Group>
-                                    </Form>
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleClose}>
-                                        Close
-                                    </Button>
-                                    <Button variant="primary" onClick={createRoom}>
-                                        Save Changes
-                                    </Button>
-                                </Modal.Footer>
-                            </Modal>
-                        </Stack>
+                    <Row className='h-90'>
+                        {/* Recent or Groups body */}
+                        {activeContent === 'recent' && <RecentChats /> }
+                        {activeContent === 'groups' && <ChatGroups /> }
                     </Row>
                 </Col>
 
@@ -301,7 +142,7 @@ const Chat = () => {
                 </Col>
 
                 {/* Members column */}
-                <Col className='bg-white col-md-3' text='dark'>
+                <Col className='col-md-3'>
                     <Row className='h-75'>
                         <Card.Header>
                             <Nav
@@ -332,6 +173,7 @@ const Chat = () => {
                             {/* Delete Room = when we are on a private chat channel*/}
                             {/* Leave Room = when we are on a room chat channel*/}
                             <Button variant="primary" >Leave Room</Button>
+                            <Button variant="primary" >Join Room</Button>{/* if protected -> ask for password*/}
                         </Stack>
                     </Row>
                 </Col>

@@ -1,21 +1,13 @@
-.main-field {
-	display: inline-block;
-	/*background-color: light;*/
-	/* color = font color*/
-	color: grey;
-	padding: 0%;
-	width: 100%;
-	height: auto;
-}
-
 /*TODO: make it automatically change depending on screen size? or it does already ? */
 #div-center {
-	margin: auto;
+	/*margin: auto;*/
+	/* color = font color */
+	color: grey;
 	width: 100%;
-	height: 610px;
+	height: 50vw;
 	display: flex;
-	justify-content: left;
-	align-items: center;
+	/* justify-content: left; */
+	/* align-items: center; */
 	/* height: 90%; */
 	/* border: 3px solid green;*/
 }
@@ -35,6 +27,13 @@
 	/*background-color: orange;*/
 }
 
+/* this is the css/Profile.css -> it was duplicated I believe*/
+/*#user-page {*/
+/*	width: 100%;*/
+/*	height: 100%;*/
+/*	!*border: 2px solid black;*!*/
+/*	!*background-color: green;*!*/
+/*}*/
 
 /* CUSTOM BOOTSTRAP ADDED */
 .bg-custom {

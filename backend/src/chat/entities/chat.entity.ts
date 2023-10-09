@@ -10,12 +10,22 @@ export class ChatEntity {
     @PrimaryGeneratedColumn()
     id?: number;	// ? is optional -> it will be created automatically
 
+    @Column()
+    roomName: string;
+
     @Column({
         type: "enum",
         enum: RoomType,
         default: RoomType.PUBLIC,
     })
     roomType: RoomType;
+
+    // it has to be hashed before saved to the database
+    @Column()
+    roomPassword: string;
+
+    @Column("simple-array")
+    roomMembers: number[]
 
     // @Column("simple-json")
     // profile: { name: string; nickname: string }
