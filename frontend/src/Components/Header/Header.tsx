@@ -101,6 +101,11 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
                             <Nav.Link eventKey="chat">Chat</Nav.Link>
                             {/*<Nav.Link eventKey="chat">Chat <Badge bg="info">9</Badge> </Nav.Link>*/}
                         </Nav.Item>
+
+                        <Nav.Item>
+                            <Nav.Link eventKey="users">Users</Nav.Link>
+                        </Nav.Item>
+
                         <Nav.Item>
                             <Nav.Link eventKey="game">Game</Nav.Link>
                         </Nav.Item>

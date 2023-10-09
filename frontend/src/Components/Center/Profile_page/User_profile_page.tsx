@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ImageUpload from "./changeUserImage";
-import UsersList from "./DisplayUsers";
+import FriendsList from "./DisplayFriends";
 import ChangeProfileName from "./changeProfileName";
 import { CurrUserData } from "./contextCurrentUser";
 // import JustTest from "./justTest_NOT_USED";
@@ -56,8 +56,8 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 					{/* <Col className='bg-primary col-md-8'> */}
 					<Col className='bg-custom text-black justify-content-left align-items-left p-3 rounded'>
 						{/* <Row> */}
-							<div>
-								<p>USER PROFILE PAGE</p>
+							<div id="user-page">
+								<h5>MY PROFILE PAGE</h5>
 								<ChangeProfileName updateContext={ updateContext } />
 								<ImageUpload updateContext={ updateContext }/>
 								{/* <JustTest/> */}
@@ -71,7 +71,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 					<Col className='bg-custom text-black justify-content-left align-items-left p-3 mx-2 rounded'>
 							{/* <Row className='h-75'> */}
 							<Row>
-								<p>MY STATISTICS</p>
+								<h5>MY STATISTICS</h5>
 							</Row>
 							{/* <Row className='h-25 align-items-center'>
 							</Row> */}
@@ -80,9 +80,9 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 					<Col className='bg-custom text-black justify-content-left align-items-left p-3 rounded'>
 						{/* <Row className='h-75'> */}
 						{/* <Row> */}
-							<div>
-								<p>LIST OF USERS</p>
-								<UsersList />
+							<div id="user-page">
+								<h5>MY FRIENDS</h5>
+								<FriendsList />
 							</div>
 						{/* </Row> */}
 
@@ -102,7 +102,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 	//     <ChangeProfileName updateContext={ updateContext } />
 	//     <ImageUpload updateContext={ updateContext }/>
 	//     {/* <JustTest/> */}
-	//     <UsersList />
+	//     <FriendsList />
 	//   </div>
 	// );
 };
