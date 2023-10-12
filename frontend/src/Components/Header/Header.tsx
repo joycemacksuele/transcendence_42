@@ -52,6 +52,7 @@ const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
         return null;  // will this be needed ?
     }
 
+    // here everything is still 'undefined':
     console.log('Header: currUserData.loginName: ', currUserData?.loginName);
     console.log('Header: currUserData.profileName: ', currUserData?.profileName);
     console.log('Header: currUserData.loginImage: ', currUserData?.loginImage);

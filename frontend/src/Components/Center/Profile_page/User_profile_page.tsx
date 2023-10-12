@@ -71,7 +71,12 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 					<Col className='bg-custom text-black justify-content-left align-items-left p-3 mx-2 rounded'>
 							{/* <Row className='h-75'> */}
 							<Row>
-								<h5>MY STATISTICS</h5>
+								<h5> { localStorage.getItem('profileName') }'s STATISTICS</h5>
+								<p>Won: 3</p>
+								<p>Lost: 7</p>
+								<p>Ladder: ???</p>
+								<p>Achievments: ???</p>
+
 							</Row>
 							{/* <Row className='h-25 align-items-center'>
 							</Row> */}

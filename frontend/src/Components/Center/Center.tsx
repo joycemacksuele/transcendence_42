@@ -26,7 +26,9 @@ const Center: React.FC<ContextProps> = ({ activeContent, updateContext }) => {
           {activeContent === 'chat' && <ChatPage /> }
           {/*{activeContent === 'users' && <Users /> }// TODO Build the search engine*/}
           {/*{activeContent === 'Statistics Page' && <StatsPage /> }*/}
-          {activeContent === 'users' && <UsersList /> }
+
+          {/* todo jaka: UsersList needs updateContext, to update the change of profile name */}
+          {activeContent === 'users' && <UsersList /> } 
           {activeContent === 'logout' && <LogoutPage /> }
       </div>
     {/*</div>*/}
