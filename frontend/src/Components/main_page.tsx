@@ -21,6 +21,7 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 	// Read the Cookie Username-Cookie:
 	const cookieProfileName = getCookie('cookieProfileName') || '';
 	const cookieProfileImage = getCookie('cookieProfileImage') || '';
+	const cookieUserName = getCookie('cookieUserName') || '';
 	console.log('   CookieProfileName: ', cookieProfileName, '\n   CookieProfileImage:', cookieProfileImage);
 
 	// LOCAL STORAGE NEEDS TO BE UPDATED, IF THE USERNAME IS CHANGED ...
@@ -42,7 +43,11 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 	useEffect(() => {
 		console.log('   Check if user is in DB: ');
 		if (cookieProfileName && currUserData.loginName !== cookieProfileName) {
-			checkIfUserExistsInDB(cookieProfileName).then((response) => {
+
+			// Jaka: Here the context:loginName is still empty, after reload, so it 
+			// checkIfUserExistsInDB(cookieProfileName).then((response) => {
+				checkIfUserExistsInDB(cookieUserName).then((response) => {
+
 				console.log('      Response:', response.user);
 				if (response.exists) {
 					console.log('      Context will be updated ...');
@@ -55,7 +60,11 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 						// Update Local Storage:
 						localStorage.setItem('profileName', response.user?.profileName || '' ); // jaka, maybe not needed
 						localStorage.setItem('profileImage', response.user?.profileImage || '' );
+
+
 						updateContext(updatedUserData);
+						console.log('   Updating context: \n      login and profile name: ', currUserData);
+
 				} else {
 					console.log('   ??? ??? This user is not yet in DB: ');
 						// UPDATE ONLY IF THE USER DOES NOT EXISTS YET, 
@@ -68,8 +77,8 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 								profileName:	localStorage.getItem('loginName') || undefined,
 								loginImage:		localStorage.getItem('loginImage') || undefined,
 						};
-						console.log('   Updating context ... \n      First time login - login and profile name should be the same');
 						updateContext(updatedUserData);
+						console.log('   Updating context: \n      First time login - login and profile name should be the same: ', currUserData);
 						}
 					}
 				});
