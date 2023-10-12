@@ -14,6 +14,7 @@ import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 import { Repository, FindOneOptions } from 'typeorm';
 import { createWriteStream } from 'fs';   // added jaka, to save the orig user image to folder ./uploads
+import { Like } from 'typeorm';
 import axios from 'axios';
 
 
@@ -34,28 +35,30 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async deleteAllUsers(): Promise<void> {
-    console.log('[BACKEND LOG] UserService.deleteAllUsers');
-    try {
-      await this.userRepository.clear();
-      console.log('[BACKEND LOG] from nest user.service: All users deleted.');
-    } catch (error) {
-      console.error('[BACKEND LOG] from nest user.service: Error deleting all users.', error);
-      // throw new InternalServerErrorException('Unable to delete all users');
-    }
-  }
-
-  // async deleteDummies(): Promise<void> {
-  //   console.log('[BACKEND LOG] UserService.deleteDummies');
+  // Not used anymore
+  // async deleteAllUsers(): Promise<void> {
+  //   console.log('[BACKEND LOG] UserService.deleteAllUsers');
   //   try {
-  //     await this.userRepository.delete({ profileName: 'dummy' });
-  //     console.log('[BACKEND LOG] from nest user.service: All dummy users deleted.');
-  //   }
-  //   catch (error) {
-  //     console.error('[BACKEND LOG] from nest user.service: Error deleting dummy users.', error);
-  //     // throw new InternalServerErrorException('Unable to delete dummy users');
+  //     await this.userRepository.clear();
+  //     console.log('[BACKEND LOG] from nest user.service: All users deleted.');
+  //   } catch (error) {
+  //     console.error('[BACKEND LOG] from nest user.service: Error deleting all users.', error);
+  //     // throw new InternalServerErrorException('Unable to delete all users');
   //   }
   // }
+
+  async deleteDummies(): Promise<void> {
+    console.log('[BACKEND LOG] UserService.deleteDummies');
+    try {
+      await this.userRepository.delete({ profileName: Like ('%dummy%') });
+      await this.userRepository.delete({ loginName: Like ('%dummy%') });  // Jaka: Temporary, until the 'change name' bug is solved
+      console.log('[BACKEND LOG] from nest user.service: All dummy users deleted.');
+    }
+    catch (error) {
+      console.error('[BACKEND LOG] from nest user.service: Error deleting dummy users.', error);
+      // throw new InternalServerErrorException('Unable to delete dummy users');
+    }
+  }
 
   async getAllUsers(): Promise<UserEntity[]> {
     console.log('[BACKEND LOG] UserService.getAllUsers');
