@@ -19,9 +19,10 @@ export class StoreCurrUserToDataBs {
 
 
   @Get('check_if_user_in_db')
-  async checkIfCurrUserIsInBB(@Query('loginName') loginName: string) {
+  async checkIfCurrUserIsInDB(@Query('loginName') loginName: string) {
     try {
       // Check if user with the same loginName already exists
+      console.log('Endpoint: Check_if_user_in_db, arg: loginName:', loginName);
       const existingUser = await this.userService.getUserByLoginName(loginName);
       if (existingUser) {
         console.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
@@ -30,6 +31,8 @@ export class StoreCurrUserToDataBs {
         // return { message: 'This loginName already exists in database == the current user.'};
         // FOUND EXISTING USER IN DB, NOT SURE IF THIS IS THE OPTIMAL WAY TO CHECK
       }
+      console.log('Endpoint: Check_if_user_in_db, LoginName:', existingUser); // jaka, temp
+      
       return { exists: false }; 
       // return { message: 'CHECK User does not exist in the database.' };
     } catch (error) {
@@ -99,23 +102,23 @@ export class StoreCurrUserToDataBs {
       // should be get current UserByLoginName() and then change the profile name, but then the profile name on the button should be also replaced,
       // but that button name is loaded in the Header, directly from intra ...!
 
-      console.log('Changing the profile name ...');
+      console.log('Changing the profile name of user:', data.loginName, " new profileName: ", data.profileName);
       const user = await this.userService.getUserByLoginName(data.loginName);
       // console.log('Jaka, found profile name: ', user.profileName  );
       if (!user) {
-	throw new HttpException('User with this loginName not found', HttpStatus.I_AM_A_TEAPOT);
-//        return {message: 'User with this loginName not found'};
+	      throw new HttpException('User with this loginName not found', HttpStatus.I_AM_A_TEAPOT);
+        // return {message: 'User with this loginName not found'};
       }
       const profile = await this.userService.getUserByProfileName(data.profileName);
       if (profile) {
-	throw new HttpException('User with this profileName already exists', HttpStatus.I_AM_A_TEAPOT);
-//        return {message: 'User with this profileName already exists'};
+	      throw new HttpException('User with this profileName already exists', HttpStatus.I_AM_A_TEAPOT);
+        // return {message: 'User with this profileName already exists'};
       }
 
       const duplicate = await this.duplicateService.checkDuplicate(data.profileName, data.loginName);
       if (duplicate) {
-	throw new HttpException('Another user with this profileName exists in Intra', HttpStatus.I_AM_A_TEAPOT);
-//        return {message: 'Another user with this profileName exists in Intra'};
+	      throw new HttpException('Another user with this profileName exists in Intra', HttpStatus.I_AM_A_TEAPOT);
+        // return {message: 'Another user with this profileName exists in Intra'};
       }
 
       user.profileName = data.profileName; // updating the name
@@ -123,8 +126,8 @@ export class StoreCurrUserToDataBs {
 
       return {message: 'Profile name updated successfully.'};
     } catch (error) {
-      console.error('Error updating the profile name: ', error.message);
-      throw error;
+        console.error('Error updating the profile name: ', error.message);
+        throw error;
     }
   }
 
