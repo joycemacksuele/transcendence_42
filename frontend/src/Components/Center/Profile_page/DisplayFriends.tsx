@@ -62,17 +62,17 @@ const UsersList: React.FC = () => {
 	// 	setDisplayList(!displayList);
 	// };
 
-	const deleteUsers = async () => {
+	const deleteDummies = async () => {
 		try {
 			await axios.delete("http://localhost:3001/users/");
 			console.log("Dummies deleted successfully");
 		} catch (error) {
-			console.error("Error deleting all users: ", error);
+			console.error("Error deleting dummies: ", error);
 		}
 	};
 
-	const handleClickDeleteUsers = () => {
-		deleteUsers();
+	const handleClickDeleteDummies = () => {
+		deleteDummies();
 	};
 
 	return (
@@ -119,7 +119,7 @@ const UsersList: React.FC = () => {
 				</div>
 			)}
 
-			<button onClick={handleClickDeleteUsers}>Delete users</button>
+			<button onClick={handleClickDeleteDummies}>Delete users</button>
 		</div>
 	);
 };

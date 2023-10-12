@@ -23,7 +23,8 @@ export class DuplicateService {
 //		console.log('Jaka: The whole request URL: ', reqUrl);
 //		console.log('Jaka:           requestCode: ', requestCode);
 		if (user == login) {
-			return false;
+			console.log("checkDuplicate(), return TRUE. user: ", user, "login: ", login);
+			return false; // ???		
 		}
 
 		//https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
@@ -33,7 +34,7 @@ export class DuplicateService {
 		parameters.append('client_secret', process.env.SECRET);
 
 		try {
-			response = await this.exchangeCodeForAccessToken(parameters, user);
+			response = await this.exchangeCodeForAccessToken(parameters, user, login);
 			return response;
 //			return await this.exchangeCodeForAccessToken(parameters, user);
 		} catch (err) {
@@ -45,7 +46,7 @@ export class DuplicateService {
 	//--------------------------------------------------------------------------------
 	// This request needs to be performed on the server side, over a secure connection
 
-	async exchangeCodeForAccessToken(clientData: any, user: string) {
+	async exchangeCodeForAccessToken(clientData: any, user: string, login: string) {
 		// console.log('Start Exchange Code for token');
 		let access_token: string;
 		let response: boolean = true;
@@ -63,7 +64,7 @@ export class DuplicateService {
 //				throw new HttpException('Authorization failed with 42 API (Robert)', HttpStatus.UNAUTHORIZED);
                               this.logger.log('Duplicate stuff (Robert): ' + error);
 			});
-		response = await this.getDuplicate(access_token, user);
+		response = await this.getDuplicate(access_token, user, login);
 		return response;
 	}
 
@@ -71,7 +72,7 @@ export class DuplicateService {
 	//--------------------------------------------------------------------------------
 	// GET request to the current token owner with the bearer token - get user info in response
 
-	async getDuplicate(access_token: string, user: string) {
+	async getDuplicate(access_token: string, user: string, login: string) {
 		const authorizationHeader: string = 'Bearer ' + access_token;
 		let found: boolean = true;
 
@@ -82,15 +83,18 @@ export class DuplicateService {
 			} // fetch the current token owner 
 		})
 		.then((response) => {
-                        if (response['data'].length == 0) {
-				this.logger.log('no match');
+            if (response['data'].length == 0) {
+				this.logger.log('no match: allowed to change profileName');
 				found = false;
 			} else {
 				this.logger.log('match');
+				console.log(response['data'][0].login);		// The response is an array of objects, not just one object
+
+				console.log("      current loginName != searched user   -> found: TRUE: forbidden to change profilename");
 				found = true;
 			}
 
-		})  // save the token owner info 
+		})  // save the token owner info
 		.catch(() => {
 		this.logger.error('\x1b[31mAn Error in 42 API (Robert): get duplicate\x1b[0m');
 //		throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
