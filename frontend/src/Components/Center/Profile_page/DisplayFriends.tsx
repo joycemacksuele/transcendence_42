@@ -29,9 +29,9 @@ const UsersList: React.FC = () => {
 	const [displayList, setDisplayList] = useState(true);
 	
 
-	// const handleInsertDataClick = () => {
-	// 	insertDummyUsers();
-	// };
+	const handleInsertDataClick = () => {
+		insertDummyUsers();
+	};
 
 	const fetchUsers = async () => {
 		try {
@@ -77,9 +77,7 @@ const UsersList: React.FC = () => {
 
 	return (
 		<div style={myStyle}>
-			{/* <button onClick={handleInsertDataClick}>Create Dummy Users</button> */}
-			&nbsp;
-
+			
 			{/* <button onClick={handleClick}>
 				{!displayList ? "Show Dummy Users" : "Hide Users"}
 			</button>{" "} */}
@@ -118,8 +116,9 @@ const UsersList: React.FC = () => {
 					</ol>
 				</div>
 			)}
-
-			<button onClick={handleClickDeleteDummies}>Delete users</button>
+			<button onClick={handleInsertDataClick}>Create dummies</button>
+			&nbsp;
+			<button onClick={handleClickDeleteDummies}>Delete dummies</button>
 		</div>
 	);
 };

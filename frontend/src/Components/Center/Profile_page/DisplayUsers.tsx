@@ -119,7 +119,7 @@ const UsersList: React.FC = () => {
 								</span>
 							</li>
 						))}
-						<button onClick={handleClickDeleteUsers}>Delete users</button>
+						{/* <button onClick={handleClickDeleteUsers}>Delete dummies</button> */}
 					</ol>
 					)}
 				</Col>
