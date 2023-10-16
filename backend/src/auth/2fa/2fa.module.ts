@@ -9,15 +9,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
 
 @Module({
-    imports: [MailerModule.forRoot({
+    imports: [TypeOrmModule.forFeature([UserEntity]),
+    MailerModule.forRoot({
         transport: {
-            host: 'smtp.gmail.com',
+            service: 'gmail',
+            secure: false,
+            host: `${process.env.EHOST}`,
             auth: {
-                user: 'email address',
-                pass: 'password',
+                user: `${process.env.EMAIL}`,
+                pass: `${process.env.EPASS}`,
             }
         },
-    }), TypeOrmModule.forFeature([UserEntity])],
+    })], 
   
     controllers: [TwoFactorAuthController],
     

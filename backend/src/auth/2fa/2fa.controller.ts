@@ -18,39 +18,88 @@ export class TwoFactorAuthController {
     // once the user clicks send on the screen with the 2fa code this does GET http:localhost:3001/2fa/profile
 
     @Post('verify_code')
-    async verifyTwoFactorAuthentification(@Body() body: any, @Request() request: any, @Response() response: any){
+    async verifyTwoFactorAuthentification(@Request() request: any, @Body() body: any, @Response() response: any){
         try{
-            const codeToVerify = body['tfaCode'];
             let player = await this.userService.getUserByLoginName(request.loginName);
             const codeStored = player.tfaCode;
+            const codeToVerify = body;
+
             let attempts: number;
-            attempts = +body['attempts'];
+            attempts = +(request.get('Cookie')).split('cookieLogInAttempts=')[1];
+            this.logger.log("attempts: " + attempts);
+
             let path: string;
 
-            if (codeToVerify == codeStored) // 2fa enabled
+            if (codeStored === 'default')
+                throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR); // redirect to the auth page? 
+
+            if (codeToVerify === codeStored) // succesful verification
             {
                 path = `${process.env.DOMAIN}/main_page?loginName=`;
-                this.userService.enableTFA(player.loginName, true);  // enable TFA
-                // reset codeStored to default
+                // this.userService.enableTFA(player.loginName, true);  // this needs to be moved to the profile page
+                this.userService.updateStoredTFACode(player.loginName, 'default');
             }
-            else if (attempts < 3)  // try again 
+            else if (attempts < 3)  // failed verification within the 3 attempts
             {
+                path = `${process.env.DOMAIN}/main_page?loginName=`;  // will change to path = `${process.env.DOMAIN}/login_2fa`;
+                
                 attempts++;
-                // path = `${process.env.DOMAIN}/login_2fa`;
-                this.tfaService.sendVerificationMail(player); 
-                // store attempts? 
-                // store new code 
-                return {message: 'Incorrect Code. New Code has been sent. Try again!'};
+                let cookieLogInAttempts = `${attempts}; path=/;`;
+                response.append('Set-Cookie', cookieLogInAttempts);
+
+                this.tfaService.sendVerificationMail(player);  // this stores the new code 
+                return {message: 'Incorrect Code. New Code has been sent. Try again!'};  // does it return the cookies???
             }
             else // restart auth 
             {
                 path = `${process.env.BACKEND}/auth/login`;
-                // reset attempt to 0 / or erase attempt from body 
+                response.clearCookie('Cookie');
+                this.userService.updateStoredTFACode(player.loginName, 'default');
             }
             return response.redirect(path);
         }catch(err){
-            this.logger.log('Error updating the profile name: ', err);
+            this.logger.log('verify_user error: ', err);
             throw new HttpException('Two Factor Authentication verification failed', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+
+
+    // @Post('verify_code')
+    // async verifyTwoFactorAuthentification(@Body() body: any, @Request() request: any, @Response() response: any){
+    //     try{
+    //         const codeToVerify = body['tfaCode'];
+    //         let player = await this.userService.getUserByLoginName(request.loginName);
+    //         const codeStored = player.tfaCode;
+    //         let attempts: number;
+    //         attempts = +body['attempts'];
+    //         let path: string;
+
+    //         if (codeToVerify == codeStored) // 2fa enabled
+    //         {
+    //             path = `${process.env.DOMAIN}/main_page?loginName=`;
+    //             this.userService.enableTFA(player.loginName, true);  // enable TFA
+    //             // reset codeStored to default
+    //         }
+    //         else if (attempts < 3)  // try again 
+    //         {
+    //             attempts++;
+    //             // path = `${process.env.DOMAIN}/login_2fa`;
+    //             this.tfaService.sendVerificationMail(player); 
+    //             // store attempts? 
+    //             // store new code 
+    //             return {message: 'Incorrect Code. New Code has been sent. Try again!'};
+    //         }
+    //         else // restart auth 
+    //         {
+    //             path = `${process.env.BACKEND}/auth/login`;
+    //             // reset attempt to 0 / or erase attempt from body 
+    //         }
+    //         return response.redirect(path);
+    //     }catch(err){
+    //         this.logger.log('Error updating the profile name: ', err);
+    //         throw new HttpException('Two Factor Authentication verification failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 }
