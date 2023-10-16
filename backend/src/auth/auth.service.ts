@@ -191,25 +191,21 @@ export class AuthService {
 		let cookieProfileImage = `cookieProfileImage=${player.profileImage}; path=/;`;
 		response.append('Set-Cookie', cookieProfileImage);
 
-
 		// response.cookie('jwt', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
-		// Temp. disabled by Jaka
-		// const jwt = 'token=' + token + ' ; HttpOnly; Secure; SameSite=Strict';
-		// response.setHeader('Set-Cookie', jwt);
 
-		// response.cookie('token', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
 		console.log('print token inside request: ' + response.getHeader("set-cookie"));  // test 
 
 		// if 2fa true display profile else redirect to 2fa 
 		let path: string;
 		if (player.tfaEnabled === true)
-			path = `${process.env.DOMAIN}/main_page?loginName=`;
-		else
 		{
-			path = `${process.env.DOMAIN}/main_page?loginName=`; //once implemented this changes to: 
-			// path = `${process.env.DOMAIN}/login_2fa`;
-			this.tfaService.sendVerificationMail(player);
-		}	
+			path = `${process.env.DOMAIN}/main_page?loginName=`;//once implemented this changes to: 
+			// path = `${process.env.DOMAIN}/login_2fa`;  // POST request to 'verify_code'
+			let cookieLogInAttempts = `cookieLogInAttempts=0; path=/;`;
+			response.append('Set-Cookie', cookieLogInAttempts);
+		}
+		else
+			path = `${process.env.DOMAIN}/main_page?loginName=`; 	
 
 		response.status(200);
 		return response.redirect(path); 														   // jaka, temp. added
@@ -248,7 +244,7 @@ export class AuthService {
 
   logout(req: Request, response: Response) {
 	try{
-		response.clearCookie('token');
+		response.clearCookie('Cookie');
 		// disable 2fa ? 
 		return response.send({ message: 'Sign out succeeded' });
 	}
