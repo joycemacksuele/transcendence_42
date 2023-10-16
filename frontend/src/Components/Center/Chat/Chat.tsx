@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Socket, io } from "socket.io-client";
+import axios from 'axios';
 import $ from "jquery";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't

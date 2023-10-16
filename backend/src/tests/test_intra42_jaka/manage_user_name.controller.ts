@@ -54,6 +54,10 @@ export class StoreCurrUserToDataBs {
                                           intraId: number,
                                           email: string,
                                           onlineStatus: boolean,
+                                          rank: number,
+                                          gamesPlayed: number,
+                                          gamesWon: number,
+                                          gamesLost: number,
                                           tfaEnabled: boolean,
                                           tfaCode: string,
                                           hashedSecret: string,
@@ -75,6 +79,10 @@ export class StoreCurrUserToDataBs {
           intraId: 0,                             // todo jaka: change back, and obtain the real intraId
           email: data.email,
           onlineStatus: true,
+          rank: 0,
+          gamesPlayed: 0,
+          gamesWon: 0,
+          gamesLost: 0,
           tfaEnabled: false,
           tfaCode: 'default',
           hashedSecret: 'dummy hashed secret',  // todo jaka: change back, and obtain the real hashedSecret

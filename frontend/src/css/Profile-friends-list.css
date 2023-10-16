@@ -33,7 +33,7 @@ button#make-friend {
 }
 
 .list-users > li:not(.column-titles)::before {
-    content: counter(list-counter) ". ";
+    /* content: counter(list-counter) ". "; */
     margin-right: 10px;
 }
 
@@ -52,4 +52,5 @@ button#make-friend {
 .column-titles > span {
     font-weight: bold;
     background-color: rgb(212, 212, 186);
+    padding: 5%;
 }

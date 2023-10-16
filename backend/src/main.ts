@@ -3,11 +3,11 @@
   application, it attaches the 'AppModule' and creates an instance of 'NestApplication'.
 */
 
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-// import { JwtService } from '@nestjs/jwt';
-// import { ConfigModule } from '@nestjs/config';
-// import { AuthGuard } from './auth/guards/auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
+import { AuthGuard } from './auth/guards/auth.guard';
 import cookieParser from 'cookie-parser';
 import * as express from 'express';
 
@@ -28,6 +28,7 @@ async function main() {
   
   // To enable backend server to serve static files from the folder where uploaded images are stored
   app.use('/uploads', express.static('uploads'));
+  app.use('/uploadsDummies', express.static('uploadsDummies'));
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
   // app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));

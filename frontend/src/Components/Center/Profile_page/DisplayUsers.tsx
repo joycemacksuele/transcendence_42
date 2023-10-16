@@ -3,7 +3,8 @@ import axios from "axios";
 import { Container, Col, Row } from 'react-bootstrap';
 
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
-// import { MyUser }
+import DisplayOneUser from "./DisplayOneUser";		// without brackets, because it is exported 'default'
+
 
 // Custom CSS
 import '../../../css/Profile-users-list.css'
@@ -13,27 +14,17 @@ axios.defaults.withCredentials = true;
 interface User {
 	id: number;
 	name: string;
+	profileImage: string,
 	loginName: string;
 	profileName: string;
 	onlineStatus: boolean;
+	rank: number;
 }
-
-// const myStyle = {
-// 	// padding: "2%",
-// 	// width: "100%",
-// 	backgroundColor: "beige",
-// 	color: "black",
-// };
-
 
 const UsersList: React.FC = () => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [displayList, setDisplayList] = useState(true);
-	
-
-	// const handleInsertDataClick = () => {
-	// 	insertDummyUsers();
-	// };
+	const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
 	const fetchUsers = async () => {
 		try {
@@ -57,13 +48,6 @@ const UsersList: React.FC = () => {
 		fetchUsers();
 	}, []);
 
-	// const handleClick = () => {
-	// 	if (!displayList) {
-	// 		fetchUsers();
-	// 	}
-	// 	setDisplayList(!displayList);
-	// };
-
 	const deleteUsers = async () => {
 		try {
 			await axios.delete("http://localhost:3001/users/");
@@ -80,6 +64,11 @@ const UsersList: React.FC = () => {
 	const handleClickPlaceholder = () => {
 		;
 	};
+	
+	const handleUserClick = (e: React.MouseEvent, loginName: string) => {
+		e.preventDefault();
+		setSelectedUser(loginName);
+	}
 
 
 	return (
@@ -87,30 +76,35 @@ const UsersList: React.FC = () => {
 
 			<Row className='profile-page' text='dark'>
 
-				{/* <button onClick={handleInsertDataClick}>Create Dummy Users</button> */}
-				&nbsp;
-
-				{/* <button onClick={handleClick}>
-					{!displayList ? "Show Dummy Users" : "Hide Users"}
-				</button>{" "} */}
-
 				<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 rounded'>
 					{/* Button to trigger fetching the users */}
-					{displayList && ( // Only render the list if showList is true
-					<ol className="list-users">
+					{displayList && ( // Only render the list if dislpayList is true
+					<ul className="list-users">
+						
 						<h4>Users in the database:</h4>
 						<li className="column-titles">
-							<span>Intra</span>
+							<span>Rank</span>
+							{/* <span>Intra</span> */}
 							<span>Name</span>
 							<span>Online</span>
 						</li>
-						{users.map((user) => (
+
+						{users.sort((a, b) => a.rank - b.rank)
+							.map((user) => (
 							<li key={user.id}>
-								<span>
+								<span>{ user.rank }.</span>
+								{/* <span>
 									{user.loginName}
-								</span>
+								</span> */}
 								<span>
-								<a href="" className="list-user-link">
+								<a
+									href=""
+									className="list-user-link"
+									onClick={(e) => handleUserClick(e, user.loginName)}
+								>
+									<img src={"http://localhost:3001/" + user.profileImage}
+										 id="profileImage_tiny"
+									/>
 									{user.profileName}
 								</a>
 								</span>
@@ -120,30 +114,14 @@ const UsersList: React.FC = () => {
 							</li>
 						))}
 						{/* <button onClick={handleClickDeleteUsers}>Delete dummies</button> */}
-					</ol>
+					</ul>
 					)}
 				</Col>
 		
+
 				<Col className='bg-custom text-black p-3 rounded'>
-					<Row className="mb-3">
-						<Col>
-							<h4>PROFILE OF THIS USER</h4>
-						</Col>
-					</Row>
-					<Row className="mb-5">
-						<Col><b>Image:</b> Dummy</Col>
-						<Col><b>Name:</b> Dummy</Col>
-					</Row>
-					<Row className="mb-5">
-						<Col><b>Best result:</b> 103</Col>
-						<Col><b>Games played:</b> 16</Col>
-					</Row>
-					<Row className="mb-5">
-						<Col>
-							<button onClick={handleClickPlaceholder}>Private Chat</button></Col>
-						<Col>
-							<button onClick={handleClickPlaceholder}>Make friend</button></Col>
-					</Row>
+					{/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
+					{ selectedUser && <DisplayOneUser loginName={selectedUser}/>}
 				</Col>
 
 			</Row>
