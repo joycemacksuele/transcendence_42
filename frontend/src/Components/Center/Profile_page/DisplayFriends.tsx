@@ -12,8 +12,10 @@ interface User {
 	id: number;
 	name: string;
 	loginName: string;
+	profileImage: string,
 	profileName: string;
 	onlineStatus: boolean;
+	rank: number;
 }
 
 const myStyle = {
@@ -21,6 +23,7 @@ const myStyle = {
 	// width: "100%",
 	backgroundColor: "beige",
 	color: "black",
+
 };
 
 
@@ -86,21 +89,27 @@ const UsersList: React.FC = () => {
 			{displayList && ( // Only render the list if showList is true
 				<div>
 					{/* <h4>Users in the database:</h4> */}
-					<ol className="list-users">
+					<ul className="list-users">
 						<li className="column-titles">
-							<span>Intra</span>
+							<span>Rank</span>
+							{/* <span>Intra</span> */}
 							<span>Name</span>
 							<span>Online</span>
 							{/* <span></span> */}
 						</li>
-						{users.map((user) => (
+						{ users.sort((a, b) => a.rank - b.rank)
+							.map((user) => (
 							// <li key={user.id}> ... {user.name} </li>
 							<li key={user.id}>
-								<span>
+								<span> { user.rank }. </span>
+								{/* <span>
 									{user.loginName}
-								</span>
+								</span> */}
 								<span>
 								{/* <b>intra:</b> {user.loginName}, &nbsp;&nbsp; */}
+								<img src={"http://localhost:3001/" + user.profileImage}
+										 id="profileImage_tiny"
+								/>
 									{user.profileName}
 								</span>
 								<span>
@@ -113,7 +122,7 @@ const UsersList: React.FC = () => {
 								</span> */}
 							</li>
 						))}
-					</ol>
+					</ul>
 				</div>
 			)}
 			<button onClick={handleInsertDataClick}>Create dummies</button>

@@ -45,7 +45,7 @@ const App_jaka: React.FC = () => {
 		<>
 		<CurrentUserContext.Provider value={currUserData as CurrUserData}>
 			<Routes>
-				<Route path="/"					element={<LoginAuth />} />
+				<Route path="/"					element={<LoginAuth />} />8
 				<Route path="/auth-callback"	element={<AuthCallbackPage />}/>
 
 				<Route 	path="/main_page"

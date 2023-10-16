@@ -14,12 +14,13 @@ import { CurrUserData } from "./Profile_page/contextCurrentUser";
 // import UsersList from "./Profile_page/DisplayUsers";
 // import StatsPage from "../Other/stats_page";
 
-type ContextProps = {
-  activeContent: string;
-  updateContext: (updateUserData: CurrUserData ) => void;
-};
+// type ContextProps = {
+//   activeContent: string;
+//   updateContext: (updateUserData: CurrUserData ) => void;
+// };
 
-const Center: React.FC<ContextProps> = ({ activeContent, updateContext }) => {
+// const Center: React.FC<ContextProps> = ({ activeContent, updateContext }) => {
+  const Center = () => {
 
   return (
     <>
