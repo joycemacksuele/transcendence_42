@@ -57,13 +57,27 @@ export class UserController {
 		return this.userService.createUser(createUserDto);// UserEntity
 	}
 
-		// GET ALL USERS
-		@Get('all')
-		async getAllUsers(): Promise<UserEntity[]> {
-			this.logger.log('[BACKEND LOG] getAllUsers');
-			return (this.userService.getAllUsers());
-		}
+
+	// GET ALL USERS
+	@Get('all')
+	async getAllUsers(): Promise<UserEntity[]> {
+		this.logger.log('[BACKEND LOG] getAllUsers');
+		return (this.userService.getAllUsers());
+	}
 	
+	
+	// GET ONE USER DATA
+	@Get('get-user/:loginName')
+	async getUserData(
+		@Param('loginName') loginName: string
+	): Promise<UserEntity>
+	{
+		
+		this.logger.log('[BACKEND LOG] getUser');
+		return (this.userService.getUserByLoginName(loginName));
+	}
+
+	// DELETE DUMMIES
 	@Delete()
 	async deleteDummies(): Promise<void> {
 		console.log('DELETE All Dummies');

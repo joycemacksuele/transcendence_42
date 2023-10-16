@@ -39,7 +39,7 @@ button#make-friend {
 }
 
 .list-users > li:not(.column-titles)::before {
-    content: counter(list-counter) ". ";
+    /* content: counter(list-counter) ". "; */ /* Numbers at start of each line  */
     margin-right: 10px;
 }
 
@@ -62,6 +62,7 @@ button#make-friend {
 .column-titles > span {
     font-weight: bold;
     background-color: rgb(212, 212, 186);
+    padding-left: 4%;
 }
 
 
@@ -78,4 +79,18 @@ button#make-friend {
 
 .list-user-link:hover {
     background-color: #c6b7b7;  /* choose any color you prefer */
+}
+
+ 
+#otherUserImage {
+    width: 75px;
+    height: 75px;
+    border-radius: 5%;
+}
+
+#profileImage_tiny {
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    margin: 0 3% 0 0;
 }
