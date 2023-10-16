@@ -3,6 +3,7 @@ import Header from "./Header/Header.tsx";
 import Center from "./Center/Center.tsx";
 import { CurrentUserContext, CurrUserData } from './Center/Profile_page/contextCurrentUser.tsx';
 import { checkIfUserExistsInDB } from './Center/Profile_page/checkIfUserExistsInDB.tsx';
+import { useNavigate } from 'react-router';
 
 interface ContextProps {
 	updateContext: (updateUserData: CurrUserData ) => void;
@@ -92,6 +93,7 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 		console.log('COOKIES: ', cookies);
 
 
+	const navigate = useNavigate();
 
 	// Todo Jaka: Now it first shows the Game component 
 	//		Maybe 'setActiveContent' is not needed anymore ??? 
@@ -99,15 +101,18 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 
 	const handleSetActiveContent = (content: string | null) => {
 		setActiveContent(content || '');
+		navigate(`/${content}`);
 	};
 
 	return (
 		<>
-			<Header functionToCall={handleSetActiveContent}/>
+			{/* <Header functionToCall={handleSetActiveContent}/> */}
+			<Header />
 			
 			<Center activeContent={ activeContent }
 					updateContext={ updateContext }
 			/>
+			{/* <Footer /> */}
 		</>
 	);
 };
