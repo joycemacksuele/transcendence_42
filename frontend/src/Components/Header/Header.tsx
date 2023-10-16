@@ -47,9 +47,9 @@ const Header: React.FC = () => {
 
 	console.log('Start Header ...');
 	
-	const handleClick = (content: null | string) => {
+	// const handleClick = (content: null | string) => {
 		// functionToCall(content);  //    ( setActiveContent() in main_page )
-	};
+	// };
 	
 	// Logging out button: 
 	//      The path '/logout' starts the component <LogoutPage>, there it goes to backend /auth/logout,
@@ -86,7 +86,7 @@ const Header: React.FC = () => {
 	console.log('Local Storage Image: ', image);
 
 	return (
-		<Navbar bg="light" data-bs-theme="light" sticky="top" defaultExpanded className="border-bottom">
+		<Navbar bg="light" data-bs-theme="light" sticky="top" className="border-bottom">
 			<Container fluid>
 
 				{/* Profile Image */}
@@ -109,7 +109,7 @@ const Header: React.FC = () => {
 				<Col className='col-md-10'>
 					<Nav
 						defaultActiveKey="profile"
-						onSelect={(k) => handleClick(k)}
+						// onSelect={(k) => handleClick(k)}
 						fill
 						// variant="tabs"		// just different styling
 						variant="underline"
