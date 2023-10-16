@@ -28,6 +28,7 @@ async function main() {
   
   // To enable backend server to serve static files from the folder where uploaded images are stored
   app.use('/uploads', express.static('uploads'));
+  app.use('/uploadsDummies', express.static('uploadsDummies'));
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
   app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));

@@ -53,10 +53,10 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 			const newProfileName = data.profileName;
 			
 			if (response.data.statusCode == 418) {
-	setProfileName('');
+				setProfileName('');
 				setErrorMessage(response.data.message);
 			} else if (response.data.statusCode < 200 || response.data.statusCode >= 300) {
-	setProfileName('');
+				setProfileName('');
 				setErrorMessage(response.data.message);
 			} else {
 				// Update Local Storage

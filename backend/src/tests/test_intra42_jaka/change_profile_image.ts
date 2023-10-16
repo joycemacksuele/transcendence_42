@@ -65,7 +65,7 @@ export class UploadImageController {
 		
 	async uploadFile(
 		@Param('loginName') loginName: string,		// ParseIntPipe: to extract parameter from the URL
-			@UploadedFile() file:any 
+		@UploadedFile() file:any 
 	) {
 		console.log('\n\nChange Image, Request received for userName: ', loginName);
 		const imagePath = file.path;
