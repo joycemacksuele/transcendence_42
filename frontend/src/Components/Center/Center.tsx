@@ -26,7 +26,10 @@ import { CurrUserData } from "./Profile_page/contextCurrentUser";
     <>
     <div id='div-center'>
 
-          <Outlet />
+        <Outlet />
+        {/* OUTLET: Inside this component (Center) there is outlet - access to other components (Chat, game ...)
+                    They are specified as 'Routes' in the top App component.
+                    Now they can be displayed within the Center component via the 'Outlet'. */}
 
       {/* <Routes>
           <Route path="profile" element={<UserProfilePage updateContext={ updateContext } />} />
