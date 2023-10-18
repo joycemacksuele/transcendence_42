@@ -94,3 +94,7 @@ button#make-friend {
     border-radius: 100%;
     margin: 0 3% 0 0;
 }
+
+.selected {
+    background: pink;
+}
