@@ -43,6 +43,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 					<Row className="mb-3">
 						<Col>
 							<h4>{ userData.profileName }</h4>
+							<p>online: {userData.onlineStatus ? "Yes" : "No"}</p>
 						</Col>
 					</Row>
 					<Row className="mb-5">
