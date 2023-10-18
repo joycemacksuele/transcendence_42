@@ -18,6 +18,10 @@ interface User {
 	rank: number;
 }
 
+interface FriendsListProps {
+	clickOnUser: (loginName: string) => void;
+}
+
 const myStyle = {
 	// padding: "2%",
 	// width: "100%",
@@ -27,9 +31,11 @@ const myStyle = {
 };
 
 
-const UsersList: React.FC = () => {
+const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
+
 	const [users, setUsers] = useState<User[]>([]);
 	const [displayList, setDisplayList] = useState(true);
+	const [selectedUser, setSelectedUser] = useState<string | null>(null);
 	
 
 	const handleInsertDataClick = () => {
@@ -58,6 +64,12 @@ const UsersList: React.FC = () => {
 		fetchUsers();
 	}, []);
 
+	const handleUserClick = (e: React.MouseEvent, loginName: string) => {
+		e.preventDefault();
+		setSelectedUser(loginName);
+		clickOnUser(loginName);
+	}
+
 	// const handleClick = () => {
 	// 	if (!displayList) {
 	// 		fetchUsers();
@@ -80,41 +92,35 @@ const UsersList: React.FC = () => {
 
 	return (
 		<div style={myStyle}>
-			
-			{/* <button onClick={handleClick}>
-				{!displayList ? "Show Dummy Users" : "Hide Users"}
-			</button>{" "} */}
 
 			{/* Button to trigger fetching the users */}
 			{displayList && ( // Only render the list if showList is true
 				<div>
-					{/* <h4>Users in the database:</h4> */}
 					<ul className="list-users">
 						<li className="column-titles">
 							<span>Rank</span>
-							{/* <span>Intra</span> */}
 							<span>Name</span>
 							<span>Online</span>
-							{/* <span></span> */}
 						</li>
 						{ users.sort((a, b) => a.rank - b.rank)
 							.map((user) => (
-							// <li key={user.id}> ... {user.name} </li>
 							<li key={user.id}>
 								<span> { user.rank }. </span>
-								{/* <span>
-									{user.loginName}
-								</span> */}
+
 								<span>
-								{/* <b>intra:</b> {user.loginName}, &nbsp;&nbsp; */}
-								<img src={"http://localhost:3001/" + user.profileImage}
-										 id="profileImage_tiny"
-								/>
+								<a
+									className={'list-user-link'}
+									//className={`list-user-link ${user.loginName === selectedUser ? 'selected' : ''} `}
+									onClick={(e) => handleUserClick(e, user.loginName)}
+								>
+									<img src={"http://localhost:3001/" + user.profileImage}
+										id="profileImage_tiny"
+									/>
 									{user.profileName}
+								</a>
 								</span>
+
 								<span>
-									{/* yes/no */}
-									{/* {user.onlineStatus} */}
 									{user.onlineStatus ? "Yes" : "No"}
 								</span>
 								{/* <span>
@@ -132,4 +138,4 @@ const UsersList: React.FC = () => {
 	);
 };
 
-export default UsersList;
+export default FriendsList;
