@@ -22,7 +22,6 @@ const InputUserName: React.FC = () => {
       setOkMessage("Username has been submitted.")
     }
 
-    
     try {
       const response = await axios.post('http://localhost:3001/users', { name });
       

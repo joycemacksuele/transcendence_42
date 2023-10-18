@@ -93,13 +93,11 @@ const UsersList: React.FC = () => {
 							.map((user) => (
 							<li key={user.id}>
 								<span>{ user.rank }.</span>
-								{/* <span>
-									{user.loginName}
-								</span> */}
+
 								<span>
 								<a
 									href=""
-									className="list-user-link"
+									className={`list-user-link ${user.loginName === selectedUser ? 'selected' : ''} `}
 									onClick={(e) => handleUserClick(e, user.loginName)}
 								>
 									<img src={"http://localhost:3001/" + user.profileImage}
@@ -121,7 +119,12 @@ const UsersList: React.FC = () => {
 
 				<Col className='bg-custom text-black p-3 rounded'>
 					{/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
-					{ selectedUser && <DisplayOneUser loginName={selectedUser}/>}
+					{ selectedUser ? (
+						<DisplayOneUser loginName={selectedUser} />
+						) : (
+						<p><br /><br /><br /> &larr; Select a user from the list</p>
+						)
+					}
 				</Col>
 
 			</Row>
