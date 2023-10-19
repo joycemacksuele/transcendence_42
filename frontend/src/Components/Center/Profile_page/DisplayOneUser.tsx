@@ -3,7 +3,7 @@ import React, {useEffect, useState } from 'react';
 import axios from 'axios';
 import { Navbar, Container, Nav, Row, Col, Image, Button } from 'react-bootstrap';
 
-import '../../../css/profile-users-list.css'
+import '../../../css/Profile-users-list.css'
 
 interface UserProps {
 	loginName: string;
