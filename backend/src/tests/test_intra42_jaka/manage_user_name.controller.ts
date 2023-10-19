@@ -4,7 +4,7 @@ import { Controller, Post, Get, HttpStatus, HttpException, Body, Query } from '@
 import { UserService } from '../../user/user.service';
 import { UserEntity } from '../../user/user.entity';
 import { DuplicateService } from '../../duplicate/duplicate.service';
-
+import { ChangeProfileNameDTO } from './change_profile_name.dto'
 
 @Controller('manage_curr_user_data')
 export class StoreCurrUserToDataBs {
@@ -105,7 +105,8 @@ export class StoreCurrUserToDataBs {
 
 
   @Post('change_profile_name')
-  async changeProfileName(@Body() data: { profileName: string, loginName: string }): Promise<{ message: string }> {
+  // async changeProfileName(@Body() data: { profileName: string, loginName: string }): Promise<{ message: string }> {
+  async changeProfileName(@Body() data: ChangeProfileNameDTO): Promise<{ message: string }> {
     try {
       // should be get current UserByLoginName() and then change the profile name, but then the profile name on the button should be also replaced,
       // but that button name is loaded in the Header, directly from intra ...!
