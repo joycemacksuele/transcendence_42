@@ -95,9 +95,9 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 					/> &nbsp; 
 
 					<button type="submit">Submit</button>
-						{ !profileName && errorMessage && <p style={{ color: 'red' }}> { errorMessage } </p> }
-						{  profileName && <p style={{ color: 'orange' }}>You are typing ...</p>} 
-						{ !profileName && !errorMessage && <p style={{ color: 'green' }}> { OkMessage } </p> } 
+					{ !profileName && errorMessage && <p style={{ color: 'red' }}> { errorMessage } </p> }
+					{  profileName && <p style={{ color: 'orange' }}>You are typing ...</p>}
+					{ !profileName && !errorMessage && <p style={{ color: 'green' }}> { OkMessage } </p> }
 				</form>
 			</div>
 	);

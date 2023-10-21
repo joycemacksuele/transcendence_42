@@ -1,6 +1,7 @@
 // TODO: EACH USER SHOWN ON THE CHAT SCREEN HAS TO BE CLICKABLE AND BRING THE USER TO THIS USER'S PUBLIC PROFILE PAGE
 import React, { useState, useEffect } from 'react';
 import { Socket, io } from "socket.io-client";
+import RoomType from "./Chat";
 import avatarImage from '../../../images/avatar_default.png'
 
 // Importing bootstrap and other modules
@@ -11,7 +12,13 @@ import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-const ChatGroups = () => {
+type PropsHeader = {
+    membersRoomType: RoomType;
+    // setRoomType: (value: (((prevState: RoomType) => RoomType) | RoomType)) => void;
+};
+
+// const ChatGroups = () => {
+const ChatGroups: React.FC<PropsHeader> = ({ membersRoomType }) => {
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
 
@@ -53,12 +60,6 @@ const ChatGroups = () => {
 
     ////////////////////////////////////////////////////////////////////// CREATE CHAT ROOM
 
-    enum RoomType {
-        PRIVATE,// max 2 people (DM)
-        PUBLIC,// Can have > 2
-        PROTECTED,//Can have > 2 AND has a password
-    }
-
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -69,9 +70,10 @@ const ChatGroups = () => {
 
     const createRoom = () => {
         console.log("[FRONTNED LOG] createRoom called");
-        {/* TODO: roomType IS ALWAYS BEING SET TO 1 ON THE BACKEND */}
-        socket.emit("createRoom", {roomName: roomName, roomType: roomType, roomPassword: roomPassword});
+        socket.emit("createRoom", {roomName: roomName, roomType: RoomType, roomPassword: roomPassword});
         setShow(false)
+        setRoomName('');
+        setRoomPassword('');
         // - Dto to send in order to create a room:
         // name
         // type (RoomType -> private is a DM, public is just saved as public, protected will ask for a password)
@@ -105,7 +107,7 @@ const ChatGroups = () => {
                         </div>
                         <div className="p-2">Jaka's group</div>
                         <div className="p-2">Corina's group</div>
-                        <div className="p-2">Hokai's group</div>
+                        <div className="p-2">Ho Kai's group</div>
                         <div className="p-2">Robert's group</div>
                     </Stack>
                 </Card.Body>
@@ -117,31 +119,37 @@ const ChatGroups = () => {
                     <Button variant="primary" type="submit" onClick={handleShow}>Create room</Button>
                     <Modal show={show} onHide={handleClose}>
                         <Modal.Header closeButton>
-                            <Modal.Title>Modal heading</Modal.Title>
+                            <Modal.Title>Create group</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <Form>
+                                {/* Group Name */}
                                 <Form.Group className="mb-3" controlId="roomForm.name">
-                                    {/* <Form.Label>Room name</Form.Label> */}
+                                    {/* <Form.Label>Group name</Form.Label> */}
                                     <Form.Control
                                         type="text"
-                                        placeholder="Room name"
+                                        placeholder="Group name"
                                         autoFocus
                                         onChange={(event) => setRoomName(event.target.value)}
                                     />
                                 </Form.Group>
+
+                                {/* Group Type */}
                                 <Form.Select
                                     aria-label="Default select example"
                                     id="roomForm.type"
                                     className="mb-3"
+                                    onChange={(event) => setRoomType(event.target.value)}
                                 >
-                                    <option>Choose the chat type</option>
+                                    <option>Choose the group type</option>
                                     {/* <option value="" selected="true"></option> */}
-                                    {/* TODO: THIS IS ALWAYS BEING SET TO Q ON THE BACKEND */}
-                                    <option value="form_1" onChange={() => setRoomType(RoomType.PUBLIC)}>Public</option>
-                                    <option value="form_2" onChange={() => setRoomType(RoomType.PRIVATE)}>Private (DM)</option>
-                                    <option value="form_3" onChange={() => setRoomType(RoomType.PROTECTED)}>Protected</option>
+                                    {/* TODO: THIS IS ALWAYS BEING SET TO 1 ON THE BACKEND */}
+                                    <option value={RoomType.PUBLIC} >Public</option>
+                                    {/*<option value="form_2" onChange={() => setRoomType(RoomType.PRIVATE)}>Private (DM)</option>*/}
+                                    <option value={RoomType.PROTECTED} >Protected</option>
                                 </Form.Select>
+
+                                {/* Group password - if it's protected */}
                                 <Form.Group className="mb-3">
                                     {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
                                     <Form.Control
