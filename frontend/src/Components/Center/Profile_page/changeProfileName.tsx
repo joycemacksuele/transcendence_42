@@ -12,7 +12,6 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
 	const myMargin = { margin: '5% 0 5% 0', padding: '2%', backgroundColor: 'beige', width: '100%', color: 'blue'};
 
-
 	// Get loginName from the 'global' context struct 
 	const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
@@ -40,12 +39,11 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 		
 		try {
 			// const loginName =
-			const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name', { profileName, loginName} , {validateStatus: () => true });
+			const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name', { profileName, loginName } , {validateStatus: () => true });
 
 			setProfileName(''); // Resetting the input field
 			setErrorMessage('');
 		
-			
 			// To grab a specific value (profileName) from the incoming Json response:
 			const data = JSON.parse(response.config.data);
 			console.log('Jaka: from ChangeProfileName, JSON: ', JSON.stringify(response));

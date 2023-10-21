@@ -13,7 +13,9 @@
 	Each entity has its own repository.
 */
 
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+
+import { Friendship } from 'src/friendships/friendship.entity';
 
 @Entity()
 export class UserEntity {// Joyce -> I named it from MyUser to UserEntity because it was tricky for me to remember that the MyUser keyword was an entity -> we can change it back later if you want
@@ -70,4 +72,11 @@ export class UserEntity {// Joyce -> I named it from MyUser to UserEntity becaus
 	// @Column({type: json})
 	@Column({type: "integer", array: true})
 	roomsCreated: number[];
+
+	
+	@OneToMany(() => Friendship, (friendship) => friendship.user)
+	friendships: Friendship[];
+
+	@OneToMany(() => Friendship, (friendship) => friendship.friend)
+	friendOf: Friendship[];
 }
