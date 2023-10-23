@@ -88,7 +88,7 @@ export class StoreCurrUserToDataBs {
           hashedSecret: 'dummy hashed secret',  // todo jaka: change back, and obtain the real hashedSecret
           roomsCreated: [2, 5, 44],
           friendships: [],
-          friendOf: []
+          // friendOf: []
         // intraId: data.intraId,
           // hashedSecret: data.hashedSecret },
         },
