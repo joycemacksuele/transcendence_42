@@ -51,7 +51,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 	// const handleClose = () => setDummy(false);
 	// const handleShow = () => setDummy(true);
 	// const [roomName, setRoomName] = useState('');
-	// const [roomType, setRoomType] = useState(RoomType.PUBLIC);
+	// const [groupType, setGroupType] = useState(GroupType.PUBLIC);
 	// const [roomPassword, setRoomPassword] = useState('');
 
 	// const dummyFunction00 = () => {
