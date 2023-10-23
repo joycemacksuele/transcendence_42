@@ -27,36 +27,77 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Nav';
 
-import RecentChats from "./RecentChats";
+import ChatRecent from "./ChatRecent";
 import ChatGroups from "./ChatGroups";
+import NewChat from "./NewChat";
 import Messages from "./Messages";
 import MembersPrivateMessage from "./MembersPrivateMessage";
 import MembersGroup from "./MembersGroup";
 
-export enum RoomType {
+export enum GroupType {
     PRIVATE,// max 2 people (DM)
     PUBLIC,// Can have > 2
     PROTECTED,//Can have > 2 AND has a password
 }
-// type ContextProps = {
-//     activeContentRight: string;
-// };
-const Chat = () => {
-// const Chat: React.FC<ContextProps> = ({ activeContentRight }) => {
 
-    const [roomType, setRoomType] = useState(RoomType.PUBLIC);
+interface ChatData {
+    socketRoomId: number;
+    name: string;// Can also be a login name
+}
+
+const Chat = () => {
+
+    ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
+    const [socket, setSocket] = useState<Socket>();
+
+    // useEffect without dependencies
+    // When your component is added to the DOM, React will run your setup function
+    useEffect(() => {
+        const newSocket = io("http://localhost:3001");// TODO GET FROM THE .ENV OR MACRO
+        setSocket(newSocket);
+        console.log(`[Chat Component] socket created`);
+
+        newSocket?.on("connect", () => {
+            console.log(`[Chat Component] socket connected -> socket id: ${newSocket?.id}`);
+        });
+
+        // When your component is removed from the DOM, React will run your clean up function
+        return () => {
+            // console.log(`socket disconnected AND removeAllListeners`);
+            // socket.removeAllListeners();
+            socket?.disconnect();
+            console.log(`[Chat Component] socket disconnected`);
+        };
+    }, []);
+
+    // // useEffect with socket as a dependency
+    // useEffect(() => {
+    //     socket?.on("connect", () => {
+    //         console.log(`socket connected -> socket id: ${socket?.id}`);
+    //     });
+    //     // After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values
+    //     return () => {
+    //         // console.log(`socket disconnected AND removeAllListeners`);
+    //         // socket.removeAllListeners();
+    //         socket?.disconnect();
+    //         console.log(`socket disconnected`);
+    //     };
+    // }, [socket]);
 
     ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
+    const [recentChatList, setRecentChatList] = useState<ChatData[]>([]);
+    const [groupType, setGroupType] = useState(GroupType.PUBLIC);
 
+    // recent ot groups
     const [activeContentLeft, setActiveContentLeft] = useState<string>('recent');
-    const [activeContentRight, setActiveContentRight] = useState<string>('recent');
+    // roomId so we can have the correct chat members and config on this column
+    const [activeContentRight, setActiveContentRight] = useState<number>();
 
     const handleClick = (content: null | string) => {
         setActiveContentLeft(content || '');
     };
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
-
     return (
         <Container fluid>
             {/* I still dont understand why we need tihs Row here but it is not working without it*/}
@@ -83,8 +124,15 @@ const Chat = () => {
                     </Row>
                     {/* Recent or Group's body */}
                     <Row className='h-100'>
-                        {activeContentLeft === 'recent' && <RecentChats /> }
-                        {activeContentLeft === 'groups' && <ChatGroups roomType={ roomType } /> }
+                        {/* send a list of chats to outout ... updated when we click on NewChat button*/}
+                        {activeContentLeft === 'recent' && <ChatRecent recentChatList={recentChatList} /> }
+                        {activeContentLeft === 'groups' && <ChatGroups /> }
+                        {/* NewChat Button */}
+                        <NewChat
+                            socket={socket}
+                            setRecentChatList={setRecentChatList}
+                            // onSelect={(k) => handleClick(k)}
+                        />
                     </Row>
                 </Col>
 
@@ -111,8 +159,8 @@ const Chat = () => {
                         </Card.Header>
                         {/* Members body */}
                         <Card.Body>
-                            {roomType === RoomType.PRIVATE && <MembersPrivateMessage /> }
-                            {roomType === RoomType.PUBLIC || roomType === RoomType.PROTECTED && <MembersGroup /> }
+                            {groupType === GroupType.PRIVATE && <MembersPrivateMessage /> }
+                            {groupType === GroupType.PUBLIC || groupType === GroupType.PROTECTED && <MembersGroup /> }
                             {/*<Nav.Link href="/home">Active</Nav.Link>*/}
                         </Card.Body>
                     </Row>

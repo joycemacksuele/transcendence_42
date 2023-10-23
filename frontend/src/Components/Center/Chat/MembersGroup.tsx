@@ -30,10 +30,33 @@ const MembersGroup = () => {
 // TODO: EACH USER SHOWN ON THE CHAT SCREEN HAS TO BE CLICKABLE AND BRING THE USER TO THIS USER'S PUBLIC PROFILE PAGE
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
-
     return (
         <>
-            <Row className='h-25'>
+            {/* Members row */}
+            <Row className='h-80'>
+                <Card.Body variant="top">
+                    <Stack gap={1}>
+                        <div className="media" className="p-2">
+                            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />
+                            Joyce's group
+                            {/*<small className="small font-weight-bold">25 Dec</small>*/}
+                        </div>
+                        <div
+                            className="p-2"
+                            className="media"
+                        >
+                            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />
+                            Jaka
+                        </div>
+                        <div className="p-2">Corina</div>
+                        <div className="p-2">Ho Kai</div>
+                        <div className="p-2">Robert</div>
+                    </Stack>
+                </Card.Body>
+            </Row>
+
+            {/* Group Buttons row */}
+            <Row className='h-20'>
                 <Stack gap={2} className='align-self-center'>
                     {/*use variant="outline-secondary" disabled for when we dont want this button to be enabled*/}
                     {/* Play button is available only when we are on a private chat channel*/}

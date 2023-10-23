@@ -33,7 +33,7 @@ const MembersPrivateMessage = () => {
 
     return (
         <>
-            <Row className='h-25'>
+            <Row className='h-100'>
                 <Stack gap={2} className='align-self-center'>
                     {/*use variant="outline-secondary" disabled for when we dont want this button to be enabled*/}
                     {/* Play button is available only when we are on a private chat channel*/}
