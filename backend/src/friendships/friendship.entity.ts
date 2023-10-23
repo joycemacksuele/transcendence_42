@@ -4,23 +4,37 @@ import { UserEntity } from '../user/user.entity';
 @Entity('friendship')
 @Unique(['userId', 'friendId']) // prevent friendship with same person
 
+
+
+/*
+	This is a table with 2 columns, that represent the sender of friend request (userId) and the receiver (friendId)
+
+	Each row represents 1 friend relationship:
+		userid           friendid
+		10                   20
+		11                   20
+		10                   21
+		11                   21
+*/
+
 export class Friendship {
 	@PrimaryGeneratedColumn()
 	id: number;
 
 	@Column()
-	userId: number;
+	userId: number;	// The ID of the follower
 
 	@Column()
 	friendId: number;
 
-	@ManyToOne(() => UserEntity) // ??? WHAT DOES THIS EXACTLY ???
+	// @ManyToOne(() => UserEntity)
+	@ManyToOne(() => UserEntity, user => user.friendships)
 	@JoinColumn({ name: 'userId' })
-	user: UserEntity;
+	user: UserEntity;		// The user who SENDS the friend request
 
 	@ManyToOne(() => UserEntity)
-	@JoinColumn({ name: 'friendId' })
-	friend: UserEntity;
+	@JoinColumn({ name: 'friendId' })	
+	friend: UserEntity;		// the user who RECEIVES the friend request
 }
 
 

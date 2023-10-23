@@ -10,6 +10,8 @@ import { UserService } from 'src/user/user.service';
 import { promises as fs } from 'fs';  // added jaka, to delete old profile image
 import * as path from 'path';         // added jaka, to delete old profile image
 
+import { GetCurrentUser } from 'src/utils/decorators/getCurrentUser';
+
 // https://stackoverflow.com/questions/70687308/how-to-upload-image-file-using-reactjs-to-api-using-nestjs-with-bytea-datatype
 
 
@@ -65,9 +67,11 @@ export class UploadImageController {
 		
 	async uploadFile(
 		@Param('loginName') loginName: string,		// ParseIntPipe: to extract parameter from the URL
-		@UploadedFile() file:any 
+		@UploadedFile() file: any,
+		@GetCurrentUser() user: any,
 	) {
 		console.log('\n\nChange Image, Request received for userName: ', loginName);
+		console.log('\n\nChange Image, Request received for userName: ', user.loginName);
 		const imagePath = file.path;
 		console.log('New image path:', imagePath);
 		
