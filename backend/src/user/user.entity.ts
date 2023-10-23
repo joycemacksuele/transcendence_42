@@ -16,7 +16,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class UserEntity {// Joyce -> I named it from MyUser to UserEntity because it was tricky for me to remember that the MyUser keyword was an entity -> we can change it back later if you want
+export class UserEntity {
 	constructor() {
 		console.log('[BACKEND LOG] UserEntity constructor');
 	}
