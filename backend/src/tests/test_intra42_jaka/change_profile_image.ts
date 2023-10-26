@@ -69,9 +69,11 @@ export class UploadImageController {
 		@Param('loginName') loginName: string,		// ParseIntPipe: to extract parameter from the URL
 		@UploadedFile() file: any,
 		@GetCurrentUser() user: any,
+		// @Req() req: Request,		// jaka: this gives acces to token's payload content, when JwtGuard is inabled: const loginName = req.user.loginName;
+
 	) {
-		console.log('\n\nChange Image, Request received for userName: ', loginName);
-		console.log('\n\nChange Image, Request received for userName: ', user.loginName);
+		//console.log('\n\nChange Image, Request received for userName: ', loginName);
+		console.log('\n\nChange Image, Request received for userName: ', user.username);
 		const imagePath = file.path;
 		console.log('New image path:', imagePath);
 		
