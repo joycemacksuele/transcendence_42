@@ -6,18 +6,23 @@ import { AuthService } from '../auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MyUser } from 'src/user/user.entity';
+import { UserEntity } from 'src/user/user.entity';
 
 @Module({
-    imports: [MailerModule.forRoot({
+    imports: [TypeOrmModule.forFeature([UserEntity]),
+    MailerModule.forRoot({
         transport: {
-            host: 'smtp.gmail.com',
+            host: `${process.env.EHOST}`,
+            port: `${process.env.EPORT}`,
+            // service: 'gmail',
+            secure: true,
             auth: {
-                user: 'email address',
-                pass: 'password',
+                user: `${process.env.EMAIL}`,
+                pass: `${process.env.APASS}`,
+
             }
         },
-    }), TypeOrmModule.forFeature([MyUser])],
+    })], 
   
     controllers: [TwoFactorAuthController],
     

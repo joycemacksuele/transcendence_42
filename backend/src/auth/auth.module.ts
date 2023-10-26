@@ -8,7 +8,7 @@ import { UserService } from 'src/user/user.service';
 import { TwoFactorAuthService } from './2fa/2fa.service';
 import { UserModule } from 'src/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MyUser } from 'src/user/user.entity';
+import { UserEntity } from 'src/user/user.entity';
 
 
 @Module({
@@ -17,7 +17,7 @@ import { MyUser } from 'src/user/user.entity';
     global: true,
   }), 
   UserModule, 
-  TypeOrmModule.forFeature([MyUser])],
+  TypeOrmModule.forFeature([UserEntity])],
 
   controllers: [AuthController],
   

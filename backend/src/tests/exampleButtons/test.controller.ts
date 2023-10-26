@@ -13,5 +13,4 @@ export class TestButton {
     console.log('print from test button 01');
     return '[BACKEND] This is the response from "TEST" endpoint.';
   }
-
 }

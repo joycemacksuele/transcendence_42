@@ -16,19 +16,22 @@ export class AuthGuard implements CanActivate {
     
     // if the class that is used is OpenAccess then it will allow access otherwise it will proceed to verify the JWT token
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        console.log('AuthGuard function');        
+        this.logger.log('Start AuthGuard function');        
         
         const open = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
             context.getHandler(),
             context.getClass(),
         ]);
         if (open)
+        {
+            this.logger.log('Open Access - no need for AuthGuard');
             return true;
+        }
 
         // decode and verify the JWT token   
         const request = context.switchToHttp().getRequest();
         const token = this.extractTokenFromHeader(request);
-        console.log('Token Auth Guard: ' + token);
+        this.logger.log('Token Auth Guard: ' + token);
         
         if (!token){
             throw new UnauthorizedException();
@@ -71,22 +74,19 @@ export class AuthGuard implements CanActivate {
         return (request['user']);
     }
 
-    // extractTokenFromHeader(request: Request): string | undefined{
-    //     let token: string;
-    //     let type: string;
+    extractTokenFromHeader(request: Request): string | undefined{
+        let cookie: string;
+        let token: string;
 
-    //     // token = request.get('Cookie');
-    //     token = request.cookies;
-    //     console.log('tester1: ' + token);
-    //     type = token.split('Bearer ')[1];
-    //     console.log('extracted token: ' + type);
-    //     if (token === type)
-    //         return token;
-    //     return undefined;
-    // }
-
-    private extractTokenFromHeader(request: Request): string | undefined {
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token : undefined;
-      }
+        cookie = request.get('Cookie');
+        this.logger.log('extract Token from Header - full cookie: ' + cookie);
+        // this.logger.log('full cookie: ' + cookie);
+        if (!cookie)
+            return undefined;
+        token = cookie.split(';')[0];
+        token = token.split('token=')[1];
+        // console.log('extracted token: ' + token);
+        // console.log(request);
+        return token;
+    }
 }

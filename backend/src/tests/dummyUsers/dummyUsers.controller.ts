@@ -2,7 +2,7 @@
 import { Controller, Post, HttpStatus, HttpException } from '@nestjs/common';
 // import { DummyUserService } from './dummyUsers.service';
 import { UserService } from '../../user/user.service';
-import { MyUser } from '../../user/user.entity';
+import { UserEntity } from '../../user/user.entity';
 import { OpenAccess } from 'src/auth/guards/auth.openaccess';
 
 // export class DummyUserDto {
@@ -28,13 +28,12 @@ export class DummyUsersController {
       // Jaka: such endpoint should be protected and can only be accessed by authorized users
 
       // Dummy user data (for testing)
-      const dummyUsers: MyUser[] = [
-        { loginName: 'dummy 1', profileName: 'default name 1', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
-        { loginName: 'dummy 2', profileName: 'default name 2', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
-        { loginName: 'dummy 3', profileName: 'default name 3', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
-        { loginName: 'dummy 4', profileName: 'default name 4', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
-        { loginName: 'dummy 5', profileName: 'default name 5', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', tfaEnabled: true, tfaCode: 'default'},
-
+      const dummyUsers: UserEntity[] = [
+        { loginName: 'dummy1', profileName: 'dummy1', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', onlineStatus: false, rank: 7, gamesPlayed: 20, gamesWon: 11, gamesLost: 9, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 5, 33]},
+        { loginName: 'dummy2', profileName: 'dummy2', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', onlineStatus: false, rank: 3, gamesPlayed: 21, gamesWon: 13, gamesLost: 8, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 33]},
+        { loginName: 'dummy3', profileName: 'dummy3', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', onlineStatus: false, rank: 9, gamesPlayed: 22, gamesWon: 15, gamesLost: 7, tfaEnabled: true, tfaCode: 'default', roomsCreated: [5, 33]},
+        { loginName: 'dummy4', profileName: 'dummy4', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', onlineStatus: false, rank: 8, gamesPlayed: 22, gamesWon: 17, gamesLost: 5, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 1, 2]},
+        { loginName: 'dummy5', profileName: 'dummy5', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', onlineStatus: false, rank: 2, gamesPlayed: 22, gamesWon: 19, gamesLost: 3, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 5]},
       ];
 
       // Insert the dummy users into the database
@@ -48,4 +47,6 @@ export class DummyUsersController {
       throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
 }
