@@ -33,7 +33,7 @@ export class AuthController {
 
 		try{
 			this.logger.log('Redirecting to OAuth...');
-			return response.redirect(path);  // 302 http status 
+			return response.redirect(path);  // 302 http status
 		}
 		catch(err){
 			this.logger.log('getAuthLogin: ' + err);
