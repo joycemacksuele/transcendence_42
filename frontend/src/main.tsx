@@ -13,7 +13,6 @@ import App_jaka from "./App_jaka.tsx";
 // import ExampleInputField	from './components/forms/RegisterForm.tsx'
 // import ExampleFormUserName	from './components/forms/exampleInputUserName.tsx'
 // import ExampleDisplayUsers	from './components/forms/exampleDisplayUsers.tsx'
-// import ChatInputField from './components/forms/chatForm.tsx'
 
 /*
   jQuery
@@ -24,16 +23,16 @@ import App_jaka from "./App_jaka.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Router>
-  < StrictMode >
+    {/* StrictMode was re-rendereing the components twice, to find errors as far as I know */}
+  {/* < StrictMode > */}
     {/* <App_vite_orig /> */}
     <App_jaka />
-	{/* <ChatInputField /> */}
 
     {/* <SomeText />
 		<SomeButtons />
 		<ExampleInputField />
 		<ExampleFormUserName />
 		<ExampleDisplayUsers /> */}
-  </ StrictMode >
+  {/* </ StrictMode > */}
   </Router>
 );

@@ -22,15 +22,20 @@ export class AuthService {
 	// This request needs to be performed on the server side, over a secure connection
 
 	async exchangeCodeForAccessToken(clientData: any, res: Response) {
+		// console.log('Start Exchange Code for token');
 		let access_token: string;
+		this.logger.log('exchangeCodeForAccessToken');
 		await axios
 			.post('https://api.intra.42.fr/oauth/token', clientData)
 			.then((response) => {
 				access_token = response.data['access_token'];
 				this.logger.log('Access Token received: ' + access_token); //
+				
 			})
 			.catch((error) => {
-				this.logger.error('\x1b[31mAn Error in 42 API: post request\x1b[0m' + error.response.data);
+				// this.logger.error('\x1b[31mAn Error in 42 API: post request: response: \x1b[0m' + JSON.stringify(response));
+				// this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response: \x1b[0m' + JSON.stringify(error.response));
+				this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response.data: \x1b[0m' + JSON.stringify(error.response.data));
 				throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 			});
 		await this.getTokenOwnerData(access_token, clientData.get('client_secret'), res);
@@ -77,10 +82,12 @@ export class AuthService {
 		intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
 		// intraId: 0,
 		email: email,
+		onlineStatus: true,		// at logout change to 'false'
 		hashedSecret: hash,
-		tfaEnabled: false,
+		tfaEnabled: true,
 		tfaCode: 'default',
-		profileImage: avatar
+		profileImage: avatar,
+		roomsCreated: [1, 2]
 	};
 
 	this.logger.log('dto:  intraLogin: ' + dto.loginName + ' intraId: ' + dto.intraId); // testing purpose - TO BE REMOVED!
@@ -110,12 +117,27 @@ export class AuthService {
 
 	async getOrCreateUser(data: any, response: Response) {
     	let token: string; 
+
+		this.logger.log('test create/find user ');
 		let player = await this.userService.getUserByLoginName(data.loginName);
 
 		if (!player) {
 			try {
 				player = await this.userService.createUser(data);
 				this.logger.log('made new player: ' + player.loginName);
+
+				// ADDED JAKA: 							//	SAVE ORIG USER IMAGE TO THE ./uploads/ FOLDER
+				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
+				console.log("Jaka: ImageURL: ", imageUrl);
+
+            	const imagePath = `./uploads/${player.loginName}.jpg`;
+				try {
+					await this.userService.downloadAndSaveImage(imageUrl, imagePath);
+					await this.userService.updateProfileImage(player.loginName,	"uploads/" + player.loginName + ".jpg");
+					console.log("User image saved.");
+				} catch(err) {
+					this.logger.error('Error updating profile image for player: ' + err);					
+				}
 			}
 			catch (err) {
 				this.logger.error('Error creating new player: ' + err);
@@ -125,38 +147,71 @@ export class AuthService {
 			this.logger.log('test: Created a new user:' + test.loginName);
 		}
 		
-		this.logger.log('getOrCreateUser: Current User: player.intraLogin:' + player.loginName);
-		this.logger.log('getOrCreateUser: Current User: player.profileName:' + player.profileName);
-		this.logger.log('getOrCreateUser: Current User: player.intrId:' + player.intraId);
-		this.logger.log('getOrCreateUser: Current User: player.email:' + player.email);
-		this.logger.log('getOrCreateUser: Current User: player.2fa:' + player.tfaEnabled);
+		this.logger.log('getOrCreateUser: Current User:');
+		this.logger.log('                          player.intraLogin:' + player.loginName);
+		this.logger.log('                          player.profileName:' + player.profileName);
+		this.logger.log('                          player.profileName:' + player.profileImage);
+		this.logger.log('                          player.intrId:' + player.intraId);
+		this.logger.log('                          player.email:' + player.email);
+		this.logger.log('                          player.2fa:' + player.tfaEnabled);
+		this.logger.log('                          player.tfaCode:' + player.tfaCode);
 
 		token = await this.signToken(player);
 		if (!token) {
 			throw new HttpException('Signing token failed.', HttpStatus.SERVICE_UNAVAILABLE);
 		}
 
-		this.logger.log('token: ' + token);
-		// response.cookie('jwt', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
-		const jwt = 'token=' + token + ' ; HttpOnly; Secure; SameSite=Strict';
-		response.setHeader('Set-Cookie', jwt);
 
-		// response.cookie('token', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
+		this.logger.log('Set-Cookie token: ' + token);
+
+		// Added jaka: ////////////////////////////////////////////////////////////////
+		// These attributs should be included when the the App is ready for 'production' 
+		const cookieAttributes = {
+			httpOnly: true,
+			path: '/',
+			// sameSite: 'none',
+			// secure: true,
+			// maxAge: 60 * 60 * 1000;	// 60 minutes
+		};
+
+		// Variant B)
+		// added jaka: appending the Attributes to the cookie
+		let cookieToken = `token=${token};`;
+		for (let attribute in cookieAttributes) {
+			if (cookieAttributes[attribute] === true) {
+				cookieToken += ` ${attribute};`;
+			} else
+				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
+		}
+		response.append('Set-Cookie', cookieToken);
+
+		// Jaka: Just for test: Separate cookies with user data, without httpOnly
+		let cookieUsername = `cookieUserName=${player.loginName}; path=/;`;
+		response.append('Set-Cookie', cookieUsername);
+		let cookieProfileName = `cookieProfileName=${player.profileName}; path=/;`;
+		response.append('Set-Cookie', cookieProfileName);
+		let cookieProfileImage = `cookieProfileImage=${player.profileImage}; path=/;`;
+		response.append('Set-Cookie', cookieProfileImage);
+
+		// response.cookie('jwt', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
+
 		console.log('print token inside request: ' + response.getHeader("set-cookie"));  // test 
 
 		// if 2fa true display profile else redirect to 2fa 
 		let path: string;
 		if (player.tfaEnabled === true)
-			path = `${process.env.DOMAIN}/main_page?loginName=`;
-		else
 		{
-			path = `${process.env.DOMAIN}/main_page?loginName=`; //once implemented this changes to: 
-			// path = `${process.env.DOMAIN}/login_2fa`;
+			this.logger.log('Two factor authentication enabled! Sending verification mail.');
 			this.tfaService.sendVerificationMail(player);
-		}	
+			let cookieLogInAttempts = `cookieLogInAttempts=0; path=/;`;
+			path = `${process.env.DOMAIN}/Login_2fa`;
+			response.append('Set-Cookie', cookieLogInAttempts);
+		}
+		else
+			path = `${process.env.DOMAIN}/main_page?loginName=`; 	
 
 		response.status(200);
-		return response.redirect(path + player.loginName + '&loginImage=' + player.profileImage);
+		return response.redirect(path); 														   // jaka, temp. added
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
 		// return response.redirect('http://localhost:3001/2faAuth' + const parameters? )
 	}
@@ -192,7 +247,7 @@ export class AuthService {
 
   logout(req: Request, response: Response) {
 	try{
-		response.clearCookie('token');
+		response.clearCookie('Cookie');
 		// disable 2fa ? 
 		return response.send({ message: 'Sign out succeeded' });
 	}
@@ -200,5 +255,5 @@ export class AuthService {
 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
 	}
   }
-
 }
+

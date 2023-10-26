@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
 import { Logger } from "@nestjs/common";
 import { UserService } from "src/user/user.service";
-import { MyUser } from "src/user/user.entity";
+import { UserEntity } from "src/user/user.entity";
 
 @Injectable()
 export class TwoFactorAuthService {
@@ -16,18 +16,24 @@ export class TwoFactorAuthService {
 		return code;
 	}
 
-	sendVerificationMail(player: MyUser)
-	{
+	async sendVerificationMail(player: UserEntity): Promise <void>	{
 		let code :string;
         code = String(this.createCode());
-		this.userService.updateStoredTFACode(player.loginName, code);
+		this.logger.log('create verification code: ' + code);
 
+		let updateCode = await this.userService.updateStoredTFACode(player.loginName, code);
+
+		this.logger.log('stored player.email: ' + player.email);
+		
+		// // JAKA: TEMP. DISABLED, IT WAS GIVING ERROR AT LOGIN
 		this.mailerService.sendMail({
-			to: 'email',
-			from: 'email',
-			subject: 'text',
-			text: 'Your verification code is: ' + code,
-			html: '<b> really not sure what this does </b>',
+			to: `${player.email}`,
+			from: `No reply ${process.env.EMAIL}`,
+			subject: 'Unfriendly Ping Pong log in verification',
+			text: 'Hey ' + player.loginName + ' ,Your verification code is: ' + code + 'If you did not request this email that sounds like a you problem!',
+			html: '<p>Hey ' + player.loginName + ' ,</p> <p>Your verification code is: ' + code + '</p><p>If you did not request this email that sounds like a you problem!</p>',
 		});
+
+		this.logger.log('verification email sent');
 	}
 }
