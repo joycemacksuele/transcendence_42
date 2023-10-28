@@ -13,6 +13,16 @@ export class FriendshipController {
 	};
 
 
+	@Post(':userId/removeFriend/:friendId')
+	async removeFriend(@Param('userId') userId: number, @Param('friendId') friendId: number): Promise<any> {
+		return this.friendshipService.removeFriend(userId, friendId)
+	}
+
+	@Get('/followingExists/:userId/:friendId')
+	async iAmFollowingHim(@Param('userId') userId: number, @Param('friendId') friendId: number): Promise <boolean> {
+		return this.friendshipService.followingExists(userId, friendId);
+	}
+
 	@Get(':userId/friends')
 	async getFriendsOfUser(@Param('userId') userId: number): Promise<UserEntity[]> {
 		return this.friendshipService.getFriendsOfUser(userId);

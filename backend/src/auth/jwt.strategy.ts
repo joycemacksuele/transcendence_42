@@ -3,7 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
 /*
-	jaka, installed:
+	Jaka, installed 'jwt strategy: to enable extracting content of the jwt token (userName, etc ...)
 		npm install @nestjs/passport passport passport-jwt     
 		npm i --save-dev @types/passport-jwt
 */

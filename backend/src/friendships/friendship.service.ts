@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Friendship } from "./friendship.entity";
@@ -21,7 +21,7 @@ export class FriendshipService {
 			where: {userId, friendId }
 		});
 		if (existingFriendship) {
-			throw new BadRequestException("This user is already your friend.");
+			throw new BadRequestException("wrong message: This should never shop up, because if the displayed profile is already a friend, it should on click just un-follow this user, and maybe? return to the list of friends");
 		}
 
 		const friendship = new Friendship();
@@ -29,6 +29,32 @@ export class FriendshipService {
 		friendship.friendId = friendId;
 		return this.friendshipRepository.save(friendship);
 	}
+
+	async removeFriend(userId: number, friendId: number): Promise<any> {
+		if (userId === friendId) {
+			throw new BadRequestException("You can't remove yourself as a 'followed user'");
+		}
+		const followedUser = await this.friendshipRepository.findOne({
+			where: { userId, friendId }
+		});
+
+		if (!followedUser) {
+			throw new NotFoundException("This user is not followed by you");
+		}
+
+		return this.friendshipRepository.remove(followedUser);
+
+	}
+
+		// THIS SHOULD FIND IF ONE FRIENDSHIP EXISTS
+		async followingExists(userId: number, friendId: number): Promise<boolean> {
+			const followingExists = await this.friendshipRepository.findOne({
+				where: { userId, friendId }
+			});
+
+			// !! DOUBLE !! CONVERST TO BOOLEAN, IF A VARIABLE IS NULL OR EXISTING
+			return !!followingExists;
+	  	}
 
 
 	async getFriendsOfUser(userId: number): Promise<UserEntity[]> {

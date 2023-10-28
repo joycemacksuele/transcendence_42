@@ -16,17 +16,41 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 	const [myId, setMyId] = useState<number>();
 
 	useEffect(() => { 
+
+		if (!myId) return; // GUARD CLAUSE: wait until myID is available
+
 		const fetchUserData = async () => {
+			let response;
 			try {
-				const response = await axios.get(`http://localhost:3001/users/get-user/${loginName}`);
+				response = await axios.get(`http://localhost:3001/users/get-user/${loginName}`);
 				setUserData(response.data);
 				console.log("Fetched userData: ", response);
 			} catch (error) {
 				console.error("Error fetching user's data: ", error);
+				return;
+			}
+
+			if (!response.data.id) return; // GUARD CLAUSE: wait until id is available
+
+			try {
+				console.log("Checking if I follow this user ... ");
+				
+				const responseAmIFollowing = await axios.get(`http://localhost:3001/friendship/followingExists/${myId}/${response.data.id}`);
+				console.log("   responseAmIFollowing: ", responseAmIFollowing);
+				if (responseAmIFollowing.data) {
+					// setIamFollowing(!!responseAmIFollowing.data); // DOUBLE !! CONVERT TO BOOL
+					console.log("    YES");
+					setIamFollowing(true);
+				} else {
+					console.log("    NO ");
+					setIamFollowing(false);
+				}
+			} catch (error) {
+				console.log("Error fetching if friendship/following exists", error);
 			}
 		};
 		fetchUserData();
-	}, [loginName]);
+	}, [loginName, myId]);
 	
 	
 	useEffect(() => {
@@ -37,7 +61,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 				console.log("localstorage-profileName: ", localStorage.getItem('profileName'));
 				const response = await axios.get(`http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem("profileName")}`);
 				setMyId(response.data.id);
-				setIamFollowing(response.data.IamFollowing);
+				//setIamFollowing(response.data.IamFollowing);
 				console.log("Fetched My Data: ", response);
 			} catch (error) {
 				console.error("Error catching my data: ", error);
