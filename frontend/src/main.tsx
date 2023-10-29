@@ -4,7 +4,6 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import "./index.css";
-import './index.css'
 import App_jaka from "./App_jaka.tsx";
 
 // import App_vite_orig from "./components/example_vite_orig.tsx";
@@ -23,16 +22,16 @@ import App_jaka from "./App_jaka.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Router>
-    {/* StrictMode was re-rendereing the components twice, to find errors as far as I know */}
-  {/* < StrictMode > */}
-    {/* <App_vite_orig /> */}
-    <App_jaka />
+      {/* StrictMode was re-rendereing the components twice, to find errors as far as I know */}
+      {/* < StrictMode > */}
+      {/* <App_vite_orig /> */}
+      <App_jaka />
 
-    {/* <SomeText />
-		<SomeButtons />
-		<ExampleInputField />
-		<ExampleFormUserName />
-		<ExampleDisplayUsers /> */}
-  {/* </ StrictMode > */}
+      {/* <SomeText />
+      <SomeButtons />
+      <ExampleInputField />
+      <ExampleFormUserName />
+      <ExampleDisplayUsers /> */}
+      {/* </ StrictMode > */}
   </Router>
 );
