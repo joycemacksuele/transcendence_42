@@ -43,24 +43,24 @@ const App_jaka: React.FC = () => {
 
 	return (
 		<>
-		<CurrentUserContext.Provider value={currUserData as CurrUserData}>
-			<Routes>
-				<Route path="/"					element={<LoginAuth />} />8
-				<Route path="/auth-callback"	element={<AuthCallbackPage />}/>
+			<CurrentUserContext.Provider value={currUserData as CurrUserData}>
+				<Routes>
+					<Route path="/"					element={<LoginAuth />} />8
+					<Route path="/auth-callback"	element={<AuthCallbackPage />}/>
 
-				<Route 	path="/main_page"
-						element={<MainPage updateContext={ updateContextValue } />}
-					>
-					<Route path="/main_page/profile" element={<UserProfilePage updateContext={ updateContextValue } />} />
-					<Route path="/main_page/chat" element={<ChatPage />} />
-					<Route path="/main_page/game" element={<PlayGamePage />} />
-					<Route path="/main_page/users" element={<UsersList />} />
-				</Route>
+					<Route 	path="/main_page"
+							element={<MainPage updateContext={ updateContextValue } />}
+						>
+						<Route path="/main_page/profile" element={<UserProfilePage updateContext={ updateContextValue } />} />
+						<Route path="/main_page/chat" element={<ChatPage />} />
+						<Route path="/main_page/game" element={<PlayGamePage />} />
+						<Route path="/main_page/users" element={<UsersList />} />
+					</Route>
 
-				<Route path="logout"			element={<LogoutPage />} />
-				<Route path="*"					element={<PageNotFound />} />
-			</Routes>
-		</CurrentUserContext.Provider>
+					<Route path="logout"			element={<LogoutPage />} />
+					<Route path="*"					element={<PageNotFound />} />
+				</Routes>
+			</CurrentUserContext.Provider>
 		</>
 	);
 };

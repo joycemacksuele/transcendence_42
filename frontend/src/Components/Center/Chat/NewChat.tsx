@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Socket from "socket.io-client";
-import GroupType from "./Chat";
+import React, { useState, useEffect } from 'react';
+import { Socket, io } from "socket.io-client";
+import { GroupType, ChatData } from "./Chat";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -10,13 +10,16 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 type PropsHeader = {
-    socket: Socket;
-    setRecentChatList: (value: (((prevState: ChatData[]) => ChatData[]) | ChatData[])) => void;
+    // setRecentChatList: (recentChatList: ChatData[]) => void;
+    setRecentChatList: (value: ChatData[]) => void;
 };
 
-const NewChat: React.FC<PropsHeader> = ({ socket, setRecentChatList }) => {
+const NewChat: React.FC<PropsHeader> = ({ setRecentChatList }) => {
+
+    console.log("[FRONTEND LOG] NewChat");
 
     ////////////////////////////////////////////////////////////////////// CREATE SOCKET ROOM
+    const [socket, setSocket] = useState<Socket>();
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -24,15 +27,19 @@ const NewChat: React.FC<PropsHeader> = ({ socket, setRecentChatList }) => {
     const [groupType, setGroupType] = useState(GroupType.PUBLIC);
     const [roomPassword, setRoomPassword] = useState('');
     // const [roomMembers, setMembers] = useState('');
+    const [roomCreated, setRoomCreated] = useState(false);
 
     const createRoom = () => {
         console.log("[FRONTNED LOG] createRoom called");
-        socket.emit("createRoom", {roomName: roomName, groupType: GroupType, roomPassword: roomPassword});
+        socket?.emit("createRoom", {roomName: roomName, groupType: GroupType, roomPassword: roomPassword});
 
-        setRecentChatList({socketRoomId: socket.id, name: roomName})
-        setShow(false)
+        // setRecentChatList([{socketRoomId: socket?.id, name: roomName}]);
+        // const updatedUserData = { ... initialState, {socketRoomId: socket?.id, name: roomName}};
+        setRecentChatList((recentChatList: ChatData[]) => ([...value, {socketRoomId: socket?.id, name: roomName}]));
+        setShow(false);
         setRoomName('');
         setRoomPassword('');
+        setRoomCreated(true);
         // - Dto to send in order to create a room:
         // name
         // type (GroupType -> private is a DM, public is just saved as public, protected will ask for a password)
@@ -50,6 +57,43 @@ const NewChat: React.FC<PropsHeader> = ({ socket, setRecentChatList }) => {
         //      more admins will be added later on, on the "members" colunm in the chat tab
         //      blocked users ids will be saved to the chat room database too, so we can hid their messages from the current user
     };
+
+    ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
+    
+
+    // useEffect without dependencies
+    // When your component is added to the DOM, React will run your setup function
+    useEffect(() => {
+        const newSocket = io("http://localhost:3001");// TODO GET FROM THE .ENV OR MACRO
+        setSocket(newSocket);
+        console.log("[Chat Component] socket created");
+
+        newSocket?.on("connect", () => {
+            console.log("[Chat Component] socket connected -> socket id: ", newSocket?.id);
+        });
+
+        // When your component is removed from the DOM, React will run your clean up function
+        // return () => {
+        //     // console.log(`socket disconnected AND removeAllListeners`);
+        //     // socket.removeAllListeners();
+        //     socket?.disconnect();
+        //     console.log("[Chat Component] socket disconnected");
+        // };
+    }, [roomCreated]);
+
+    // useEffect with socket as a dependency
+    // useEffect(() => {
+    //     socket?.on("connect", () => {
+    //         console.log("[Chat Component] socket connected -> socket id: ", socket?.id);
+    //     });
+    //     // After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values
+    //     return () => {
+    //         // console.log(`[Chat Component] socket disconnected AND removeAllListeners`);
+    //         // socket.removeAllListeners();
+    //         socket?.disconnect();
+    //         console.log("[Chat Component] socket disconnected");
+    //     };
+    // }, [socket]);
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
