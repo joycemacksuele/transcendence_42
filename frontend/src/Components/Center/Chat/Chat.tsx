@@ -1,7 +1,7 @@
 // TODO: EACH USER SHOWN ON THE CHAT SCREEN HAS TO BE CLICKABLE AND BRING THE USER TO THIS USER'S PUBLIC PROFILE PAGE
 
-import React, { useState, useEffect } from 'react';
-import { Socket, io } from "socket.io-client";
+import React, { useState } from 'react';
+import { Socket } from "socket.io-client";
 import axios from 'axios';
 import $ from "jquery";
 
@@ -40,52 +40,17 @@ export enum GroupType {
     PROTECTED,//Can have > 2 AND has a password
 }
 
-interface ChatData {
-    socketRoomId: number;
+export interface ChatData {
+    socketRoomId: Socket;
     name: string;// Can also be a login name
 }
 
 const Chat = () => {
-
-    ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
-    const [socket, setSocket] = useState<Socket>();
-
-    // useEffect without dependencies
-    // When your component is added to the DOM, React will run your setup function
-    useEffect(() => {
-        const newSocket = io("http://localhost:3001");// TODO GET FROM THE .ENV OR MACRO
-        setSocket(newSocket);
-        console.log(`[Chat Component] socket created`);
-
-        newSocket?.on("connect", () => {
-            console.log(`[Chat Component] socket connected -> socket id: ${newSocket?.id}`);
-        });
-
-        // When your component is removed from the DOM, React will run your clean up function
-        return () => {
-            // console.log(`socket disconnected AND removeAllListeners`);
-            // socket.removeAllListeners();
-            socket?.disconnect();
-            console.log(`[Chat Component] socket disconnected`);
-        };
-    }, []);
-
-    // // useEffect with socket as a dependency
-    // useEffect(() => {
-    //     socket?.on("connect", () => {
-    //         console.log(`socket connected -> socket id: ${socket?.id}`);
-    //     });
-    //     // After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values
-    //     return () => {
-    //         // console.log(`socket disconnected AND removeAllListeners`);
-    //         // socket.removeAllListeners();
-    //         socket?.disconnect();
-    //         console.log(`socket disconnected`);
-    //     };
-    // }, [socket]);
+    console.log("[FRONTEND LOG] Chat");
 
     ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
     const [recentChatList, setRecentChatList] = useState<ChatData[]>([]);
+    console.log("[FRONTEND LOG] Chat.recentChatList: ", recentChatList);
     const [groupType, setGroupType] = useState(GroupType.PUBLIC);
 
     // recent ot groups
@@ -129,7 +94,6 @@ const Chat = () => {
                         {activeContentLeft === 'groups' && <ChatGroups /> }
                         {/* NewChat Button */}
                         <NewChat
-                            socket={socket}
                             setRecentChatList={setRecentChatList}
                             // onSelect={(k) => handleClick(k)}
                         />
