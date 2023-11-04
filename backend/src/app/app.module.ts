@@ -4,6 +4,9 @@
   Path must match, but it can be without .ts suffix
 */
 
+// jaka, todo: here apparently it is enough to only import the module of each entity (ie: UserModule), and not UserController etc ...
+// --> remove the unnecessary
+
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -19,6 +22,8 @@ import { UserController } from '../user/user.controller';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { UserEntity } from '../user/user.entity';
+import { FriendshipModule } from '../friendships/friendship.module';
+import { Friendship } from '../friendships/friendship.entity';
 
 import { DuplicateService } from '../duplicate/duplicate.service';
 
@@ -69,15 +74,17 @@ import { JwtService } from '@nestjs/jwt';
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
-      entities: [UserEntity],// Add ChatEntity (and others) here?????????
+      entities: [UserEntity, Friendship],// Add ChatEntity (and others) here?????????
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
+      // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity]), // it is already in user.module
     UserModule,
     DatabaseModule,
     MailerModule,
     TwoFactorAuthModule,
     ChatModule,
+    FriendshipModule
   ],
 
   controllers: [
