@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth/guards/auth.guard';
 import cookieParser from 'cookie-parser';
 import * as express from 'express';
+import { ValidationPipe } from '@nestjs/common' 
 
 async function main() {
   console.log('[BACKEND LOG] main');
@@ -26,6 +27,9 @@ async function main() {
     credentials: true,
   });
   
+  // To globally validate user's input, ie: changing profileName ... @maxLength, etc 
+  app.useGlobalPipes(new ValidationPipe());
+
   // To enable backend server to serve static files from the folder where uploaded images are stored
   app.use('/uploads', express.static('uploads'));
   app.use('/uploadsDummies', express.static('uploadsDummies'));

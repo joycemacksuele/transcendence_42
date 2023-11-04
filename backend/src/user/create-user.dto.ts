@@ -7,7 +7,7 @@
 	enforce validation rules specific to that operation.
 */
 
-import { IsString, IsNumber, IsNotEmpty, IsEmail, ArrayContains } from 'class-validator';
+import { IsString, IsNumber, IsNotEmpty, IsEmail, MinLength, MaxLength, ArrayContains } from 'class-validator';
 
 // DTOs are short Data Transfer Objects. They can be interfaces objects that determine how data
 // will be sent in a post request body and response.
@@ -17,6 +17,8 @@ export class CreateUserDto {
   loginName: string;
 
   @IsString()
+  @MinLength(3)
+  @MaxLength(10)
   profileName: string;
 
   @IsNumber()

@@ -33,26 +33,66 @@ const myStyle = {
 
 const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 
-	const [users, setUsers] = useState<User[]>([]);
+	// const [users, setUsers] = useState<User[]>([]);
+	//const [myId, setMyId] = useState<User>();
+	const [friends, setFriends] = useState<User[]>([]);
 	const [displayList, setDisplayList] = useState(true);
-	const [selectedUser, setSelectedUser] = useState<string | null>(null);
+	const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
 	
 
 	const handleInsertDataClick = () => {
 		insertDummyUsers();
 	};
 
-	const fetchUsers = async () => {
+	// const fetchUsers = async () => {
+	// 	try {
+	// 		const response = await axios.get<User[]>(
+	// 			"http://localhost:3001/users/all"
+	// 		); // Assuming the server is running on the same host and port
+	// 		setUsers(response.data);
+	// 		console.log('Jaka, retreived users', response.data);
+	// 	} catch (error) {
+	// 		console.error("Error retrieving users:", error);
+	// 	}
+	// };
+
+
+
+	const fetchMyId = async () => {
 		try {
-			const response = await axios.get<User[]>(
-				"http://localhost:3001/users/all"
-			); // Assuming the server is running on the same host and port
-			setUsers(response.data);
-			console.log('Jaka, retreived users', response.data);
+			const response = await axios.get(`http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem('profileName')}`);
+			//setMyId(response.data.id);	// todo: is this the correct id ??
+			console.log("Fetched myID: ", response.data.id);
+			console.log("Fetched user data: ", response.data);
+			return response.data.id;
+			// return Promise.resolve();	// OTHERWISE THE ASYNC CAN BE TOO QUICK AND myID IS STILL UNDEFINED
 		} catch (error) {
-			console.error("Error retrieving users:", error);
+			console.error("Error fetching user's ID: ", error);
+			throw error; // this gives the error to the calling function fetchData()
 		}
 	};
+
+	
+	const fetchFriends = async (myId: number) => {
+		try {
+			const response = await axios.get<User[]>(`http://localhost:3001/friendship/${myId}/friends`);
+			setFriends(response.data);
+			console.log('Retrieved friends: ', response.data);
+		} catch (error) {
+			console.error('Error fetching friends: ', error);
+		}
+	};
+
+
+	const fetchData = async () => {
+		try {
+			const response = await fetchMyId();
+			fetchFriends(response);
+		} catch (error) {
+			console.error("Error in fetchData: ", error);
+		}
+	}
+
 
 	useEffect(() => {		
 		// Check if dummies have been inserted before using local storage
@@ -61,12 +101,16 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 			// Set a flag in local storage to indicate dummies have been inserted
 			localStorage.setItem("dummiesInserted", "true");
 		}
-		fetchUsers();
+		//fetchUsers();
+		fetchData();
+		// fetchFriends();
 	}, []);
+
+
 
 	const handleUserClick = (e: React.MouseEvent, loginName: string) => {
 		e.preventDefault();
-		setSelectedUser(loginName);
+		setSelectedFriend(loginName);
 		clickOnUser(loginName);
 	}
 
@@ -102,26 +146,26 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 							<span>Name</span>
 							<span>Online</span>
 						</li>
-						{ users.sort((a, b) => a.rank - b.rank)
-							.map((user) => (
-							<li key={user.id}>
-								<span> { user.rank }. </span>
+						{ friends.sort((a, b) => a.rank - b.rank)
+							.map((friend) => (
+							<li key={friend.id}>
+								<span> { friend.rank }. </span>
 
 								<span>
 								<a
 									className={'list-user-link'}
 									//className={`list-user-link ${user.loginName === selectedUser ? 'selected' : ''} `}
-									onClick={(e) => handleUserClick(e, user.loginName)}
+									onClick={(e) => handleUserClick(e, friend.loginName)}
 								>
-									<img src={"http://localhost:3001/" + user.profileImage}
+									<img src={"http://localhost:3001/" + friend.profileImage}
 										id="profileImage_tiny"
 									/>
-									{user.profileName}
+									{friend.profileName}
 								</a>
 								</span>
 
 								<span>
-									{user.onlineStatus ? "Yes" : "No"}
+									{friend.onlineStatus ? "Yes" : "No"}
 								</span>
 								{/* <span>
 									<button id="make-friend">Make friend</button>
