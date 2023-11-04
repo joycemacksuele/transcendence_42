@@ -24,15 +24,9 @@ import App_jaka from "./App_jaka.tsx";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Router>
     {/* StrictMode was re-rendereing the components twice, to find errors as far as I know */}
-  {/* < StrictMode > */}
-    {/* <App_vite_orig /> */}
+
     <App_jaka />
 
-    {/* <SomeText />
-		<SomeButtons />
-		<ExampleInputField />
-		<ExampleFormUserName />
-		<ExampleDisplayUsers /> */}
-  {/* </ StrictMode > */}
+    {/* </ StrictMode > */}
   </Router>
 );
