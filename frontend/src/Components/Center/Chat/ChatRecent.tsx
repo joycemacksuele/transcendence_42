@@ -1,6 +1,5 @@
-import React, { useState,useEffect } from 'react';
 import avatarImage from '../../../images/avatar_default.png'
-import ChatData from './Chat'
+import { ChatData } from "./Chat";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -30,24 +29,22 @@ const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
         <>
             {/* Recent chats row */}
             <Row className='80'>
-                <Card.Body variant="top">
-                    <Stack gap={1}>
-                        <div className="media p-2">
-                            {/* <ol className="list-users media p-2"> */}
-                                {recentChatList.map((chat) => (
-                                    // <li key={chat.socketRoomId}>
-                                        // <span>
-                                            <a className="list-user-link" href="">
-                                            {/* <img src={"http://localhost:3001/" + user.profileImage} id="profileImage_tiny"/> */}
-                                            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />
-                                            { chat.name }
+                <Card.Body>
+                    <Stack gap={3}>
+                        {/* <ol className="list-users media p-2"> */}
+                            {recentChatList.map((chat: ChatData) => (
+                                <li key={chat.socketRoomId}>
+                                    {/* <span>*/}
+                                        <a className="list-user-link" href="">
+                                        {/* <img src={"http://localhost:3001/" + user.profileImage} id="profileImage_tiny"/> */}
+                                        <img src={avatarImage} alt="user" width="20" className="rounded-circle" />
+                                        { chat.name }
 
-                                            </a>
-                                        // </span>
-                                    // </li>
-                                ))}
-                            {/* </ol> */}
-                        </div>
+                                        </a>
+                                    {/* </span>*/}
+                                </li>
+                            ))}
+                        {/* </ol> */}
                     </Stack>
                 </Card.Body>
             </Row>
