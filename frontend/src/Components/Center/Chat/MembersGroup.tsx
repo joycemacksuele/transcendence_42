@@ -1,7 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { Socket, io } from "socket.io-client";
-import $ from "jquery";
-
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,16 +9,10 @@ import '../../../css/Chat.css'
 // import avatarImage from '../../../images/avatar_default.png'
 
 // Importing bootstrap and other modules
-import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Nav';
 
 const MembersGroup = () => {
 
@@ -33,24 +23,21 @@ const MembersGroup = () => {
     return (
         <>
             {/* Members row */}
-            <Row className='h-80'>
-                <Card.Body variant="top">
-                    <Stack gap={1}>
-                        <div className="media" className="p-2">
-                            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />
-                            Joyce's group
-                            {/*<small className="small font-weight-bold">25 Dec</small>*/}
-                        </div>
-                        <div
-                            className="p-2"
-                            className="media"
-                        >
-                            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />
-                            Jaka
-                        </div>
-                        <div className="p-2">Corina</div>
-                        <div className="p-2">Ho Kai</div>
-                        <div className="p-2">Robert</div>
+            <Row className='80'>
+                <Card.Body>
+                    <Stack gap={3}>
+                        {/*TODO LIST OF GROUPS*/}
+                        {/*{recentChatList.map((chat: ChatData) => (*/}
+                        {/*    <li key={chat.socketRoomId}>*/}
+                        {/*        /!* <span>*!/*/}
+                        {/*        <a className="list-user-link" href="">*/}
+                        {/*            /!* <img src={"http://localhost:3001/" + user.profileImage} id="profileImage_tiny"/> *!/*/}
+                        {/*            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />*/}
+                        {/*            { chat.name }*/}
+                        {/*        </a>*/}
+                        {/*        /!* </span>*!/*/}
+                        {/*    </li>*/}
+                        {/*))}*/}
                     </Stack>
                 </Card.Body>
             </Row>

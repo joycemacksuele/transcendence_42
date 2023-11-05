@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import avatarImage from '../../../images/avatar_default.png'
+// import avatarImage from '../../../images/avatar_default.png'
 
 // Importing bootstrap and other modules
-import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import NavLink from 'react-bootstrap/NavLink';
 
 // type PropsHeader = {
 //     setActiveContentRight: (value: (((prevState: ChatUtils) => ChatUtils) | ChatUtils)) => void;
@@ -22,18 +17,22 @@ const ChatGroups = () => {
     return (
         <>
             {/* Available groups row */}
-            <Row className='h-80'>
-                <Card.Body variant="top">
-                    <Stack gap={1}>
-                        <div className="media" className="p-2">
-                            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />
-                            Joyce's group
-                            {/*<small className="small font-weight-bold">25 Dec</small>*/}
-                        </div>
-                        <NavLink className="p-2">Jaka's group</NavLink>
-                        <div className="p-2">Corina's group</div>
-                        <div className="p-2">Ho Kai's group</div>
-                        <div className="p-2">Robert's group</div>
+            <Row className='80'>
+                <Card.Body>
+                    <Stack gap={3}>
+                        {/*TODO LIST OF GROUPS*/}
+                        {/*{recentChatList.map((chat: ChatData) => (*/}
+                        {/*    <li key={chat.socketRoomId}>*/}
+                        {/*        /!* <span>*!/*/}
+                        {/*        <a className="list-user-link" href="">*/}
+                        {/*            /!* <img src={"http://localhost:3001/" + user.profileImage} id="profileImage_tiny"/> *!/*/}
+                        {/*            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />*/}
+                        {/*            { chat.name }*/}
+
+                        {/*        </a>*/}
+                        {/*        /!* </span>*!/*/}
+                        {/*    </li>*/}
+                        {/*))}*/}
                     </Stack>
                 </Card.Body>
             </Row>

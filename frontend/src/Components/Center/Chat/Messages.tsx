@@ -31,17 +31,13 @@ const Messages = () => {
         }
         else {
             try {
-                console.log('BEFORE SENDING TO BACKEND');// TODO I never see this log too I THINK FRONTEND IS NOT LOGGING
+                console.log('BEFORE SENDING TO BACKEND');
 
-                // const response = await axios.post('http://localhost:3001/chat', { message });
                 // make this via socket.emit("SendMessage");
-                // how to send data? send the message + userId to send the message to (or roomId?)
+                // how to send data? send the message + userId to send the message to (or chatId?)
 
                 setMessage('');
                 setMessageBoxPlaceHolder('Write a message...');
-
-                // console.log(response.data); // Handle the response as needed
-                // console.log('Response from the backend in JSON: ', JSON.stringify(response));// TODO I never see this log
             } catch (error) {
                 console.error('[FRONTEND ERROR] ', error);
             }
