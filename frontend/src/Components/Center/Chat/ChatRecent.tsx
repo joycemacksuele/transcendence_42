@@ -1,5 +1,5 @@
 import avatarImage from '../../../images/avatar_default.png'
-import { ChatData } from "./Chat";
+import { ChatData } from "./utils/ChatUtils.tsx";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -39,7 +39,6 @@ const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
                                         {/* <img src={"http://localhost:3001/" + user.profileImage} id="profileImage_tiny"/> */}
                                         <img src={avatarImage} alt="user" width="20" className="rounded-circle" />
                                         { chat.name }
-
                                         </a>
                                     {/* </span>*/}
                                 </li>

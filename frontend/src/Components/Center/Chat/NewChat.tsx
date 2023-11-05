@@ -7,7 +7,7 @@ import Stack from 'react-bootstrap/Stack';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import {ChatData} from "./utils/ChatUtils.tsx";
+import {ChatData, ChatType} from "./utils/ChatUtils.tsx";
 
 type PropsHeader = {
     recentChatList: ChatData[];
@@ -18,30 +18,21 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
 
     console.log("[FRONTEND LOG] NewChat");
 
-    ////////////////////////////////////////////////////////////////////// CREATE SOCKET ROOM
+    ////////////////////////////////////////////////////////////////////// CREATE SOCKET CHAT ROOM
     const [socket, setSocket] = useState<Socket>();
 
     const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
 
     const [chatName, setChatName] = useState('');
-    const [chatType, setChatType] = useState<string>("1");
+    const [chatType, setChatType] = useState<ChatType>(ChatType.PRIVATE);
     const [chatPassword, setChatPassword] = useState('');
-    // const [roomMembers, setMembers] = useState('');
-    const [chatCreated, setChatCreated] = useState(false);
-
-    const joyce = (event) => {
-        console.log("[NewChat] JOYCE chatType: ", event.target.value);
-        const value = event.target.value;
-        setChatType(value);
-        console.log("[NewChat] JOYCE eeeeee chatType: ", chatType);
-    }
+    const [socketCount, setSocketCount] = useState(0);
 
     const createRoom = () => {
         console.log("[NewChat] createRoom called");
 
         socket?.emit("createRoom", {chatName: chatName, chatType: chatType, chatPassword: chatPassword});
+        console.log("[NewChat] CORINAAA chatType after after: ", chatType);
         setRecentChatList([...recentChatList, {socketRoomId: socket?.id, name: chatName, type: chatType, password: chatPassword}]);
         // - Dto to send in order to create a room:
         // socket id: automatically created?
@@ -57,60 +48,55 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
         //      can kick, ban, mute othe on the channel (besides the owner)
 
         setChatName('');
-        // setChatType(ChatType.PUBLIC);
+        setChatType(ChatType.PUBLIC);
         setChatPassword('');
-        setShow(false);
-        setChatCreated(true);
 
         // On other screens/parts:
-        //      members of the room will be added later on, on the "members" colunm in the chat tab
-        //      more admins will be added later on, on the "members" colunm in the chat tab
+        //      members of the room will be added later on, on the "members" column in the chat tab
+        //      more admins will be added later on, on the "members" column in the chat tab
         //      blocked users ids will be saved to the chat room database too, so we can hid their messages from the current user
     };
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
 
-    // useEffect without dependencies
-    // When your component is added to the DOM, React will run your setup function
+    // useEffect without dependencies:
+    // - When your component is added to the DOM, React will run your setup function
+    // - When your component is removed from the DOM, React will run your cleanup function
+    // useEffect with dependencies:
+    // - After every re-render with changed dependencies, React will first run the cleanup function with the old values
+    // - Then run your setup function with the new values
     useEffect(() => {
         const newSocket = io("http://localhost:3001");// TODO GET FROM THE .ENV OR MACRO
         setSocket(newSocket);
-        console.log("[NewChat] socket created");
+        console.log("[NewChat] socket created -> id: ", newSocket?.id);
 
         newSocket?.on("connect", () => {
             console.log("[NewChat] socket connected -> socket id: ", newSocket?.id);
         });
 
-        // When your component is removed from the DOM, React will run your cleanup function
-        // return () => {
-        //     // console.log(`socket disconnected AND removeAllListeners`);
+        // For now, I am not calling a cleanup function everytime I socketCount is called -> probably not needed
+        return () => {
+        //     console.log(`[NewChat] socket disconnected AND removeAllListeners`);
         //     // socket.removeAllListeners();
         //     socket?.disconnect();
         //     console.log("[NewChat] socket disconnected");
-        // };
-    }, [chatCreated]);
-
-    // useEffect with socket as a dependency
-    // useEffect(() => {
-    //     socket?.on("connect", () => {
-    //         console.log("[NewChat] socket connected -> socket id: ", socket?.id);
-    //     });
-    //     // After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values
-    //     return () => {
-    //         // console.log(`[NewChat] socket disconnected AND removeAllListeners`);
-    //         // socket.removeAllListeners();
-    //         socket?.disconnect();
-    //         console.log("[NewChat] socket disconnected");
-    //     };
-    // }, [socket]);
+            console.log("[NewChat] change on socketCount so useEffect return function is called -> socketCount: ", socketCount);
+        };
+    }, [socketCount]);
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
         <>
             <Row className='h-20 align-items-bottom'>
                 <Stack gap={2} className='align-self-center'>
-                    <Button variant="primary" type="submit" onClick={handleShow}>New Chat</Button>
-                    <Modal show={show} onHide={handleClose}>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        onClick={ () => setShow(true)}
+                    >
+                        New Chat
+                    </Button>
+                    <Modal show={show} onHide={ () => {setShow(false)}}>
                         <Modal.Header closeButton>
                             <Modal.Title>New Chat</Modal.Title>
                         </Modal.Header>
@@ -123,28 +109,27 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
                                         type="text"
                                         placeholder="Group name"
                                         autoFocus
-                                        onChange={(event) => setChatName(event.target.value)}
+                                        onChange={event => setChatName(event.target.value)}
                                     />
                                 </Form.Group>
 
                                 {/* Group Type */}
                                 <Form.Group className="mb-3">
                                     <Form.Select
-                                        // defaultValue="Chat type"
-                                        // aria-label="Default select example"
                                         // id="roomForm.type"
-                                        // className="mb-3"
-                                        // onSelect={(event) => setChatType(Number(event.target))}
-                                        onChange={joyce}
-
+                                        value={chatType}
+                                        // defaultValue={ChatType.PRIVATE}
+                                        aria-label="Default select example"
+                                        className="mb-3"
+                                        onChange={event=> {
+                                            console.log("[NewChat] CORINAAA chatType before: ", Number(event.target.value) as ChatType);
+                                            setChatType(Number(event.target.value) as ChatType);
+                                            console.log("[NewChat] CORINAAA chatType after: ", chatType);
+                                        }}
                                     >
-                                        {/*<option onSelect={() => setChatType(ChatType.PRIVATE)}>Private (DM)</option>*/}
-                                        {/*<option onSelect={() => setChatType(ChatType.PUBLIC)}>Public</option>*/}
-                                        {/*<option onSelect={() => setChatType(ChatType.PROTECTED)}>Protected</option>*/}
-
-                                        <option value="0" >Private (DM)</option>
-                                        <option value="1" >Public</option>
-                                        <option value="2" >Protected</option>
+                                        <option value={ChatType.PRIVATE} >Private (DM)</option>
+                                        <option value={ChatType.PUBLIC} >Public</option>
+                                        <option value={ChatType.PROTECTED} >Protected</option>
                                     </Form.Select>
                                 </Form.Group>
 
@@ -156,7 +141,7 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
                                         placeholder="Protected chat password"
                                         id="inputPassword5"
                                         aria-describedby="passwordHelpBlock"
-                                        onChange={(event) => setChatPassword(event.target.value)}
+                                        onChange={event=> setChatPassword(event.target.value)}
                                     />
                                     <Form.Text id="passwordHelpBlock" muted>
                                         Your password must be 5-20 characters long, contain letters and numbers,
@@ -166,10 +151,14 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
                             </Form>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
+                            <Button variant="secondary" onClick={ () => setShow(false)}>
                                 Close
                             </Button>
-                            <Button variant="primary" onClick={createRoom}>
+                            <Button variant="primary" onClick={ () => {
+                                createRoom();
+                                setShow(false);
+                                setSocketCount(socketCount + 1);
+                            }}>
                                 Save Changes
                             </Button>
                         </Modal.Footer>
