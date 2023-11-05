@@ -11,8 +11,8 @@ import Modal from 'react-bootstrap/Modal';
 import NavLink from 'react-bootstrap/NavLink';
 
 // type PropsHeader = {
-//     setActiveContentRight: (value: (((prevState: GroupType) => GroupType) | GroupType)) => void;
-//     // membersGroupType: GroupType;
+//     setActiveContentRight: (value: (((prevState: ChatUtils) => ChatUtils) | ChatUtils)) => void;
+//     // membersGroupType: ChatUtils;
 // };
 
 const ChatGroups = () => {
