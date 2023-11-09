@@ -15,6 +15,7 @@ import { UserEntity } from 'src/user/user.entity';
   imports: [
   JwtModule.register({
     global: true,
+    secret: process.env.secret // added jaka, to enable extracting the jwt token
   }), 
   UserModule, 
   TypeOrmModule.forFeature([UserEntity])],
