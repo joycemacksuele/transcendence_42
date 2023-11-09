@@ -24,7 +24,7 @@ type ContextProps = {
 // const ImageUpload = () => {
 const ImageUpload: React.FC<ContextProps> = ({ updateContext }) => {
 
-	const myMargin = { margin: '2% 0 2% 0', padding: '1%', backgroundColor: 'pink', width: '100%', color: 'black'};
+	const myMargin = { margin: '2% 0 2% 0', padding: '1%', backgroundColor: 'beige', width: '100%', color: 'black'};
 
 	
 	const [loginName, setLoginName] = useState<string | undefined>('');
