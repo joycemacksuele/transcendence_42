@@ -42,6 +42,8 @@ services:
         build:
             context: ./backend
             dockerfile: Dockerfile
+            args:
+                MYSECRET: ${SECRET}
         ports:
             - 3001:3001
             # - "${BACKEND_PORT}:${BACKEND_PORT}"
@@ -62,6 +64,7 @@ services:
             - POSTGRES_USER=transcendence_user
             - POSTGRES_PASSWORD=novogeslo1
             - POSTGRES_PORT=5432
+            - BACKEND_PORT=${BACKEND_PORT}
             - CLIENT_ID=${CLIENT_ID}
             - SECRET=${SECRET}
             - REDIRECT=${REDIRECT}
@@ -69,6 +72,11 @@ services:
             - FRONTEND=${FRONTEND}
             - BACKEND=${BACKEND}
             - DATABASE=${DATABASE}
+            - UPLOADS=${UPLOADS}
+            - EHOST=${EHOST}
+            - EPORT=${EPORT}
+            - EPASS=${EPASS}
+            - APASS=${APASS}
 
 
     # --------------------------------------------- PostgreSQL
@@ -85,6 +93,7 @@ services:
             - ./.env
 #        restart: unless-stopped
         environment:
+#            // TODO Align it with .env
             - POSTGRES_DB=mydb
             - POSTGRES_HOST=postgres_db
             - POSTGRES_USER=transcendence_user
