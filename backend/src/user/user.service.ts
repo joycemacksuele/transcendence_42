@@ -86,7 +86,7 @@ export class UserService {
   }
 
   async updateStoredTFACode(loginName: string, tfaCode: string) {
-    console.log('updatetfa function before: ' + tfaCode);
+    // console.log('updatetfa function before: ' + this.userRepository.findOne("tfaCode"));
 
     const response = await this.userRepository.update({ loginName} , { tfaCode });
     console.log('updatetfa function after: ' + tfaCode);
