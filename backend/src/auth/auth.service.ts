@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { TwoFactorAuthService } from './2fa/2fa.service';
+import { request } from 'http';
 
 @Injectable()
 export class AuthService {
@@ -156,6 +157,7 @@ export class AuthService {
 		this.logger.log('                          player.2fa:' + player.tfaEnabled);
 		this.logger.log('                          player.tfaCode:' + player.tfaCode);
 
+
 		token = await this.signToken(player);
 		if (!token) {
 			throw new HttpException('Signing token failed.', HttpStatus.SERVICE_UNAVAILABLE);
@@ -206,6 +208,10 @@ export class AuthService {
 			let cookieLogInAttempts = `cookieLogInAttempts=0; path=/;`;
 			path = `${process.env.DOMAIN}/Login_2fa`;
 			response.append('Set-Cookie', cookieLogInAttempts);
+			// response.setHeader('Sec-Fetch-Site', 'none');
+			// response.removeHeader('vary');
+			response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+			// console.log(response.getHeaderNames());
 		}
 		else
 			path = `${process.env.DOMAIN}/main_page?loginName=`; 	
