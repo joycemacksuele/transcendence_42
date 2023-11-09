@@ -5,6 +5,7 @@
 	"author": "",
 	"private": true,
 	"license": "UNLICENSED",
+	"proxy": "http://localhost:3001",
 	"scripts": {
 		"build": "nest build",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -85,5 +86,5 @@
 		],
 		"coverageDirectory": "../coverage",
 		"testEnvironment": "node"
-	}
+	}	
 }

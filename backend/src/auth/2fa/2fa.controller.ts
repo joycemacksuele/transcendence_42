@@ -46,7 +46,10 @@ export class TwoFactorAuthController {
                 throw new HttpException('Internal Server Error: Verification email was not sent', HttpStatus.INTERNAL_SERVER_ERROR); // redirect to the auth page? 
             }
             if (codeToVerify === codeStored)
+            {
+                let temp = await this.userService.updateStoredTFACode(player.loginName, "default");
                 return true;
+            }
             else 
                 return false;
         }catch(err){
