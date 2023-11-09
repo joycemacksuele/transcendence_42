@@ -25,7 +25,6 @@ export class TwoFactorAuthService {
 
 		this.logger.log('stored player.email: ' + player.email);
 		
-		// // JAKA: TEMP. DISABLED, IT WAS GIVING ERROR AT LOGIN
 		this.mailerService.sendMail({
 			to: `${player.email}`,
 			from: `No reply ${process.env.EMAIL}`,
