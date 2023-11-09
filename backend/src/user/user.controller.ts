@@ -66,15 +66,24 @@ export class UserController {
 	}
 	
 	
-	// GET ONE USER DATA
+	// GET ONE USER DATA BY LOGIN NAME
 	@Get('get-user/:loginName')
 	async getUserData(
 		@Param('loginName') loginName: string
 	): Promise<UserEntity>
 	{
-		
 		this.logger.log('[BACKEND LOG] getUser');
 		return (this.userService.getUserByLoginName(loginName));
+	}
+
+	// GET ONE USER DATA BY LOGIN NAME
+	@Get('get-user-by-profilename/:profileName')
+	async getUserDataByProfileName(
+		@Param('profileName') profileName: string
+	): Promise<UserEntity>
+	{	
+		this.logger.log('[BACKEND LOG] getUser');
+		return (this.userService.getUserByProfileName(profileName));
 	}
 
 	// DELETE DUMMIES

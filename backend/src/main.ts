@@ -3,19 +3,17 @@
   application, it attaches the 'AppModule' and creates an instance of 'NestApplication'.
 */
 
-import { NestFactory, Reflector} from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { JwtService } from '@nestjs/jwt';
 // import { ConfigModule } from '@nestjs/config';
 import { AuthGuard } from './auth/guards/auth.guard';
 import cookieParser from 'cookie-parser';
 import * as express from 'express';
-
+import { ValidationPipe } from '@nestjs/common' 
 
 async function main() {
   console.log('[BACKEND LOG] main');
-
-  // const cors = require("cors");
 
   const app = await NestFactory.create(AppModule);
 
@@ -24,22 +22,17 @@ async function main() {
   // try to access/send requests to the backend) as a Cors option).
   app.enableCors({
     // origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432'],// TODO: change for a macro or from .env
-    // allowedHeaders: ['content-type'],
-    // origin: [`${process.env.DOMAIN}`],
-    origin: [`${process.env.FRONTEND}`, `${process.env.BACKEND}`, `${process.env.DATABASE}`, `${process.env.DOMAIN}`],//, 'https://api.intra.42.fr'],
-    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],   // add 'HEAD', 'PUT', 'PATCH', 'POST', 'OPTIONS' ?
+    origin: [`${process.env.FRONTEND}`, `${process.env.BACKEND}`, `${process.env.DATABASE}`],
+    methods: ['GET', 'POST', 'DELETE'],   // add 'HEAD', 'PUT', 'PATCH', 'POST', 'OPTIONS' ?
     credentials: true,
   });
   
+  // To globally validate user's input, ie: changing profileName ... @maxLength, etc 
+  app.useGlobalPipes(new ValidationPipe());
+
   // To enable backend server to serve static files from the folder where uploaded images are stored
   app.use('/uploads', express.static('uploads'));
   app.use('/uploadsDummies', express.static('uploadsDummies'));
-
-  // app.use(cors());
-  // app.get('/', (req, res) => {
-  //   res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
-  //   res.send({"msg": "This has Cors enabled"})
-  // });
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
   app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));
@@ -52,6 +45,7 @@ async function main() {
   //   next();
   // });
 
-  await app.listen(`${process.env.BACKEND_PORT}`);
+  //await app.listen(`${process.env.BACKEND_PORT}`);
+  await app.listen(process.env.BACKEND_PORT);
 }
 main();

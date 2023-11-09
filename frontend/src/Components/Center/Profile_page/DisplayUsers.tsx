@@ -21,6 +21,23 @@ interface User {
 	rank: number;
 }
 
+const handleInsertDataClick = () => {
+	insertDummyUsers();
+};
+
+const deleteDummies = async () => {
+	try {
+		await axios.delete("http://localhost:3001/users/");
+		console.log("Dummies deleted successfully");
+	} catch (error) {
+		console.error("Error deleting dummies: ", error);
+	}
+};
+
+const handleClickDeleteDummies = () => {
+	deleteDummies();
+};
+
 const UsersList: React.FC = () => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [displayList, setDisplayList] = useState(true);
@@ -125,7 +142,15 @@ const UsersList: React.FC = () => {
 						<p><br /><br /><br /> &larr; Select a user from the list</p>
 						)
 					}
+				
+					<button onClick={handleInsertDataClick}>Create dummies
+					</button>
+					&nbsp;&nbsp;
+					<button onClick={handleClickDeleteDummies}>Delete dummies
+					</button>
 				</Col>
+
+
 
 			</Row>
 		</Container>
