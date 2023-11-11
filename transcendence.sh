@@ -61,12 +61,12 @@ if [[ $1 = 'build' ]] ; then
   echo -ne "$bold_white -> Downloading dependencies for the backend:\n"
   echo -e "$reset ------------------------------------"
   cd ./backend/ || echo -ne "$red Can't cd to ./backend\n"
-  npm install
+  npm install --omit=optional
 
   echo -ne "\n$bold_white -> Downloading dependencies for the frontend:\n"
   echo -e "$reset ------------------------------------"
   cd ../frontend/ || echo -ne "$red Can't cd to ./frontend\n"
-  npm install
+  npm install --omit=optional
 
   cd ../ || echo -ne "$red Can't cd to ../\n"
 
