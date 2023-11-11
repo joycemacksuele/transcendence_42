@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {io, Socket} from "socket.io-client";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -7,7 +6,9 @@ import Stack from 'react-bootstrap/Stack';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import {ChatData, ChatType} from "./utils/ChatUtils.tsx";
+
+import {ChatData, ChatType} from "./Utils/ChatUtils.tsx";
+import { chatSocket } from "./Utils/ClientSocket.tsx"
 
 type PropsHeader = {
     recentChatList: ChatData[];
@@ -16,10 +17,8 @@ type PropsHeader = {
 
 const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) => {
 
-    console.log("[FRONTEND LOG] NewChat");
-
     ////////////////////////////////////////////////////////////////////// CREATE SOCKET CHAT ROOM
-    const [socket, setSocket] = useState<Socket>();
+    // const [socket, setSocket] = useState<Socket>();
 
     const [show, setShow] = useState(false);
 
@@ -31,9 +30,8 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
     const createRoom = () => {
         console.log("[NewChat] createRoom called");
 
-        socket?.emit("createRoom", {chatName: chatName, chatType: chatType, chatPassword: chatPassword});
-        console.log("[NewChat] CORINAAA chatType after after: ", chatType);
-        setRecentChatList([...recentChatList, {socketRoomId: socket?.id, name: chatName, type: chatType, password: chatPassword}]);
+        chatSocket.emit("createRoom", {chatName: chatName, chatType: chatType, chatPassword: chatPassword});
+        setRecentChatList([...recentChatList, {socketRoomId: chatSocket?.id, name: chatName, type: chatType, password: chatPassword}]);
         // - Dto to send in order to create a room:
         // socket id: automatically created?
         // chat name
@@ -66,23 +64,18 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
     // - After every re-render with changed dependencies, React will first run the cleanup function with the old values
     // - Then run your setup function with the new values
     useEffect(() => {
-        const newSocket = io("http://localhost:3001");// TODO GET FROM THE .ENV OR MACRO
-        setSocket(newSocket);
-        console.log("[NewChat] socket created -> id: ", newSocket?.id);
-
-        newSocket?.on("connect", () => {
-            console.log("[NewChat] socket connected -> socket id: ", newSocket?.id);
+        chatSocket.connect();
+        chatSocket.on("connect", () => {
+            console.log("[NewChat] socket connected -> socket id: ", chatSocket.id);
         });
 
-        // For now, I am not calling a cleanup function everytime I socketCount is called -> probably not needed
         return () => {
         //     console.log(`[NewChat] socket disconnected AND removeAllListeners`);
         //     // socket.removeAllListeners();
-        //     socket?.disconnect();
-        //     console.log("[NewChat] socket disconnected");
-            console.log("[NewChat] change on socketCount so useEffect return function is called -> socketCount: ", socketCount);
+            chatSocket.disconnect();
+            console.log("[NewChat] Inside useEffect return function (Chat Component was removed from DOM): Chat docket ", chatSocket.id, " was disconnected");
         };
-    }, [socketCount]);
+    }, []);
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (

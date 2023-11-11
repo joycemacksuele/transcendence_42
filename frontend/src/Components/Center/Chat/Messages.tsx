@@ -39,7 +39,7 @@ const Messages = () => {
                 setMessage('');
                 setMessageBoxPlaceHolder('Write a message...');
             } catch (error) {
-                console.error('[FRONTEND ERROR] ', error);
+                console.error('[Messages] Error: ', error);
             }
         }
     };

@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
-import { ChatEntity } from './entities/chat.entity';
+import { NewChatEntity } from './entities/new-chat.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatEntity]),
+    TypeOrmModule.forFeature([NewChatEntity]),
     // UserModule
   ],
   // Providers can include services or repositories (and as we won't have a controller for the chat,
