@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth/guards/auth.guard';
 import cookieParser from 'cookie-parser';
 import * as express from 'express';
-import { ValidationPipe } from '@nestjs/common' 
+import { ValidationPipe } from '@nestjs/common'
 
 async function main() {
   console.log('[BACKEND LOG] main');
@@ -36,7 +36,7 @@ async function main() {
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
   app.useGlobalGuards(new AuthGuard(new JwtService, new Reflector));
-	app.use(cookieParser());
+  app.use(cookieParser());
 
   // app.use((req, res, next) => {
   //   res.header('Access-Control-Allow-Origin', ['http://localhost:3000/','http://localhost:3001/', 'http://localhost:5432'] );

@@ -29,37 +29,19 @@ import { DuplicateService } from '../duplicate/duplicate.service';
 
 import { ChatModule } from '../chat/chat.module';
 import { ChatService } from '../chat/chat.service';
-// import { ChatGateway } from '../chat/chat.gateway';
-
-// import { ExampleController } from '../tests/exampleButtons/example.controller';
-// import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
-// import { ExampleController } from '../tests/exampleButtons/example.controller';
-// import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
 
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
 import { TwoFactorAuthController } from 'src/auth/2fa/2fa.controller';
 import { TwoFactorAuthService } from 'src/auth/2fa/2fa.service';
-
-import { TestButton } from 'src/tests/exampleButtons/test.controller';
-
-// added jaka to test API INTRA42
-// import { GetUserNameFromIntra } from '../tests/test_intra42_jaka/fetchFromIntra_userName.controller';
-// import { DummyUserService } from 'src/tests/dummyUsers/dummyUsers.service';
-import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
-// added jaka: to store current user to database
-import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
-import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer';
 
-// To read: https://docs.nestjs.com/techniques/database
-/*
-  TypeOrm
-  TypeOrm is an Object Relational Mapper (ORM) typescript package that allows you to use both SQL
-  such as PostgreSQL, MySQL and NoSQL databases. More about typeorm is in its documentation.
-*/
+import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
+import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
+import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
+
 // To read: https://docs.nestjs.com/techniques/database
 /*
   TypeOrm
@@ -68,7 +50,7 @@ import { JwtService } from '@nestjs/jwt';
 */
 
 @Module({
-  imports: [ 
+  imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       // envFilePath: '.env',
@@ -82,7 +64,7 @@ import { JwtService } from '@nestjs/jwt';
       username: 'transcendence_user',
       password: 'novogeslo1',
       database: 'mydb',
-      entities: [UserEntity, Friendship],// Add ChatEntity (and others) here?????????
+      entities: [UserEntity, Friendship],// Add NewChatEntity (and others) here?????????
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
@@ -100,11 +82,7 @@ import { JwtService } from '@nestjs/jwt';
       AppController,
       UserController,
       DatabaseController,
-      // ChatGateway,
       AuthController,
-      // TestButton,           // jaka, testing
-      // ExampleController,    // jaka, testing
-      // ExampleButton,        // jaka, testing
       // GetUserNameFromIntra, // jaka, testing
       DummyUsersController, // jaka, testing
       StoreCurrUserToDataBs,

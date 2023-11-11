@@ -44,8 +44,6 @@ type PropsHeader = {
 //      Maybe this is not necessary each time
 // const Header: React.FC<PropsHeader> = ({ functionToCall }) => {
 const Header: React.FC = () => {
-
-	console.log('Start Header ...');
 	
 	// const handleClick = (content: null | string) => {
 		// functionToCall(content);  //    ( setActiveContent() in main_page )
