@@ -85,9 +85,9 @@ const Header: React.FC = () => {
 	// const image = localStorage.getItem('profileImage') || undefined;
 	console.log('Local Storage Image: ', image);
 
-	return (
-		<Navbar bg="light" data-bs-theme="light" sticky="top" className="border-bottom">
-			<Container fluid>
+    return (
+        <Navbar bg="light" data-bs-theme="light" sticky="top" className="border-bottom">
+            <Container fluid>
 
 				{/* Profile Image */}
 				<Col className='col-md-1 position-relative'>

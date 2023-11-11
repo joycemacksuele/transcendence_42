@@ -24,22 +24,20 @@ import { CurrUserData } from "./Profile_page/contextCurrentUser";
 
   return (
     <>
-    <div id='div-center'>
-
-        <Outlet />
-        {/* OUTLET: Inside this component (Center) there is outlet - access to other components (Chat, game ...)
-                    They are specified as 'Routes' in the top App component.
-                    Now they can be displayed within the Center component via the 'Outlet'. */}
-
-      {/* <Routes>
-          <Route path="profile" element={<UserProfilePage updateContext={ updateContext } />} />
-          <Route path="chat" element={<ChatPage />} />
-          <Route path="game" element={<PlayGamePage />} />
-          <Route path="users" element={<UsersList />} />
-          <Route path="logout" element={<LogoutPage />} />
-      </Routes> */}
+      <div id='div-center'>
+          <Outlet />
+          {/* OUTLET: Inside this component (Center) there is outlet - access to other components (Chat, game ...)
+                      They are specified as 'Routes' in the top App component.
+                      Now they can be displayed within the Center component via the 'Outlet'. */}
+        {/* <Routes>
+            <Route path="profile" element={<UserProfilePage updateContext={ updateContext } />} />
+            <Route path="chat" element={<ChatPage />} />
+            <Route path="game" element={<PlayGamePage />} />
+            <Route path="users" element={<UsersList />} />
+            <Route path="logout" element={<LogoutPage />} />
+        </Routes> */}
     
-    </div>
+      </div>
     </>
   );
 };
