@@ -21,14 +21,13 @@ import NewChat from "./NewChat";
 import Messages from "./Messages";
 // import MembersPrivateMessage from "./MembersPrivateMessage";
 // import MembersGroup from "./MembersGroup";
-import { ChatData } from "./utils/ChatUtils.tsx";
+import { ChatData } from "./Utils/ChatUtils.tsx";
 
 const Chat = () => {
-    console.log("[FRONTEND LOG] Chat");
 
     ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
     const [recentChatList, setRecentChatList] = useState<ChatData[]>([]);
-    console.log("[FRONTEND LOG] Chat.recentChatList: ", recentChatList);
+    console.log("[Chat] Chat.recentChatList: ", recentChatList);
     // const [chatType, setChatType] = useState(ChatType.PUBLIC);
 
     // recent ot groups

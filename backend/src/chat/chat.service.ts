@@ -1,18 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
-// import { CreateChatDto } from './dto/create-chat.dto';
+import {RequestNewChatDto} from "./dto/request-new-chat.dto";
+// import { RequestNewChatDto } from './dto/create-chat.dto';
 // import { UpdateChatDto } from './dto/update-chat.dto';
 
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
 
-  // constructor(private readonly userData: CreateChatDto) {
+  // constructor(private readonly userData: RequestNewChatDto) {
   constructor() {
     this.logger.log('[BACKEND LOG] ChatService constructor');
   }
 
-  // createRoom(createChatDto: CreateChatDto) {
-  createRoom() {
+  // createRoom(createChatDto: RequestNewChatDto) {
+  createRoom(createChatDto: RequestNewChatDto) {
+    // Save to the database:
+
     return 'This action adds a new room';
   }
 

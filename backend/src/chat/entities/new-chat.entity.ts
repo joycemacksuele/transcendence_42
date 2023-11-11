@@ -1,31 +1,31 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { RoomType } from '../dto/create-chat.dto'
+import { ChatType } from '../utils/chat-utils'
 
 // Read: https://orkhan.gitbook.io/typeorm/docs/entities#column-types-for-postgres
 // Entity reflects exactly one table in the database
 
 @Entity()
-export class ChatEntity {
+export class NewChatEntity {
 
     @PrimaryGeneratedColumn()
-    id?: number;	// ? is optional -> it will be created automatically
+    id?: number;
 
     @Column()
-    roomName: string;
+    chatName: string;
 
     @Column({
         type: "enum",
-        enum: RoomType,
-        default: RoomType.PUBLIC,
+        enum: ChatType,
+        default: ChatType.PUBLIC,
     })
-    roomType: RoomType;
+    chatType: ChatType;
 
     // it has to be hashed before saved to the database
     @Column()
-    roomPassword: string;
+    chatPassword: string;
 
     @Column("simple-array")
-    roomMembers: number[]
+    chatMembers: number[]
 
     // @Column("simple-json")
     // profile: { name: string; nickname: string }
