@@ -58,12 +58,12 @@ export class UserController {
 	}
 
 
-	// GET ALL USERS
-	@Get('all')
-	async getAllUsers(): Promise<UserEntity[]> {
-		this.logger.log('[BACKEND LOG] getAllUsers');
-		return (this.userService.getAllUsers());
-	}
+    // GET ALL USERS
+    @Get('all')
+    async getAllUsers(): Promise<UserEntity[]> {
+        this.logger.log('[BACKEND LOG] getAllUsers');
+        return (this.userService.getAllUsers());
+    }
 	
 	
 	// GET ONE USER DATA BY LOGIN NAME

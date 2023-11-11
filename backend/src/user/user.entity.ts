@@ -18,7 +18,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Friendship } from 'src/friendships/friendship.entity';
 
 @Entity()
-export class UserEntity {// Joyce -> I named it from MyUser to UserEntity because it was tricky for me to remember that the MyUser keyword was an entity -> we can change it back later if you want
+export class UserEntity {
 	constructor() {
 		console.log('[BACKEND LOG] UserEntity constructor');
 	}
@@ -62,7 +62,7 @@ export class UserEntity {// Joyce -> I named it from MyUser to UserEntity becaus
 	@Column()
 	hashedSecret: string;
 
-	@Column({default: true})
+	@Column({default: false})
 	tfaEnabled: boolean;
 
 	@Column({default: 'default'})
