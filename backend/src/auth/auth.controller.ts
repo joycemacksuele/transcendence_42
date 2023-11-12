@@ -5,7 +5,6 @@ import { UserService } from 'src/user/user.service';
 import { UserRepository } from 'src/user/user.repository';
 import { response } from 'express';
 import { AuthGuard } from './guards/auth.guard';
-import config from '../config_NOT_USED/config';
 import { ConfigService } from '@nestjs/config';
 
 //.env 

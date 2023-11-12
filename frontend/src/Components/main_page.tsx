@@ -1,9 +1,9 @@
-import { useState, useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import Header from "./Header/Header.tsx";
 import Center from "./Center/Center.tsx";
 import { CurrentUserContext, CurrUserData } from './Center/Profile_page/contextCurrentUser.tsx';
 import { checkIfUserExistsInDB } from './Center/Profile_page/checkIfUserExistsInDB.tsx';
-import { useNavigate } from 'react-router';
+//import { useNavigate } from 'react-router';
 
 interface ContextProps {
 	updateContext: (updateUserData: CurrUserData ) => void;
@@ -47,7 +47,7 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 
 			// Jaka: Here the context:loginName is still empty, after reload, so it 
 			// checkIfUserExistsInDB(cookieProfileName).then((response) => {
-				checkIfUserExistsInDB(cookieUserName).then((response) => {
+			checkIfUserExistsInDB(cookieUserName).then((response) => {
 
 				console.log('      Response:', response.user);
 				if (response.exists) {
@@ -68,50 +68,34 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 
 				} else {
 					console.log('   ??? ??? This user is not yet in DB: ');
-						// UPDATE ONLY IF THE USER DOES NOT EXISTS YET, 
-						// BECAUSE OTHERWISE IT RESETS THE PROFILENAME BACK TO USERNAME!
-						// OTHERWISE THE CONTEXT SHOULD ALREADY CONTAIN THE profileName ...etc ...
-						if (cookieProfileName) {
-							const updatedUserData = {
-								...currUserData,
-								loginName:		localStorage.getItem('loginName') || undefined,
-								profileName:	localStorage.getItem('loginName') || undefined,
-								loginImage:		localStorage.getItem('loginImage') || undefined,
-						};
-						updateContext(updatedUserData);
-						console.log('   Updating context: \n      First time login - login and profile name should be the same: ', currUserData);
-						}
+					// UPDATE ONLY IF THE USER DOES NOT EXISTS YET, 
+					// BECAUSE OTHERWISE IT RESETS THE PROFILENAME BACK TO USERNAME!
+					// OTHERWISE THE CONTEXT SHOULD ALREADY CONTAIN THE profileName ...etc ...
+					if (cookieProfileName) {
+						const updatedUserData = {
+							...currUserData,
+							loginName:		localStorage.getItem('loginName') || undefined,
+							profileName:	localStorage.getItem('loginName') || undefined,
+							loginImage:		localStorage.getItem('loginImage') || undefined,
+					};
+					updateContext(updatedUserData);
+					console.log('   Updating context: \n      First time login - login and profile name should be the same: ', currUserData);
 					}
-				});
-			}
+				}
+			});
+		}
 		// }, [freshLoginImage, updateContext]);	// this was causing infinite loop
-		}, []);
-	// Update the userContext
+	}, []);
 
 
-		const cookies = document.cookie;
-		console.log('COOKIES: ', cookies);
-
-
-	const navigate = useNavigate();
-
-	// Todo Jaka: Now it first shows the Game component 
-	//		Maybe 'setActiveContent' is not needed anymore ??? 
-	const [activeContent, setActiveContent] = useState<string>('game');
-
-	const handleSetActiveContent = (content: string | null) => {
-		setActiveContent(content || '');
-		navigate(`/${content}`);
-	};
+	const cookies = document.cookie;
+	console.log('COOKIES: ', cookies);
 
 	return (
 		<>
 			{/* <Header functionToCall={handleSetActiveContent}/> */}
 			<Header />
-			
-			<Center activeContent={ activeContent }
-					updateContext={ updateContext }
-			/>
+			<Center />
 			{/* <Footer /> */}
 		</>
 	);
