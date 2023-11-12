@@ -83,7 +83,7 @@ export class AuthService {
 		intraId: +id,	// todo, jaka, change back ?? Maybe it needs to be converted to a number?
 		// intraId: 0,
 		email: email,
-		onlineStatus: true,		// at logout change to 'false'
+		onlineStatus: false,		// at logout change to 'false'
 		hashedSecret: hash,
 		tfaEnabled: true,
 		tfaCode: 'default',
