@@ -27,17 +27,17 @@ const ImageUpload: React.FC<ContextProps> = ({ updateContext }) => {
 	const myMargin = { margin: '2% 0 2% 0', padding: '1%', backgroundColor: 'beige', width: '100%', color: 'black'};
 
 	
-	const [loginName, setLoginName] = useState<string | undefined>('');
+//	const [loginName, setLoginName] = useState<string | undefined>('');
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
 	
 	// Get loginName from the 'global' context struct 
 	const currUserData = useContext(CurrentUserContext) as CurrUserData;
-	// const loginName = currUserData.loginName;
+	const loginName = currUserData.loginName;
 	
-	useEffect(() => {
-		setLoginName(currUserData.loginName);
-		// console.log('Selected image: ', selectedImage);
-	}, [loginName]);
+//	useEffect(() => {
+//		setLoginName(currUserData.loginName);
+//		// console.log('Selected image: ', selectedImage);
+//	}, [loginName]);
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {	 // e === event object
 		const inputValue = e.target.value;
@@ -49,10 +49,6 @@ const ImageUpload: React.FC<ContextProps> = ({ updateContext }) => {
 		}
 	};
 
-	// TODO:
-	// THE UPLOADED IMAGE IS ONLY VISIBLE AFTER RELOADING THE PAGE.
-    // IT NEEDS TO BE USED AS CONTEXT, TO CHANGE IMMEDIATELLY 
-	
 	const handleUpload = async () => {
 
 		try {
