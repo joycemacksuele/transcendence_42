@@ -1,4 +1,4 @@
-import { Injectable, Logger, HttpException, HttpStatus} from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus, UnauthorizedException} from '@nestjs/common';
 import { Request, Response } from 'express';
 import axios from 'axios';
 import * as bcryptjs from 'bcryptjs';
@@ -261,5 +261,41 @@ export class AuthService {
 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
 	}
   }
-}
 
+
+
+
+// ADDED JAKA:
+    // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
+    // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
+    // SO THIS FUNCION NEEDS TO BE MODIFIED
+    async extractUserFromRequest(request: Request): Promise<any> { 
+        const token = this.extractTokenFromHeader(request);
+        if (!token) {
+            throw new UnauthorizedException('Token not found');
+        }
+        try {
+            const payload = await this.jwtService.verifyAsync(token, { secret: process.env.SECRET });
+            return payload;
+        } catch {
+            throw new UnauthorizedException('Invalid token');
+        }
+    }
+
+	extractTokenFromHeader(request: Request): string | undefined{
+        let cookie: string;
+        let token: string;
+
+        cookie = request.get('Cookie');
+        this.logger.log('extract Token from Header - full cookie: ' + cookie);
+        // this.logger.log('full cookie: ' + cookie);
+        if (!cookie)
+            return undefined;
+        token = cookie.split(';')[0];
+        token = token.split('token=')[1];
+        // console.log('extracted token: ' + token);
+        // console.log(request);
+        return token;
+    }
+
+}

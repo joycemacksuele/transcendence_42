@@ -1,10 +1,40 @@
-import { Body, Controller, Get, Post, Request, Response, HttpException, HttpStatus } from "@nestjs/common";
+import { Body, Controller, Post, Req, Res, HttpException, HttpStatus } from "@nestjs/common";
+import { Response } from 'express';
+
 import { Logger } from "@nestjs/common";
 import { TwoFactorAuthService } from "./2fa.service";
 import { JwtService } from "@nestjs/jwt";
 import { UserService } from "src/user/user.service";
-import { UserEntity } from "src/user/user.entity";
-import axios from 'axios';
+import { AuthService } from "../auth.service";  // ADDED JAKA
+// import { AuthGuard } from "../guards/auth.guard";
+// import { UserEntity } from "src/user/user.entity";
+// import axios from 'axios';
+
+
+
+/*
+    jaka, observations:
+    - 1st attempt: if user does not yet exist (empty database), the tfa works in the first attemp
+        (broswer still gives error:
+                POST http://localhost:3001/two-factor-auth/send-verification-mail
+                [HTTP/1.1 404` Not Found 167ms]
+                Error sending verification email:
+
+    - 2nd and 3rd attempt: if user does not yet exist (empty database):
+            ...397
+
+    - If a user already exists in the db, then tfa does not work (it does not proceed to main_page)
+            3 browser errors:
+                    POST http://localhost:3001/2fa/verify_code
+                        [HTTP/1.1 500 Internal Server Error 242ms]
+
+                    POST http://localhost:3001/two-factor-auth/send-verification-mail
+                        [HTTP/1.1 404 Not Found 142ms]
+
+                    Error sending verification email:
+                        
+                    Input TfaCode error:  
+*/
 
 
 @Controller('2fa')
@@ -12,7 +42,8 @@ export class TwoFactorAuthController {
     constructor(
         private readonly tfaService: TwoFactorAuthService,
         private readonly userService: UserService,
-        private readonly jwtService: JwtService, 
+        private readonly jwtService: JwtService,
+        private readonly authService: AuthService   // added jaka, to enable extractUserFromRequest()
         ) {}
     logger: Logger = new Logger('2FA mail controller');
 
@@ -31,14 +62,35 @@ export class TwoFactorAuthController {
     // }
 
     @Post('verify_code')
-    async verifyTwoFactorAuthentification(@Request() request: any, @Body() data: {inputValue: string}){
+    async verifyTwoFactorAuthentification(@Req() request: any, @Body() data: {inputValue: string}){
         try{
-            let player = await this.userService.getUserByLoginName(request.loginName);
-            const codeStored = player.tfaCode;
+
+            // IT LOOKS LIKE THAT BEFORE THE CHECK IS PERFORMED, ALREADY THE NEW CODE IS GENERATED AND STORED INTO TABLE, SO THAT NOW IT COMPARES THE OLD AND THE NEW CODE !!  
+
+            console.log("Start verify_code");
+            // extractUserFromHeader
+            let payload = await this.authService.extractUserFromRequest(request);
+            console.log("      ... payload.username: ", payload.username);
+            // THE ABOVE ONLY RETURNS THE PAYLOAD OF TOKEN, NOT THE USER ENTITY
+            
+            
+            // RETRIEVE THE WHOLE USER ENTITY BY LOGINNAME
+            let user = await this.userService.getUserByLoginName(payload.username);
+            console.log("      ... user.email: ", user.email);
+            console.log("      ... user.tfaCode: ", user.tfaCode);
+            const codeStored = user.tfaCode;
+
+
+
+
+            // THIS IS RETRIEVEING A dummy1 USER ??? instead of the real user,
+            // MAYBE IT NEEDS TO DO THE SAME AGAIN, EXTRACT TOKEN, ETC ...
+            // let player = await this.userService.getUserByLoginName(request.loginName);
+            // const codeStored = player.tfaCode;
             const codeToVerify = data.inputValue;
     
-            this.logger.log('codeStored: ' + codeStored);
-            this.logger.log('codeToVerify:  ' + codeToVerify);
+            this.logger.log('loginname: ' + user.loginName + ',  codeStored: ' + codeStored);
+            this.logger.log("user's input code to verify:  " + codeToVerify);
     
             if (codeStored === 'default')
             {
@@ -47,17 +99,58 @@ export class TwoFactorAuthController {
             }
             if (codeToVerify === codeStored)
             {
-                let temp = await this.userService.updateStoredTFACode(player.loginName, "default");
+                // let temp = await this.userService.updateStoredTFACode(player.loginName, "default");
+                console.log("YES, the codes match!");
+                let temp = await this.userService.updateStoredTFACode(user.loginName, "default"); // jaka
                 return true;
             }
-            else 
-                return false;
-        }catch(err){
-            this.logger.log('verify tfa code: ', err);
+            else {
+                console.log("NO, the codes DONT match: input: ", codeToVerify, ",  stored: ", codeStored);
+                return false; 
+            }
+        } catch(err) {
+            this.logger.log('Error in verify tfa code: ', err);
             throw new HttpException('Two Factor Authentication verification failed', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+
+    @Post('resend_email_code')  // added jaka, to be called from frontend login_tfa.tsx
+    async resendVerificationMail(@Req() req, @Res() res: Response) {
+        try {
+            this.logger.log('Trying to resend Verification Mail');
+
+            // extractUserFromHeader
+            let payload = await this.authService.extractUserFromRequest(req);
+            console.log("      ... user: ", payload.username);
+            // THE ABOVE ONLY RETURNS THE PAYLOAD OF TOKEN, NOT THE USER ENTITY
+            
+            
+            // RETRIEVE THE WHOLE USER ENTITY BY LOGINNAME
+            let user = await this.userService.getUserByLoginName(payload.username);
+            console.log("      ... user.email: ", user.email);
+
+
+            await this.tfaService.sendVerificationMail(user);
+            res.status(HttpStatus.OK).send({ message: 'Verification email is re-sent.' });
+        } catch (error) {
+            this.logger.log('Error re-sending the code email: ', error);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Error re-sending the code email.' });
+        }
+        // await this.TwoFactorAuthService.sendVerificationMail(user);
+
+
+        // OR //
+        // async sendVerificationMail(@Req() req: Request, @Res() res: Response) {
+        //     try {
+        //         const player = /* Retrieve player information from request */;
+        //         await this.twoFactorAuthService.sendVerificationMail(player);
+        //         res.status(HttpStatus.OK).send({ message: 'Verification email sent.' });
+        //     } catch (error) {
+        //         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: error.message });
+        //     }
+        // }
+    }
 
     // @Post('verify_code')
     // // async changeProfileName(@Body() data: { profileName: string, loginName: string }): Promise<{ message: string }> {

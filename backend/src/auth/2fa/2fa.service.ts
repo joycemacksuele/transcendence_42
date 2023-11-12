@@ -22,7 +22,8 @@ export class TwoFactorAuthService {
 		this.logger.log('create verification code: ' + code);
 
 		let updateCode = await this.userService.updateStoredTFACode(player.loginName, code);
-		this.logger.log('stored tfa: ' + player.tfaCode);
+		this.logger.log('stored tfa: ' + player.tfaCode + " (here still shows old code, but not updated)");
+		this.logger.log("            Should the user data be fetched again to show the updated code?");
 		this.logger.log('stored player.email: ' + player.email);
 		
 		this.mailerService.sendMail({
