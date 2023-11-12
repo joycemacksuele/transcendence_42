@@ -10,33 +10,6 @@ import { AuthService } from "../auth.service";  // ADDED JAKA
 // import { UserEntity } from "src/user/user.entity";
 // import axios from 'axios';
 
-
-
-/*
-    jaka, observations:
-    - 1st attempt: if user does not yet exist (empty database), the tfa works in the first attemp
-        (broswer still gives error:
-                POST http://localhost:3001/two-factor-auth/send-verification-mail
-                [HTTP/1.1 404` Not Found 167ms]
-                Error sending verification email:
-
-    - 2nd and 3rd attempt: if user does not yet exist (empty database):
-            ...397
-
-    - If a user already exists in the db, then tfa does not work (it does not proceed to main_page)
-            3 browser errors:
-                    POST http://localhost:3001/2fa/verify_code
-                        [HTTP/1.1 500 Internal Server Error 242ms]
-
-                    POST http://localhost:3001/two-factor-auth/send-verification-mail
-                        [HTTP/1.1 404 Not Found 142ms]
-
-                    Error sending verification email:
-                        
-                    Input TfaCode error:  
-*/
-
-
 @Controller('2fa')
 export class TwoFactorAuthController {
     constructor(
@@ -64,9 +37,6 @@ export class TwoFactorAuthController {
     @Post('verify_code')
     async verifyTwoFactorAuthentification(@Req() request: any, @Body() data: {inputValue: string}){
         try{
-
-            // IT LOOKS LIKE THAT BEFORE THE CHECK IS PERFORMED, ALREADY THE NEW CODE IS GENERATED AND STORED INTO TABLE, SO THAT NOW IT COMPARES THE OLD AND THE NEW CODE !!  
-
             console.log("Start verify_code");
             // extractUserFromHeader
             let payload = await this.authService.extractUserFromRequest(request);
@@ -80,11 +50,6 @@ export class TwoFactorAuthController {
             console.log("      ... user.tfaCode: ", user.tfaCode);
             const codeStored = user.tfaCode;
 
-
-
-
-            // THIS IS RETRIEVEING A dummy1 USER ??? instead of the real user,
-            // MAYBE IT NEEDS TO DO THE SAME AGAIN, EXTRACT TOKEN, ETC ...
             // let player = await this.userService.getUserByLoginName(request.loginName);
             // const codeStored = player.tfaCode;
             const codeToVerify = data.inputValue;
