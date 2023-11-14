@@ -46,63 +46,63 @@ export class StoreCurrUserToDataBs {
 ////////////////////////////
 
 
-  @Post('store_login_data')
-  async storeCurrUserName(@Body() data: { loginName: string,
-                                          profilename: string,
-                                          loginImage: string,
-                                          profileImage: string,
-                                          intraId: number,
-                                          email: string,
-                                          onlineStatus: boolean,
-                                          rank: number,
-                                          gamesPlayed: number,
-                                          gamesWon: number,
-                                          gamesLost: number,
-                                          tfaEnabled: boolean,
-                                          tfaCode: string,
-                                          hashedSecret: string,
-                                          roomsCreated: number[],
-  }): Promise<{ message: string }> {
-    try {
-      // Check if user with the same loginName already exists
-      const existingUser = await this.userService.getUserByLoginName(data.loginName );
-      if (existingUser) {
-        // console.log('This loginName already exists in databs -> the current user, profilefame:', existingUser.profileName);
-        return { message: 'STORE: This loginName already exists in database == the current user.'};
-        // FOUND EXISTING USER IN DB, NOT SURE IF THIS IS THE OPTIMAL WAY TO CHECK
-        // throw new HttpException('This loginName already exists in database --> the current user.', HttpStatus.CONFLICT);
-      }
-      const currUserName: UserEntity[] = [
-        { loginName: data.loginName,
-          profileName: data.loginName,
-          profileImage: data.loginImage,
-          intraId: 0,                             // todo jaka: change back, and obtain the real intraId
-          email: data.email,
-          onlineStatus: true,
-          rank: 0,
-          gamesPlayed: 0,
-          gamesWon: 0,
-          gamesLost: 0,
-          tfaEnabled: false,
-          tfaCode: 'default',
-          hashedSecret: 'dummy hashed secret',  // todo jaka: change back, and obtain the real hashedSecret
-          roomsCreated: [2, 5, 44],
-          friendships: [],
-          // friendOf: []
-        // intraId: data.intraId,
-          // hashedSecret: data.hashedSecret },
-        },
-      ];
+  // @Post('store_login_data')
+  // async storeCurrUserName(@Body() data: { loginName: string,
+  //                                         profilename: string,
+  //                                         loginImage: string,
+  //                                         profileImage: string,
+  //                                         intraId: number,
+  //                                         email: string,
+  //                                         onlineStatus: boolean,
+  //                                         rank: number,
+  //                                         gamesPlayed: number,
+  //                                         gamesWon: number,
+  //                                         gamesLost: number,
+  //                                         tfaEnabled: boolean,
+  //                                         tfaCode: string,
+  //                                         hashedSecret: string,
+  //                                         roomsCreated: number[],
+  // }): Promise<{ message: string }> {
+  //   try {
+  //     // Check if user with the same loginName already exists
+  //     const existingUser = await this.userService.getUserByLoginName(data.loginName );
+  //     if (existingUser) {
+  //       // console.log('This loginName already exists in databs -> the current user, profilefame:', existingUser.profileName);
+  //       return { message: 'STORE: This loginName already exists in database == the current user.'};
+  //       // FOUND EXISTING USER IN DB, NOT SURE IF THIS IS THE OPTIMAL WAY TO CHECK
+  //       // throw new HttpException('This loginName already exists in database --> the current user.', HttpStatus.CONFLICT);
+  //     }
+  //     const currUserName: UserEntity[] = [
+  //       { loginName: data.loginName,
+  //         profileName: data.loginName,
+  //         profileImage: data.loginImage,
+  //         intraId: 0,                             // todo jaka: change back, and obtain the real intraId
+  //         email: data.email,
+  //         onlineStatus: true,
+  //         rank: 0,
+  //         gamesPlayed: 0,
+  //         gamesWon: 0,
+  //         gamesLost: 0,
+  //         tfaEnabled: false,
+  //         tfaCode: 'default',
+  //         hashedSecret: 'dummy hashed secret',  // todo jaka: change back, and obtain the real hashedSecret
+  //         roomsCreated: [2, 5, 44],
+  //         friendships: [],
+  //         // friendOf: []
+  //       // intraId: data.intraId,
+  //         // hashedSecret: data.hashedSecret },
+  //       },
+  //     ];
 
-      const promises = currUserName.map((user) => this.userService.createUser(user));
-      await Promise.all(promises);
+  //     const promises = currUserName.map((user) => this.userService.createUser(user));
+  //     await Promise.all(promises);
 
-      return { message: 'STORE: Current user name stored successfully.' };
-    } catch (error) {
-      console.error('STORE: Error storing current user name:', error);
-      throw new HttpException('STORE: Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+  //     return { message: 'STORE: Current user name stored successfully.' };
+  //   } catch (error) {
+  //     console.error('STORE: Error storing current user name:', error);
+  //     throw new HttpException('STORE: Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+  //   }
+  // }
 
 
 
