@@ -36,4 +36,9 @@ export class TwoFactorAuthService {
 
 		this.logger.log('verification email sent');
 	}
+
+
+	// async toggleButtonTfa(player: UserEntity): Promise <void>	{	
+	// }
+	
 }

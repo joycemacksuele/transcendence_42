@@ -102,8 +102,39 @@ export class TwoFactorAuthController {
             this.logger.log('Error re-sending the code email: ', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Error re-sending the code email.' });
         }
+    }
         // await this.TwoFactorAuthService.sendVerificationMail(user);
 
+    @Post('toggle_button_tfa')  // added jaka, to be called from frontend login_tfa.tsx
+    async toggleButtonTfa(@Req() req, @Res() res: Response) {
+        try {
+            this.logger.log('Trying to toggle tfa.');
+
+            // extractUserFromHeader
+            let payload = await this.authService.extractUserFromRequest(req);
+            console.log("      ... user: ", payload.username);
+            // THE ABOVE ONLY RETURNS THE PAYLOAD OF TOKEN, NOT THE USER ENTITY
+            
+            
+            // RETRIEVE THE WHOLE USER ENTITY BY LOGINNAME
+            let user = await this.userService.getUserByLoginName(payload.username);
+            if (!user) {
+                throw new Error('User not found');
+            }
+            console.log("      ... user.email: ", user.email);
+
+            // Toggle TFA status
+            const updatedTfaStatus = !user.tfaEnabled;
+
+            // Update the DB with new tfa status
+            await this.userService.enableTFA (user.loginName, updatedTfaStatus);
+
+            res.status(HttpStatus.OK).send({ message: 'Button toggled tfa OK.' , tfaEnabled: updatedTfaStatus });
+        } catch (error) {
+            this.logger.log('Error Button toggled tfa: ', error);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Error Button toggled tfa.' });
+        }
+    }
 
         // OR //
         // async sendVerificationMail(@Req() req: Request, @Res() res: Response) {
@@ -115,7 +146,6 @@ export class TwoFactorAuthController {
         //         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: error.message });
         //     }
         // }
-    }
 
     // @Post('verify_code')
     // // async changeProfileName(@Body() data: { profileName: string, loginName: string }): Promise<{ message: string }> {
