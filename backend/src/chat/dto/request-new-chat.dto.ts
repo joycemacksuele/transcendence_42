@@ -1,31 +1,38 @@
-import { IsNotEmpty, IsOptional, IsString, MinLength, MaxLength } from 'class-validator';
-import { ChatType } from '../utils/chat-utils'
+import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, IsEnum} from 'class-validator';
+import {OneToMany} from "typeorm";
+import {ChatType} from '../utils/chat-utils'
+import {CreateUserDto} from "../../user/create-user.dto";
 
 export class RequestNewChatDto {
 
-    @IsNotEmpty({ message: 'Required' })
     @IsString()
     @MinLength(2)
     @MaxLength(20)
+    @IsNotEmpty({ message: 'Required' })
     chatName: string;
 
+    // if chatType == PROTECTED
+    // it has to be hashed before saved to the database
     // @IsNotEmpty({ message: 'Required' })
-    // creatorId: number;// We can get from the backend since its the current user
-
-    // @IsNotEmpty({ message: 'Required' })
-    // adminId: number;// We can get from the backend since its the current user
-
-    @IsNotEmpty({ message: 'Required' })
+    @IsEnum(ChatType)
     chatType: ChatType;
 
-    // Only has a password if its a type PROTECTED
-    // it has to be hashed before saved to the database
-    @IsOptional()
+    // PRIVATE   | is a DM - can't be joined  | only members can see it
+    // PUBLIC    | everyone can join it       | everyone can see it
+    // PROTECTED | password to join           | everyone can see it
     @IsString()
     @MinLength(5)
-    @MaxLength(20)
-    chatPassword: string;
+    @MaxLength(15)
+    @IsOptional()
+    chatPassword: string | undefined;
 
     // @IsNotEmpty({ message: 'Required' })
+
+    @IsString()
+    @MinLength(3)
+    @MaxLength(10)
+    @OneToMany(() => CreateUserDto, (createUserDto) => createUserDto.loginName)
+    @IsNotEmpty({ message: 'Required' })
+    loginName: string;
     // chatMembers: number[];// not in the create chat screen
 }

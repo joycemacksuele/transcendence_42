@@ -68,12 +68,6 @@ export class UserEntity {
 	@Column({default: 'default'})
 	tfaCode: string;
 
-	// Chat related
-	// @Column({type: json})
-	@Column({type: "integer", array: true})
-	roomsCreated: number[];
-
-
 	/* @OneToMany()  Is a decorator from TypeORM
 		A User entity can have friends - can be associated with multiple instances of Friendship entity.
 
@@ -88,7 +82,8 @@ export class UserEntity {
 			This informs TypeORM about the entity on the other side of relationship.
 
 			INVERSE SIDE:	(friendship) => friendship.user)
-			The Frienship entity has a property/column 'user'. This represents the other side of relationship, from the perspective of the targeted Friendship entity.
+			The Friendship entity has a property/column 'user'.
+			This represents the other side of relationship, from the perspective of the targeted Friendship entity.
 			This function returns the property 'user' of the target entity. 
 	*/
 	@OneToMany(() => Friendship, (friendship) => friendship.user)

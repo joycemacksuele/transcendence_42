@@ -1,8 +1,9 @@
-export interface ChatData {
-    socketRoomId: string | undefined;
-    name: string;// Can also be a login name
-    type: ChatType;
-    password: string;
+export interface RequestNewChatDto {
+    socketId: string;
+    chatName: string;// Can also be a login name
+    chaType: ChatType;
+    chatPassword: string | undefined;
+    loginName: string | undefined;
 }
 
 export enum ChatType {
