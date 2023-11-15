@@ -6,8 +6,10 @@ import { NewChatEntity } from './entities/new-chat.entity';
 export class ChatRepository extends Repository<NewChatEntity> {
 
 	constructor() {
-		console.log('[BACKEND LOG] ChatRepository constructor');
+		console.log('constructor');
 		// @ts-ignore
 		super();
 	}
+
+
 }

@@ -1,4 +1,4 @@
-import { ChatData } from "./Utils/ChatUtils.tsx";
+import { RequestNewChatDto } from "./Utils/ChatUtils.tsx";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -10,7 +10,7 @@ import React from "react";
 
 
 type PropsHeader = {
-    recentChatList: ChatData[];
+    recentChatList: RequestNewChatDto[];
 };
 
 // const ChatRecent = () => {
@@ -33,9 +33,9 @@ const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
             <Row className='me-auto'>
                 <Card.Body>
                     <Stack gap={3}>
-                        {recentChatList.map((chat: ChatData) => (
+                        {recentChatList.map((chat: RequestNewChatDto) => (
                             <ListGroup
-                                defaultActiveKey={chat.socketRoomId}
+                                key={chat.chatName}
                                 variant="flush"
                             >
                                 <ListGroup.Item
@@ -52,7 +52,7 @@ const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
                                         alt="user"
                                         roundedCircle
                                     />
-                                    {chat.name}
+                                    {chat.chatName}
                                 </ListGroup.Item>
                                 {/*<li key={chat.socketRoomId}>*/}
                                 {/*    <a*/}

@@ -28,7 +28,9 @@ import { Friendship } from '../friendships/friendship.entity';
 import { DuplicateService } from '../duplicate/duplicate.service';
 
 import { ChatModule } from '../chat/chat.module';
+import { ChatGateway } from "../chat/chat.gateway";
 import { ChatService } from '../chat/chat.service';
+import { ChatRepository } from "../chat/chat.repository";
 
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
@@ -70,39 +72,40 @@ import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profil
     }),
     TypeOrmModule.forFeature([UserEntity]), // it is already in user.module
     UserModule,
+    ChatModule,
+    TwoFactorAuthModule,
     DatabaseModule,
     MailerModule,
-    TwoFactorAuthModule,
-    ChatModule,
     FriendshipModule
-    //ChatModule,
   ],
 
   controllers: [
-      AppController,
-      UserController,
-      DatabaseController,
-      AuthController,
-      // GetUserNameFromIntra, // jaka, testing
-      DummyUsersController, // jaka, testing
-      StoreCurrUserToDataBs,
-      UploadImageController,
-      TwoFactorAuthController,
+    AppController,
+    UserController,
+    TwoFactorAuthController,
+    AuthController,
+    DatabaseController,
+    DummyUsersController, // jaka, testing
+    StoreCurrUserToDataBs,
+    UploadImageController,
+    // GetUserNameFromIntra, // jaka, testing
   ],
                 
   providers: [
-      AppService,
-      UserService,
-      DuplicateService,
-      UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
-      ChatService,
-      AuthService,
-      JwtService,
-      TwoFactorAuthService,
+    AppService,
+    UserService,
+    UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
+    ChatGateway,
+    ChatService,
+    ChatRepository,
+    TwoFactorAuthService,
+    AuthService,
+    JwtService,
+    DuplicateService,
   ],
 })
 export class AppModule {
     constructor() {
-        console.log('[BACKEND LOG] AppModule constructor');
+        console.log('Constructor');
     }
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -7,52 +7,36 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-import {ChatData, ChatType} from "./Utils/ChatUtils.tsx";
-import { chatSocket } from "./Utils/ClientSocket.tsx"
+import {ChatType, RequestNewChatDto} from "./Utils/ChatUtils.tsx";
+import {chatSocket} from "./Utils/ClientSocket.tsx"
+import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
 
 type PropsHeader = {
-    recentChatList: ChatData[];
-    setRecentChatList: (recentChatList: ChatData[]) => void;
+    recentChatList: RequestNewChatDto[];
+    setRecentChatList: (recentChatList: RequestNewChatDto[]) => void;
 };
 
 const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) => {
 
     ////////////////////////////////////////////////////////////////////// CREATE SOCKET CHAT ROOM
-    // const [socket, setSocket] = useState<Socket>();
+    const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
     const [show, setShow] = useState(false);
 
     const [chatName, setChatName] = useState('');
-    const [chatType, setChatType] = useState<ChatType>(ChatType.PRIVATE);
-    const [chatPassword, setChatPassword] = useState('');
+    const [chatType, setChatType] = useState<ChatType>(ChatType.PUBLIC);
+    const [chatPassword, setChatPassword] = useState<string | undefined>(undefined);
     const [socketCount, setSocketCount] = useState(0);
 
     const createRoom = () => {
         console.log("[NewChat] createRoom called");
+        // const profileName = localStorage.getItem('profileName');
+        const loginName = currUserData.loginName;
 
-        chatSocket.emit("createRoom", {chatName: chatName, chatType: chatType, chatPassword: chatPassword});
-        setRecentChatList([...recentChatList, {socketRoomId: chatSocket?.id, name: chatName, type: chatType, password: chatPassword}]);
-        // - Dto to send in order to create a room:
-        // socket id: automatically created?
-        // chat name
-        // chat type (ChatType -> private is a DM, public is just saved as public, protected will ask for a password)
-        // chat password (if type == protected)
+        chatSocket.emit("createChat", {chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: loginName});
+        setRecentChatList([...recentChatList, {socketId: chatSocket.id, chatName: chatName, chaType: chatType, chatPassword: chatPassword, loginName: loginName}]);
 
-        // - What does not need to be in the Dto because the backend has access to it:
-        // owner of the room (creator / current user)
-        //      can kick, ban, mute anyone on the channel (even admins)
-        // admin of the room
-        //      it's the owner (creator) when the room is created (later on in another screen the admin will be able to add more admins to the room)
-        //      can kick, ban, mute othe on the channel (besides the owner)
-
-        setChatName('');
-        setChatType(ChatType.PUBLIC);
-        setChatPassword('');
-
-        // On other screens/parts:
-        //      members of the room will be added later on, on the "members" column in the chat tab
-        //      more admins will be added later on, on the "members" column in the chat tab
-        //      blocked users ids will be saved to the chat room database too, so we can hid their messages from the current user
+        setChatPassword(undefined);
     };
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
@@ -64,16 +48,28 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
     // - After every re-render with changed dependencies, React will first run the cleanup function with the old values
     // - Then run your setup function with the new values
     useEffect(() => {
-        chatSocket.connect();
-        chatSocket.on("connect", () => {
-            console.log("[NewChat] socket connected -> socket id: ", chatSocket.id);
-        });
+        if (!chatSocket.connected) {
+            chatSocket.connect();
+            chatSocket.on("connect", () => {
+                console.log("[NewChat] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
+            });
+            chatSocket.on("disconnect", (reason) => {
+                if (reason === "io server disconnect") {
+                    console.log("[NewChat] socket disconnected: ", reason);
+                    // the disconnection was initiated by the server, you need to reconnect manually
+                    chatSocket.connect();
+                }
+                // else the socket will automatically try to reconnect
+            });
+        }
 
         return () => {
         //     console.log(`[NewChat] socket disconnected AND removeAllListeners`);
         //     // socket.removeAllListeners();
-            chatSocket.disconnect();
-            console.log("[NewChat] Inside useEffect return function (Chat Component was removed from DOM): Chat docket ", chatSocket.id, " was disconnected");
+            if (chatSocket.connected) {
+                chatSocket.disconnect();
+                console.log("[NewChat] Inside useEffect return function (Chat Component was removed from DOM): Chat docket ", chatSocket.id, " was disconnected");
+            }
         };
     }, []);
 
@@ -95,52 +91,55 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
                         </Modal.Header>
                         <Modal.Body>
                             <Form>
-                                {/* Group Name */}
-                                <Form.Group className="mb-3">
-                                    {/* <Form.Label>Group name</Form.Label> */}
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Group name"
-                                        autoFocus
-                                        onChange={event => setChatName(event.target.value)}
-                                    />
-                                </Form.Group>
-
                                 {/* Group Type */}
                                 <Form.Group className="mb-3">
                                     <Form.Select
                                         // id="roomForm.type"
                                         value={chatType}
-                                        // defaultValue={ChatType.PRIVATE}
+                                        defaultValue={ChatType.PUBLIC}
                                         aria-label="Default select example"
                                         className="mb-3"
                                         onChange={event=> {
-                                            console.log("[NewChat] CORINAAA chatType before: ", Number(event.target.value) as ChatType);
+                                            console.log("[NewChat] chatType is set to: ", Number(event.target.value) as ChatType);
                                             setChatType(Number(event.target.value) as ChatType);
-                                            console.log("[NewChat] CORINAAA chatType after: ", chatType);
                                         }}
                                     >
-                                        <option value={ChatType.PRIVATE} >Private (DM)</option>
+                                        {/*<option value={ChatType.PRIVATE} >Private (DM)</option>*/}
                                         <option value={ChatType.PUBLIC} >Public</option>
                                         <option value={ChatType.PROTECTED} >Protected</option>
                                     </Form.Select>
                                 </Form.Group>
 
+                                {/* Group Name */}
+                                {/*{chatType === ChatType.PROTECTED || chatType === ChatType.PUBLIC &&*/}
+                                    <Form.Group className="mb-3">
+                                        {/* <Form.Label>Group name</Form.Label> */}
+                                        <Form.Control
+                                            type="text"
+                                            placeholder="Group name"
+                                            autoFocus
+                                            onChange={event => setChatName(event.target.value)}
+                                        />
+                                    </Form.Group>
+                                {/*}*/}
+
                                 {/* Group password - if it's protected */}
-                                <Form.Group className="mb-3">
-                                    {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
-                                    <Form.Control
-                                        type="password"
-                                        placeholder="Protected chat password"
-                                        id="inputPassword5"
-                                        aria-describedby="passwordHelpBlock"
-                                        onChange={event=> setChatPassword(event.target.value)}
-                                    />
-                                    <Form.Text id="passwordHelpBlock" muted>
-                                        Your password must be 5-20 characters long, contain letters and numbers,
-                                        and must not contain spaces, special characters, or emoji.
-                                    </Form.Text>
-                                </Form.Group>
+                                {chatType === ChatType.PROTECTED &&
+                                    <Form.Group className="mb-3">
+                                        {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
+                                        <Form.Control
+                                            type="password"
+                                            placeholder="Protected chat password"
+                                            id="inputPassword5"
+                                            aria-describedby="passwordHelpBlock"
+                                            onChange={event=> setChatPassword(event.target.value)}
+                                        />
+                                        <Form.Text id="passwordHelpBlock" muted>
+                                            Your password must be 5-20 characters long, contain letters and numbers,
+                                            and must not contain spaces, special characters, or emoji.
+                                        </Form.Text>
+                                    </Form.Group>
+                                }
                             </Form>
                         </Modal.Body>
                         <Modal.Footer>
