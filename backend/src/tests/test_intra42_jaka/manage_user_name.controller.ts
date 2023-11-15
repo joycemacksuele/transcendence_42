@@ -61,7 +61,6 @@ export class StoreCurrUserToDataBs {
                                           tfaEnabled: boolean,
                                           tfaCode: string,
                                           hashedSecret: string,
-                                          roomsCreated: number[],
   }): Promise<{ message: string }> {
     try {
       // Check if user with the same loginName already exists
@@ -86,7 +85,6 @@ export class StoreCurrUserToDataBs {
           tfaEnabled: false,
           tfaCode: 'default',
           hashedSecret: 'dummy hashed secret',  // todo jaka: change back, and obtain the real hashedSecret
-          roomsCreated: [2, 5, 44],
           friendships: [],
           // friendOf: []
         // intraId: data.intraId,

@@ -13,6 +13,9 @@ export class NewChatEntity {
     @Column()
     chatName: string;
 
+    // PRIVATE   | is a DM - can't be joined  | only members can see it
+    // PUBLIC    | everyone can join it       | everyone can see it
+    // PROTECTED | password to join           | everyone can see it
     @Column({
         type: "enum",
         enum: ChatType,
@@ -20,16 +23,25 @@ export class NewChatEntity {
     })
     chatType: ChatType;
 
+    // if chatType == PROTECTED
     // it has to be hashed before saved to the database
     @Column()
-    chatPassword: string;
+    chatPassword: string | undefined;
 
-    @Column("simple-array")
-    chatMembers: number[]
+    // the creator can kick, ban, mute anyone on the channel (even admins)
+    @Column()
+    chatCreator: string;
 
-    // @Column("simple-json")
-    // profile: { name: string; nickname: string }
+    // when the group is created, the admin is the owner (creator)
+    // later on in another screen the admin will be able to add more admins to the room
+    // the admin can kick, ban, mute others on the channel (besides the creator)
+    @Column("simple-json")
+    chatAdmins: string[]
+
+    // it includes the current user
+    @Column("simple-json")
+    chatMembers: string[]
 
     // @Column("simple-array")
-    // names: string[]
+    // chatBannedUsers: number[]
 }

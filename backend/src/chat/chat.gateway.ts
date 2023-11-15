@@ -1,9 +1,8 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Logger, UnauthorizedException } from '@nestjs/common';
+import {Logger, UnauthorizedException, UsePipes, ValidationPipe} from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { RequestNewChatDto } from './dto/request-new-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
 
 /*
     Websockets tips:
@@ -14,6 +13,7 @@ import { UpdateChatDto } from './dto/update-chat.dto';
     closed, the data is lost.
  */
 
+@UsePipes(new ValidationPipe())// As the global one does not work for web sockets
 @WebSocketGateway({
   // namespace: '/chat',
   cors: {
@@ -28,66 +28,74 @@ export class ChatGateway
   private readonly logger = new Logger(ChatGateway.name);
 
   constructor(private readonly chatService: ChatService) {
-    this.logger.log('[BACKEND LOG] ChatGateway constructor');
+    this.logger.log('Constructor');
   }
 
   @WebSocketServer()
   ws_server: Server;
 
   afterInit() {
-    this.logger.log('[BACKEND LOG] ChatGateway Initialized');
+    this.logger.log('Initialized');
   }
 
   async handleConnection(clientSocket: Socket) {
     try {
-      this.logger.log('[BACKEND LOG] ChatGateway Client Socket connected: ', clientSocket.id);
+      this.logger.log('Socket connected: ', clientSocket.id);
+
+      clientSocket.on("connected", (socket) => {
+        this.logger.log('Socket rooms: ', socket.rooms);
+        socket.join("room1");
+        this.logger.log('Socket rooms: ', socket.rooms);
+      })
       // const token = clientSocket.handshake.headers.cookie.split('=')[1];
-      // this.logger.log('[BACKEND LOG] ChatGateway token: ', token);
+      // this.logger.log('token: ', token);
       // const decodedToken = this.authService.validateJwt(token);
       // const user = await this.authService.validateUser(decodedToken.id);
       // clientSocket.data.user = user;
     } catch {
-      this.logger.log('[BACKEND LOG] Client disconnected:', clientSocket.id);
+      this.logger.log('UnauthorizedException -> Socket disconnected:', clientSocket.id);
       clientSocket.emit('error', new UnauthorizedException());
       // clientSocket.disconnect();
     }
   }
 
   handleDisconnect(clientSocket: Socket) {
-    this.logger.log(`[BACKEND LOG] Client disconnected: ${clientSocket.id}`);
+    this.logger.log(`Client disconnected: ${clientSocket.id}`);
     // Do we need to handle it?
     // client.disconnect();
   }
 
-  @SubscribeMessage('createRoom')
-  // createRoom(@MessageBody() createChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
-  createRoom(@MessageBody() createChatDto: RequestNewChatDto) {
-    this.logger.log('[BACKEND LOG] ChatGateway -> createRoom called: ', createChatDto);
-    return this.chatService.createRoom(createChatDto);
+  @SubscribeMessage('createChat')
+  // createChat(@MessageBody() createChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
+  createChat(@MessageBody() requestNewChatDto: RequestNewChatDto) {
+    this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
+    const ret = this.chatService.createChat(requestNewChatDto);
+    // this.ws_server.emit('new_chat', ret);
+    return ret;
   }
 
-  @SubscribeMessage('findAllChat')
-  findAll() {
-    this.logger.log('[BACKEND LOG] ChatGateway -> findAll called');
-    return this.chatService.findAll();
-  }
-
-  @SubscribeMessage('findOneChat')
-  findOne(@MessageBody() id: number) {
-    this.logger.log('[BACKEND LOG] ChatGateway -> findOne called');
-    return this.chatService.findOne(id);
-  }
-
-  @SubscribeMessage('updateChat')
-  update(@MessageBody() updateChatDto: UpdateChatDto) {
-    this.logger.log('[BACKEND LOG] ChatGateway -> update called');
-    // return this.chatService.update(updateChatDto.id, updateChatDto);
-    return this.chatService.update(updateChatDto.id);
-  }
-
-  @SubscribeMessage('removeChat')
-  remove(@MessageBody() id: number) {
-    this.logger.log('[BACKEND LOG] ChatGateway -> remove called');
-    return this.chatService.remove(id);
-  }
+  // @SubscribeMessage('findAllChat')
+  // findAll() {
+  //   this.logger.log('findAllChat called');
+  //   return this.chatService.findAll();
+  // }
+  //
+  // @SubscribeMessage('findOneChat')
+  // findOne(@MessageBody() id: number) {
+  //   this.logger.log('findOneChat called');
+  //   return this.chatService.findOne(id);
+  // }
+  //
+  // @SubscribeMessage('updateChat')
+  // update(@MessageBody() updateChatDto: UpdateChatDto) {
+  //   this.logger.log('updateChat called');
+  //   // return this.chatService.update(updateChatDto.id, updateChatDto);
+  //   return this.chatService.update(updateChatDto.id);
+  // }
+  //
+  // @SubscribeMessage('removeChat')
+  // remove(@MessageBody() id: number) {
+  //   this.logger.log('removeChat called');
+  //   return this.chatService.remove(id);
+  // }
 }
