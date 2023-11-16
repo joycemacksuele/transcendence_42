@@ -129,8 +129,9 @@ export class AuthService {
 
 				// ADDED JAKA: 							//	SAVE ORIG USER IMAGE TO THE ./uploads/ FOLDER
 				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
-				console.log("Jaka: ImageURL: ", imageUrl);
+				//console.log("Jaka: ImageURL: ", imageUrl);
 
+				// todo: replace ./uploads/ with .env var everywhere
             	const imagePath = `./uploads/${player.loginName}.jpg`;
 				try {
 					await this.userService.downloadAndSaveImage(imageUrl, imagePath);
@@ -172,7 +173,7 @@ export class AuthService {
 			httpOnly: true,
 			path: '/',
 			// sameSite: 'none',
-			// secure: true,
+			// secure: true,		// todo: is secure needed ??
 			// maxAge: 60 * 60 * 1000;	// 60 minutes
 		};
 
@@ -214,10 +215,11 @@ export class AuthService {
 			// console.log(response.getHeaderNames());
 		}
 		else
-			path = `${process.env.DOMAIN}/main_page?loginName=`; 	
+			path = `${process.env.DOMAIN}`;
 
-		response.status(200);
-		return response.redirect(path); 														   // jaka, temp. added
+			this.logger.log("Redirecting to: ", process.env.DOMAIN);
+			return response.redirect(path); 														   // jaka, temp. added
+		return;
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
 		// return response.redirect('http://localhost:3001/2faAuth' + const parameters? )
 	}
