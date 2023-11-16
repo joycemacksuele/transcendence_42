@@ -9,7 +9,7 @@ import React from 'react';
 export interface CurrUserData {
 	loginName:	string | undefined;
 	profileName: string | undefined;
-	loginImage:	string | undefined;
+	profileImage:	string | undefined;
 }
 
 export const CurrentUserContext = React.createContext<CurrUserData | null> (null);
