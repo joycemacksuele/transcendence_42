@@ -1,35 +1,46 @@
 // src/controllers/test.controller.ts
-import { Controller, Post, Get, HttpStatus, HttpException, Body, Query } from '@nestjs/common';
+import { Controller, Req, Post, Get, HttpStatus, HttpException, Body, Query } from '@nestjs/common';
+import { Request } from 'express';
 // import { DummyUserService } from './dummyUsers.service';
 import { UserService } from '../../user/user.service';
 import { UserEntity } from '../../user/user.entity';
 import { DuplicateService } from '../../duplicate/duplicate.service';
 import { ChangeProfileNameDTO } from './change_profile_name.dto'
+import { AuthService } from 'src/auth/auth.service';
+
+
+interface CheckResponse {
+  exists: boolean;
+  user?: UserEntity; // Assuming 'User' is a defined type or interface for user data
+}
+
 
 @Controller('manage_curr_user_data')
 export class StoreCurrUserToDataBs {
 	// InsertUserDto class defined inside the TestController file
 	constructor(
 		private readonly userService: UserService,
-		private readonly duplicateService: DuplicateService
-	) {
-  }
-
-
+		private readonly duplicateService: DuplicateService,
+    private readonly authService: AuthService   // added jaka, to enable extractUserFromRequest()
+	) { }
 
 
   @Get('check_if_user_in_db')
-  async checkIfCurrUserIsInDB(@Query('loginName') loginName: string) {
+  // async checkIfCurrUserIsInDB(@Query('loginName') loginName: string) {
+    async checkIfCurrUserIsInDB(@Req() request: Request): Promise<CheckResponse> {
     try {
+      // get user and loginName from request-token
+      let payload = await this.authService.extractUserFromRequest(request);
+      console.log("      ... payload.username: ", payload.username);
+
+
       // Check if user with the same loginName already exists
-      console.log('Endpoint: Check_if_user_in_db, arg: loginName:', loginName);
-      const existingUser = await this.userService.getUserByLoginName(loginName);
+      console.log('Endpoint: Check_if_user_in_db()');
+      const existingUser = await this.userService.getUserByLoginName(payload.username);
       if (existingUser) {
         console.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
         return { exists: true, user: existingUser};
-        // throw new HttpException('This loginName already exists in database --> the current user.', HttpStatus.CONFLICT);
         // return { message: 'This loginName already exists in database == the current user.'};
-        // FOUND EXISTING USER IN DB, NOT SURE IF THIS IS THE OPTIMAL WAY TO CHECK
       }
       console.log('Endpoint: Check_if_user_in_db, LoginName:', existingUser); // jaka, temp
       
@@ -40,6 +51,65 @@ export class StoreCurrUserToDataBs {
       throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
+  @Post('change_profile_name')
+  async changeProfileName(@Req() request: Request, @Body() data: ChangeProfileNameDTO): Promise<{ message: string }> {
+    try {
+      console.log('Changing the profile name:, new profileName: ', data.profileName);
+
+      // get user and loginName from request-token
+      let payload = await this.authService.extractUserFromRequest(request);
+      console.log("      ... payload.username: ", payload.username);
+
+
+      const user = await this.userService.getUserByLoginName(payload.username);
+      // console.log('Jaka, found profile name: ', user.profileName  );
+      if (!user) {
+	      throw new HttpException('User with this loginName not found', HttpStatus.I_AM_A_TEAPOT);
+        // return {message: 'User with this loginName not found'};
+      }
+      const profile = await this.userService.getUserByProfileName(data.profileName);
+      if (profile) {
+	      throw new HttpException('User with this profileName already exists', HttpStatus.I_AM_A_TEAPOT);
+        // return {message: 'User with this profileName already exists'};
+      }
+
+      const duplicate = await this.duplicateService.checkDuplicate(data.profileName, payload.username);
+      if (duplicate) {
+	      throw new HttpException('Another user with this profileName exists in Intra', HttpStatus.I_AM_A_TEAPOT);
+        // return {message: 'Another user with this profileName exists in Intra'};
+      }
+
+      user.profileName = data.profileName; // updating the name
+      await this.userService.saveUser(user);
+
+      return {message: 'Profile name updated successfully.'};
+    } catch (error) {
+        console.error('Error updating the profile name: ', error.message);
+        throw error;
+    }
+  }
+
+  // Added Jaka
+  // @Post('just_test')
+  // async justTest() {
+  //   console.log('From manage user name, just test ...A');
+  //   try {
+  //     console.log('From manage user name, just test ...B');
+
+  //   } catch (error) {
+  //     console.error('Error in just test: ', error.message);
+  //     throw error;
+  //   }
+  // }
+
+} // End Class
+
+
+// needs to check if this loginName already exists before storing it.
+// Must create a separate function in the user.service
+
 
 
 
@@ -103,61 +173,3 @@ export class StoreCurrUserToDataBs {
   //     throw new HttpException('STORE: Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
   //   }
   // }
-
-
-
-  @Post('change_profile_name')
-  // async changeProfileName(@Body() data: { profileName: string, loginName: string }): Promise<{ message: string }> {
-  async changeProfileName(@Body() data: ChangeProfileNameDTO): Promise<{ message: string }> {
-    try {
-      // should be get current UserByLoginName() and then change the profile name, but then the profile name on the button should be also replaced,
-      // but that button name is loaded in the Header, directly from intra ...!
-
-      console.log('Changing the profile name of user:', data.loginName, " new profileName: ", data.profileName);
-      const user = await this.userService.getUserByLoginName(data.loginName);
-      // console.log('Jaka, found profile name: ', user.profileName  );
-      if (!user) {
-	      throw new HttpException('User with this loginName not found', HttpStatus.I_AM_A_TEAPOT);
-        // return {message: 'User with this loginName not found'};
-      }
-      const profile = await this.userService.getUserByProfileName(data.profileName);
-      if (profile) {
-	      throw new HttpException('User with this profileName already exists', HttpStatus.I_AM_A_TEAPOT);
-        // return {message: 'User with this profileName already exists'};
-      }
-
-      const duplicate = await this.duplicateService.checkDuplicate(data.profileName, data.loginName);
-      if (duplicate) {
-	      throw new HttpException('Another user with this profileName exists in Intra', HttpStatus.I_AM_A_TEAPOT);
-        // return {message: 'Another user with this profileName exists in Intra'};
-      }
-
-      user.profileName = data.profileName; // updating the name
-      await this.userService.saveUser(user);
-
-      return {message: 'Profile name updated successfully.'};
-    } catch (error) {
-        console.error('Error updating the profile name: ', error.message);
-        throw error;
-    }
-  }
-
-  // Added Jaka
-  // @Post('just_test')
-  // async justTest() {
-  //   console.log('From manage user name, just test ...A');
-  //   try {
-  //     console.log('From manage user name, just test ...B');
-
-  //   } catch (error) {
-  //     console.error('Error in just test: ', error.message);
-  //     throw error;
-  //   }
-  // }
-
-} // End Class
-
-
-// needs to check if this loginName already exists before storing it.
-// Must create a separate function in the user.service
-

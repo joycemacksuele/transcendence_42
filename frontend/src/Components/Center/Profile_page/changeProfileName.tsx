@@ -26,7 +26,7 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log('HandleSubmit, loginName: ', loginName);
+		console.log('Handle Submit new profileName for user: ', loginName);
 		if (profileName.trim() === '') {
 			setErrorMessage('Please write a name.');
 			setOkMessage('');
@@ -38,9 +38,8 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
 		
 		try {
-			// const loginName =
 			const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name',
-							{ profileName, loginName } , {validateStatus: () => true }); // validateStatus: All http responses will be successfull, regardless if the status code is Error. This allows more flexible error handling below
+							{ profileName } , {validateStatus: () => true }); // validateStatus: All http responses will be successfull, regardless if the status code is Error. This allows more flexible error handling below
 
 
 			setProfileName(''); // Resetting the input field

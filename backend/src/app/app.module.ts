@@ -49,17 +49,13 @@ import { TestButton } from 'src/tests/exampleButtons/test.controller';
 import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
 // added jaka: to store current user to database
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
-import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
+import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
+import { AddUsernameMiddleware } from 'src/tests/test_intra42_jaka/change_profile_image';
+import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
 
-// To read: https://docs.nestjs.com/techniques/database
-/*
-  TypeOrm
-  TypeOrm is an Object Relational Mapper (ORM) typescript package that allows you to use both SQL
-  such as PostgreSQL, MySQL and NoSQL databases. More about typeorm is in its documentation.
-*/
 // To read: https://docs.nestjs.com/techniques/database
 /*
   TypeOrm
@@ -123,8 +119,17 @@ import { JwtService } from '@nestjs/jwt';
       TwoFactorAuthService,
   ],
 })
-export class AppModule {
-    constructor() {
-        console.log('[BACKEND LOG] AppModule constructor');
-    }
+
+
+export class AppModule implements NestModule {
+  
+  constructor() {
+    console.log('Backend: AppModule constructor');
+  }
+
+  configure(consumer: MiddlewareConsumer) { // added jaka: needed for fetching username for uploading new profile image 
+    consumer
+      .apply(AddUsernameMiddleware)
+      .forRoutes(UploadImageController);
+  }
 }
