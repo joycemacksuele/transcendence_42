@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -22,9 +22,43 @@ import Messages from "./Messages";
 // import MembersPrivateMessage from "./MembersPrivateMessage";
 // import MembersGroup from "./MembersGroup";
 import { RequestNewChatDto } from "./Utils/ChatUtils.tsx";
+import { chatSocket } from "./Utils/ClientSocket.tsx";
 
 const Chat = () => {
 
+    ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
+
+    // useEffect without dependencies:
+    // - When your component is added to the DOM, React will run your setup function
+    // - When your component is removed from the DOM, React will run your cleanup function
+    // useEffect with dependencies:
+    // - After every re-render with changed dependencies, React will first run the cleanup function with the old values
+    // - Then run your setup function with the new values
+    useEffect(() => {
+        if (!chatSocket.connected) {
+            chatSocket.connect();
+            chatSocket.on("connect", () => {
+                console.log("[NewChat] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
+            });
+            chatSocket.on("disconnect", (reason) => {
+                if (reason === "io server disconnect") {
+                    console.log("[NewChat] socket disconnected: ", reason);
+                    // the disconnection was initiated by the server, you need to reconnect manually
+                    chatSocket.connect();
+                }
+                // else the socket will automatically try to reconnect
+            });
+        }
+
+        return () => {
+        //     console.log(`[NewChat] socket disconnected AND removeAllListeners`);
+        //     // socket.removeAllListeners();
+            if (chatSocket.connected) {
+                chatSocket.disconnect();
+                console.log("[NewChat] Inside useEffect return function (Chat Component was removed from DOM): Chat docket ", chatSocket.id, " was disconnected");
+            }
+        };
+    }, []);
     ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
     const [recentChatList, setRecentChatList] = useState<RequestNewChatDto[]>([]);
     console.log("[Chat] Chat.recentChatList: ", recentChatList);

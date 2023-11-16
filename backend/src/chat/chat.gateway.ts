@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import {Logger, UnauthorizedException, UsePipes, ValidationPipe} from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { RequestNewChatDto } from './dto/request-new-chat.dto';
+import { RequestMessageChatDto } from './dto/request-message-chat.dto';
 
 /*
     Websockets tips:
@@ -72,6 +73,14 @@ export class ChatGateway
     const ret = this.chatService.createChat(requestNewChatDto);
     // this.ws_server.emit('new_chat', ret);
     return ret;
+  }
+
+  @SubscribeMessage('messageChat')
+  messageChat(@MessageBody() requestMessageChatDto: RequestMessageChatDto) {
+    this.logger.log('messageChat -> requestMessageChatDto: ', requestMessageChatDto);
+    // const ret = this.chatService.messageChat(requestMessageChatDto);
+    // this.ws_server.emit('new_chat', ret);
+    // return ret;
   }
 
   // @SubscribeMessage('findAllChat')

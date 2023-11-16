@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -15,6 +15,8 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+import { chatSocket } from './Utils/ClientSocket.tsx';
+import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
 
 const Messages = () => {
 
@@ -22,25 +24,23 @@ const Messages = () => {
 
     const [message, setMessage] = useState('');
     const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
+    const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
-    const sendMessage = async (event: React.FormEvent)=> {
-        event.preventDefault();
+    const sendMessage = ()=> {
         if (message.trim() == '') {
             setMessageBoxPlaceHolder('Please write a message.');
             return;
         }
         else {
-            try {
-                console.log('BEFORE SENDING TO BACKEND');
+            console.log('BEFORE SENDING TO BACKEND');
 
-                // make this via socket.emit("SendMessage");
-                // how to send data? send the message + userId to send the message to (or chatId?)
+            // make this via socket.emit("SendMessage");
+            // how to send data? send the message + userId to send the message to (or chatId?)
 
-                setMessage('');
-                setMessageBoxPlaceHolder('Write a message...');
-            } catch (error) {
-                console.error('[Messages] Error: ', error);
-            }
+            const loginName = currUserData.loginName;
+            chatSocket.emit("messageChat", {loginName: loginName, message: message});
+            setMessage('');
+            setMessageBoxPlaceHolder('Write a message...');
         }
     };
 
