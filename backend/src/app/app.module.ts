@@ -43,6 +43,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
+import {NewChatEntity} from "../chat/entities/new-chat.entity";
 
 // To read: https://docs.nestjs.com/techniques/database
 /*
@@ -66,7 +67,7 @@ import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profil
       username: 'transcendence_user',
       password: 'novogeslo1',
       database: 'mydb',
-      entities: [UserEntity, Friendship],// Add NewChatEntity (and others) here?????????
+      entities: [UserEntity, Friendship, NewChatEntity],
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
@@ -95,8 +96,8 @@ import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profil
     AppService,
     UserService,
     UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
-    ChatGateway,
-    ChatService,
+    // ChatGateway,// already on chat module
+    // ChatService,// already on chat module
     ChatRepository,
     TwoFactorAuthService,
     AuthService,

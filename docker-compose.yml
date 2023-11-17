@@ -117,6 +117,26 @@ services:
         # healthcheck:
         #   test: /healthchecks/postgres.sh
         #   interval: "5s"
+        # --------------------------------------------- PostgreSQL
+    pgadmin:
+        container_name: pgadmin
+        image: dpage/pgadmin4
+        logging:
+            driver: "none"
+            options:
+                max-size: "0k"
+                max-file: "0"
+        ports:
+            - 5050:5050
+        volumes:
+            - ./backend/_pgadmin_data:/var/lib/pgadmin
+        env_file:
+            - ./.env
+        environment:
+            #            // TODO Align it with .env
+            - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+            - PGADMIN_DEFAULT_PASSWORD=novogeslo1
+            - PGADMIN_LISTEN_PORT=5050
 
 # volumes:
 #      - ./<host_machine_dir_path>:/<container_data_dir_path>
