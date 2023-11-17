@@ -70,9 +70,10 @@ export class ChatGateway
   // createChat(@MessageBody() createChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
   createChat(@MessageBody() requestNewChatDto: RequestNewChatDto) {
     this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
-    const ret = this.chatService.createChat(requestNewChatDto);
+    // const ret = this.chatService.createChat(requestNewChatDto);
+    this.chatService.createChat(requestNewChatDto).then();
     // this.ws_server.emit('new_chat', ret);
-    return ret;
+    // return ret;
   }
 
   @SubscribeMessage('messageChat')
