@@ -31,7 +31,7 @@ export class RequestNewChatDto {
     @IsString()
     @MinLength(3)
     @MaxLength(10)
-    @OneToMany(() => CreateUserDto, (createUserDto) => createUserDto.loginName)
+    // @OneToMany(() => CreateUserDto, (createUserDto) => createUserDto.loginName)
     @IsNotEmpty({ message: 'Required' })
     loginName: string;
     // chatMembers: number[];// not in the create chat screen

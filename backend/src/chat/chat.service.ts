@@ -4,43 +4,47 @@ import {RequestNewChatDto} from "./dto/request-new-chat.dto";
 import {NewChatEntity} from "./entities/new-chat.entity";
 import {ChatType} from "./utils/chat-utils";
 import {ChatRepository} from "./chat.repository";
-
+import * as bcryptjs from 'bcryptjs';
 
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
 
   constructor(
-      // @InjectRepository(NewChatEntity)
-      private readonly chatRepository: ChatRepository,
+      @InjectRepository(NewChatEntity)
+      public readonly chatRepository: ChatRepository,
       // public readonly userService: UserService
   ) {
     this.logger.log('constructor');
   }
 
-  createChat(requestNewChatDto: RequestNewChatDto) {
+  async createChat(requestNewChatDto: RequestNewChatDto)  {
     const chat_entity = new NewChatEntity();
     chat_entity.chatName = requestNewChatDto.chatName;
-    chat_entity.chatAdmins = [];
-    chat_entity.chatMembers = [];
-    // chat_entity.chatBannedUsers = [];
     chat_entity.chatType = requestNewChatDto.chatType;
     chat_entity.chatCreator = requestNewChatDto.loginName;
+    chat_entity.chatAdmins = [];
     chat_entity.chatAdmins.push(requestNewChatDto.loginName);
-    // chat_entity.chatMembers.push(current_user);
+    chat_entity.chatMembers = [];
+    chat_entity.chatMembers.push(requestNewChatDto.loginName);
+    // chat_entity.chatBannedUsers = [];
     if (requestNewChatDto.chatType == ChatType.PROTECTED) {
       if (requestNewChatDto.chatPassword == null) {
         throw new Error('Password is required for PROTECTED_CHANNEL');
       }
-      // TODO password has to be hashed before saved to the database
-      // try {
-        chat_entity.chatPassword = requestNewChatDto.chatPassword;
-      //   chat_entity.chatPassword = await bcrypt.hash(requestNewChatDto.chatPassword, 10);
-      // } catch (err) {
-      //   throw new Error('Can not hash password');
-      // }
+      try {
+        chat_entity.chatPassword = await bcryptjs.hash(requestNewChatDto.chatPassword, 10);
+      } catch (err) {
+        throw new Error('Can not hash password');
+      }
+    } else {
+      requestNewChatDto.chatPassword = null;
     }
-    return this.chatRepository.save(chat_entity);
+    // const new_chat = this.chatRepository.create(requestNewChatDto);// this can create an Entity out of an object if var name matches
+    // await this.chatRepository.save(chat_entity);
+    this.chatRepository.save(chat_entity).then(r => {
+      this.logger.log('NewChatEntity: ', r.id);
+    });
   }
 
   // findAll() {

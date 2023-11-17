@@ -25,21 +25,31 @@ export class NewChatEntity {
 
     // if chatType == PROTECTED
     // it has to be hashed before saved to the database
-    @Column()
-    chatPassword: string | undefined;
+    @Column({
+        nullable: true,
+    })
+    chatPassword: string;
 
     // the creator can kick, ban, mute anyone on the channel (even admins)
-    @Column()
+    @Column({
+        nullable: true,
+    })
     chatCreator: string;
 
     // when the group is created, the admin is the owner (creator)
     // later on in another screen the admin will be able to add more admins to the room
     // the admin can kick, ban, mute others on the channel (besides the creator)
-    @Column("simple-json")
+    @Column({
+        type: "simple-json",
+        nullable: true,
+    })
     chatAdmins: string[]
 
     // it includes the current user
-    @Column("simple-json")
+    @Column({
+        type: "simple-json",
+        nullable: true,
+    })
     chatMembers: string[]
 
     // @Column("simple-array")
