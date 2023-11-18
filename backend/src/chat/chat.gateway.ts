@@ -4,6 +4,7 @@ import {Logger, UnauthorizedException, UsePipes, ValidationPipe} from '@nestjs/c
 import { ChatService } from './chat.service';
 import { RequestNewChatDto } from './dto/request-new-chat.dto';
 import { RequestMessageChatDto } from './dto/request-message-chat.dto';
+import { RequestRegisterChatDto } from './dto/request-register-chat.dto';
 
 /*
     Websockets tips:
@@ -79,6 +80,14 @@ export class ChatGateway
   @SubscribeMessage('messageChat')
   messageChat(@MessageBody() requestMessageChatDto: RequestMessageChatDto) {
     this.logger.log('messageChat -> requestMessageChatDto: ', requestMessageChatDto);
+    // const ret = this.chatService.messageChat(requestMessageChatDto);
+    // this.ws_server.emit('new_chat', ret);
+    // return ret;
+  }
+
+  @SubscribeMessage('registerChat')
+  registerChat(@MessageBody() requestRegisterChatDto: RequestRegisterChatDto) {
+    this.logger.log('registerChat -> requestRegisterChatDto: ', requestRegisterChatDto);
     // const ret = this.chatService.messageChat(requestMessageChatDto);
     // this.ws_server.emit('new_chat', ret);
     // return ret;

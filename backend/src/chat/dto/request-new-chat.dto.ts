@@ -1,5 +1,4 @@
 import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, IsEnum} from 'class-validator';
-import {OneToMany} from "typeorm";
 import {ChatType} from '../utils/chat-utils'
 import {CreateUserDto} from "../../user/create-user.dto";
 
@@ -31,8 +30,6 @@ export class RequestNewChatDto {
     @IsString()
     @MinLength(3)
     @MaxLength(10)
-    // @OneToMany(() => CreateUserDto, (createUserDto) => createUserDto.loginName)
     @IsNotEmpty({ message: 'Required' })
     loginName: string;
-    // chatMembers: number[];// not in the create chat screen
 }
