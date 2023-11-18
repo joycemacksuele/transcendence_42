@@ -15,15 +15,10 @@ interface CheckResponse {
 	user?: User;	// ?: Optional (it may not exists)
 }
 
-export const checkIfUserExistsInDB = async (loginName: string | undefined): Promise<CheckResponse> => {
-	console.log("................ CheckifUserExistsinDB: arg: loginName", loginName);
+export const checkIfUserExistsInDB = async (): Promise<CheckResponse> => {
+	console.log("Start checkifUserExistsinDB():");
 	try {
-		const response:AxiosResponse< CheckResponse > = await axios.get< CheckResponse >("http://localhost:3001/manage_curr_user_data/check_if_user_in_db", {
-			params: {
-				loginName: loginName
-			}
-		});
-		console.log("................ CheckifUserExistsinDB: response: ", response);
+		const response:AxiosResponse< CheckResponse > = await axios.get< CheckResponse >("http://localhost:3001/manage_curr_user_data/check_if_user_in_db");
 		console.log("................ CheckifUserExistsinDB: response.data: ", response.data);
 		return response.data;
 	} catch (error) {
@@ -31,4 +26,3 @@ export const checkIfUserExistsInDB = async (loginName: string | undefined): Prom
     	throw error;
 	}
 }
- 
