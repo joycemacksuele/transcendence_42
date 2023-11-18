@@ -34,7 +34,7 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
         const loginName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
         chatSocket.emit("createChat", {chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: loginName});
-        setRecentChatList([...recentChatList, {socketId: chatSocket.id, chatName: chatName, chaType: chatType, chatPassword: chatPassword, loginName: loginName}]);
+        setRecentChatList([...recentChatList, {socketId: chatSocket.id, chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: loginName}]);
 
         setChatPassword(null);
     };

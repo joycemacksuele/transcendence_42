@@ -6,7 +6,10 @@ import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
 import Image from "react-bootstrap/Image";
 import ListGroup from "react-bootstrap/ListGroup";
-import React from "react";
+import Button from "react-bootstrap/Button";
+import { CurrentUserContext, CurrUserData } from "../Profile_page/contextCurrentUser.tsx";
+import { chatSocket } from './Utils/ClientSocket.tsx';
+import React, {useContext} from "react";
 
 
 type PropsHeader = {
@@ -18,6 +21,14 @@ const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
 
     console.log("[ChatRecent] recentChatList: ", recentChatList);
 
+    const currUserData = useContext(CurrentUserContext) as CurrUserData;
+
+    const changeGroup = (chatName : string) => {
+      console.log("Changing to " + chatName);
+      const loginName = currUserData.loginName;
+      // TODO: Password stuff for protected groups
+      chatSocket.emit("registerChat", {chatName: chatName, loginName: loginName});
+    }
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
@@ -45,7 +56,7 @@ const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
                                         alt="user"
                                         roundedCircle
                                     />
-                                    {chat.chatName}
+                                    <Button variant="secondary" onClick={ () => changeGroup(chat.chatName)}>{chat.chatName}</Button>
                                 </ListGroup.Item>
                                 {/*<li key={chat.socketRoomId}>*/}
                                 {/*    <a*/}
