@@ -11,19 +11,10 @@ interface ContextProps {
 const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 
 	console.log(' -------- MAIN PAGE: ---------');
-	
-	// interface UserData
-	// let loginName = '';
-	// let profileName = '';
-	// let profileImage = '';
-
 
 	const [userData, setUserData] = useState<CurrUserData | null>(null);
 
 	const currUserData = useContext(CurrentUserContext) as CurrUserData;
-
-	// CHECK WHAT IF USER DOES NOT YET EXISTS, DOES IT STILL FETCH?
-	// BUT BY NOW IT MUST EXISTS, BECAUSE IT WAS CREATED AT THE MOMENT OF LOGIN
 
 	useEffect(() => {
 		const fetchUserData = async () => {
@@ -42,43 +33,8 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 					localStorage.setItem('profileName', response.user.profileName || '' ); // jaka, maybe not needed
 					localStorage.setItem('profileImage', response.user.profileImage || '' );
 
-
 					updateContext(response.user);
 					console.log('   Updating context: \n      login and profile name: ', currUserData);
-
-						// else {
-						// 	console.log('   ?? This user is not yet in DB: ');
-
-						// 	checkIfUserExistsInDB().then(response => {
-						// 		if (response && response.user) {
-						// 			loginName: response.user.loginName;
-						// 			profileName: response.user.profileName;
-						// 			profileImage: response.user.profileImage;
-						// 			console.log('   Setting local storage from DB response ...');
-						// 			localStorage.setItem('profileName', profileName);
-						// 			localStorage.setItem('profileImage', profileImage);
-						// 			console.log("      fetched user.loginName A): ", loginName);
-						// 		}
-						// 	})
-						// 	console.log("      fetched user.loginName B): ", loginName);
-						// 	console.log('              localstorage.profilename:: ', localStorage.getItem('profileName'));
-
-
-						// 	// UPDATE ONLY IF THE USER DOES NOT EXISTS YET, 
-						// 	// BECAUSE OTHERWISE IT RESETS THE PROFILENAME BACK TO USERNAME!
-						// 	// OTHERWISE THE CONTEXT SHOULD ALREADY CONTAIN THE profileName ...etc ...
-						// 	if (profileName) {
-						// 		const updatedUserData = {
-						// 			...currUserData,
-						// 			loginName:		localStorage.getItem('loginName') || undefined,
-						// 			profileName:	localStorage.getItem('loginName') || undefined,
-						// 			loginImage:		localStorage.getItem('loginImage') || undefined,
-						// 	};
-						// 	updateContext(updatedUserData);
-						// 	console.log('   Updating context: \n      First time login - login and profile name should be the same: ', currUserData);
-						// 	}
-						// }
-
 				}
 			} catch (error) {
 				console.error("      Error fetching user data", error);
