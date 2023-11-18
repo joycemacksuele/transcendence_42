@@ -116,11 +116,6 @@
 // ---------------------------------------------------------------------------------------------------------
 
 
-
-
-
-
-
 import React, { useState, useEffect, Req, Res } from "react";
 import axios from "axios";
 import { data } from "jquery";
@@ -128,14 +123,14 @@ import MainPage from "../main_page";
 import LoginPage from "./Login_auth";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { useNavigate } from "react-router-dom"; // added jaka, to navigate to mainPage, if code is correct
+import { useNavigate } from "react-router-dom";
 
 
 const re_sendVerificationEmail = async () => {
   console.log("Re-send Verification email:");
   try {
 		const response = await axios.post(
-		  "http://localhost:3001/2fa/resend_email_code"
+		  "http://localhost:3001/2fa/resend_email_code"  // TO DO - change to env variable 
 		  );
 		console.log("    email sent, response.data:", response.data);
   } catch (error) {
@@ -147,17 +142,7 @@ const InputTFAcode = () => {
   const [inputValue, setInputValue] = useState("");
   const [tfa, settfa] = useState(false);
   const [tfaAttempts, setAttempts] = useState<number>(0);
-  const navigate = useNavigate(); // added jaka
-
-//   useEffect(() => {
-// 	// added jaka
-// 	if (tfa === false && tfaAttempts > 0 && tfaAttempts < 3) {
-// 	  console.log("USE EFFECT: should call sendVerification Email ");
-
-// 	  // send again the verification mail
-// 	  re_sendVerificationEmail();
-// 	}
-//   }, [tfaAttempts, tfa]);
+  const navigate = useNavigate();
 
   let axiosConfig = {
 	headers: {
@@ -171,7 +156,7 @@ const InputTFAcode = () => {
 	try {
 		console.log(document.cookie);
 	  const response = await axios.post(
-		"http://localhost:3001/2fa/verify_code",
+		"http://localhost:3001/2fa/verify_code",  // TO DO change to the env variable 
 		{ inputValue },
 		axiosConfig
 	  );
@@ -188,7 +173,7 @@ const InputTFAcode = () => {
 		{
 			console.log("Supposedly cleaning cookies on the backend");
 			const responseCleanCookies = await axios.post(
-				"http://localhost:3001/auth/cleanToken",
+				"http://localhost:3001/auth/cleanToken",  // TO DO change to the environment variable 
 				axiosConfig
 			  );
 			  console.log("clean Token response: " + responseCleanCookies.cookie);
@@ -204,30 +189,10 @@ const InputTFAcode = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		tfaBackend(e);
 		setInputValue('');
-
-	// useEffect(() => { settfa(true) }, [])
-	// console.log("response tfa outside: " + tfa);
-	// e.preventDefault();
-	// try {
-	//     const response = await axios.post('http://localhost:3001/2fa/verify_code', { inputValue }, axiosConfig);
-	//     console.log('request: ' , response);
-	//     console.log('Input TfaCode response: ', JSON.stringify(response));
-	// } catch(error) {
-	//     console.error("Input TfaCode error: ", error);
-	// }
   };
-  // settfa(true);
-  // console.log("response tfa outside function: " + tfa);
-
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     setInputValue(e.target.value);
-  //     console.log('input value tfa: ' + inputValue);
-  // };
 
   return (
 	<>
-	  {/* {tfa === true && tfaAttempts < 3 && <MainPage />} Jaka, moved above into navigate() */}
-	  
 	  {tfa === false && tfaAttempts === 3 && <LoginPage />}  
 	  {tfa === false && tfaAttempts < 3 && (
 		<>

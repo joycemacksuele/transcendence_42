@@ -73,7 +73,6 @@ services:
             - CLIENT_ID=${CLIENT_ID}
             - SECRET=${SECRET}
             - REDIRECT=${REDIRECT}
-            - DOMAIN=${DOMAIN}
             - FRONTEND=${FRONTEND}
             - BACKEND=${BACKEND}
             - DATABASE=${DATABASE}

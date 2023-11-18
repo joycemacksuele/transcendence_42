@@ -76,7 +76,7 @@ export class AuthController {
 	@Get('logout')   // to be connected with frontend
 	async logOut(@Request() req:any, @Response() res:any){
 		try{
-			// change online staatus to false 
+			// TO DO:  change online staatus to false 
 			await this.authService.removeAuthToken(req, res);
 			this.logger.log('Clean Token Controller Point After Logout: ' + response.get('Cookie'))
 		}

@@ -39,9 +39,6 @@ export class TwoFactorAuthService {
 
 	async inputCheck(value? : string): Promise<boolean>
 	{
-		console.log("verify code sql: " + value);
-		let temp : number;
-		temp = +value;
 		if (value === null)
 		{
 			console.log("value null");
@@ -52,7 +49,6 @@ export class TwoFactorAuthService {
 			console.log("length: " + value.length);
 			return false;
 		} 
-		// if (isNaN(Number(value)) === false)
 		if (typeof(+value) !== "number")
 		{
 			console.log("not a number: ");

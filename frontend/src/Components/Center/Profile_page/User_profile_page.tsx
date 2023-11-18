@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ImageUpload from "./changeUserImage";
+import ButtonTfa from './ButtonTfa';
 import FriendsList from "./DisplayFriends";
 import ChangeProfileName from "./changeProfileName";
 import { CurrUserData } from "./contextCurrentUser";
@@ -75,6 +76,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 								<h5>MY PROFILE PAGE</h5>
 								<ChangeProfileName updateContext={ updateContext } />
 								<ImageUpload updateContext={ updateContext }/>
+								<ButtonTfa/>
 								{/* <JustTest/> */}
 							</div>
 						{/* </Row> */}
