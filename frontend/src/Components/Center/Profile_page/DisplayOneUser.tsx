@@ -71,20 +71,20 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 	}, []);
 	
 	// async function handleAddFriend( event: React.MouseEvent<HTMLButtonElement>) {
-		async function startFollowing() {
-			const friendId = userData.id; // todo: fetch the id (the to-be friend)
-			try {
-				const response = await axios.post(`http://localhost:3001/friendship/${myId}/addFriend/${friendId}`);
-				console.log("Success: Friendship added: ", response.data);
+	async function startFollowing() {
+		const friendId = userData.id; // todo: fetch the id (the to-be friend)
+		try {
+			const response = await axios.post(`http://localhost:3001/friendship/${myId}/addFriend/${friendId}`);
+			console.log("Success: Friendship added: ", response.data);
+		}
+		catch (error: any) {
+			console.error("Error adding a friend: "/*, error*/);
+			if (axios.isAxiosError(error)) {
+				if (error.response && error.response.data && error.response.data.message) {
+					alert(error.response.data.message);
+				} else {
+				alert("An axiosError occured while adding a friend.");
 			}
-			catch (error: any) {
-				console.error("Error adding a friend: "/*, error*/);
-				if (axios.isAxiosError(error)) {
-					if (error.response && error.response.data && error.response.data.message) {
-						alert(error.response.data.message);
-					} else {
-					alert("An axiosError occured while adding a friend.");
-				}
 			} else {
 				alert("Another (non axios) error occured while adding a friend.")
 			}

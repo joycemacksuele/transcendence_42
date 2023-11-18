@@ -80,35 +80,50 @@ export class TwoFactorAuthController {
             this.logger.log('Error re-sending the code email: ', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'To Factor Authentication verification attempt two/three failed' });
         }
- 
-        // OR //
-        // async sendVerificationMail(@Req() req: Request, @Res() res: Response) {
-        //     try {
-        //         const user = /* Retrieve user information from request */;
-        //         await this.twoFactorAuthService.sendVerificationMail(user);
-        //         res.status(HttpStatus.OK).send({ message: 'Verification email sent.' });
-        //     } catch (error) {
-        //         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: error.message });
-        //     }
-        // }
     }
 
-    @Post('send_tfa_code')
-    async sendCode(@Req() req, @Res() res: Response) {
+    @Post('toggle_button_tfa')
+    async toggleButtonTfa(@Req() req, @Res() res: Response) {
         try {
-            this.logger.log('Start send_tfa_code');
+            this.logger.log('Start toggle_button_tfa');
 
-            let payload = await this.authService.extractUserFromRequest(req); // extract user from header
-            this.logger.log('Extracted user from header: ', payload.username); // returns the token payload, NOT THE USER ENTITY
+            let payload = await this.authService.extractUserFromRequest(req);
+            this.logger.log("request.user: ", payload.username); // returns payload, not user entity
             
-            let user = await this.userService.getUserByLoginName(payload.username); // retrieve user
-            this.logger.log('User data retrieved: email: ' + user.email);
+            let user = await this.userService.getUserByLoginName(payload.username);  // retrieve user entity
+            if (!user) {
+                throw new Error('toggle_button_tfa: User not found');
+            }
+            this.logger.log("verify user: user.email- ", user.email);
 
-            await this.tfaService.sendVerificationMail(user);
-            res.status(HttpStatus.OK).send({ message: 'Verification email has been sent.' });
+            // Toggle TFA status
+            const updatedTfaStatus = !user.tfaEnabled;
+
+            await this.userService.enableTFA (user.loginName, updatedTfaStatus); // update database
+
+            res.status(HttpStatus.OK).send({ message: 'Button toggled tfa OK.' , tfaEnabled: updatedTfaStatus });
         } catch (error) {
-            this.logger.log('Error rsending the code email: ', error);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'To Factor Authentication semail sending failed' });
+            this.logger.log('Error toggled tfa button: ', error);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Unable to update toggle tfa button' });
         }
     }
+
+    // @Post('send_tfa_code')
+    // async sendCode(@Req() req, @Res() res: Response) {
+    //     try {
+    //         this.logger.log('Start send_tfa_code');
+
+    //         let payload = await this.authService.extractUserFromRequest(req); // extract user from header
+    //         this.logger.log('Extracted user from header: ', payload.username); // returns the token payload, NOT THE USER ENTITY
+            
+    //         let user = await this.userService.getUserByLoginName(payload.username); // retrieve user
+    //         this.logger.log('User data retrieved: email: ' + user.email);
+
+    //         await this.tfaService.sendVerificationMail(user);
+    //         res.status(HttpStatus.OK).send({ message: 'Verification email has been sent.' });
+    //     } catch (error) {
+    //         this.logger.log('Error rsending the code email: ', error);
+    //         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'To Factor Authentication semail sending failed' });
+    //     }
+    // }
 }
