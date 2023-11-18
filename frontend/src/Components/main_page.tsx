@@ -22,6 +22,9 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 
 	const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
+	// CHECK WHAT IF USER DOES NOT YET EXISTS, DOES IT STILL FETCH?
+	// BUT BY NOW IT MUST EXISTS, BECAUSE IT WAS CREATED AT THE MOMENT OF LOGIN
+
 	useEffect(() => {
 		const fetchUserData = async () => {
 			try {
@@ -33,7 +36,7 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 					setUserData({
 						loginName:		response.user.loginName,
 						profileName:	response.user.profileName,
-						profileImage:		response.user.profileImage
+						profileImage:	response.user.profileImage
 					});
 					// Update Local Storage:
 					localStorage.setItem('profileName', response.user.profileName || '' ); // jaka, maybe not needed
