@@ -25,6 +25,15 @@ export class DummyUsersController {
   @Post()
   async insertDummyUsers(): Promise<{ message: string }> {
     try {
+
+      // If Dummies already exists, return!
+      let user = await this.userService.getUserByLoginName("dummy1");
+      if (user) {
+          console.log("Dummies already exists, no need to create new ones.");
+          return { message: 'Returned: Dummies already exists, no need to create new ones.' };
+      }
+      // console.log("      ... user.email: ", user.email);
+
       // Jaka: such endpoint should be protected and can only be accessed by authorized users
 
       // Dummy user data (for testing)
