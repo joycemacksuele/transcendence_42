@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Request, Response, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Logger, Request, Response, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { OpenAccess } from './guards/auth.openaccess';
 import { UserService } from 'src/user/user.service';
@@ -6,6 +6,7 @@ import { UserRepository } from 'src/user/user.repository';
 import { response } from 'express';
 import { AuthGuard } from './guards/auth.guard';
 import { ConfigService } from '@nestjs/config';
+import { request } from 'https';
 
 //.env 
 // Dotenv is a library used to inject environment variables from a file into your program 
@@ -74,12 +75,24 @@ export class AuthController {
 
 	@Get('logout')   // to be connected with frontend
 	async logOut(@Request() req:any, @Response() res:any){
-		// find the user, change status, 2fa
 		try{
-			this.authService.logout(req, res);
+			// change online staatus to false 
+			await this.authService.removeAuthToken(req, res);
+			this.logger.log('Clean Token Controller Point After Logout: ' + response.get('Cookie'))
 		}
 		catch(err){
 			this.logger.log('getAuthorizationLogout: ' + err);
+		}
+	}
+
+	@Post('cleanToken')
+	async cleanToken(@Request() req:any, @Response() res:any){
+		try{
+			this.logger.log("Start cleanToken function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			return await this.authService.removeAuthToken(req, res);
+		}
+		catch(err){
+			this.logger.log('cleanToken: ' + err);
 		}
 	}
 }
