@@ -86,6 +86,7 @@ export class StoreCurrUserToDataBs {
           tfaCode: 'default',
           hashedSecret: 'dummy hashed secret',  // todo jaka: change back, and obtain the real hashedSecret
           friendships: [],
+          chatmessages: [],
           // friendOf: []
         // intraId: data.intraId,
           // hashedSecret: data.hashedSecret },

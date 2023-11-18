@@ -31,6 +31,8 @@ import { ChatModule } from '../chat/chat.module';
 import { ChatGateway } from "../chat/chat.gateway";
 import { ChatService } from '../chat/chat.service';
 import { ChatRepository } from "../chat/chat.repository";
+import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
+import { NewChatEntity } from 'src/chat/entities/new-chat.entity';
 
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
@@ -66,11 +68,11 @@ import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profil
       username: 'transcendence_user',
       password: 'novogeslo1',
       database: 'mydb',
-      entities: [UserEntity, Friendship],// Add NewChatEntity (and others) here?????????
+      entities: [UserEntity, Friendship, ChatMessageEntity, NewChatEntity],// Add NewChatEntity (and others) here?????????
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
-    TypeOrmModule.forFeature([UserEntity]), // it is already in user.module
+    TypeOrmModule.forFeature([UserEntity, ChatMessageEntity, NewChatEntity]), // it is already in user.module
     UserModule,
     ChatModule,
     TwoFactorAuthModule,

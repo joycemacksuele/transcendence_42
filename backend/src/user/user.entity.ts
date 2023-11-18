@@ -17,6 +17,9 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 import { Friendship } from 'src/friendships/friendship.entity';
 
+import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
+
+
 @Entity()
 export class UserEntity {
 	constructor() {
@@ -87,8 +90,11 @@ export class UserEntity {
 			This function returns the property 'user' of the target entity. 
 	*/
 	@OneToMany(() => Friendship, (friendship) => friendship.user)
-	friendships: Friendship[];
+	friendships: Friendship[] | null;
 
 	// @OneToMany(() => Friendship, (friendship) => friendship.friend)
 	// friendOf: Friendship[];
+
+	@OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.creator)
+	chatmessages: ChatMessageEntity[] | null;
 }
