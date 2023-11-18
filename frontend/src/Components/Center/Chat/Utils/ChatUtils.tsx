@@ -2,8 +2,8 @@ export interface RequestNewChatDto {
     socketId: string;
     chatName: string;// Can also be a login name
     chaType: ChatType;
-    chatPassword: string | undefined;
-    loginName: string | undefined;
+    chatPassword: string | null;
+    loginName: string;
 }
 
 export enum ChatType {

@@ -17,14 +17,7 @@ type PropsHeader = {
 const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
 
     console.log("[ChatRecent] recentChatList: ", recentChatList);
-    // console.log("[ChatRecent] ChatRecent.recentChatList.name: ", recentChatList[0].name);
 
-    // useEffect with socket as a dependency
-    // After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values,
-    // and then run your setup function with the new values
-    // useEffect(() => {		
-	// 	fetchUsers();
-	// }, []);
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useState, useContext} from 'react';
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -25,18 +25,18 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
 
     const [chatName, setChatName] = useState('');
     const [chatType, setChatType] = useState<ChatType>(ChatType.PUBLIC);
-    const [chatPassword, setChatPassword] = useState<string | undefined>(undefined);
-    const [socketCount, setSocketCount] = useState(0);
+    const [chatPassword, setChatPassword] = useState<string | null>(null);
+    // const [socketCount, setSocketCount] = useState(0);
 
-    const createRoom = () => {
-        console.log("[NewChat] createRoom called");
+    const createChat = () => {
+        console.log("[NewChat] createChat called");
         // const profileName = localStorage.getItem('profileName');
-        const loginName = currUserData.loginName;
+        const loginName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
         chatSocket.emit("createChat", {chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: loginName});
         setRecentChatList([...recentChatList, {socketId: chatSocket.id, chatName: chatName, chaType: chatType, chatPassword: chatPassword, loginName: loginName}]);
 
-        setChatPassword(undefined);
+        setChatPassword(null);
     };
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
@@ -62,7 +62,7 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
                                     <Form.Select
                                         // id="roomForm.type"
                                         value={chatType}
-                                        defaultValue={ChatType.PUBLIC}
+                                        // defaultValue={ChatType.PUBLIC}
                                         aria-label="Default select example"
                                         className="mb-3"
                                         onChange={event=> {
@@ -77,17 +77,15 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
                                 </Form.Group>
 
                                 {/* Group Name */}
-                                {/*{chatType === ChatType.PROTECTED || chatType === ChatType.PUBLIC &&*/}
-                                    <Form.Group className="mb-3">
-                                        {/* <Form.Label>Group name</Form.Label> */}
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Group name"
-                                            autoFocus
-                                            onChange={event => setChatName(event.target.value)}
-                                        />
-                                    </Form.Group>
-                                {/*}*/}
+                                <Form.Group className="mb-3">
+                                    {/* <Form.Label>Group name</Form.Label> */}
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Group name"
+                                        autoFocus
+                                        onChange={event => setChatName(event.target.value)}
+                                    />
+                                </Form.Group>
 
                                 {/* Group password - if it's protected */}
                                 {chatType === ChatType.PROTECTED &&
@@ -113,9 +111,9 @@ const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) =
                                 Close
                             </Button>
                             <Button variant="primary" onClick={ () => {
-                                createRoom();
+                                createChat();
                                 setShow(false);
-                                setSocketCount(socketCount + 1);
+                                // setSocketCount(socketCount + 1);
                             }}>
                                 Save Changes
                             </Button>
