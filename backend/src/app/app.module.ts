@@ -97,8 +97,8 @@ import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profil
     AppService,
     UserService,
     UserRepository,//https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
-    ChatGateway,
-    ChatService,
+    // ChatGateway,// already on chat module
+    // ChatService,// already on chat module
     ChatRepository,
     TwoFactorAuthService,
     AuthService,
