@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { ChatType } from '../utils/chat-utils'
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { ChatType } from '../utils/chat-utils';
+import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
+import { UserEntity } from 'src/user/user.entity';
 
 // Read: https://orkhan.gitbook.io/typeorm/docs/entities#column-types-for-postgres
 // Entity reflects exactly one table in the database
@@ -36,12 +38,20 @@ export class NewChatEntity {
     // later on in another screen the admin will be able to add more admins to the room
     // the admin can kick, ban, mute others on the channel (besides the creator)
     @Column("simple-json")
-    chatAdmins: string[]
+    chatAdmins: string[];
 
     // it includes the current user
     @Column("simple-json")
-    chatMembers: string[]
+    chatMembers: string[];
 
-    // @Column("simple-array")
-    // chatBannedUsers: number[]
+//    @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
+//    chatmessages: ChatMessageEntity[];
+
+    @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
+    chatmessages: ChatMessageEntity[];
+
+    @ManyToMany(() => UserEntity)
+    @JoinTable()
+    users: UserEntity[];
+
 }
