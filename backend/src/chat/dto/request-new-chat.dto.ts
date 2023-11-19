@@ -1,4 +1,5 @@
-import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, IsEnum} from 'class-validator';
+import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, IsEnum, IsStrongPassword} from 'class-validator';
+import {OneToMany} from "typeorm";
 import {ChatType} from '../utils/chat-utils'
 import {CreateUserDto} from "../../user/create-user.dto";
 
@@ -19,17 +20,18 @@ export class RequestNewChatDto {
     // PRIVATE   | is a DM - can't be joined  | only members can see it
     // PUBLIC    | everyone can join it       | everyone can see it
     // PROTECTED | password to join           | everyone can see it
-    @IsString()
+    // @IsStrongPassword()
     @MinLength(5)
     @MaxLength(15)
     @IsOptional()
-    chatPassword: string | undefined;
+    chatPassword: string | null;
 
     // @IsNotEmpty({ message: 'Required' })
 
     @IsString()
     @MinLength(3)
-    @MaxLength(10)
+    @MaxLength(15)
+    // @OneToMany(() => CreateUserDto, (createUserDto) => createUserDto.loginName)
     @IsNotEmpty({ message: 'Required' })
     loginName: string;
 }

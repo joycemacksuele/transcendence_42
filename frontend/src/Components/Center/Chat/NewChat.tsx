@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import {useState, useContext} from 'react';
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -11,30 +11,29 @@ import {ChatType, RequestNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx"
 import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
 
-type PropsHeader = {
-    recentChatList: RequestNewChatDto[];
-    setRecentChatList: (recentChatList: RequestNewChatDto[]) => void;
-};
+// type PropsHeader = {
+//     // recentChatList: RequestNewChatDto[];
+//     // setRecentChatList: (recentChatList: RequestNewChatDto[]) => void;
+// };
 
-const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) => {
+// const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) => {
+const NewChat = () => {
 
     ////////////////////////////////////////////////////////////////////// CREATE SOCKET CHAT ROOM
-    const currUserData = useContext(CurrentUserContext) as CurrUserData;
-
-    const [show, setShow] = useState(false);
-
     const [chatName, setChatName] = useState('');
     const [chatType, setChatType] = useState<ChatType>(ChatType.PUBLIC);
     const [chatPassword, setChatPassword] = useState<string | null>(null);
-    // const [socketCount, setSocketCount] = useState(0);
+
+    const currUserData = useContext(CurrentUserContext) as CurrUserData;
+    const [show, setShow] = useState(false);
 
     const createChat = () => {
-        console.log("[NewChat] createChat called");
         // const profileName = localStorage.getItem('profileName');
         const loginName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
-        chatSocket.emit("createChat", {chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: loginName});
-        setRecentChatList([...recentChatList, {socketId: chatSocket.id, chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: loginName}]);
+        const requestNewChatDto: RequestNewChatDto = {chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: loginName};
+        chatSocket.emit("createChat", requestNewChatDto);
+        console.log("[NewChat] createChat called. requestNewChatDto:", requestNewChatDto);
 
         setChatPassword(null);
     };

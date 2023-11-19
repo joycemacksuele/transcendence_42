@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {Logger, Module} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Tutorials
@@ -33,7 +33,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 	],
 })
 export class DatabaseModule {
+	private readonly logger = new Logger(DatabaseModule.name);
 	constructor() {
-		console.log('[BACKEND LOG] DatabaseModule constructor');
+		this.logger.log('constructor');
 	}
 }
