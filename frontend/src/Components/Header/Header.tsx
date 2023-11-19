@@ -37,6 +37,7 @@ const Header: React.FC = () => {
 	//      After returning from backend, it navigates to '/' LoginPage        
 	const navigate = useNavigate();
 	const handleLogoutClick = () => {
+		console.log('LOGOUT: click navigate("/logout")');
 		navigate('/logout');
 	}
 
@@ -50,7 +51,7 @@ const Header: React.FC = () => {
 	// here everything is still 'undefined':
 	console.log('Header: currUserData.loginName: ', currUserData?.loginName);
 	console.log('Header: currUserData.profileName: ', currUserData?.profileName);
-	console.log('Header: currUserData.loginImage: ', currUserData?.loginImage);
+	console.log('Header: currUserData.loginImage: ', currUserData?.profileImage);
 
 	
 	// THE CORRECT PATH FOR STORED IMAGES, EXAMPLE:

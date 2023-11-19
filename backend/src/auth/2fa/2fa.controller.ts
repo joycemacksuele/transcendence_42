@@ -66,6 +66,7 @@ export class TwoFactorAuthController {
             {
                 // let temp = await this.userService.updateStoredTFACode(player.loginName, "default");
                 console.log("YES, the codes match!");
+    			await this.userService.setOnlineStatus(user.loginName, true);   // jaka
                 let temp = await this.userService.updateStoredTFACode(user.loginName, "default"); // jaka
                 return true;
             }
