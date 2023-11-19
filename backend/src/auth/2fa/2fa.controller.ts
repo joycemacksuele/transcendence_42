@@ -16,7 +16,7 @@ export class TwoFactorAuthController {
         private readonly tfaService: TwoFactorAuthService,
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
-        private readonly authService: AuthService   // added jaka, to enable extractUserFromRequest()
+        private readonly authService: AuthService   // added jaka, to enable extractUserdataFromToken()
         ) {}
     logger: Logger = new Logger('2FA mail controller');
 
@@ -39,7 +39,7 @@ export class TwoFactorAuthController {
         try{
             console.log("Start verify_code");
             // extractUserFromHeader
-            let payload = await this.authService.extractUserFromRequest(request);
+            let payload = await this.authService.extractUserdataFromToken(request);
             console.log("      ... payload.username: ", payload.username);
             // THE ABOVE ONLY RETURNS THE PAYLOAD OF TOKEN, NOT THE USER ENTITY
             
@@ -87,7 +87,7 @@ export class TwoFactorAuthController {
             this.logger.log('Trying to resend Verification Mail');
 
             // extractUserFromHeader
-            let payload = await this.authService.extractUserFromRequest(req);
+            let payload = await this.authService.extractUserdataFromToken(req);
             console.log("      ... user: ", payload.username);
             // THE ABOVE ONLY RETURNS THE PAYLOAD OF TOKEN, NOT THE USER ENTITY
             
@@ -112,7 +112,7 @@ export class TwoFactorAuthController {
             this.logger.log('Trying to toggle tfa.');
 
             // extractUserFromHeader
-            let payload = await this.authService.extractUserFromRequest(req);
+            let payload = await this.authService.extractUserdataFromToken(req);
             console.log("      ... user: ", payload.username);
             // THE ABOVE ONLY RETURNS THE PAYLOAD OF TOKEN, NOT THE USER ENTITY
             
