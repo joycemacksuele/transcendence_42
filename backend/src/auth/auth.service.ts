@@ -14,7 +14,8 @@ export class AuthService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly jwtService: JwtService, 
-		private readonly tfaService: TwoFactorAuthService
+		private readonly tfaService: TwoFactorAuthService,
+		// private readonly userRepository: UserRepository
 		) {}
 	logger: Logger = new Logger('Auth Services');
 
@@ -129,7 +130,6 @@ export class AuthService {
 
 				// ADDED JAKA: 							//	SAVE ORIG USER IMAGE TO THE ./uploads/ FOLDER
 				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
-				//console.log("Jaka: ImageURL: ", imageUrl);
 
 				// todo: replace ./uploads/ with .env var everywhere
             	const imagePath = `./uploads/${player.loginName}.jpg`;
@@ -189,16 +189,20 @@ export class AuthService {
 		response.append('Set-Cookie', cookieToken);
 
 		// Jaka: Just for test: Separate cookies with user data, without httpOnly
-		let cookieUsername = `cookieUserName=${player.loginName}; path=/;`;
-		response.append('Set-Cookie', cookieUsername);
-		let cookieProfileName = `cookieProfileName=${player.profileName}; path=/;`;
-		response.append('Set-Cookie', cookieProfileName);
-		let cookieProfileImage = `cookieProfileImage=${player.profileImage}; path=/;`;
-		response.append('Set-Cookie', cookieProfileImage);
+		//let cookieUsername = `cookieUserName=${player.loginName}; path=/;`;
+		//response.append('Set-Cookie', cookieUsername);
+		//let cookieProfileName = `cookieProfileName=${player.profileName}; path=/;`;
+		//response.append('Set-Cookie', cookieProfileName);
+		//let cookieProfileImage = `cookieProfileImage=${player.profileImage}; path=/;`;
+		//response.append('Set-Cookie', cookieProfileImage);
 
 		// response.cookie('jwt', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
 
 		console.log('print token inside request: ' + response.getHeader("set-cookie"));  // test 
+
+
+		// Set status Online true
+		// await this.userService.setOnlineStatus(player.loginName, true);
 
 		// if 2fa true display profile else redirect to 2fa 
 		let path: string;
@@ -207,19 +211,20 @@ export class AuthService {
 			this.logger.log('Two factor authentication enabled! Sending verification mail.');
 			this.tfaService.sendVerificationMail(player);
 			let cookieLogInAttempts = `cookieLogInAttempts=0; path=/;`;
-			path = `${process.env.DOMAIN}/Login_2fa`;
+			path = `${process.env.FRONTEND}/Login_2fa`;
 			response.append('Set-Cookie', cookieLogInAttempts);
 			// response.setHeader('Sec-Fetch-Site', 'none');
 			// response.removeHeader('vary');
 			response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
 			// console.log(response.getHeaderNames());
 		}
-		else
-			path = `${process.env.DOMAIN}`;
-
-			this.logger.log("Redirecting to: ", process.env.DOMAIN);
-			return response.redirect(path); 														   // jaka, temp. added
-		return;
+		else {
+			path = `${process.env.FRONTEND}`;
+			await this.userService.setOnlineStatus(player.loginName, true);
+		}
+		this.logger.log("Redirecting to: ", process.env.FRONTEND);
+		return response.redirect(path); 	// jaka, temp. added
+		// return;
 		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
 		// return response.redirect('http://localhost:3001/2faAuth' + const parameters? )
 	}

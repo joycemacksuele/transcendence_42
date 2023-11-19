@@ -18,6 +18,7 @@ export class AuthController {
 	
 	constructor(
 		private readonly authService: AuthService,
+		private readonly userService: UserService
 		) {}		
 
 	//		STEP 1: LOGIN - redirect 
@@ -76,6 +77,14 @@ export class AuthController {
 	async logOut(@Request() req:any, @Response() res:any){
 		// find the user, change status, 2fa
 		try{
+			this.logger.log('LOGOUT, should change online status to false');
+			let payload = await this.authService.extractUserFromRequest(req);
+			let user = await this.userService.getUserByLoginName(payload.username);
+			this.logger.log('          LOGOUT: user.loginName: ', user.loginName);
+			this.logger.log('          LOGOUT: user.onlineStatus before: [', user.onlineStatus, ']');
+			
+			await this.userService.setOnlineStatus(user.loginName, false);
+			this.logger.log('          LOGOUT: user.onlineStatus after: [', user.onlineStatus , ']');
 			this.authService.logout(req, res);
 		}
 		catch(err){
