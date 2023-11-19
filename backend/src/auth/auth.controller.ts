@@ -78,7 +78,7 @@ export class AuthController {
 		// find the user, change status, 2fa
 		try{
 			this.logger.log('LOGOUT, should change online status to false');
-			let payload = await this.authService.extractUserFromRequest(req);
+			let payload = await this.authService.extractUserdataFromToken(req);
 			let user = await this.userService.getUserByLoginName(payload.username);
 			this.logger.log('          LOGOUT: user.loginName: ', user.loginName);
 			this.logger.log('          LOGOUT: user.onlineStatus before: [', user.onlineStatus, ']');
