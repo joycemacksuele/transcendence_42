@@ -47,6 +47,16 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
         };
     }, []);
 
+    // const currUserData = useContext(CurrentUserContext) as CurrUserData;
+    //
+    // const changeGroup = (chatName : string) => {
+    //   console.log("Changing to " + chatName);
+    //   const loginName = currUserData.loginName;
+    //   // TODO: Password stuff for protected groups
+    //   chatSocket.emit("registerChat", {chatName: chatName, loginName: loginName});
+    // }
+
+
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
         <>
@@ -76,6 +86,7 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                                             roundedCircle
                                         />
                                         {chat.chatName}
+                                        {/*<Button variant="secondary" onClick={ () => changeGroup(chat.chatName)}>{chat.chatName}</Button>*/}
                                     </ListGroup.Item>
                                 }
                             </ListGroup>
