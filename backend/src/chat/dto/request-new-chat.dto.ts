@@ -2,7 +2,6 @@ import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, IsEnum, IsStrong
 import {OneToMany} from "typeorm";
 import {ChatType} from '../utils/chat-utils'
 import {CreateUserDto} from "../../user/create-user.dto";
-import {ConnectedSocket} from "@nestjs/websockets";
 
 export class RequestNewChatDto {
 
@@ -35,5 +34,4 @@ export class RequestNewChatDto {
     // @OneToMany(() => CreateUserDto, (createUserDto) => createUserDto.loginName)
     @IsNotEmpty({ message: 'Required' })
     loginName: string;
-    // chatMembers: number[];// not in the create chat screen
 }

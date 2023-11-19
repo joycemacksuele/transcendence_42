@@ -32,6 +32,8 @@ import { ChatModule } from '../chat/chat.module';
 // import { ChatGateway } from "../chat/chat.gateway";
 // import { ChatService } from '../chat/chat.service';
 import { ChatRepository } from "../chat/chat.repository";
+import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
+import { NewChatEntity } from 'src/chat/entities/new-chat.entity';
 
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
@@ -44,7 +46,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
 import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
-import {NewChatEntity} from "../chat/entities/new-chat.entity";
+import { AddUsernameMiddleware } from 'src/tests/test_intra42_jaka/change_profile_image';
+import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
 
 // To read: https://docs.nestjs.com/techniques/database
 /*
@@ -68,7 +71,7 @@ import {NewChatEntity} from "../chat/entities/new-chat.entity";
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
-      entities: [UserEntity, Friendship, NewChatEntity],
+      entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity],
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
@@ -106,9 +109,16 @@ import {NewChatEntity} from "../chat/entities/new-chat.entity";
     DuplicateService,
   ],
 })
-export class AppModule {
-  private readonly logger = new Logger(AppModule.name);
-  constructor() {
-    this.logger.log('constructor');
+
+export class AppModule implements NestModule {
+    private readonly logger = new Logger(AppModule.name);
+    constructor() {
+        this.logger.log('constructor');
+  }
+
+  configure(consumer: MiddlewareConsumer) { // added jaka: needed for fetching username for uploading new profile image
+    consumer
+      .apply(AddUsernameMiddleware)
+      .forRoutes(UploadImageController);
   }
 }
