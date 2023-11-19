@@ -30,7 +30,7 @@ export class AuthService {
 			.post('https://api.intra.42.fr/oauth/token', clientData)
 			.then((response) => {
 				access_token = response.data['access_token'];
-				this.logger.log('Access Token received: ' + access_token); 				
+				this.logger.log('Access Token received: ' + access_token);
 			})
 			.catch((error) => {
 				// this.logger.error('\x1b[31mAn Error in 42 API: post request: response: \x1b[0m' + JSON.stringify(response));
@@ -165,7 +165,7 @@ export class AuthService {
 			httpOnly: true,
 			path: '/',
 			sameSite: 'none',
-			// expires: `${expiryDate}`, 
+			// expires: `${expiryDate}`,
 		};
 
 		// Variant B)
@@ -195,12 +195,12 @@ export class AuthService {
 		{
 			this.logger.log('Two factor authentication enabled! Sending verification mail.');
 			this.tfaService.sendVerificationMail(player);
-			path = `${process.env.DOMAIN}/Login_2fa`;
+			path = `${process.env.FRONTEND}/Login_2fa`;
 			// response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
 		}
 		else
-			path = `${process.env.DOMAIN}`;
-			this.logger.log("Redirecting to: ", process.env.DOMAIN);
+			path = `${process.env.FRONTEND}`;
+			this.logger.log("Redirecting to: ", process.env.FRONTEND);
 			// return response.redirect(path); 														   // jaka, temp. added
 		return response.redirect(path);
 	}
@@ -262,7 +262,7 @@ export class AuthService {
 // 			console.log("payload still there: " + payload['sub']);
 // 	}
 // 	catch{
-// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
+// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited
 // 	}
 //   }
 
@@ -309,7 +309,7 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
-    async extractUserFromRequest(request: Request): Promise<any> { 
+    async extractUserFromRequest(request: Request): Promise<any> {
         const token = this.extractTokenFromHeader(request);
         if (!token) {
             throw new UnauthorizedException('Token not found');

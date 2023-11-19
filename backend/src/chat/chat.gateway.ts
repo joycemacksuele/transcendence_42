@@ -42,12 +42,12 @@ export class ChatGateway
 
   async handleConnection(clientSocket: Socket) {
     try {
-      this.logger.log('Socket connected: ', clientSocket.id);
+      this.logger.log('Socket connected: ' + clientSocket.id);
 
       clientSocket.on("connected", (socket) => {
-        this.logger.log('Socket rooms: ', socket.rooms);
-        socket.join("room1");
-        this.logger.log('Socket rooms: ', socket.rooms);
+        this.logger.log('Socket rooms: ' + socket.rooms);
+        socket.join("newChat");
+        this.logger.log('Socket rooms: ' + socket.rooms);
       })
       // const token = clientSocket.handshake.headers.cookie.split('=')[1];
       // this.logger.log('token: ', token);
@@ -68,21 +68,21 @@ export class ChatGateway
   }
 
   @SubscribeMessage('createChat')
-  // createChat(@MessageBody() createChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
-  createChat(@MessageBody() requestNewChatDto: RequestNewChatDto) {
+  // createChat(@MessageBody() requestNewChatDto: RequestNewChatDto) {
+  createChat(@MessageBody() requestNewChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
-    // const ret = this.chatService.createChat(requestNewChatDto);
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.chatService.createChat(requestNewChatDto).then();
-    // this.ws_server.emit('new_chat', ret);
-    // return ret;
+    // clientSocket.join(requestNewChatDto.loginName);// + loginName of other person -> for groups ??
+    // this.logger.log('Socket rooms for the createChat: ' + clientSocket.rooms);
   }
 
   @SubscribeMessage('messageChat')
   messageChat(@MessageBody() requestMessageChatDto: RequestMessageChatDto) {
     this.logger.log('messageChat -> requestMessageChatDto: ', requestMessageChatDto);
     // const ret = this.chatService.messageChat(requestMessageChatDto);
-    // this.ws_server.emit('new_chat', ret);
-    // return ret;
+    // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
+    // this.ws_server.emit.to(requestNewChatDto.loginName).('message', ret);
   }
 
   @SubscribeMessage('registerChat')

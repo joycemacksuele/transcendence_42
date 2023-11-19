@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import {Logger, Module} from '@nestjs/common'
 import { MailerModule, MailerService } from '@nestjs-modules/mailer';
 import { TwoFactorAuthController } from './2fa.controller';
 import { TwoFactorAuthService } from './2fa.service';
@@ -30,7 +30,8 @@ import { UserEntity } from 'src/user/user.entity';
     providers: [TwoFactorAuthService, AuthService, JwtService, UserService],
 })
 export class TwoFactorAuthModule {
+    private readonly logger = new Logger(TwoFactorAuthModule.name);
     constructor() {
-        console.log('[BACKEND LOG] TwoFactorAuthModule constructor');
+        this.logger.log('constructor');
     }
 }

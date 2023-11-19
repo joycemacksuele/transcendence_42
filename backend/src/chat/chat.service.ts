@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
-import {RequestNewChatDto} from "./dto/request-new-chat.dto";
 import {NewChatEntity} from "./entities/new-chat.entity";
 import {ChatType} from "./utils/chat-utils";
 import {ChatRepository} from "./chat.repository";
 import * as bcryptjs from 'bcryptjs';
+import {RequestNewChatDto} from "./dto/request-new-chat.dto";
+import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
 
 @Injectable()
 export class ChatService {
@@ -17,6 +18,8 @@ export class ChatService {
   ) {
     this.logger.log('constructor');
   }
+
+  ////////////////////////////////////////////////////////////// Functions for Gateway
 
   async createChat(requestNewChatDto: RequestNewChatDto)  {
     const chat_entity = new NewChatEntity();
@@ -43,9 +46,19 @@ export class ChatService {
     // const new_chat = this.chatRepository.create(requestNewChatDto);// this can create an Entity out of an object if var name matches
     // await this.chatRepository.save(chat_entity);
     this.chatRepository.save(chat_entity).then(r => {
-      this.logger.log('NewChatEntity: ', r.id);
+      this.logger.log('NewChatEntity id: ' +  r.id);
     });
   }
+
+  ////////////////////////////////////////////////////////////// Functions for Controller
+  async getAllChatNames(): Promise<ResponseNewChatDto[]> {
+    this.logger.log('getAllChatNames');
+    // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
+    // console.log("ChatService query.getQuery(): ", query.getQuery());
+    // return this.chatRepository.query(query.getQuery());
+    return this.chatRepository.find();
+  }
+
 
   // findAll() {
   //   return `This action returns all chat`;
