@@ -7,7 +7,7 @@
 // jaka, todo: here apparently it is enough to only import the module of each entity (ie: UserModule), and not UserController etc ...
 // --> remove the unnecessary
 
-import { Module } from '@nestjs/common';
+import {Logger, Module} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
@@ -28,8 +28,9 @@ import { Friendship } from '../friendships/friendship.entity';
 import { DuplicateService } from '../duplicate/duplicate.service';
 
 import { ChatModule } from '../chat/chat.module';
-import { ChatGateway } from "../chat/chat.gateway";
-import { ChatService } from '../chat/chat.service';
+// import {ChatController} from "../chat/chat.controller";
+// import { ChatGateway } from "../chat/chat.gateway";
+// import { ChatService } from '../chat/chat.service';
 import { ChatRepository } from "../chat/chat.repository";
 
 import { AuthController } from 'src/auth/auth.controller';
@@ -106,7 +107,8 @@ import {NewChatEntity} from "../chat/entities/new-chat.entity";
   ],
 })
 export class AppModule {
-    constructor() {
-        console.log('Constructor');
-    }
+  private readonly logger = new Logger(AppModule.name);
+  constructor() {
+    this.logger.log('constructor');
+  }
 }

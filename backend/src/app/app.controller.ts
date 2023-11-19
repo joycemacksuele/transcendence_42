@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import {Controller, Get, Logger} from '@nestjs/common';
 import { AppService } from './app.service';
 
 /*
@@ -8,13 +8,16 @@ import { AppService } from './app.service';
 */
 @Controller()
 export class AppController {
+
+  private readonly logger = new Logger(AppController.name);
+
   constructor(private readonly appService: AppService) {
-    console.log('[BACKEND LOG] AppController constructor');
+    this.logger.log('constructor');
   }
 
   @Get('/')
   getHello(): string {
-    console.log('[BACKEND LOG] getHello AppController');
+    this.logger.log('getHello');
     return this.appService.getHello();
   }
 }

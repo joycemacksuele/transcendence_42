@@ -8,7 +8,7 @@ import { ChatType } from '../utils/chat-utils'
 export class NewChatEntity {
 
     @PrimaryGeneratedColumn()
-    id?: number;
+    id: number;
 
     @Column()
     chatName: string;

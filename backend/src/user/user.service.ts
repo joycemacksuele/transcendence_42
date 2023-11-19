@@ -7,7 +7,7 @@
   The functions that access data are better located in the file user.repository
 */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './create-user.dto';
 import { UserEntity } from './user.entity';
@@ -20,17 +20,20 @@ import axios from 'axios';
 
 @Injectable()
 export class UserService {
+
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
       @InjectRepository(UserEntity)
       public readonly userRepository: UserRepository,
       // private userRepository: Repository<UserEntity>,
       // public readonly justRepository: Repository<UserEntity>
   ) {
-      console.log('[BACKEND LOG] UserService constructor');
+      this.logger.log('constructor');
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    console.log('[BACKEND LOG] UserService.createUser');
+    this.logger.log('createUser');
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
@@ -48,20 +51,20 @@ export class UserService {
   // }
 
   async deleteDummies(): Promise<void> {
-    console.log('[BACKEND LOG] UserService.deleteDummies');
+    this.logger.log('deleteDummies');
     try {
       await this.userRepository.delete({ profileName: Like ('%dummy%') });
       await this.userRepository.delete({ loginName: Like ('%dummy%') });  // Jaka: Temporary, until the 'change name' bug is solved
-      console.log('[BACKEND LOG] from nest user.service: All dummy users deleted.');
+      this.logger.log('All dummy users deleted.');
     }
     catch (error) {
-      console.error('[BACKEND LOG] from nest user.service: Error deleting dummy users.', error);
+      this.logger.error('Error deleting dummy users.', error);
       // throw new InternalServerErrorException('Unable to delete dummy users');
     }
   }
 
   async getAllUsers(): Promise<UserEntity[]> {
-    console.log('[BACKEND LOG] UserService.getAllUsers');
+    this.logger.log('getAllUsers');
     return this.userRepository.find();
     // return this.userRepository.getAllUsers();
   }
@@ -86,10 +89,10 @@ export class UserService {
   }
 
   async updateStoredTFACode(loginName: string, tfaCode: string) {
-    // console.log('updatetfa function before: ' + this.userRepository.findOne("tfaCode"));
+    // this.logger.log('updateStoredTFACode function before: ' + this.userRepository.findOne("tfaCode"));
 
     const response = await this.userRepository.update({ loginName} , { tfaCode });
-    console.log('updatetfa function after: ' + tfaCode);
+    this.logger.log('updateStoredTFACode function after: ' + tfaCode);
   }
 
   async enableTFA(loginName: string, tfaEnabled: boolean) {
@@ -115,7 +118,7 @@ export class UserService {
   }
 
   // async findById(id: number): Promise<UserEntity | undefined> {
-  //   console.log('[BACKEND LOG] UserService.getUserById');
+  //   this.logger.log('getUserById');
   //   return this.userRepository.findById(id);
   // }
 

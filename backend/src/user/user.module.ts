@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {Logger, Module} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
@@ -13,7 +13,8 @@ import { Friendship } from '../friendships/friendship.entity';
     controllers: [UserController],
 })
 export class UserModule {
+    private readonly logger = new Logger(UserModule.name);
     constructor() {
-        console.log('[BACKEND LOG] UserModule constructor');
+        this.logger.log('constructor');
     }
 }

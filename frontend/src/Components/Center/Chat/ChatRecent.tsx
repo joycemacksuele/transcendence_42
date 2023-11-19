@@ -1,23 +1,51 @@
-import { RequestNewChatDto } from "./Utils/ChatUtils.tsx";
+import React, {useEffect, useState} from "react";
+import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
+import axios from "axios";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import Image from "react-bootstrap/Image";
 import ListGroup from "react-bootstrap/ListGroup";
-import React from "react";
-
+import Image from "react-bootstrap/Image";
 
 type PropsHeader = {
-    recentChatList: RequestNewChatDto[];
+    setChatClicked: (chatClicked: ResponseNewChatDto) => void;
 };
 
-// const ChatRecent = () => {
-const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
+const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
 
-    console.log("[ChatRecent] recentChatList: ", recentChatList);
+    const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
 
+    const getAllChatNames = async () => {
+        try {
+            const response = await axios.get<ResponseNewChatDto[]>(
+                "http://localhost:3001/chat/all-chat-names"
+            );
+            console.log("[ChatRecent] response.data: ", response.data);
+            setChatInfo(response.data);
+        } catch (error) {
+            console.error('[ChatRecent] Error on the chat controller for the all-chat-names endpoint: ', error);
+        }
+    };
+
+    useEffect(() => {
+        getAllChatNames().catch(r => {
+            console.log("[ChatRecent] response.data?????????: ", r);
+        });
+        // axios.get<ResponseNewChatDto[]>(
+        //     "http://localhost:3001/chat/all-chat-names"
+        // ).then((response) => {
+        //     console.log("[ChatRecent] response.data: ", response.data);
+        //     setChatInfo(response.data);
+        // }).catch((error) => {
+        //     console.error('Check: Error on the chat controller for the all-chat-names endpoint: ', error);
+        // });
+
+        return () => {
+            console.log("[ChatRecent] Inside useEffect return function (ChatRecent Component was removed from DOM)");
+        };
+    }, []);
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
@@ -25,37 +53,31 @@ const ChatRecent: React.FC<PropsHeader> = ({recentChatList}) => {
             {/* Recent chats row */}
             <Row className='me-auto'>
                 <Card.Body>
-                    <Stack gap={3}>
-                        {recentChatList.map((chat: RequestNewChatDto) => (
+                    <Stack gap={2}>
+                        {chatInfo.map((chat: ResponseNewChatDto) => (
                             <ListGroup
-                                key={chat.chatName}
+                                key={chat.id}
                                 variant="flush"
                             >
-                                <ListGroup.Item
-                                    as="li"
-                                    className="justify-content-between align-items-start"
-                                    variant="light"
-                                >
-                                    <Image
-                                        src={`http://localhost:3001/uploads/group.png`}
-                                        className="me-auto"
-                                        // id="profileImage_tiny"
-                                        width={40}
-                                        // height={30}
-                                        alt="user"
-                                        roundedCircle
-                                    />
-                                    {chat.chatName}
-                                </ListGroup.Item>
-                                {/*<li key={chat.socketRoomId}>*/}
-                                {/*    <a*/}
-                                {/*        className="list-user-link"*/}
-                                {/*        href=""*/}
-                                {/*    >*/}
-                                {/*        */}
-                                {/*   */}
-                                {/*    </a>*/}
-                                {/*</li>*/}
+                                {chat.chatType == ChatType.PRIVATE &&
+                                    <ListGroup.Item
+                                        as="li"
+                                        className="justify-content-between align-items-start"
+                                        variant="light"
+                                        onClick={() => setChatClicked(chat)}
+                                    >
+                                        <Image
+                                            src={`http://localhost:3001/resources/msg.png`}
+                                            className="me-1"
+                                            id="profileImage_tiny"
+                                            width={30}
+                                            // height={30}
+                                            alt="user"
+                                            roundedCircle
+                                        />
+                                        {chat.chatName}
+                                    </ListGroup.Item>
+                                }
                             </ListGroup>
                         ))}
                     </Stack>
