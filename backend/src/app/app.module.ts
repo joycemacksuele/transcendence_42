@@ -75,7 +75,7 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
-    TypeOrmModule.forFeature([UserEntity]), // it is already in user.module
+    TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
     UserModule,
     ChatModule,
     TwoFactorAuthModule,
