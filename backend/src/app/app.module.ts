@@ -41,19 +41,19 @@ import { AuthService } from 'src/auth/auth.service';
 import { TwoFactorAuthController } from 'src/auth/2fa/2fa.controller';
 import { TwoFactorAuthService } from 'src/auth/2fa/2fa.service';
 
-import { TestButton } from 'src/tests/exampleButtons/test.controller';
+// import { TestButton } from 'src/tests/exampleButtons/test.controller';
 
 // added jaka to test API INTRA42
 // import { GetUserNameFromIntra } from '../tests/test_intra42_jaka/fetchFromIntra_userName.controller';
 // import { DummyUserService } from 'src/tests/dummyUsers/dummyUsers.service';
-import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
+import { DummyUsersController } from 'src/dummies/dummyUsers.controller';
 // added jaka: to store current user to database
-import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
+// import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
-import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
-import { AddUsernameMiddleware } from 'src/tests/test_intra42_jaka/change_profile_image';
+import { UploadImageController } from 'src/user/change_profile_image_or_name/change_profile_image';
+import { AddUsernameMiddleware } from 'src/user/change_profile_image_or_name/change_profile_image';
 import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
 
 // To read: https://docs.nestjs.com/techniques/database
@@ -103,7 +103,7 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
       // ExampleButton,        // jaka, testing
       // GetUserNameFromIntra, // jaka, testing
       DummyUsersController, // jaka, testing
-      StoreCurrUserToDataBs,
+      // StoreCurrUserToDataBs,
       UploadImageController,
       TwoFactorAuthController,
   ],

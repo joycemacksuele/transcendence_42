@@ -276,7 +276,7 @@ export class AuthService {
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
-    async extractUserFromRequest(request: Request): Promise<any> { 
+    async extractUserdataFromToken(request: Request): Promise<any> { 
         const token = this.extractTokenFromHeader(request);
         if (!token) {
             throw new UnauthorizedException('Token not found');
