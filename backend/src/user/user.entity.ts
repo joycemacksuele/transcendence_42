@@ -19,10 +19,7 @@ import { Friendship } from 'src/friendships/friendship.entity';
 
 @Entity()
 export class UserEntity {
-	constructor() {
-		console.log('[BACKEND LOG] UserEntity constructor');
-	}
-	
+
 	@PrimaryGeneratedColumn()
 	id?: number;	// ? is optional -> it will be created automatically
 

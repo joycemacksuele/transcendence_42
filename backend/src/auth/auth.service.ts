@@ -205,7 +205,7 @@ export class AuthService {
 			this.logger.log('Two factor authentication enabled! Sending verification mail.');
 			this.tfaService.sendVerificationMail(player);
 			let cookieLogInAttempts = `cookieLogInAttempts=0; path=/;`;
-			path = `${process.env.DOMAIN}/Login_2fa`;
+			path = `${process.env.FRONTEND}/Login_2fa`;
 			response.append('Set-Cookie', cookieLogInAttempts);
 			// response.setHeader('Sec-Fetch-Site', 'none');
 			// response.removeHeader('vary');
@@ -213,7 +213,7 @@ export class AuthService {
 			// console.log(response.getHeaderNames());
 		}
 		else
-			path = `${process.env.DOMAIN}/main_page?loginName=`; 	
+			path = `${process.env.FRONTEND}/main_page?loginName=`;
 
 		response.status(200);
 		return response.redirect(path); 														   // jaka, temp. added
