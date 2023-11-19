@@ -4,9 +4,10 @@ import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
 import { NewChatEntity } from './entities/new-chat.entity';
 import {ChatController} from "./chat.controller";
+import {ChatMessageEntity} from "./entities/chat-message.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NewChatEntity])],
+  imports: [TypeOrmModule.forFeature([NewChatEntity, ChatMessageEntity])],
   providers: [ChatService, ChatGateway],
   controllers: [ChatController],
   // Providers can include services or repositories (and as we won't have a controller for the chat,
