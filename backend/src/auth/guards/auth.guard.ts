@@ -37,11 +37,32 @@ export class AuthGuard implements CanActivate {
             throw new UnauthorizedException();
         }
         try{
-            const payload = await this.jwtService.verifyAsync(
-            token, {secret: process.env.SECRET}
-            )               // returns the decoded payload with the user info 
+            console.log("START TRY !!!!!!!!!!!!!!!");
+            const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
+            console.log("AFTER PAYLOAD !!!!!!!!!!!!!!!");
+
+            // token, {secret: process.env.SECRET}
+            // returns the decoded payload with the user info 
+
             request['user'] = payload;
             console.log("Payload: " , payload);
+            
+            // if (token expired)
+            // {
+            //     if (refresh token exists in database){
+            //         make new access token 
+            //         make new refresh token
+            //         set up request['user'] = payload;
+            //         console.log("Payload: " , payload);
+            //     } 
+            //     else
+            //         return false 
+            // }
+            // else
+            // {
+            //     request['user'] = payload;
+            //     console.log("Payload: " , payload);
+            // }
         }
         catch{
             throw new UnauthorizedException();
@@ -49,6 +70,18 @@ export class AuthGuard implements CanActivate {
         return true;     
     }
 
+
+    // ADDED JAKA:
+    // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
+    // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
+    // AND ALSO, 'AUTHGUARDS' CANNOT BE INJECTED INTO A CONTROLLER
+    // THEREFORE, I WROTE ANOTHER FUNCTION INSIDE auth.service
+    
+
+
+
+    // Jaka: NOT USED SO FAR. IT IS MODIFIED AND MOVED INTO FILE auth.service
+    // ALSO, IT NEEDS TO HAVE AS AN ARGUMENT A 'REQUEST' INSTEAD OF 'CONTEXT'
     async extractUserFromToken(context: ExecutionContext) {
 
         const open = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
@@ -79,14 +112,19 @@ export class AuthGuard implements CanActivate {
         let token: string;
 
         cookie = request.get('Cookie');
-        this.logger.log('extract Token from Header - full cookie: ' + cookie);
-        // this.logger.log('full cookie: ' + cookie);
         if (!cookie)
             return undefined;
-        token = cookie.split(';')[0];
-        token = token.split('token=')[1];
-        // console.log('extracted token: ' + token);
-        // console.log(request);
+        var arrays = cookie.split(';');
+        console.log("arrays: " + arrays);
+        for (let i = 0; arrays[i]; i++)
+        {
+            if (arrays[i].includes("token="))
+            {
+                token = arrays[i].split('token=')[1];
+                break ;
+            }
+        }
+        console.log('token: ' + token);
         return token;
     }
 }

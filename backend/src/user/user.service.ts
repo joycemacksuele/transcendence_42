@@ -38,18 +38,6 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  // Not used anymore
-  // async deleteAllUsers(): Promise<void> {
-  //   console.log('[BACKEND LOG] UserService.deleteAllUsers');
-  //   try {
-  //     await this.userRepository.clear();
-  //     console.log('[BACKEND LOG] from nest user.service: All users deleted.');
-  //   } catch (error) {
-  //     console.error('[BACKEND LOG] from nest user.service: Error deleting all users.', error);
-  //     // throw new InternalServerErrorException('Unable to delete all users');
-  //   }
-  // }
-
   async deleteDummies(): Promise<void> {
     this.logger.log('deleteDummies');
     try {

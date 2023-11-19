@@ -1,10 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { NewChatEntity } from 'src/chat/entities/new-chat.entity';
+import { UserEntity } from 'src/user/user.entity';
 // Read: https://orkhan.gitbook.io/typeorm/docs/entities#column-types-for-postgres
 // Entity reflects exactly one table in the database
 
 @Entity()
-export class NewChatEntity {
+export class ChatMessageEntity {
 
     @PrimaryGeneratedColumn()
     id?: number;
@@ -33,4 +34,10 @@ export class NewChatEntity {
 
     // @Column("simple-array")
     // chatBannedUsers: number[]
+
+    @ManyToOne(() => UserEntity, (user) => user.chatmessages)
+    creator: UserEntity;
+
+    @ManyToOne(() => NewChatEntity, (newchat) => newchat.chatmessages)
+    chatbox: NewChatEntity;
 }

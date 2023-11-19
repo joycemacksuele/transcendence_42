@@ -63,7 +63,7 @@ const Messages = () => {
                             placeholder={messageBoxPlaceHolder}
                             onChange={(event) => setMessage(event.target.value)}
                         />
-                        {/* TODO onClik erase the message from the form box*/}
+                        {/* TODO onClick erase the message from the form box*/}
                         <Button variant="primary" type="submit" onClick={sendMessage}>Send</Button>
                     </Stack>
                 </Form.Group>
