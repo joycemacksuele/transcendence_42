@@ -1,22 +1,24 @@
 import { UserEntity } from '../user/user.entity';
-import { Controller, Get } from '@nestjs/common';
+import {Controller, Get, Logger} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserRepository } from '../user/user.repository';
 
 @Controller('database')
 export class DatabaseController {
+
+  private readonly logger = new Logger(DatabaseController.name);
+
   constructor(
       @InjectRepository(UserEntity)
       private readonly userRepository: UserRepository,
   ) {
-    console.log('[BACKEND LOG] DatabaseController constructor');
+    this.logger.log('constructor');
   }
 
   @Get()
   async getDataFromDatabase() {
-    console.log('[BACKEND LOG] getDataFromDatabase');
-    const data = await this.userRepository.find(); // Perform a database query
-    return data;
+    this.logger.log('getDataFromDatabase');
+    return await this.userRepository.find(); // Perform a database query
   }
 }

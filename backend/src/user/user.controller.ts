@@ -47,7 +47,7 @@ export class UserController {
 	constructor(private readonly userService: UserService,
 		// public readonly userRepository: UserRepository // jaka: Controller should not interact with UserRepository
 	) {
-		this.logger.log('[BACKEND LOG] UserController constructor');
+		this.logger.log('constructor');
 	}
 
 	@Post()

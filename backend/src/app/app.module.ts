@@ -7,7 +7,7 @@
 // jaka, todo: here apparently it is enough to only import the module of each entity (ie: UserModule), and not UserController etc ...
 // --> remove the unnecessary
 
-import { Module } from '@nestjs/common';
+import {Logger, Module} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
@@ -28,8 +28,9 @@ import { Friendship } from '../friendships/friendship.entity';
 import { DuplicateService } from '../duplicate/duplicate.service';
 
 import { ChatModule } from '../chat/chat.module';
-import { ChatGateway } from "../chat/chat.gateway";
-import { ChatService } from '../chat/chat.service';
+// import {ChatController} from "../chat/chat.controller";
+// import { ChatGateway } from "../chat/chat.gateway";
+// import { ChatService } from '../chat/chat.service';
 import { ChatRepository } from "../chat/chat.repository";
 import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 import { NewChatEntity } from 'src/chat/entities/new-chat.entity';
@@ -38,17 +39,12 @@ import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
 import { TwoFactorAuthController } from 'src/auth/2fa/2fa.controller';
 import { TwoFactorAuthService } from 'src/auth/2fa/2fa.service';
-import { TestButton } from 'src/tests/exampleButtons/test.controller';
-
-// added jaka to test API INTRA42
-// import { GetUserNameFromIntra } from '../tests/test_intra42_jaka/fetchFromIntra_userName.controller';
-// import { DummyUserService } from 'src/tests/dummyUsers/dummyUsers.service';
-import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
-// added jaka: to store current user to database
-import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer';
+
+import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
+import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
 import { AddUsernameMiddleware } from 'src/tests/test_intra42_jaka/change_profile_image';
 import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
@@ -75,11 +71,11 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
-      entities: [UserEntity, Friendship, ChatMessageEntity, NewChatEntity],// Add NewChatEntity (and others) here?????????
+      entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity],
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
-    TypeOrmModule.forFeature([UserEntity, ChatMessageEntity, NewChatEntity]), // it is already in user.module
+    TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
     UserModule,
     ChatModule,
     TwoFactorAuthModule,
@@ -115,12 +111,12 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
 })
 
 export class AppModule implements NestModule {
-  
-  constructor() {
-    console.log('Backend: AppModule constructor');
+    private readonly logger = new Logger(AppModule.name);
+    constructor() {
+        this.logger.log('constructor');
   }
 
-  configure(consumer: MiddlewareConsumer) { // added jaka: needed for fetching username for uploading new profile image 
+  configure(consumer: MiddlewareConsumer) { // added jaka: needed for fetching username for uploading new profile image
     consumer
       .apply(AddUsernameMiddleware)
       .forRoutes(UploadImageController);

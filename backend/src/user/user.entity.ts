@@ -22,10 +22,7 @@ import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 
 @Entity()
 export class UserEntity {
-	constructor() {
-		console.log('[BACKEND LOG] UserEntity constructor');
-	}
-	
+
 	@PrimaryGeneratedColumn()
 	id?: number;	// ? is optional -> it will be created automatically
 

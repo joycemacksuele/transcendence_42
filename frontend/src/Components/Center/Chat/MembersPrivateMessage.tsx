@@ -1,42 +1,59 @@
-// Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
-// ship with any included CSS. However, some stylesheet is required to use these components:
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
-// Put any other imports below so that CSS from your
-// components takes precedence over default styles.
-
-import '../../../css/Chat.css'
-// import avatarImage from '../../../images/avatar_default.png'
+import {ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
+import Image from "react-bootstrap/Image";
+import React from "react";
 
-const MembersPrivateMessage = () => {
+type PropsHeader = {
+    chatClicked: ResponseNewChatDto;
+};
+
+const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
+// const MembersPrivateMessage = () => {
 
 
 // TODO: EACH USER SHOWN ON THE CHAT SCREEN HAS TO BE CLICKABLE AND BRING THE USER TO THIS USER'S PUBLIC PROFILE PAGE
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
-
     return (
         <>
             {/* Members row */}
-            <Row className='80'>
+            <Row className='me-auto'>
                 <Card.Body>
                     <Stack gap={3}>
-                        {/*TODO LIST OF GROUPS*/}
-                        {/*{recentChatList.map((chat: ChatData) => (*/}
-                        {/*    <li key={chat.socketRoomId}>*/}
-                        {/*        /!* <span>*!/*/}
+                        <ListGroup
+                            key={chatClicked.chatName}
+                            variant="flush"
+                        >
+                            <ListGroup.Item
+                                as="li"
+                                className="justify-content-between align-items-start"
+                                variant="light"
+                                // onClick={() => goToUserProfile()}
+                            >
+                                <Image
+                                    src={`http://localhost:3001/resources/msg.png`}
+                                    className="me-1"
+                                    id="profileImage_tiny"
+                                    width={30}
+                                    // height={30}
+                                    alt="user"
+                                    roundedCircle
+                                />
+                                {chatClicked.chatName}
+                            </ListGroup.Item>
+                        </ListGroup>
+                        {/*{chatClicked.chatMembers.map((member: string[]) => (*/}
+                        {/*    <li key={member}>*/}
                         {/*        <a className="list-user-link" href="">*/}
                         {/*            /!* <img src={"http://localhost:3001/" + user.profileImage} id="profileImage_tiny"/> *!/*/}
-                        {/*            <img src={avatarImage} alt="user" width="20" className="rounded-circle" />*/}
-                        {/*            { chat.name }*/}
+                        {/*            { member }*/}
                         {/*        </a>*/}
-                        {/*        /!* </span>*!/*/}
                         {/*    </li>*/}
                         {/*))}*/}
                     </Stack>
@@ -44,7 +61,7 @@ const MembersPrivateMessage = () => {
             </Row>
 
             {/* Private Chat Buttons row */}
-            <Row className='h-100'>
+            <Row className='h-40'>
                 <Stack gap={2} className='align-self-center'>
                     {/*use variant="outline-secondary" disabled for when we dont want this button to be enabled*/}
                     {/* Play button is available only when we are on a private chat channel*/}

@@ -10,10 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth/guards/auth.guard';
 import cookieParser from 'cookie-parser';
 import * as express from 'express';
-import { ValidationPipe } from '@nestjs/common'
+import {Logger, ValidationPipe} from '@nestjs/common'
 
 async function main() {
-  console.log('[BACKEND LOG] main');
+  let logger = new Logger(main.name);
 
   const app = await NestFactory.create(AppModule);
 
@@ -33,6 +33,7 @@ async function main() {
 
   // To enable backend server to serve static files from the folder where uploaded images are stored
   app.use('/uploads', express.static('uploads'));
+  app.use('/resources', express.static('resources'));
   app.use('/uploadsDummies', express.static('uploadsDummies'));
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
@@ -48,5 +49,6 @@ async function main() {
 
   //await app.listen(`${process.env.BACKEND_PORT}`);
   await app.listen(process.env.BACKEND_PORT);
+  logger.log('--------------------------> Backend configured and listening on port ' + process.env.BACKEND_PORT);
 }
 main();
