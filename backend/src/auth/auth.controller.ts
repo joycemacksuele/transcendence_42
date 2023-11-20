@@ -19,6 +19,7 @@ export class AuthController {
 	
 	constructor(
 		private readonly authService: AuthService,
+		private readonly userService: UserService
 		) {}		
 
 	//		STEP 1: LOGIN - redirect 
@@ -76,9 +77,13 @@ export class AuthController {
 	@Get('logout')   // to be connected with frontend
 	async logOut(@Request() req:any, @Response() res:any){
 		try{
-			// TO DO:  change online staatus to false 
+			this.logger.log("Start logout");
+			let payload = await this.authService.extractUserdataFromToken(req);
+			let user = await this.userService.getUserByLoginName(payload.username);
+			await this.userService.setOnlineStatus(user.loginName, false);
+			// this.authService.logout(req, res);
 			await this.authService.removeAuthToken(req, res);
-			this.logger.log('Clean Token Controller Point After Logout: ' + response.get('Cookie'))
+			//this.logger.log('Clean Token Controller Point After Logout: ' + response.get('Cookie'))
 		}
 		catch(err){
 			this.logger.log('getAuthorizationLogout: ' + err);

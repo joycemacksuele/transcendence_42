@@ -43,10 +43,9 @@ import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
 
-import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
-import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
-import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
-import { AddUsernameMiddleware } from 'src/tests/test_intra42_jaka/change_profile_image';
+import { DummyUsersController } from 'src/dummies/dummyUsers.controller';
+import { UploadImageController } from 'src/user/change_profile_image_or_name/change_profile_image';
+import { AddUsernameMiddleware } from 'src/user/change_profile_image_or_name/change_profile_image';
 import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
 
 // To read: https://docs.nestjs.com/techniques/database
@@ -91,7 +90,6 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
     AuthController,
     DatabaseController,
     DummyUsersController, // jaka, testing
-    StoreCurrUserToDataBs,
     UploadImageController,
     // GetUserNameFromIntra, // jaka, testing
   ],
