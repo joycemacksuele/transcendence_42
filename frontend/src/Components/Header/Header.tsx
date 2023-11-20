@@ -29,8 +29,6 @@ import '../../css/Header.css'
 */
 
 const Header: React.FC = () => {
-
-	console.log('Start Header ...');
 	
 	// Logging out button: 
 	//      The path '/logout' starts the component <LogoutPage>, there it goes to backend /auth/logout,
