@@ -1,12 +1,12 @@
-import { Controller, Get, Logger, Request, Response, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Logger, Request, Response, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { OpenAccess } from './guards/auth.openaccess';
 import { UserService } from 'src/user/user.service';
 import { UserRepository } from 'src/user/user.repository';
 import { response } from 'express';
 import { AuthGuard } from './guards/auth.guard';
-import config from '../config_NOT_USED/config';
 import { ConfigService } from '@nestjs/config';
+import { request } from 'https';
 
 //.env 
 // Dotenv is a library used to inject environment variables from a file into your program 
@@ -33,7 +33,8 @@ export class AuthController {
 
 		try{
 			this.logger.log('Redirecting to OAuth...');
-			return response.redirect(path);  // 302 http status
+			this.logger.log('Restarting Auth path = ' + path);
+			return response.redirect(path);  // 302 http status 
 		}
 		catch(err){
 			this.logger.log('getAuthLogin: ' + err);
@@ -45,7 +46,7 @@ export class AuthController {
 
 	//		STEP 2 - GET request with temporary "code"
 	//--------------------------------------------------------------------------------
-	@OpenAccess()
+	@OpenAccess()  // this should not be needed!!!!!!!!!!!!!!!!!!!!!
 	@Get('token') // 'token' - end point of address 
 	async getAuthorizationToken(@Request() request: any, @Response() response: any) {
 
@@ -74,12 +75,24 @@ export class AuthController {
 
 	@Get('logout')   // to be connected with frontend
 	async logOut(@Request() req:any, @Response() res:any){
-		// find the user, change status, 2fa
 		try{
-			this.authService.logout(req, res);
+			// TO DO:  change online staatus to false 
+			await this.authService.removeAuthToken(req, res);
+			this.logger.log('Clean Token Controller Point After Logout: ' + response.get('Cookie'))
 		}
 		catch(err){
 			this.logger.log('getAuthorizationLogout: ' + err);
+		}
+	}
+
+	@Post('cleanToken')
+	async cleanToken(@Request() req:any, @Response() res:any){
+		try{
+			this.logger.log("Start cleanToken function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			return await this.authService.removeAuthToken(req, res);
+		}
+		catch(err){
+			this.logger.log('cleanToken: ' + err);
 		}
 	}
 }

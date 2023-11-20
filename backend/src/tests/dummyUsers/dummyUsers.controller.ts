@@ -25,15 +25,24 @@ export class DummyUsersController {
   @Post()
   async insertDummyUsers(): Promise<{ message: string }> {
     try {
+
+      // If Dummies already exists, return!
+      let user = await this.userService.getUserByLoginName("dummy1");
+      if (user) {
+          console.log("Dummies already exists, no need to create new ones.");
+          return { message: 'Returned: Dummies already exists, no need to create new ones.' };
+      }
+      // console.log("      ... user.email: ", user.email);
+
       // Jaka: such endpoint should be protected and can only be accessed by authorized users
 
       // Dummy user data (for testing)
       const dummyUsers: UserEntity[] = [
-        { loginName: 'dummy1', profileName: 'dummy1', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', onlineStatus: false, rank: 7, gamesPlayed: 20, gamesWon: 11, gamesLost: 9, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 5, 33], friendships: []},
-        { loginName: 'dummy2', profileName: 'dummy2', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', onlineStatus: false, rank: 3, gamesPlayed: 21, gamesWon: 13, gamesLost: 8, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 33], friendships: []},
-        { loginName: 'dummy3', profileName: 'dummy3', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', onlineStatus: false, rank: 9, gamesPlayed: 22, gamesWon: 15, gamesLost: 7, tfaEnabled: true, tfaCode: 'default', roomsCreated: [5, 33], friendships: []},
-        { loginName: 'dummy4', profileName: 'dummy4', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', onlineStatus: false, rank: 8, gamesPlayed: 22, gamesWon: 17, gamesLost: 5, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 1, 2], friendships: []},
-        { loginName: 'dummy5', profileName: 'dummy5', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', onlineStatus: false, rank: 2, gamesPlayed: 22, gamesWon: 19, gamesLost: 3, tfaEnabled: true, tfaCode: 'default', roomsCreated: [4, 5], friendships: []},
+        { loginName: 'dummy1', profileName: 'dummy1', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', onlineStatus: false, rank: 7, gamesPlayed: 20, gamesWon: 11, gamesLost: 9, tfaEnabled: true, tfaCode: 'default', friendships: [], chatmessages: null},
+        { loginName: 'dummy2', profileName: 'dummy2', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', onlineStatus: false, rank: 3, gamesPlayed: 21, gamesWon: 13, gamesLost: 8, tfaEnabled: true, tfaCode: 'default', friendships: [], chatmessages: null},
+        { loginName: 'dummy3', profileName: 'dummy3', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', onlineStatus: false, rank: 9, gamesPlayed: 22, gamesWon: 15, gamesLost: 7, tfaEnabled: true, tfaCode: 'default', friendships: [], chatmessages: null},
+        { loginName: 'dummy4', profileName: 'dummy4', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', onlineStatus: false, rank: 8, gamesPlayed: 22, gamesWon: 17, gamesLost: 5, tfaEnabled: true, tfaCode: 'default', friendships: [], chatmessages: null},
+        { loginName: 'dummy5', profileName: 'dummy5', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', onlineStatus: false, rank: 2, gamesPlayed: 22, gamesWon: 19, gamesLost: 3, tfaEnabled: true, tfaCode: 'default', friendships: [], chatmessages: null},
       ];
 
       // Insert the dummy users into the database

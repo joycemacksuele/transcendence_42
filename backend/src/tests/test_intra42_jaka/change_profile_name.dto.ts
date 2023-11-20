@@ -7,6 +7,6 @@ export class ChangeProfileNameDTO {
 	@IsAlphanumeric()
 	profileName: string;
 
-	@IsString()
-	loginName: string;
+	//@IsString()
+	//loginName: string;
 }

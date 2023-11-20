@@ -1,173 +1,87 @@
-// TODO: EACH USER SHOWN ON THE CHAT SCREEN HAS TO BE CLICKABLE AND BRING THE USER TO THIS USER'S PUBLIC PROFILE PAGE
-import React, { useState, useEffect } from 'react';
-import { Socket, io } from "socket.io-client";
-import avatarImage from '../../../images/avatar_default.png'
+import React, {useEffect, useState} from "react";
+import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
+import axios from "axios";
 
 // Importing bootstrap and other modules
-import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
 import Stack from 'react-bootstrap/Stack';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import ListGroup from "react-bootstrap/ListGroup";
+import Image from "react-bootstrap/Image";
 
-const ChatGroups = () => {
+type PropsHeader = {
+    setChatClicked: (chatClicked: ResponseNewChatDto) => void;
+};
 
-    ////////////////////////////////////////////////////////////////////// CREATE/CONECT/DISCONECT SOCKET
+const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
 
-    const [socket, setSocket] = useState<Socket>();
+    const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
 
-    // useEffect without dependencies
-    // When your component is added to the DOM, React will run your setup function
+    const getAllChatNames = async () => {
+        try {
+            const response = await axios.get<ResponseNewChatDto[]>(
+                "http://localhost:3001/chat/all-chat-names"
+            );
+            console.log("[ChatGroups] response.data: ", response.data);
+            setChatInfo(response.data);
+        } catch (error) {
+            console.error('[ChatGroups] Error on the chat controller for the all-chat-names endpoint: ', error);
+        }
+    };
+
     useEffect(() => {
-        const newSocket = io("http://localhost:3001");// TODO GET FROM THE .ENV OR MACRO
-        setSocket(newSocket);
-        console.log(`[Chat Component] socket created`);
-
-        newSocket?.on("connect", () => {
-            console.log(`[Chat Component] socket connected -> socket id: ${newSocket?.id}`);
+        getAllChatNames().catch(r => {
+            console.log("[ChatGroups] response.data?????????: ", r);
         });
+        // axios.get<string[]>(
+        //     "http://localhost:3001/chat/all-chat-names"
+        // ).then((response) => {
+        //     console.log("[ChatGroups] response.data: ", response.data);
+        //     setAllChatNames(response.data);
+        // }).catch((error) => {
+        //     console.error('Check: Error on the chat controller for the all-chat-names endpoint: ', error);
+        // });
 
-        // When your component is removed from the DOM, React will run your clean up function
         return () => {
-            // console.log(`socket disconnected AND removeAllListeners`);
-            // socket.removeAllListeners();
-            socket?.disconnect();
-            console.log(`[Chat Component] socket disconnected`);
+            console.log("[ChatGroups] Inside useEffect return function (ChatGroups Component was removed from DOM)");
         };
     }, []);
 
-    // // useEffect with socket as a dependency
-    // useEffect(() => {
-    //     socket?.on("connect", () => {
-    //         console.log(`socket connected -> socket id: ${socket?.id}`);
-    //     });
-    //     // After every re-render with changed dependencies, React will first run the cleanup function (if you provided it) with the old values, and then run your setup function with the new values
-    //     return () => {
-    //         // console.log(`socket disconnected AND removeAllListeners`);
-    //         // socket.removeAllListeners();
-    //         socket?.disconnect();
-    //         console.log(`socket disconnected`);
-    //     };
-    // }, [socket]);
-
-    ////////////////////////////////////////////////////////////////////// CREATE CHAT ROOM
-
-    enum RoomType {
-        PRIVATE,// max 2 people (DM)
-        PUBLIC,// Can have > 2
-        PROTECTED,//Can have > 2 AND has a password
-    }
-
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    const [roomName, setRoomName] = useState('');
-    const [roomType, setRoomType] = useState(RoomType.PUBLIC);
-    const [roomPassword, setRoomPassword] = useState('');
-    // const [roomMembers, setMembers] = useState('');
-
-    const createRoom = () => {
-        console.log("[FRONTNED LOG] createRoom called");
-        {/* TODO: roomType IS ALWAYS BEING SET TO 1 ON THE BACKEND */}
-        socket.emit("createRoom", {roomName: roomName, roomType: roomType, roomPassword: roomPassword});
-        setShow(false)
-        // - Dto to send in order to create a room:
-        // name
-        // type (RoomType -> private is a DM, public is just saved as public, protected will ask for a password)
-        // password (if type == protected)
-
-        // - What does not need to be in the Dto because the backend has access to it:
-        // socket id: automatically created?
-        // owner of the room (creator / current user)
-        //      can kick, ban, mute anyone on the channel (even admins)
-        // admin of the room
-        //      it's the owner (creator) when the room is created (later on in another screen the admin will be able to add more admins to the room)
-        //      can kick, ban, mute othe on the channel (besides the owner)
-        // On other screens/parts:
-        //      members of the room will be added later on, on the "members" colunm in the chat tab
-        //      more admins will be added later on, on the "members" colunm in the chat tab
-        //      blocked users ids will be saved to the chat room database too, so we can hid their messages from the current user
-    };
-
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
-
     return (
         <>
             {/* Available groups row */}
-            <Row className='h-80'>
-                <Card.Body variant="top">
-                    <Stack gap={1}>
-                        <div class="media" className="p-2">
-                            <img src={avatarImage} alt="user" width="20" class="rounded-circle" />
-                            Joyce's group
-                            {/*<small class="small font-weight-bold">25 Dec</small>*/}
-                        </div>
-                        <div className="p-2">Jaka's group</div>
-                        <div className="p-2">Corina's group</div>
-                        <div className="p-2">Hokai's group</div>
-                        <div className="p-2">Robert's group</div>
+            <Row className='me-auto'>
+                <Card.Body>
+                    <Stack gap={2}>
+                        {chatInfo.map((chat: ResponseNewChatDto) => (
+                            <ListGroup
+                                key={chat.id}
+                                variant="flush"
+                            >
+                                {chat.chatType != ChatType.PRIVATE &&
+                                    <ListGroup.Item
+                                        as="li"
+                                        className="justify-content-between align-items-start"
+                                        variant="light"
+                                        onClick={() => setChatClicked(chat)}
+                                    >
+                                        <Image
+                                            src={`http://localhost:3001/resources/msg.png`}
+                                            className="me-1"
+                                            id="profileImage_tiny"
+                                            width={30}
+                                            // height={30}
+                                            alt="user"
+                                            roundedCircle
+                                        />
+                                        {chat.chatName}
+                                    </ListGroup.Item>
+                                }
+                            </ListGroup>
+                        ))}
                     </Stack>
                 </Card.Body>
-            </Row>
-
-            {/* Group Buttons row */}
-            <Row className='h-20 align-items-bottom'>
-                <Stack gap={2} className='align-self-center'>
-                    <Button variant="primary" type="submit" onClick={handleShow}>Create room</Button>
-                    <Modal show={show} onHide={handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Modal heading</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <Form>
-                                <Form.Group className="mb-3" controlId="roomForm.name">
-                                    {/* <Form.Label>Room name</Form.Label> */}
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Room name"
-                                        autoFocus
-                                        onChange={(event) => setRoomName(event.target.value)}
-                                    />
-                                </Form.Group>
-                                <Form.Select
-                                    aria-label="Default select example"
-                                    id="roomForm.type"
-                                    className="mb-3"
-                                >
-                                    <option>Choose the chat type</option>
-                                    {/* <option value="" selected="true"></option> */}
-                                    {/* TODO: THIS IS ALWAYS BEING SET TO Q ON THE BACKEND */}
-                                    <option value="form_1" onChange={() => setRoomType(RoomType.PUBLIC)}>Public</option>
-                                    <option value="form_2" onChange={() => setRoomType(RoomType.PRIVATE)}>Private (DM)</option>
-                                    <option value="form_3" onChange={() => setRoomType(RoomType.PROTECTED)}>Protected</option>
-                                </Form.Select>
-                                <Form.Group className="mb-3">
-                                    {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
-                                    <Form.Control
-                                        type="password"
-                                        placeholder="Protected chat password"
-                                        id="inputPassword5"
-                                        aria-describedby="passwordHelpBlock"
-                                        onChange={(event) => setRoomPassword(event.target.value)}
-                                    />
-                                    <Form.Text id="passwordHelpBlock" muted>
-                                        Your password must be 5-20 characters long, contain letters and numbers,
-                                        and must not contain spaces, special characters, or emoji.
-                                    </Form.Text>
-                                </Form.Group>
-                            </Form>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
-                                Close
-                            </Button>
-                            <Button variant="primary" onClick={createRoom}>
-                                Save Changes
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>
-                </Stack>
             </Row>
         </>
     )

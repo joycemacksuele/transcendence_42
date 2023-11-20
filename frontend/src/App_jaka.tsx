@@ -1,8 +1,8 @@
-// import React from "react";
 import React, { useState } from 'react';
 import { Routes, Route } from "react-router-dom";
 
 import LoginAuth from "./Components/Login_page/Login_auth.tsx";
+import InputTFAcode from './Components/Login_page/Login_2fa';
 import MainPage from "./Components/main_page.tsx";
 	import UserProfilePage from "./Components/Center/Profile_page/User_profile_page";
 	import ChatPage from "./Components/Center/Chat/Chat";
@@ -18,12 +18,6 @@ import AuthCallbackPage from './Components/Login_page/AuthCallbackPage.tsx';
 // be considered "global" or shared across multiple components, such as user authentication status, etc ...
 
 
-type ContextProps = {
-	activeContent: string;
-	updateContext: (updateUserData: CurrUserData ) => void;
-};
-
-// const App_jaka: React.FC<ContextProps> = ({ activeContent, updateContext }) => {
 const App_jaka: React.FC = () => {
 
 	/*
@@ -35,30 +29,24 @@ const App_jaka: React.FC = () => {
 		profileName: '',
 		loginImage: '',
 	});
-	const updateContextValue = (updatedUserData: CurrUserData) => {
-		setCurrUserData(updatedUserData);
-	};
-
-	
 
 	return (
 		<>
 		<CurrentUserContext.Provider value={currUserData as CurrUserData}>
 			<Routes>
-				<Route path="/"					element={<LoginAuth />} />8
-				<Route path="/auth-callback"	element={<AuthCallbackPage />}/>
+				<Route path="/"					element={<LoginAuth />} />
+				{/* <Route path="/auth-callback"	element={<AuthCallbackPage />}/> */}
+				<Route path="/Login_2fa"					element={<InputTFAcode />} />
 
-				<Route 	path="/main_page"
-						element={<MainPage updateContext={ updateContextValue } />}
-					>
-					<Route path="/main_page/profile" element={<UserProfilePage updateContext={ updateContextValue } />} />
+				<Route 	path="/main_page" element={<MainPage updateContext={ setCurrUserData } />} >
+					<Route path="/main_page/profile" element={<UserProfilePage updateContext={ setCurrUserData } />} />
 					<Route path="/main_page/chat" element={<ChatPage />} />
 					<Route path="/main_page/game" element={<PlayGamePage />} />
 					<Route path="/main_page/users" element={<UsersList />} />
 				</Route>
 
-				<Route path="logout"			element={<LogoutPage />} />
-				<Route path="*"					element={<PageNotFound />} />
+				<Route path="logout"	element={<LogoutPage />} />
+				<Route path="*"			element={<PageNotFound />} />
 			</Routes>
 		</CurrentUserContext.Provider>
 		</>

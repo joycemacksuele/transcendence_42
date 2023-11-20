@@ -1,6 +1,9 @@
 /* # is used inside id='' */
 .chat-page {
+    /* color = font color */
+    color: grey;
     width: auto;
     height: 50vw;
+    /*display: flex;*/
     /*overflow-y: scroll;*/
 }

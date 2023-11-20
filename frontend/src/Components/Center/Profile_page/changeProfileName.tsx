@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { CurrentUserContext, CurrUserData } from './contextCurrentUser'; 
 
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true; // to enable cross-origin requests, the authorization headers like jwt, and that the server will accept it...
 
 type ContextProps = {
 	updateContext: (updateUserData: CurrUserData ) => void;
@@ -26,7 +26,7 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log('HandleSubmit, loginName: ', loginName);
+		console.log('Handle Submit new profileName for user: ', loginName);
 		if (profileName.trim() === '') {
 			setErrorMessage('Please write a name.');
 			setOkMessage('');
@@ -38,8 +38,9 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
 		
 		try {
-			// const loginName =
-			const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name', { profileName, loginName } , {validateStatus: () => true });
+			const response = await axios.post('http://localhost:3001/manage_curr_user_data/change_profile_name',
+							{ profileName } , {validateStatus: () => true }); // validateStatus: All http responses will be successfull, regardless if the status code is Error. This allows more flexible error handling below
+
 
 			setProfileName(''); // Resetting the input field
 			setErrorMessage('');
@@ -93,9 +94,9 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 					/> &nbsp; 
 
 					<button type="submit">Submit</button>
-						{ !profileName && errorMessage && <p style={{ color: 'red' }}> { errorMessage } </p> }
-						{  profileName && <p style={{ color: 'orange' }}>You are typing ...</p>} 
-						{ !profileName && !errorMessage && <p style={{ color: 'green' }}> { OkMessage } </p> } 
+					{ !profileName && errorMessage && <p style={{ color: 'red' }}> { errorMessage } </p> }
+					{  profileName && <p style={{ color: 'orange' }}>You are typing ...</p>}
+					{ !profileName && !errorMessage && <p style={{ color: 'green' }}> { OkMessage } </p> }
 				</form>
 			</div>
 	);
