@@ -7,7 +7,7 @@
   The functions that access data are better located in the file user.repository
 */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './create-user.dto';
 import { UserEntity } from './user.entity';
@@ -35,18 +35,6 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  // Not used anymore
-  // async deleteAllUsers(): Promise<void> {
-  //   console.log('[BACKEND LOG] UserService.deleteAllUsers');
-  //   try {
-  //     await this.userRepository.clear();
-  //     console.log('[BACKEND LOG] from nest user.service: All users deleted.');
-  //   } catch (error) {
-  //     console.error('[BACKEND LOG] from nest user.service: Error deleting all users.', error);
-  //     // throw new InternalServerErrorException('Unable to delete all users');
-  //   }
-  // }
-
   async deleteDummies(): Promise<void> {
     console.log('[BACKEND LOG] UserService.deleteDummies');
     try {
@@ -68,7 +56,10 @@ export class UserService {
 
 
   async getUserByLoginName(loginName: string): Promise<UserEntity> {
+    console.log("getUserByLoginName function " + loginName);
     const options: FindOneOptions<UserEntity> = { where: { loginName } };
+    // console.log("getUserByLoginName function options: " + options);
+
 	  return this.userRepository.findOne( options );
   }
 
@@ -92,6 +83,11 @@ export class UserService {
     console.log('updatetfa function after: ' + tfaCode);
   }
 
+  async updateRefreshToken(loginName: string, refreshToken: string) {
+     const response = await this.userRepository.update({ loginName} , { refreshToken });
+    console.log('updatetfa function after: ' + refreshToken);
+  }
+
   async enableTFA(loginName: string, tfaEnabled: boolean) {
     await this.userRepository.update({ loginName} , { tfaEnabled });
   }
@@ -113,6 +109,22 @@ export class UserService {
       writer.on('error', reject);
     });
   }
+
+  async setOnlineStatus(loginName: string, status: boolean) {
+
+    const optionsObject: FindOneOptions<UserEntity> = { where: { loginName }  };
+ 
+    const user = await this.userRepository.findOne(optionsObject);
+    
+    if (user) {
+      user.onlineStatus = status;
+      console.log("setOnlineStatus(): ", user.onlineStatus);
+      await this.userRepository.save(user);
+    } else {
+      throw new NotFoundException(`User with login name ${loginName} not found`);
+    }
+  }
+
 
   // async findById(id: number): Promise<UserEntity | undefined> {
   //   console.log('[BACKEND LOG] UserService.getUserById');

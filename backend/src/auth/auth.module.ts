@@ -9,12 +9,14 @@ import { TwoFactorAuthService } from './2fa/2fa.service';
 import { UserModule } from 'src/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
+import { UserRepository } from 'src/user/user.repository';
 
 
 @Module({
   imports: [
   JwtModule.register({
     global: true,
+    secret: process.env.secret // added jaka, to enable extracting the jwt token
   }), 
   UserModule, 
   TypeOrmModule.forFeature([UserEntity])],
@@ -28,8 +30,10 @@ import { UserEntity } from 'src/user/user.entity';
     useClass: AuthGuard, 
   }, 
   UserService, 
-  TwoFactorAuthService,],
+  TwoFactorAuthService,
+  ],
 })
+
 export class AuthModule {
   constructor() {
     console.log('[BACKEND LOG] AuthModule constructor');

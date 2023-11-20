@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
+// import { AuthGuard } from '../guards/auth.guard';   // added jaka, to be able to use extractUserdataFromToken() in other files
 
 @Module({
     imports: [TypeOrmModule.forFeature([UserEntity]),
@@ -26,7 +27,7 @@ import { UserEntity } from 'src/user/user.entity';
   
     controllers: [TwoFactorAuthController],
     
-    providers: [TwoFactorAuthService, AuthService, JwtService, UserService, ],
+    providers: [TwoFactorAuthService, AuthService, JwtService, UserService],
 })
 export class TwoFactorAuthModule {
     constructor() {

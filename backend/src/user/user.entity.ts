@@ -13,11 +13,12 @@
 	Each entity has its own repository.
 */
 
-import { TestButton } from 'src/tests/exampleButtons/test.controller';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+
+import { Friendship } from 'src/friendships/friendship.entity';
 
 @Entity()
-export class UserEntity {// Joyce -> I named it from MyUser to UserEntity because it was tricky for me to remember that the MyUser keyword was an entity -> we can change it back later if you want
+export class UserEntity {
 	constructor() {
 		console.log('[BACKEND LOG] UserEntity constructor');
 	}
@@ -61,7 +62,10 @@ export class UserEntity {// Joyce -> I named it from MyUser to UserEntity becaus
 	@Column()
 	hashedSecret: string;
 
-	@Column({default: true})
+	@Column({default: 'default'})
+	refreshToken: string;
+
+	@Column({default: false})
 	tfaEnabled: boolean;
 
 	@Column({default: 'default'})
@@ -71,4 +75,28 @@ export class UserEntity {// Joyce -> I named it from MyUser to UserEntity becaus
 	// @Column({type: json})
 	@Column({type: "integer", array: true})
 	roomsCreated: number[];
+
+
+	/* @OneToMany()  Is a decorator from TypeORM
+		A User entity can have friends - can be associated with multiple instances of Friendship entity.
+
+		It takes 2 functions as arguments:
+			- 'target entity' and 'inverse side property'
+
+						TARGET,				INVERSE SIDE            
+			@OneToMany(	() => Friendship,   (friendship) => friendship.user)
+
+			TARGET:	() => Friendship
+			Returns the type of target entity: Friendship
+			This informs TypeORM about the entity on the other side of relationship.
+
+			INVERSE SIDE:	(friendship) => friendship.user)
+			The Frienship entity has a property/column 'user'. This represents the other side of relationship, from the perspective of the targeted Friendship entity.
+			This function returns the property 'user' of the target entity. 
+	*/
+	@OneToMany(() => Friendship, (friendship) => friendship.user)
+	friendships: Friendship[];
+
+	// @OneToMany(() => Friendship, (friendship) => friendship.friend)
+	// friendOf: Friendship[];
 }

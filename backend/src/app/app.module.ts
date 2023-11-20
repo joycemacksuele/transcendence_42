@@ -4,6 +4,9 @@
   Path must match, but it can be without .ts suffix
 */
 
+// jaka, todo: here apparently it is enough to only import the module of each entity (ie: UserModule), and not UserController etc ...
+// --> remove the unnecessary
+
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -19,6 +22,8 @@ import { UserController } from '../user/user.controller';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../user/user.repository';
 import { UserEntity } from '../user/user.entity';
+import { FriendshipModule } from '../friendships/friendship.module';
+import { Friendship } from '../friendships/friendship.entity';
 
 import { DuplicateService } from '../duplicate/duplicate.service';
 
@@ -28,24 +33,28 @@ import { ChatService } from '../chat/chat.service';
 
 // import { ExampleController } from '../tests/exampleButtons/example.controller';
 // import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
+// import { ExampleController } from '../tests/exampleButtons/example.controller';
+// import { ExampleButton } from '../tests/exampleButtons/exampleButton.controller';
 
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
 import { TwoFactorAuthController } from 'src/auth/2fa/2fa.controller';
 import { TwoFactorAuthService } from 'src/auth/2fa/2fa.service';
 
-import { TestButton } from 'src/tests/exampleButtons/test.controller';
+// import { TestButton } from 'src/tests/exampleButtons/test.controller';
 
 // added jaka to test API INTRA42
 // import { GetUserNameFromIntra } from '../tests/test_intra42_jaka/fetchFromIntra_userName.controller';
 // import { DummyUserService } from 'src/tests/dummyUsers/dummyUsers.service';
-import { DummyUsersController } from 'src/tests/dummyUsers/dummyUsers.controller';
+import { DummyUsersController } from 'src/dummies/dummyUsers.controller';
 // added jaka: to store current user to database
-import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
-import { UploadImageController } from 'src/tests/test_intra42_jaka/change_profile_image';
+// import { StoreCurrUserToDataBs } from 'src/tests/test_intra42_jaka/manage_user_name.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthModule } from 'src/auth/2fa/2fa.module';
 import { JwtService } from '@nestjs/jwt';
+import { UploadImageController } from 'src/user/change_profile_image_or_name/change_profile_image';
+import { AddUsernameMiddleware } from 'src/user/change_profile_image_or_name/change_profile_image';
+import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
 
 // To read: https://docs.nestjs.com/techniques/database
 /*
@@ -69,15 +78,18 @@ import { JwtService } from '@nestjs/jwt';
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
-      entities: [UserEntity],// Add ChatEntity (and others) here?????????
+      entities: [UserEntity, Friendship],// Add ChatEntity (and others) here?????????
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
+      // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity]), // it is already in user.module
     UserModule,
     DatabaseModule,
     MailerModule,
     TwoFactorAuthModule,
     ChatModule,
+    FriendshipModule
+    //ChatModule,
   ],
 
   controllers: [
@@ -91,7 +103,7 @@ import { JwtService } from '@nestjs/jwt';
       // ExampleButton,        // jaka, testing
       // GetUserNameFromIntra, // jaka, testing
       DummyUsersController, // jaka, testing
-      StoreCurrUserToDataBs,
+      // StoreCurrUserToDataBs,
       UploadImageController,
       TwoFactorAuthController,
   ],
@@ -107,8 +119,17 @@ import { JwtService } from '@nestjs/jwt';
       TwoFactorAuthService,
   ],
 })
-export class AppModule {
-    constructor() {
-        console.log('[BACKEND LOG] AppModule constructor');
-    }
+
+
+export class AppModule implements NestModule {
+  
+  constructor() {
+    console.log('Backend: AppModule constructor');
+  }
+
+  configure(consumer: MiddlewareConsumer) { // added jaka: needed for fetching username for uploading new profile image 
+    consumer
+      .apply(AddUsernameMiddleware)
+      .forRoutes(UploadImageController);
+  }
 }

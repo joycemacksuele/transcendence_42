@@ -15,7 +15,6 @@ services:
             - 3000:8000
             # - "${FRONTEND_PORT}:${FRONTEND_PORT}"    
         working_dir: /frontend
-
         volumes: #-> DO WE WANT TO SAVE THINGS FROM THE FRONTEND CONTAINER?
             - type: bind
               source: ./frontend
@@ -39,16 +38,22 @@ services:
     # --------------------------------------------- nestJS
     nest_app:
         container_name: backend
-        build:
-            context: ./backend
-            dockerfile: Dockerfile
-            args:
-                MYSECRET: ${SECRET}
+        image: node:18.16.0
+        command: sh -c "npm install && npm run start:dev"
+        # build:
+        #     context: ./backend
+        #     dockerfile: Dockerfile
+        #     args:
+        #         MYSECRET: ${SECRET}
         ports:
             - 3001:3001
             # - "${BACKEND_PORT}:${BACKEND_PORT}"
+        working_dir: /backend
         volumes: #-> DO WE WANT TO SAVE THINGS FROM THE BACKEND CONTAINER?
-            - ./backend:/backend
+            - type: bind
+              source: ./backend
+              target: /backend
+            # - ./backend:/backend
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
               # - ./_backend_volume:/myapp:rw,uid=<501>,gid=<20>
         env_file:
@@ -68,7 +73,6 @@ services:
             - CLIENT_ID=${CLIENT_ID}
             - SECRET=${SECRET}
             - REDIRECT=${REDIRECT}
-            - DOMAIN=${DOMAIN}
             - FRONTEND=${FRONTEND}
             - BACKEND=${BACKEND}
             - DATABASE=${DATABASE}
@@ -77,6 +81,7 @@ services:
             - EPORT=${EPORT}
             - EPASS=${EPASS}
             - APASS=${APASS}
+            - JWT_SECRET=${JWT_SECRET}
 
 
     # --------------------------------------------- PostgreSQL
