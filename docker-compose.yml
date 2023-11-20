@@ -73,7 +73,6 @@ services:
             - CLIENT_ID=${CLIENT_ID}
             - SECRET=${SECRET}
             - REDIRECT=${REDIRECT}
-            - DOMAIN=${DOMAIN}
             - FRONTEND=${FRONTEND}
             - BACKEND=${BACKEND}
             - DATABASE=${DATABASE}
@@ -82,6 +81,7 @@ services:
             - EPORT=${EPORT}
             - EPASS=${EPASS}
             - APASS=${APASS}
+            - JWT_SECRET=${JWT_SECRET}
 
 
     # --------------------------------------------- PostgreSQL
