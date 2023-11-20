@@ -284,10 +284,11 @@ export class AuthService {
 
 async removeAuthToken(request: Request, response: Response): Promise<any> {
 	try{
+		this.logger.log("start removeAuthToken");
 		let cookies = request.get('Cookie');
-		console.log("verify cookie: " + cookies);
+		console.log("     verify cookie: " + cookies);
 		let existingToken = this.extractTokenFromHeader(request);
-		console.log("existingToken: " + existingToken);
+		console.log("     existingToken: " + existingToken);
 
 		let replaceToken = "";
 		const cookieAttributes = {
@@ -342,7 +343,7 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
         let token: string;
 
         cookie = request.get('Cookie');
-        this.logger.log('extract Token from Header - full cookie: ' + cookie);
+        //this.logger.log('extract Token from Header - full cookie: ' + cookie);
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');
@@ -355,18 +356,18 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
                 break ;
             }
         }
-        console.log('token: ' + token);
+        //console.log('token: ' + token);
         return token;
     }
 
-	logout(req: Request, response: Response) {
-		try{
-			response.clearCookie('Cookie');
-			// disable 2fa ? 
-			return response.send({ message: 'Sign out succeeded' });
-		}
-		catch{
-			throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
-		}
-	}
+	// logout(req: Request, response: Response) {
+	// 	try{
+	// 		response.clearCookie('Cookie');
+	// 		// disable 2fa ? 
+	// 		return response.send({ message: 'Sign out succeeded' });
+	// 	}
+	// 	catch{
+	// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
+	// 	}
+	// }
 }
