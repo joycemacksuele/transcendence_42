@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ImageUpload from "./changeUserImage";
+import ButtonTfa from './ButtonTfa';
 import FriendsList from "./DisplayFriends";
 import ChangeProfileName from "./changeProfileName";
 import { CurrUserData } from "./contextCurrentUser";
 // import JustTest from "./justTest_NOT_USED";
 
-import InputTFAcode from '../../Login_page/Form_inputTfaCode';
+// import InputTFAcode from '../../Login_page/Form_inputTfaCode';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
@@ -51,7 +52,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 	// const handleClose = () => setDummy(false);
 	// const handleShow = () => setDummy(true);
 	// const [roomName, setRoomName] = useState('');
-	// const [roomType, setRoomType] = useState(RoomType.PUBLIC);
+	// const [groupType, setGroupType] = useState(ChatUtils.PUBLIC);
 	// const [roomPassword, setRoomPassword] = useState('');
 
 	// const dummyFunction00 = () => {
@@ -75,6 +76,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 								<h5>MY PROFILE PAGE</h5>
 								<ChangeProfileName updateContext={ updateContext } />
 								<ImageUpload updateContext={ updateContext }/>
+								<ButtonTfa/>
 								{/* <JustTest/> */}
 							</div>
 						{/* </Row> */}

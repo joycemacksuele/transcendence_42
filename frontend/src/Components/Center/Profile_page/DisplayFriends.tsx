@@ -40,9 +40,9 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 	const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
 	
 
-	const handleInsertDataClick = () => {
-		insertDummyUsers();
-	};
+	// const handleInsertDataClick = () => {
+	// 	insertDummyUsers();
+	// };
 
 	// const fetchUsers = async () => {
 	// 	try {
@@ -74,10 +74,11 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 
 	
 	const fetchFriends = async (myId: number) => {
+		console.log("Fetch Friends, myId: ", myId);
 		try {
 			const response = await axios.get<User[]>(`http://localhost:3001/friendship/${myId}/friends`);
 			setFriends(response.data);
-			console.log('Retrieved friends: ', response.data);
+			console.log('Retrieved friends (response.data): ', response.data);
 		} catch (error) {
 			console.error('Error fetching friends: ', error);
 		}
@@ -121,18 +122,18 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 	// 	setDisplayList(!displayList);
 	// };
 
-	const deleteDummies = async () => {
-		try {
-			await axios.delete("http://localhost:3001/users/");
-			console.log("Dummies deleted successfully");
-		} catch (error) {
-			console.error("Error deleting dummies: ", error);
-		}
-	};
+	// const deleteDummies = async () => {
+	// 	try {
+	// 		await axios.delete("http://localhost:3001/users/");
+	// 		console.log("Dummies deleted successfully");
+	// 	} catch (error) {
+	// 		console.error("Error deleting dummies: ", error);
+	// 	}
+	// };
 
-	const handleClickDeleteDummies = () => {
-		deleteDummies();
-	};
+	// const handleClickDeleteDummies = () => {
+	// 	deleteDummies();
+	// };
 
 	return (
 		<div style={myStyle}>
@@ -175,9 +176,9 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 					</ul>
 				</div>
 			)}
-			<button onClick={handleInsertDataClick}>Create dummies</button>
+			{/* <button onClick={handleInsertDataClick}>Create dummies</button>
 			&nbsp;
-			<button onClick={handleClickDeleteDummies}>Delete dummies</button>
+			<button onClick={handleClickDeleteDummies}>Delete dummies</button> */}
 		</div>
 	);
 };
