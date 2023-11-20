@@ -59,7 +59,7 @@ export class UserController {
     	private readonly authService: AuthService   // added jaka, to enable extractUserdataFromToken()
 		// public readonly userRepository: UserRepository // jaka: Controller should not interact with UserRepository
 	) {
-		this.logger.log('[BACKEND LOG] UserController constructor');
+		this.logger.log('constructor');
 	}
 
 	@Post()

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {Logger, Module} from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
@@ -35,7 +35,8 @@ import { UserRepository } from 'src/user/user.repository';
 })
 
 export class AuthModule {
+  private readonly logger = new Logger(AuthModule.name);
   constructor() {
-    console.log('[BACKEND LOG] AuthModule constructor');
+    this.logger.log('constructor');
   }
 }
