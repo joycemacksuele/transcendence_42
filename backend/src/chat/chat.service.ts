@@ -1,61 +1,79 @@
 import { Injectable, Logger } from '@nestjs/common';
-// import { CreateChatDto } from './dto/create-chat.dto';
-// import { UpdateChatDto } from './dto/update-chat.dto';
+import {InjectRepository} from "@nestjs/typeorm";
+import {NewChatEntity} from "./entities/new-chat.entity";
+import {ChatType} from "./utils/chat-utils";
+import {ChatRepository} from "./chat.repository";
+import * as bcryptjs from 'bcryptjs';
+import {RequestNewChatDto} from "./dto/request-new-chat.dto";
+import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
 
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
 
-  // constructor(private readonly userData: CreateChatDto) {
-  constructor() {
-    this.logger.log('[BACKEND LOG] ChatService constructor');
+  constructor(
+      @InjectRepository(NewChatEntity)
+      public readonly chatRepository: ChatRepository,
+      // public readonly userService: UserService
+  ) {
+    this.logger.log('constructor');
   }
 
-  // createRoom(createChatDto: CreateChatDto) {
-  createRoom() {
-    return 'This action adds a new room';
+  ////////////////////////////////////////////////////////////// Functions for Gateway
+
+  async createChat(requestNewChatDto: RequestNewChatDto)  {
+    const chat_entity = new NewChatEntity();
+    chat_entity.chatName = requestNewChatDto.chatName;
+    chat_entity.chatType = requestNewChatDto.chatType;
+    chat_entity.chatCreator = requestNewChatDto.loginName;
+    chat_entity.chatAdmins = [];
+    chat_entity.chatAdmins.push(requestNewChatDto.loginName);
+    chat_entity.chatMembers = [];
+    chat_entity.chatMembers.push(requestNewChatDto.loginName);
+    // chat_entity.chatBannedUsers = [];
+    if (requestNewChatDto.chatType == ChatType.PROTECTED) {
+      if (requestNewChatDto.chatPassword == null) {
+        throw new Error('Password is required for PROTECTED_CHANNEL');
+      }
+      try {
+        chat_entity.chatPassword = await bcryptjs.hash(requestNewChatDto.chatPassword, 10);
+      } catch (err) {
+        throw new Error('Can not hash password');
+      }
+    } else {
+      requestNewChatDto.chatPassword = null;
+    }
+    // const new_chat = this.chatRepository.create(requestNewChatDto);// this can create an Entity out of an object if var name matches
+    // await this.chatRepository.save(chat_entity);
+    this.chatRepository.save(chat_entity).then(r => {
+      this.logger.log('NewChatEntity id: ' +  r.id);
+    });
   }
 
-  findAll() {
-    return `This action returns all chat`;
+  ////////////////////////////////////////////////////////////// Functions for Controller
+  async getAllChatNames(): Promise<ResponseNewChatDto[]> {
+    this.logger.log('getAllChatNames');
+    // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
+    // console.log("ChatService query.getQuery(): ", query.getQuery());
+    // return this.chatRepository.query(query.getQuery());
+    return this.chatRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chat`;
-  }
 
-  // update(id: number, updateChatDto: UpdateChatDto) {
-  update(id: number) {
-    return `This action updates a #${id} chat`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} chat`;
-  }
-
-  // public async createRoom(body: ChatDto) {
-  //   const user_entity = new UserEntity();
-  //   user_entity.name = body.name;
-  //   user_entity.admins = [];
-  //   user_entity.bannedUsers = [];
-  //   user_entity.users = [];
-  //   user_entity.type = body.type;
-  //   const user = await this.userService.getUserById(body.creator_id);
-  //   if (user == null) throw new Error('User not found');
-  //   user_entity.creator = user;
-  //   user_entity.users.push(user);
-  //   user_entity.admins.push(user);
-  //   if (body.type == ChannelType.PROTECTED_CHANNEL) {
-  //     if (body.password == null)
-  //       throw new Error('Password is required for PROTECTED_CHANNEL');
-  //     try {
-  //       user_entity.pwd = await bcrypt.hash(body.password, 10);
-  //     } catch (err) {
-  //       throw new Error('Can not hash password');
-  //     }
-  //   }
-  //   const ret = await this.channelRepository.save(user_entity);
-  //   this.server.emit('new_channel', ret);
-  //   return user_entity;
+  // findAll() {
+  //   return `This action returns all chat`;
+  // }
+  //
+  // findOne(id: number) {
+  //   return `This action returns a #${id} chat`;
+  // }
+  //
+  // // update(id: number, updateChatDto: UpdateChatDto) {
+  // update(id: number) {
+  //   return `This action updates a #${id} chat`;
+  // }
+  //
+  // remove(id: number) {
+  //   return `This action removes a #${id} chat`;
   // }
 }
