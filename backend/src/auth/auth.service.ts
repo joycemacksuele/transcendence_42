@@ -15,7 +15,8 @@ export class AuthService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly jwtService: JwtService, 
-		private readonly tfaService: TwoFactorAuthService
+		private readonly tfaService: TwoFactorAuthService,
+		// private readonly userRepository: UserRepository
 		) {}
 	logger: Logger = new Logger('Auth Services');
 
@@ -124,7 +125,6 @@ export class AuthService {
 
 				// ADDED JAKA: 							//	SAVE ORIG USER IMAGE TO THE ./uploads/ FOLDER
 				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
-				//console.log("Jaka: ImageURL: ", imageUrl);
 
 				// todo: replace ./uploads/ with .env var everywhere
             	const imagePath = `./uploads/${player.loginName}.jpg`;
@@ -179,15 +179,20 @@ export class AuthService {
 		}
 		response.append('Set-Cookie', cookieToken);
 
-		// // Jaka: Just for test: Separate cookies with user data, without httpOnly
-		// let cookieUsername = `cookieUserName=${player.loginName}; path=/;`;
-		// response.append('Set-Cookie', cookieUsername);
-		// let cookieProfileName = `cookieProfileName=${player.profileName}; path=/;`;
-		// response.append('Set-Cookie', cookieProfileName);
-		// let cookieProfileImage = `cookieProfileImage=${player.profileImage}; path=/;`;
-		// response.append('Set-Cookie', cookieProfileImage);
+		// Jaka: Just for test: Separate cookies with user data, without httpOnly
+		//let cookieUsername = `cookieUserName=${player.loginName}; path=/;`;
+		//response.append('Set-Cookie', cookieUsername);
+		//let cookieProfileName = `cookieProfileName=${player.profileName}; path=/;`;
+		//response.append('Set-Cookie', cookieProfileName);
+		//let cookieProfileImage = `cookieProfileImage=${player.profileImage}; path=/;`;
+		//response.append('Set-Cookie', cookieProfileImage);
+		// response.cookie('jwt', token, {httpOnly: true, domain: process.env.DOMAIN, path: '/', secure: true});
 
 		console.log('print token inside request: ' + response.getHeader("set-cookie"));  // test 
+
+
+		// Set status Online true
+		// await this.userService.setOnlineStatus(player.loginName, true);
 
 		// if 2fa true display profile else redirect to 2fa 
 		let path: string;
@@ -195,14 +200,23 @@ export class AuthService {
 		{
 			this.logger.log('Two factor authentication enabled! Sending verification mail.');
 			this.tfaService.sendVerificationMail(player);
+			let cookieLogInAttempts = `cookieLogInAttempts=0; path=/;`;
 			path = `${process.env.FRONTEND}/Login_2fa`;
-			// response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+			response.append('Set-Cookie', cookieLogInAttempts);
+			// response.setHeader('Sec-Fetch-Site', 'none');
+			// response.removeHeader('vary');
+			response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+			// console.log(response.getHeaderNames());
 		}
-		else
+		else {
 			path = `${process.env.FRONTEND}`;
-			this.logger.log("Redirecting to: ", process.env.FRONTEND);
-			// return response.redirect(path); 														   // jaka, temp. added
-		return response.redirect(path);
+			await this.userService.setOnlineStatus(player.loginName, true);
+		}
+		this.logger.log("Redirecting to: ", process.env.FRONTEND);
+		return response.redirect(path); 	// jaka, temp. added
+		// return;
+		// return response.redirect('http://localhost:3000/main_page?loginName=jmurovec');
+		// return response.redirect('http://localhost:3001/2faAuth' + const parameters? )
 	}
 
 	// JWT Token
@@ -269,10 +283,11 @@ export class AuthService {
 
 async removeAuthToken(request: Request, response: Response): Promise<any> {
 	try{
+		this.logger.log("start removeAuthToken");
 		let cookies = request.get('Cookie');
-		console.log("verify cookie: " + cookies);
+		console.log("     verify cookie: " + cookies);
 		let existingToken = this.extractTokenFromHeader(request);
-		console.log("existingToken: " + existingToken);
+		console.log("     existingToken: " + existingToken);
 
 		let replaceToken = "";
 		const cookieAttributes = {
@@ -309,7 +324,7 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
-    async extractUserFromRequest(request: Request): Promise<any> {
+    async extractUserdataFromToken(request: Request): Promise<any> { 
         const token = this.extractTokenFromHeader(request);
         if (!token) {
             throw new UnauthorizedException('Token not found');
@@ -327,7 +342,7 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
         let token: string;
 
         cookie = request.get('Cookie');
-        this.logger.log('extract Token from Header - full cookie: ' + cookie);
+        //this.logger.log('extract Token from Header - full cookie: ' + cookie);
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');
@@ -340,7 +355,18 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
                 break ;
             }
         }
-        console.log('token: ' + token);
+        //console.log('token: ' + token);
         return token;
     }
+
+	// logout(req: Request, response: Response) {
+	// 	try{
+	// 		response.clearCookie('Cookie');
+	// 		// disable 2fa ? 
+	// 		return response.send({ message: 'Sign out succeeded' });
+	// 	}
+	// 	catch{
+	// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
+	// 	}
+	// }
 }

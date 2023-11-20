@@ -30,6 +30,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #e6dddd !important;
 }
 
 h1 {
@@ -38,28 +39,32 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  border-radius: 5px !important;
+  border: 1px solid black;
   padding: 0.6em 1.2em;
+  margin: 5px !important;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #a19c94;
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #dcfb92;
+  background-color: #c08f8f;
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #107edf;
+  }
+  body {
+    border: 2px rgb(225, 25, 122) solid;
   }
   a:hover {
     color: #747bff;
@@ -67,4 +72,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */

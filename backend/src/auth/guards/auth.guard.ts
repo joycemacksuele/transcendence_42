@@ -75,12 +75,7 @@ export class AuthGuard implements CanActivate {
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // AND ALSO, 'AUTHGUARDS' CANNOT BE INJECTED INTO A CONTROLLER
-    // THEREFORE, I WROTE ANOTHER FUNCTION INSIDE auth.service
-    
-
-
-
-    // Jaka: NOT USED SO FAR. IT IS MODIFIED AND MOVED INTO FILE auth.service
+    // THEREFORE, I WROTE  A SIMILAR FUNCTION INSIDE auth.service
     // ALSO, IT NEEDS TO HAVE AS AN ARGUMENT A 'REQUEST' INSTEAD OF 'CONTEXT'
     async extractUserFromToken(context: ExecutionContext) {
 

@@ -27,7 +27,7 @@ export class AddUsernameMiddleware implements NestMiddleware {
 
 	async use(req: Request, res: Response, next: NextFunction) {
 		// const user = req['username'];
-		const user = await this.authService.extractUserFromRequest(req);
+		const user = await this.authService.extractUserdataFromToken(req);
 		if (user && user.username) {
 			req['username'] = user.username;
 		}
@@ -101,7 +101,7 @@ export class UploadImageController {
 	) {
 
 		// extract user from request token 
-		let payload = await this.authService.extractUserFromRequest(req);
+		let payload = await this.authService.extractUserdataFromToken(req);
 		console.log("      ... payload.username: ", payload.username);
 
 		// req['username'] = user.username; // add username to request object
