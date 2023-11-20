@@ -37,11 +37,32 @@ export class AuthGuard implements CanActivate {
             throw new UnauthorizedException();
         }
         try{
-            const payload = await this.jwtService.verifyAsync(
-            token, {secret: process.env.SECRET}
-            )               // returns the decoded payload with the user info 
+            console.log("START TRY !!!!!!!!!!!!!!!");
+            const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
+            console.log("AFTER PAYLOAD !!!!!!!!!!!!!!!");
+
+            // token, {secret: process.env.SECRET}
+            // returns the decoded payload with the user info 
+
             request['user'] = payload;
             console.log("Payload: " , payload);
+            
+            // if (token expired)
+            // {
+            //     if (refresh token exists in database){
+            //         make new access token 
+            //         make new refresh token
+            //         set up request['user'] = payload;
+            //         console.log("Payload: " , payload);
+            //     } 
+            //     else
+            //         return false 
+            // }
+            // else
+            // {
+            //     request['user'] = payload;
+            //     console.log("Payload: " , payload);
+            // }
         }
         catch{
             throw new UnauthorizedException();
@@ -86,14 +107,19 @@ export class AuthGuard implements CanActivate {
         let token: string;
 
         cookie = request.get('Cookie');
-        this.logger.log('extract Token from Header - full cookie: ' + cookie);
-        // this.logger.log('full cookie: ' + cookie);
         if (!cookie)
             return undefined;
-        token = cookie.split(';')[0];
-        token = token.split('token=')[1];
-        // console.log('extracted token: ' + token);
-        // console.log(request);
+        var arrays = cookie.split(';');
+        console.log("arrays: " + arrays);
+        for (let i = 0; arrays[i]; i++)
+        {
+            if (arrays[i].includes("token="))
+            {
+                token = arrays[i].split('token=')[1];
+                break ;
+            }
+        }
+        console.log('token: ' + token);
         return token;
     }
 }

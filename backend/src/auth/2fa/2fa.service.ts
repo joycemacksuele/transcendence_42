@@ -33,12 +33,27 @@ export class TwoFactorAuthService {
 			text: 'Hey ' + player.loginName + ' ,Your verification code is: ' + code + 'If you did not request this email that sounds like a you problem!',
 			html: '<p>Hey ' + player.loginName + ' ,</p> <p>Your verification code is: ' + code + '</p><p>If you did not request this email that sounds like a you problem!</p>',
 		});
-
+		
 		this.logger.log('verification email sent');
 	}
 
-
-	// async toggleButtonTfa(player: UserEntity): Promise <void>	{	
-	// }
-	
+	async inputCheck(value? : string): Promise<boolean>
+	{
+		if (value === null)
+		{
+			console.log("value null");
+			return false;
+		} 
+		if (value.length !== 6)
+		{
+			console.log("length: " + value.length);
+			return false;
+		} 
+		if (typeof(+value) !== "number")
+		{
+			console.log("not a number: ");
+			return false;
+		}
+		return true;
+	}
 }
