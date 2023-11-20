@@ -21,7 +21,6 @@
 		"test:e2e": "jest --config ./test/jest-e2e.json"
 	},
 	"dependencies": {
-		"@nestjs/cli": "^10.0.0",
 		"@nestjs-modules/mailer": "^1.7.1",
 		"@nestjs/cli": "^10.0.0",
 		"@nestjs/common": "^10.0.0",
@@ -92,5 +91,5 @@
 		],
 		"coverageDirectory": "../coverage",
 		"testEnvironment": "node"
-	}	
+	}
 }
