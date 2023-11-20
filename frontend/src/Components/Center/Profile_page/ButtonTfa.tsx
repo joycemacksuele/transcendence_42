@@ -37,7 +37,7 @@ const ButtonTfa: React.FC = () => {
 	return (
 		<div style={myMargin}>
 			<form onSubmit={handleSubmit}>
-				Two Factor Authentication
+				Two Factor Authentication<br /> 
 				<button type="submit">
 					{tfaStatus ? 'Turn OFF' : 'Turn ON' }
 				</button>

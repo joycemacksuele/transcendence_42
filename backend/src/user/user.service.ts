@@ -7,7 +7,7 @@
   The functions that access data are better located in the file user.repository
 */
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './create-user.dto';
 import { UserEntity } from './user.entity';
@@ -104,6 +104,22 @@ export class UserService {
       writer.on('error', reject);
     });
   }
+
+  async setOnlineStatus(loginName: string, status: boolean) {
+
+    const optionsObject: FindOneOptions<UserEntity> = { where: { loginName }  };
+ 
+    const user = await this.userRepository.findOne(optionsObject);
+    
+    if (user) {
+      user.onlineStatus = status;
+      console.log("setOnlineStatus(): ", user.onlineStatus);
+      await this.userRepository.save(user);
+    } else {
+      throw new NotFoundException(`User with login name ${loginName} not found`);
+    }
+  }
+
 
   // async findById(id: number): Promise<UserEntity | undefined> {
   //   this.logger.log('getUserById');

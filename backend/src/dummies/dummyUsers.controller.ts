@@ -1,8 +1,8 @@
 // src/controllers/test.controller.ts
 import { Controller, Post, HttpStatus, HttpException } from '@nestjs/common';
 // import { DummyUserService } from './dummyUsers.service';
-import { UserService } from '../../user/user.service';
-import { UserEntity } from '../../user/user.entity';
+import { UserService } from '../user/user.service';
+import { UserEntity } from '../user/user.entity';
 import { OpenAccess } from 'src/auth/guards/auth.openaccess';
 
 // export class DummyUserDto {
