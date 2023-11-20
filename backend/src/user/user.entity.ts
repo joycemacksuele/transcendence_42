@@ -17,12 +17,12 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 import { Friendship } from 'src/friendships/friendship.entity';
 
+import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
+
+
 @Entity()
-export class UserEntity {// Joyce -> I named it from MyUser to UserEntity because it was tricky for me to remember that the MyUser keyword was an entity -> we can change it back later if you want
-	constructor() {
-		console.log('[BACKEND LOG] UserEntity constructor');
-	}
-	
+export class UserEntity {
+
 	@PrimaryGeneratedColumn()
 	id?: number;	// ? is optional -> it will be created automatically
 
@@ -68,12 +68,6 @@ export class UserEntity {// Joyce -> I named it from MyUser to UserEntity becaus
 	@Column({default: 'default'})
 	tfaCode: string;
 
-	// Chat related
-	// @Column({type: json})
-	@Column({type: "integer", array: true})
-	roomsCreated: number[];
-
-
 	/* @OneToMany()  Is a decorator from TypeORM
 		A User entity can have friends - can be associated with multiple instances of Friendship entity.
 
@@ -88,12 +82,16 @@ export class UserEntity {// Joyce -> I named it from MyUser to UserEntity becaus
 			This informs TypeORM about the entity on the other side of relationship.
 
 			INVERSE SIDE:	(friendship) => friendship.user)
-			The Frienship entity has a property/column 'user'. This represents the other side of relationship, from the perspective of the targeted Friendship entity.
+			The Friendship entity has a property/column 'user'.
+			This represents the other side of relationship, from the perspective of the targeted Friendship entity.
 			This function returns the property 'user' of the target entity. 
 	*/
 	@OneToMany(() => Friendship, (friendship) => friendship.user)
-	friendships: Friendship[];
+	friendships: Friendship[] | null;
 
 	// @OneToMany(() => Friendship, (friendship) => friendship.friend)
 	// friendOf: Friendship[];
+
+	@OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.creator)
+	chatmessages: ChatMessageEntity[] | null;
 }

@@ -47,7 +47,7 @@ export class UserController {
 	constructor(private readonly userService: UserService,
 		// public readonly userRepository: UserRepository // jaka: Controller should not interact with UserRepository
 	) {
-		this.logger.log('[BACKEND LOG] UserController constructor');
+		this.logger.log('constructor');
 	}
 
 	@Post()
@@ -58,12 +58,12 @@ export class UserController {
 	}
 
 
-	// GET ALL USERS
-	@Get('all')
-	async getAllUsers(): Promise<UserEntity[]> {
-		this.logger.log('[BACKEND LOG] getAllUsers');
-		return (this.userService.getAllUsers());
-	}
+    // GET ALL USERS
+    @Get('all')
+    async getAllUsers(): Promise<UserEntity[]> {
+        this.logger.log('[BACKEND LOG] getAllUsers');
+        return (this.userService.getAllUsers());
+    }
 	
 	
 	// GET ONE USER DATA BY LOGIN NAME

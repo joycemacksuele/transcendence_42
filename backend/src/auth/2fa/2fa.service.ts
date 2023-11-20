@@ -16,21 +16,44 @@ export class TwoFactorAuthService {
 		return code;
 	}
 
-	sendVerificationMail(player: UserEntity)
-	{
+	async sendVerificationMail(player: UserEntity): Promise <void>	{
 		let code :string;
         code = String(this.createCode());
-		this.userService.updateStoredTFACode(player.loginName, code);
+		this.logger.log('create verification code: ' + code);
 
-
-		// JAKA: TEMP. DISABLED, IT WAS GIVING ERROR AT LOGIN
+		let updateCode = await this.userService.updateStoredTFACode(player.loginName, code);
+		this.logger.log('stored tfa: ' + player.tfaCode + " (here still shows old code, but not updated)");
+		this.logger.log("            Should the user data be fetched again to show the updated code?");
+		this.logger.log('stored player.email: ' + player.email);
+		
 		this.mailerService.sendMail({
-			to: player.email,
-			from: `'No reply ' ${process.env.EMAIL}`,
+			to: `${player.email}`,
+			from: `No reply ${process.env.EMAIL}`,
 			subject: 'Unfriendly Ping Pong log in verification',
-		// 	text: 'Your verification code is: ' + code,
-		// 	html: '<b> really not sure what this does </b>',
-		html: '<p>Hey ' + player.loginName + ' ,</p> <p>Your verification code is: ' + code + '</p><p>If you did not request this email you can safely ignore it.</p>',
+			text: 'Hey ' + player.loginName + ' ,Your verification code is: ' + code + 'If you did not request this email that sounds like a you problem!',
+			html: '<p>Hey ' + player.loginName + ' ,</p> <p>Your verification code is: ' + code + '</p><p>If you did not request this email that sounds like a you problem!</p>',
 		});
+		
+		this.logger.log('verification email sent');
+	}
+
+	async inputCheck(value? : string): Promise<boolean>
+	{
+		if (value === null)
+		{
+			console.log("value null");
+			return false;
+		} 
+		if (value.length !== 6)
+		{
+			console.log("length: " + value.length);
+			return false;
+		} 
+		if (typeof(+value) !== "number")
+		{
+			console.log("not a number: ");
+			return false;
+		}
+		return true;
 	}
 }

@@ -4,17 +4,17 @@
 	the UserEntity.
 */
 
-import { Injectable } from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import { Repository, FindOneOptions } from 'typeorm';
 import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserRepository extends Repository<UserEntity> {
-
+	private readonly logger = new Logger(UserRepository.name);
 	constructor() {
-		console.log('[BACKEND LOG] UserRepository constructor');
 		// @ts-ignore
 		super();
+		this.logger.log('constructor');
 	}
 
 	
