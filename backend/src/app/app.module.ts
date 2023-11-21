@@ -56,6 +56,8 @@ import { UploadImageController } from 'src/user/change_profile_image_or_name/cha
 import { AddUsernameMiddleware } from 'src/user/change_profile_image_or_name/change_profile_image';
 import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
 
+import { AuthModule } from 'src/auth/auth.module';
+
 // To read: https://docs.nestjs.com/techniques/database
 /*
   TypeOrm
@@ -88,7 +90,8 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
     MailerModule,
     TwoFactorAuthModule,
     ChatModule,
-    FriendshipModule
+    FriendshipModule,
+    AuthModule
     //ChatModule,
   ],
 

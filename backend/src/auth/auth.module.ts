@@ -14,23 +14,24 @@ import { UserRepository } from 'src/user/user.repository';
 
 @Module({
   imports: [
-  JwtModule.register({
-    global: true,
-    secret: process.env.secret // added jaka, to enable extracting the jwt token
-  }), 
-  UserModule, 
-  TypeOrmModule.forFeature([UserEntity])],
+    JwtModule.register({
+      global: true,
+      secret: process.env.secret // added jaka, to enable extracting the jwt token
+    }), 
+    UserModule, 
+    TypeOrmModule.forFeature([UserEntity])
+  ],
 
   controllers: [AuthController],
   
   providers: [
-  AuthService,
-  {
-    provide: APP_GUARD,
-    useClass: AuthGuard, 
-  }, 
-  UserService, 
-  TwoFactorAuthService,
+    AuthService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard, 
+    }, 
+    UserService, 
+    TwoFactorAuthService,
   ],
 })
 

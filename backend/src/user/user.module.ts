@@ -15,6 +15,7 @@ import { Friendship } from '../friendships/friendship.entity';
     imports: [TypeOrmModule.forFeature([UserEntity, Friendship])],
     providers: [UserService, DuplicateService, AuthService, JwtService, TwoFactorAuthService],
     controllers: [UserController],
+    exports: [UserService]
 })
 export class UserModule {
     constructor() {

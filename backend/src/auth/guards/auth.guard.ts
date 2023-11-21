@@ -7,6 +7,9 @@ import { Reflector } from "@nestjs/core";
 import { PUBLIC_KEY } from "./auth.openaccess";
 import axios from 'axios';
 
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 
 // Guards are implemented globally. Every controller has to go through the token verification. 
 // The only exceptions are Auth('login') and Auth('token'). These have a private decorator @OpenAccess that allows them to work without being authorized. 
@@ -14,9 +17,12 @@ import axios from 'axios';
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
-        private userService: UserService,
+        @InjectRepository(UserEntity)
+        // private userService: UserService,
+        private userRepository: Repository<UserEntity>,
         private jwtService: JwtService, 
-        private reflector: Reflector) {}
+        private reflector: Reflector
+        ) {}
     logger: Logger = new Logger('Auth Guard');
     
     // if the class that is used is OpenAccess then it will allow access otherwise it will proceed to verify the JWT token
@@ -33,6 +39,10 @@ export class AuthGuard implements CanActivate {
             return true;
         }
 
+        // let user = await this.userService.getUserByLoginName(payload.username);
+
+
+
         // decode and verify the JWT token   
         const request = context.switchToHttp().getRequest();
         const token = this.extractTokenFromHeader(request);
@@ -44,6 +54,8 @@ export class AuthGuard implements CanActivate {
         try{
             console.log("START TRY !!!!!!!!!!!!!!!");
             const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
+            // let user = await this.authService.extractUserFromToken();
+
             console.log("AFTER PAYLOAD !!!!!!!!!!!!!!!");
 
             request['user'] = payload;
@@ -51,15 +63,22 @@ export class AuthGuard implements CanActivate {
 
             let expiry = await this.tokenExpired(payload.exp);
             console.log("expiry? " + expiry);
+            console.log("----- jaka ------------------------------------------------");
+
+            
+
             if (expiry === true)
             {
-                this.logger.log("Token is expired. We will now create a new one");
-                let player = await this.userService.getUserByLoginName(payload.username); // gets the entire entity 
-
-                this.logger.log("player: " + player.profileName + ' intra nr: ' + player.intraId);
-                console.log("test 1");
-                try{      
-                console.log("test 2");
+                try {
+                    this.logger.log("Token is expired. We will now create a new one");
+                    //let player = await this.userService.getUserByLoginName(payload.username); // gets the entire entity 
+                    let player = await this.userRepository.findOne({ where: { loginName: payload.username } });
+                    if (!player) {
+                        throw new UnauthorizedException('User not found');
+                    }
+    
+                    console.log("test 1");
+                    this.logger.log("player: " + player.profileName + ' intra nr: ' + player.intraId);
 
                     let refreshToken = player.refreshToken;
                     if (refreshToken === 'default')
@@ -88,7 +107,7 @@ export class AuthGuard implements CanActivate {
 
                 }
                 catch(err){
-                    this.logger.error('\x1b[31mUPlayer does not exist in the database: \x1b[0m');
+                    this.logger.error('\x1b[31mPlayer does not exist in the database: \x1b[0m');
                     throw new UnauthorizedException();
                 }         
             }
@@ -151,7 +170,7 @@ export class AuthGuard implements CanActivate {
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');
-        console.log("arrays: " + arrays);
+        //console.log("arrays: " + arrays);
         for (let i = 0; arrays[i]; i++)
         {
             if (arrays[i].includes("token="))

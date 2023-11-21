@@ -38,7 +38,7 @@ async function main() {
   app.use('/uploadsDummies', express.static('uploadsDummies'));
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
-  app.useGlobalGuards(new AuthGuard(new UserService(new UserRepository), new JwtService,  new Reflector));
+  // app.useGlobalGuards(new AuthGuard(new UserService(new UserRepository), new JwtService,  new Reflector));
 	app.use(cookieParser());
 
   // app.use((req, res, next) => {

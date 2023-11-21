@@ -101,7 +101,7 @@ export class UserController {
 	// DELETE DUMMIES
 	@Delete()
 	async deleteDummies(): Promise<void> {
-		console.log('DELETE All Dummies');
+		this.logger.log('DELETE All Dummies');
 		try {
 			await this.userService.deleteDummies();
 			this.logger.log('[BACKEND LOG] from nest user.controller: All dummies deleted.');
@@ -117,18 +117,18 @@ export class UserController {
     try {
       // get user and loginName from request-token
       let payload = await this.authService.extractUserdataFromToken(request);
-      console.log("      ... payload.username: ", payload.username);
+      this.logger.log("      ... payload.username: ", payload.username);
 
 
       // Check if user with the same loginName already exists
-      console.log('Endpoint: Check_if_user_in_db()');
+      this.logger.log('Endpoint: Check_if_user_in_db()');
       const existingUser = await this.userService.getUserByLoginName(payload.username);
       if (existingUser) {
-        console.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
+        this.logger.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
         return { exists: true, user: existingUser};
         // return { message: 'This loginName already exists in database == the current user.'};
       }
-      console.log('Endpoint: Check_if_user_in_db, LoginName:', existingUser); // jaka, temp
+      this.logger.log('Endpoint: Check_if_user_in_db, LoginName:', existingUser); // jaka, temp
       
       return { exists: false }; 
       // return { message: 'CHECK User does not exist in the database.' };
@@ -142,19 +142,20 @@ export class UserController {
   @Post('change_profile_name')
   async changeProfileName(@Req() request: Request, @Body() data: ChangeProfileNameDTO): Promise<{ message: string }> {
     try {
-      console.log('Changing the profile name:, new profileName: ', data.profileName);
+      this.logger.log('Changing the profile name:, new profileName: ' + data.profileName);
 
       // get user and loginName from request-token
       let payload = await this.authService.extractUserdataFromToken(request);
-      console.log("      ... payload.username: ", payload.username);
+      this.logger.log("      ... payload.username: " + payload.username);
 
 
       const user = await this.userService.getUserByLoginName(payload.username);
-      // console.log('Jaka, found profile name: ', user.profileName  );
+      this.logger.log('       ... user.loginName: ' + user.loginName  );
       if (!user) {
 	      throw new HttpException('User with this loginName not found', HttpStatus.I_AM_A_TEAPOT);
         // return {message: 'User with this loginName not found'};
       }
+
       const profile = await this.userService.getUserByProfileName(data.profileName);
       if (profile) {
 	      throw new HttpException('User with this profileName already exists', HttpStatus.I_AM_A_TEAPOT);

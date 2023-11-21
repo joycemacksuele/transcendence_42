@@ -7,7 +7,7 @@
   The functions that access data are better located in the file user.repository
 */
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './create-user.dto';
 import { UserEntity } from './user.entity';
@@ -20,27 +20,29 @@ import axios from 'axios';
 
 @Injectable()
 export class UserService {
+	private readonly logger = new Logger(UserService.name);
+
   constructor(
       @InjectRepository(UserEntity)
-      public readonly userRepository: UserRepository,
-      // private userRepository: Repository<UserEntity>,
-      // public readonly justRepository: Repository<UserEntity>
+      
+      private readonly userRepository: Repository<UserEntity>,
+      // private readonly userRepository: UserRepository,
   ) {
-      console.log('[BACKEND LOG] UserService constructor');
+      this.logger.log('[BACKEND LOG] UserService constructor');
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    console.log('[BACKEND LOG] UserService.createUser');
+    this.logger.log('[BACKEND LOG] UserService.createUser');
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
 
   async deleteDummies(): Promise<void> {
-    console.log('[BACKEND LOG] UserService.deleteDummies');
+    this.logger.log('[BACKEND LOG] UserService.deleteDummies');
     try {
       await this.userRepository.delete({ profileName: Like ('%dummy%') });
       await this.userRepository.delete({ loginName: Like ('%dummy%') });  // Jaka: Temporary, until the 'change name' bug is solved
-      console.log('[BACKEND LOG] from nest user.service: All dummy users deleted.');
+      this.logger.log('[BACKEND LOG] from nest user.service: All dummy users deleted.');
     }
     catch (error) {
       console.error('[BACKEND LOG] from nest user.service: Error deleting dummy users.', error);
@@ -49,18 +51,21 @@ export class UserService {
   }
 
   async getAllUsers(): Promise<UserEntity[]> {
-    console.log('[BACKEND LOG] UserService.getAllUsers');
+    this.logger.log('[BACKEND LOG] UserService.getAllUsers');
     return this.userRepository.find();
     // return this.userRepository.getAllUsers();
   }
 
 
   async getUserByLoginName(loginName: string): Promise<UserEntity> {
-    console.log("getUserByLoginName function " + loginName);
+    this.logger.log("getUserByLoginName(): " + loginName);
     const options: FindOneOptions<UserEntity> = { where: { loginName } };
-    // console.log("getUserByLoginName function options: " + options);
+    this.logger.log("getUserByLoginName() - options: ",  options);
 
-	  return this.userRepository.findOne( options );
+    const user = await this.userRepository.findOne( options );
+    this.logger.log("     FETCHED USER: " + JSON.stringify(user, null, 2));
+    // this.logger.log("     user.loginName" + user.loginName);
+    return user;
   }
 
   async getUserByProfileName(profileName: string): Promise<UserEntity> {
@@ -77,15 +82,15 @@ export class UserService {
   }
 
   async updateStoredTFACode(loginName: string, tfaCode: string) {
-    // console.log('updatetfa function before: ' + this.userRepository.findOne("tfaCode"));
+    // this.logger.log('updatetfa function before: ' + this.userRepository.findOne("tfaCode"));
 
     const response = await this.userRepository.update({ loginName} , { tfaCode });
-    console.log('updatetfa function after: ' + tfaCode);
+    this.logger.log('updatetfa function after: ' + tfaCode);
   }
 
   async updateRefreshToken(loginName: string, refreshToken: string) {
      const response = await this.userRepository.update({ loginName} , { refreshToken });
-    console.log('updatetfa function after: ' + refreshToken);
+    this.logger.log('updatetfa function after: ' + refreshToken);
   }
 
   async enableTFA(loginName: string, tfaEnabled: boolean) {
@@ -118,7 +123,7 @@ export class UserService {
     
     if (user) {
       user.onlineStatus = status;
-      console.log("setOnlineStatus(): ", user.onlineStatus);
+      this.logger.log("setOnlineStatus(): ", user.onlineStatus);
       await this.userRepository.save(user);
     } else {
       throw new NotFoundException(`User with login name ${loginName} not found`);
@@ -127,7 +132,7 @@ export class UserService {
 
 
   // async findById(id: number): Promise<UserEntity | undefined> {
-  //   console.log('[BACKEND LOG] UserService.getUserById');
+  //   this.logger.log('[BACKEND LOG] UserService.getUserById');
   //   return this.userRepository.findById(id);
   // }
 
