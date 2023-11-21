@@ -22,6 +22,7 @@ import axios from 'axios';
 export class UserService {
   constructor(
       @InjectRepository(UserEntity)
+      // public userRepository: UserRepository,
       public readonly userRepository: UserRepository,
       // private userRepository: Repository<UserEntity>,
       // public readonly justRepository: Repository<UserEntity>
@@ -57,10 +58,12 @@ export class UserService {
 
   async getUserByLoginName(loginName: string): Promise<UserEntity> {
     console.log("getUserByLoginName function " + loginName);
-    const options: FindOneOptions<UserEntity> = { where: { loginName } };
-    // console.log("getUserByLoginName function options: " + options);
-
-	  return this.userRepository.findOne( options );
+    const options: FindOneOptions<UserEntity> = { where: { "loginName": loginName } };
+    console.log("getUserByLoginName function options: " + JSON.stringify(options));
+    console.log("derp " + JSON.stringify(this.userRepository));
+    const ret = this.userRepository.findOne(options);
+    console.log(ret);
+    return ret;
   }
 
   async getUserByProfileName(profileName: string): Promise<UserEntity> {
