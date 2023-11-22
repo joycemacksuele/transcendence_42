@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
         this.logger.log('Token Auth Guard: ' + token);
         
         if (!token){
-            throw new UnauthorizedException();
+            // throw new UnauthorizedException(); // jaka temp disabled
         }
         try{
             console.log("START TRY !!!!!!!!!!!!!!!");
@@ -65,7 +65,7 @@ export class AuthGuard implements CanActivate {
             // }
         }
         catch{
-            throw new UnauthorizedException();
+            // throw new UnauthorizedException(); jaka temp disabled
         }   
         return true;     
     }
