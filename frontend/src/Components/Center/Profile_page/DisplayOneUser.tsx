@@ -126,7 +126,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 
 
 	return (
-		<Col className='bg-custom text-black p-3 rounded'>
+		<Col className='bg-custom text-black p-3 rounded one-user-section'>
 			<Row className="mb-5">
 				<Col>
 					<Image 	id="otherUserImage"
@@ -151,13 +151,15 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 			<Row className="mb-5">
 				<Col>
 					{/* <button onClick={handleClickPlaceholder}>Private Chat</button></Col> */}
-					<button >Private Chat</button></Col>
+					<Button className='button_default'>Private Chat</Button></Col>
 				<Col>
 					{/* onclick EXPECTS A FUNCTION WITH AN ARGUMENT OF TYPE MouseEvent<HTMLButtonElement */}
-					<button onClick={ () =>
-						handleButtonClick() }>
+					<Button
+						onClick={ () => handleButtonClick() }
+						className='button_default'	
+					>
 							{IamFollowing ? 'Stop Following' : 'Start Following' }
-					</button>
+					</Button>
 				</Col>
 			</Row>
 		</Col>
