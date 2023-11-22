@@ -197,7 +197,7 @@ const InputTFAcode = () => {
 	  {tfa === false && tfaAttempts === 3 && <LoginPage />}  
 	  {tfa === false && tfaAttempts < 3 && (
 		  <div>
-			<h1>Trans Scendence</h1><br></br>
+			<h1>Trans Cendence</h1><br></br>
 			<h4>Two Factor Authentication</h4>
 			<h6>
 				{tfa === false && tfaAttempts === 1 && "New code has been sent. Careful, this is your second attempt!"}

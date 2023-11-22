@@ -74,7 +74,7 @@ const LoginPage: React.FC = () => {
 		>
 			<div className='d-flex flex-column align-items-center'>
 				{/* <h1>This is Login Page for Auth</h1> */}
-				<h1>Trans Scendence</h1>
+				<h1>Trans Cendence</h1>
 					<Button variant='primary' onClick={handleClickAuth}>
 						Login with Auth
 					</Button>

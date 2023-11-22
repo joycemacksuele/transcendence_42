@@ -38,7 +38,7 @@ h1 {
   line-height: 1.1;
 }
 
-button {
+button.button_default {
   border-radius: 5px !important;
   border: 1px solid black;
   padding: 0.6em 1.2em;
@@ -50,12 +50,12 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+button.button_default:hover {
   border-color: #dcfb92;
   background-color: #c08f8f;
 }
-button:focus,
-button:focus-visible {
+button.button_default:focus,
+button.button_default:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 

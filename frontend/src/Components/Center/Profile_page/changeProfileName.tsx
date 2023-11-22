@@ -1,6 +1,8 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import { CurrentUserContext, CurrUserData } from './contextCurrentUser'; 
+import { CurrentUserContext, CurrUserData } from './contextCurrentUser';
+import { Form, Button, FormControl, Alert, InputGroup } from 'react-bootstrap';
+
 
 axios.defaults.withCredentials = true; // to enable cross-origin requests, the authorization headers like jwt, and that the server will accept it...
 
@@ -82,24 +84,48 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 			}
 	};
 
-	return (
-			<div style={myMargin}>
-				Change your profile name:
-				<form onSubmit={handleSubmit}>
-					<input
-							type="text"
-							value={profileName}
-							onChange={(e) => setProfileName(e.target.value)}
-							placeholder="New Profile Name"
-					/> &nbsp; 
+	// return (
+	// 		<div style={myMargin}>
+	// 			Change your profile name:
+	// 			<form onSubmit={handleSubmit}>
+	// 				<input
+	// 						type="text"
+	// 						value={profileName}
+	// 						onChange={(e) => setProfileName(e.target.value)}
+	// 						placeholder="New Profile Name"
+	// 				/> &nbsp; 
 
-					<button type="submit">Submit</button>
-					{ !profileName && errorMessage && <p style={{ color: 'red' }}> { errorMessage } </p> }
-					{  profileName && <p style={{ color: 'orange' }}>You are typing ...</p>}
-					{ !profileName && !errorMessage && <p style={{ color: 'green' }}> { OkMessage } </p> }
-				</form>
-			</div>
-	);
+	// 				<button type="submit">Submit</button>
+	// 				{ !profileName && errorMessage && <p style={{ color: 'red' }}> { errorMessage } </p> }
+	// 				{  profileName && <p style={{ color: 'orange' }}>You are typing ...</p>}
+	// 				{ !profileName && !errorMessage && <p style={{ color: 'green' }}> { OkMessage } </p> }
+	// 			</form>
+	// 		</div>
+	// );
+
+
+
+
+	return (
+		<div style={myMargin}>
+		  Change your profile name:
+		  <Form onSubmit={handleSubmit}>
+			<InputGroup className="mb-3">
+			  <FormControl
+				type="text"
+				value={profileName}
+				onChange={(e) => setProfileName(e.target.value)}
+				placeholder="New Profile Name"
+			  />
+				<Button className="button_default" type="submit">Submit</Button>
+			</InputGroup>
+	
+			{!profileName && errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+			{profileName && <Alert variant="warning">You are typing ...</Alert>}
+			{!profileName && !errorMessage && OkMessage && <Alert variant="success">{OkMessage}</Alert>}
+		  </Form>
+		</div>
+	  );
 };
 
 export default ChangeProfileName;
