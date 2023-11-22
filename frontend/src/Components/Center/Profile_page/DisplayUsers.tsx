@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Col, Row } from 'react-bootstrap';
+import { ListGroup, Container, Col, Row } from 'react-bootstrap';
 
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import DisplayOneUser from "./DisplayOneUser";		// without brackets, because it is exported 'default'
@@ -89,26 +89,31 @@ const UsersList: React.FC = () => {
 
 
 	return (
-		<Container fluid className='h-100 w-100'>
-
+		// <Container fluid className='h-100 w-100'>
+			<>
+			<div className='profile-section'>
 			<Row className='profile-page' text='dark'>
 
 				<Col className='bg-custom text-black d-flex justify-content-left align-items-left p-3 rounded'>
 					{/* Button to trigger fetching the users */}
+
+					
 					{displayList && ( // Only render the list if dislpayList is true
-					<ul className="list-users">
+					
+					
+					<ListGroup className="list-users">
 						
-						<h4>Users in the database:</h4>
-						<li className="column-titles">
+						<h4>USERS IN DATABASE:</h4>
+						<ListGroup.Item className="column-titles">
 							<span>Rank</span>
 							{/* <span>Intra</span> */}
 							<span>Name</span>
 							<span>Online</span>
-						</li>
+						</ListGroup.Item>
 
 						{users.sort((a, b) => a.rank - b.rank)
 							.map((user) => (
-							<li key={user.id}>
+							<ListGroup.Item key={user.id}>
 								<span>{ user.rank }.</span>
 
 								<span>
@@ -126,10 +131,10 @@ const UsersList: React.FC = () => {
 								<span>
 									{user.onlineStatus ? "Yes" : "No"}
 								</span>
-							</li>
+							</ListGroup.Item>
 						))}
 						{/* <button onClick={handleClickDeleteUsers}>Delete dummies</button> */}
-					</ul>
+					</ListGroup>
 					)}
 				</Col>
 		
@@ -151,9 +156,10 @@ const UsersList: React.FC = () => {
 				</Col>
 
 
-
 			</Row>
-		</Container>
+			</div>
+		{/* </Container> */}
+		</>
 	);
 };
 

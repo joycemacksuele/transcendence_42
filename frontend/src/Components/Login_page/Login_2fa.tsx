@@ -204,10 +204,12 @@ const InputTFAcode = () => {
 				{tfa === false && tfaAttempts === 2 && "Last attempt! Screw this one up and go back to start!"}
 				{tfa === false && tfaAttempts === 0 && "Check your email and enter the code to see if we'll let you in!"}
 			</h6>
-			<Row>
+			<Row className="align-items-center">
 				<Col>
 					<Form.Group>
-						<Form.Control	type="text"
+						<Form.Control	
+										className="input-default"
+										type="text"
 										placeholder="your code here"
 										value={inputValue}	// reset the field to empty
 										onChange={(e) => setInputValue(e.target.value)}
@@ -215,7 +217,10 @@ const InputTFAcode = () => {
 					</Form.Group>
 				</Col>
 				<Col xs='auto'>
-					<Button type="submit" onClick={handleSubmit}>
+					<Button
+						className="button_default" 
+						type="submit"
+						onClick={handleSubmit}>
 						Verify Code
 					</Button>
 				</Col>
