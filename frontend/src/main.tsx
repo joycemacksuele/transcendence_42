@@ -1,9 +1,11 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import "./index.css";
+// import "./index.css";
 import App_jaka from "./App_jaka.tsx";
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
+// import "./index.css";
 
 
 /*

@@ -12,7 +12,6 @@ import PageNotFound from "./Components/Other/PageNotFound.tsx";
 import LogoutPage from './Components/Login_page/logoutPage.tsx';
 import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_page/contextCurrentUser.tsx';
 import AuthCallbackPage from './Components/Login_page/AuthCallbackPage.tsx';
-import "./index.css";
 
 
 // 'Context' provides a way to pass data through the component tree without having to pass 

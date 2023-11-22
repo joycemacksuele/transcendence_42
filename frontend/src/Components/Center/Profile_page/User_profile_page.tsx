@@ -3,28 +3,22 @@ import ImageUpload from "./changeUserImage";
 import ButtonTfa from './ButtonTfa';
 import FriendsList from "./DisplayFriends";
 import ChangeProfileName from "./changeProfileName";
+import ChangeTheme from './ChangeTheme';
 import { CurrUserData } from "./contextCurrentUser";
 // import JustTest from "./justTest_NOT_USED";
 
 // import InputTFAcode from '../../Login_page/Form_inputTfaCode';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/js/bootstrap.min.js';
 
 // Custom CSS
-import '../../../css/Profile.css'
+// import '../../../css/Profile.css'
 
 // Importing bootstrap and other modules
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Stack from 'react-bootstrap/Stack';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Nav from 'react-bootstrap/Nav';
-import Modal from 'react-bootstrap/Modal';
 import DisplayOneUser from './DisplayOneUser';
 
 // interface User {
@@ -77,7 +71,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 								<ChangeProfileName updateContext={ updateContext } />
 								<ImageUpload updateContext={ updateContext }/>
 								<ButtonTfa/>
-								{/* <JustTest/> */}
+								<ChangeTheme/>
 							</div>
 						{/* </Row> */}
 
