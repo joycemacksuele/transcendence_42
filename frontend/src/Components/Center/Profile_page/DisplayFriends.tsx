@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
-// import { MyUser }
+import { ListGroup, Form, Button, Container, Row, Col } from "react-bootstrap";
+
 
 // Custom CSS
 import '../../../css/Profile-users-list.css'
@@ -21,14 +22,6 @@ interface User {
 interface FriendsListProps {
 	clickOnUser: (loginName: string) => void;
 }
-
-const myStyle = {
-	// padding: "2%",
-	// width: "100%",
-	backgroundColor: "beige",
-	color: "black",
-
-};
 
 
 const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
@@ -136,20 +129,20 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 	// };
 
 	return (
-		<div style={myStyle}>
+		<div className="profile-section">
 
 			{/* Button to trigger fetching the users */}
 			{displayList && ( // Only render the list if showList is true
 				<div>
-					<ul className="list-users">
-						<li className="column-titles">
+					<ListGroup className="list-users">
+						<ListGroup.Item className="column-titles">
 							<span>Rank</span>
 							<span>Name</span>
 							<span>Online</span>
-						</li>
+						</ListGroup.Item>
 						{ friends.sort((a, b) => a.rank - b.rank)
 							.map((friend) => (
-							<li key={friend.id}>
+							<ListGroup.Item key={friend.id}>
 								<span> { friend.rank }. </span>
 
 								<span>
@@ -168,17 +161,11 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 								<span>
 									{friend.onlineStatus ? "Yes" : "No"}
 								</span>
-								{/* <span>
-									<button id="make-friend">Make friend</button>
-								</span> */}
-							</li>
+							</ListGroup.Item>
 						))}
-					</ul>
+					</ListGroup>
 				</div>
 			)}
-			{/* <button onClick={handleInsertDataClick}>Create dummies</button>
-			&nbsp;
-			<button onClick={handleClickDeleteDummies}>Delete dummies</button> */}
 		</div>
 	);
 };
