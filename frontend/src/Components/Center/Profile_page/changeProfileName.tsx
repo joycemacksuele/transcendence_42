@@ -12,8 +12,6 @@ type ContextProps = {
 
 const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
-	const myMargin = { margin: '5% 0 5% 0', padding: '2%', backgroundColor: 'beige', width: '100%', color: 'blue'};
-
 	// Get loginName from the 'global' context struct 
 	const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
@@ -107,8 +105,8 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
 
 	return (
-		<div style={myMargin}>
-		  Change your profile name:
+		<div className="profile-section">
+		  <p>Change your profile name:</p>
 		  <Form onSubmit={handleSubmit}>
 			<InputGroup className="mb-3">
 			  <FormControl
@@ -117,15 +115,15 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 				onChange={(e) => setProfileName(e.target.value)}
 				placeholder="New Profile Name"
 			  />
-				<Button className="button_default" type="submit">Submit</Button>
 			</InputGroup>
+			<Button className="button_default" type="submit">Submit</Button>
 	
 			{!profileName && errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 			{profileName && <Alert variant="warning">You are typing ...</Alert>}
 			{!profileName && !errorMessage && OkMessage && <Alert variant="success">{OkMessage}</Alert>}
 		  </Form>
 		</div>
-	  );
+	);
 };
 
 export default ChangeProfileName;
