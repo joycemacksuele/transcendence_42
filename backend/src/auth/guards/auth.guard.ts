@@ -22,30 +22,30 @@ export class AuthGuard implements CanActivate {
             context.getHandler(),
             context.getClass(),
         ]);
-        if (open)
-        {
+        // if (open)
+        // {
             this.logger.log('Open Access - no need for AuthGuard');
             return true;
-        }
+        // }
 
         // decode and verify the JWT token   
-        const request = context.switchToHttp().getRequest();
-        const token = this.extractTokenFromHeader(request);
-        this.logger.log('Token Auth Guard: ' + token);
-        
-        if (!token){
-            throw new UnauthorizedException();
-        }
-        try{
-            console.log("START TRY !!!!!!!!!!!!!!!");
-            const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
-            console.log("AFTER PAYLOAD !!!!!!!!!!!!!!!");
-
-            // token, {secret: process.env.SECRET}
-            // returns the decoded payload with the user info 
-
-            request['user'] = payload;
-            console.log("Payload: " , payload);
+        // const request = context.switchToHttp().getRequest();
+        // const token = this.extractTokenFromHeader(request);
+        // this.logger.log('Token Auth Guard: ' + token);
+        //
+        // if (!token){
+        //     throw new UnauthorizedException();
+        // }
+        // try{
+        //     console.log("START TRY !!!!!!!!!!!!!!!");
+        //     const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
+        //     console.log("AFTER PAYLOAD !!!!!!!!!!!!!!!");
+        //
+        //     // token, {secret: process.env.SECRET}
+        //     // returns the decoded payload with the user info
+        //
+        //     request['user'] = payload;
+        //     console.log("Payload: " , payload);
             
             // if (token expired)
             // {
@@ -63,11 +63,11 @@ export class AuthGuard implements CanActivate {
             //     request['user'] = payload;
             //     console.log("Payload: " , payload);
             // }
-        }
-        catch{
-            throw new UnauthorizedException();
-        }   
-        return true;     
+        // }
+        // catch{
+        //     throw new UnauthorizedException();
+        // }
+        // return true;
     }
 
 
