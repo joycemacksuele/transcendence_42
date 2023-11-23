@@ -116,7 +116,7 @@
 // ---------------------------------------------------------------------------------------------------------
 
 
-import React, { useState, useEffect, Req, Res } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { data } from "jquery";
 import MainPage from "../main_page";
@@ -175,7 +175,9 @@ const InputTFAcode = () => {
 				"http://localhost:3001/auth/cleanToken",  // TO DO change to the environment variable 
 				axiosConfig
 			  );
-			  console.log("clean Token response: " + responseCleanCookies.cookie);
+			  console.log("clean Token response:  responseCleanCookies.status: " + responseCleanCookies.status);
+			//   console.log("clean Token data: " + responseCleanCookies.data);
+			//   console.log("clean Token statustext: " + responseCleanCookies.statusText);
 		}
 		else
 			re_sendVerificationEmail();
