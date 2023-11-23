@@ -11,6 +11,7 @@ export interface ResponseNewChatDto {
     chatName: string;// Can also be a login name
     chatType: ChatType;
     // chatPassword: string | null;
+    chatMembers: string[];
 }
 
 export enum ChatType {
