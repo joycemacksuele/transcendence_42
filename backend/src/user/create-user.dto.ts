@@ -43,8 +43,4 @@ export class CreateUserDto {
 
   @IsString()
   profileImage?: string;
-
-  // @IsString()
-  // @ArrayContains(number)
-  roomsCreated?: number[];
 }

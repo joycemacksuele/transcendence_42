@@ -32,7 +32,7 @@ export class AuthService {
 			.post('https://api.intra.42.fr/oauth/token', clientData)
 			.then((response) => {
 				access_token = response.data['access_token'];
-				this.logger.log('Access Token received: ' + access_token); 				
+				this.logger.log('Access Token received: ' + access_token);
 			})
 			.catch((error) => {
 				this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response.data: \x1b[0m' + JSON.stringify(error.response.data));
@@ -87,7 +87,6 @@ export class AuthService {
 		tfaEnabled: true,
 		tfaCode: 'default',
 		profileImage: avatar,
-		roomsCreated: [1, 2]
 	};
 
 	this.logger.log('dto:  intraLogin: ' + dto.loginName + ' intraId: ' + dto.intraId); // testing purpose - TO BE REMOVED!
@@ -166,7 +165,7 @@ export class AuthService {
 			httpOnly: true,
 			path: '/',
 			sameSite: 'none',
-			// expires: `${expiryDate}`, 
+			// expires: `${expiryDate}`,
 		};
 
 		// Variant B)
