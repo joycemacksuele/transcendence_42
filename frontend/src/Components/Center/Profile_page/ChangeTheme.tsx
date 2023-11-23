@@ -23,5 +23,3 @@ const ChangeTheme = () => {
 };
 
 export default ChangeTheme;
-
-WE CAN REMOVE IMPORTING useBootstrapBreakpoints.min.css IN ALL COMPONENTS AND ONLY HAVE IT IN THE TOP indexedDB.html as <link>
