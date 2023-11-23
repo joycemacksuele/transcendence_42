@@ -61,16 +61,13 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
             </Row>
 
             {/* Private Chat Buttons row */}
-            <Row className='h-40'>
+            <Row className='h-20 align-items-bottom'>
                 <Stack gap={2} className='align-self-center'>
-                    {/*use variant="outline-secondary" disabled for when we dont want this button to be enabled*/}
-                    {/* Play button is available only when we are on a private chat channel*/}
-                    {/*<Button variant="outline-secondary" disabled >Play</Button>*/}
-                    <Button variant="outline-secondary" disabled >Add user</Button>
-                    {/* Delete Room = when we are on a private chat channel*/}
-                    {/* Leave Room = when we are on a room chat channel*/}
+                    {/* use variant="outline-secondary" disabled for when we don't want this button to be enabled */}
+                    {/* Play button is available only when we are on a private chat channel */}
+                    <Button variant="outline-secondary" disabled >Play</Button>
                     <Button variant="primary" >Leave Room</Button>
-                    <Button variant="primary" >Join Room</Button>{/* if protected -> ask for password*/}
+                    <Button variant="primary" >Delete Room</Button>
                 </Stack>
             </Row>
         </>

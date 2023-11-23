@@ -116,8 +116,9 @@ const UsersList: React.FC = () => {
 							<ListGroup.Item key={user.id}>
 								<span>{ user.rank }.</span>
 
+								{/* TODO THE CURRENT USER SHOULD NOT BE ADDED TO THIS LIST SINCE THEIR PROFILE IS ALREADY AT THE FIRST TAB AND WE DONT WANT FOR EXAMPLE TO FOLLOW OURSELVES OR SEND A CHAT TO OURSELVES */}
 								<span>
-								<a
+									<a
 									href=""
 									className={`list-user-link ${user.loginName === selectedUser ? 'selected' : ''} `}
 									onClick={(e) => handleUserClick(e, user.loginName)}
