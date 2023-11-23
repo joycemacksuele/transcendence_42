@@ -13,6 +13,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  /* jaka */
+  --inner-section-background: rgb(236, 236, 187);
 }
 
 a {
@@ -30,6 +33,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #e6dddd !important;
 }
 
 h1 {
@@ -37,29 +41,55 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+.input-default {
+  margin: 10px !important;
+
+}
+
+button.button_default {
+  border-radius: 5px !important;
+  border: 1px solid black;
   padding: 0.6em 1.2em;
+  margin: 10px !important;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #a19c94;
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
-  border-color: #646cff;
+button.button_default:hover {
+  border-color: #dcfb92;
+  background-color: #c08f8f;
 }
-button:focus,
-button:focus-visible {
+button.button_default:focus,
+button.button_default:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+
+/* Sections inside each div in the center:
+  - Change profileName
+  - Change image ... */
+.profile-section {
+  margin: 10% 0 5% 0;
+  padding: 5%;
+  background: rgb(236, 236, 187);
+  width: 100%;
+  color: black;
+}
+
+.one-user-section {
+  background-color: var(--inner-section-background) !important;
+}
+
+
+/* @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #107edf;
+  }
+  body {
+    border: 2px rgb(225, 25, 122) solid;
   }
   a:hover {
     color: #747bff;
@@ -67,4 +97,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */

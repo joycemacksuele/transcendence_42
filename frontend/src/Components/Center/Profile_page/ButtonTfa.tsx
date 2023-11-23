@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Form, Button, FormControl, Alert, InputGroup } from 'react-bootstrap';
+
 // import { CurrentUserContext, CurrUserData } from './contextCurrentUser'; 
 
 axios.defaults.withCredentials = true;
 
 
 const ButtonTfa: React.FC = () => {
-
-	const myMargin = { margin: '5% 0 5% 0', padding: '2%', backgroundColor: 'beige', width: '100%', color: 'blue'};
 
 	const [tfaStatus, settfaStatus] = useState(true);
 	console.log("ButtonTfa");
@@ -35,15 +35,28 @@ const ButtonTfa: React.FC = () => {
 	};
 
 	return (
-		<div style={myMargin}>
-			<form onSubmit={handleSubmit}>
-				Two Factor Authentication
-				<button type="submit">
+		<div className='profile-section'>
+			<Form onSubmit={handleSubmit}>
+				<p>Two Factor Authentication</p> 
+				<Button className='button_default'
+						type="submit">
 					{tfaStatus ? 'Turn OFF' : 'Turn ON' }
-				</button>
-			</form>
+				</Button>
+			</Form>
 		</div>
 	);
+
+	// return (
+	// 	<div className='profile-section'>
+	// 		<form onSubmit={handleSubmit}>
+	// 			Two Factor Authentication<br /> 
+	// 			<button type="submit">
+	// 				{tfaStatus ? 'Turn OFF' : 'Turn ON' }
+	// 			</button>
+	// 		</form>
+	// 	</div>
+	// );
+
 };
 
 export default ButtonTfa;

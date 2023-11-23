@@ -62,6 +62,9 @@ export class UserEntity {
 	@Column()
 	hashedSecret: string;
 
+	@Column({default: 'default'})
+	refreshToken: string;
+
 	@Column({default: false})
 	tfaEnabled: boolean;
 

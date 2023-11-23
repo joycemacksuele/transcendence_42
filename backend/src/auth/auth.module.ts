@@ -9,6 +9,7 @@ import { TwoFactorAuthService } from './2fa/2fa.service';
 import { UserModule } from 'src/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
+import { UserRepository } from 'src/user/user.repository';
 
 
 @Module({
@@ -29,8 +30,10 @@ import { UserEntity } from 'src/user/user.entity';
     useClass: AuthGuard, 
   }, 
   UserService, 
-  TwoFactorAuthService,],
+  TwoFactorAuthService,
+  ],
 })
+
 export class AuthModule {
   private readonly logger = new Logger(AuthModule.name);
   constructor() {
