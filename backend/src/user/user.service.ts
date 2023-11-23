@@ -56,7 +56,10 @@ export class UserService {
 
 
   async getUserByLoginName(loginName: string): Promise<UserEntity> {
+    console.log("getUserByLoginName function " + loginName);
     const options: FindOneOptions<UserEntity> = { where: { loginName } };
+    // console.log("getUserByLoginName function options: " + options);
+
 	  return this.userRepository.findOne( options );
   }
 
@@ -78,6 +81,11 @@ export class UserService {
 
     const response = await this.userRepository.update({ loginName} , { tfaCode });
     console.log('updatetfa function after: ' + tfaCode);
+  }
+
+  async updateRefreshToken(loginName: string, refreshToken: string) {
+     const response = await this.userRepository.update({ loginName} , { refreshToken });
+    console.log('updaterefreshtoken function after: ' + refreshToken);
   }
 
   async enableTFA(loginName: string, tfaEnabled: boolean) {
