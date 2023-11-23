@@ -5,6 +5,7 @@ import * as bcryptjs from 'bcryptjs';
 import { CreateUserDto } from 'src/user/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
+import { UserRepository } from 'src/user/user.repository';
 import { ConfigService } from '@nestjs/config';
 import { TwoFactorAuthService } from './2fa/2fa.service';
 import { request } from 'http';
@@ -15,7 +16,8 @@ export class AuthService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly jwtService: JwtService, 
-		private readonly tfaService: TwoFactorAuthService
+		private readonly tfaService: TwoFactorAuthService,
+		// private readonly userRepository: UserRepository
 		) {}
 	logger: Logger = new Logger('Auth Services');
 
@@ -33,8 +35,6 @@ export class AuthService {
 				this.logger.log('Access Token received: ' + access_token);
 			})
 			.catch((error) => {
-				// this.logger.error('\x1b[31mAn Error in 42 API: post request: response: \x1b[0m' + JSON.stringify(response));
-				// this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response: \x1b[0m' + JSON.stringify(error.response));
 				this.logger.error('\x1b[31mAn Error in 42 API: post request: error.response.data: \x1b[0m' + JSON.stringify(error.response.data));
 				throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 			});
@@ -73,7 +73,7 @@ export class AuthService {
 		throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 		});
 
-	const hash = await this.hashSecret(secret, id);
+	const hash = await this.hashSecret(secret, id);  // CORINA - TO DO - is this actually necesary? 
 	this.logger.log('Hash: ' + hash);  // testing purposes - TO BE REMOVED!  
 
 	const dto: CreateUserDto = {
@@ -83,6 +83,7 @@ export class AuthService {
 		email: email,
 		onlineStatus: false,		// at logout change to 'false'
 		hashedSecret: hash,
+		refreshToken: 'default',
 		tfaEnabled: true,
 		tfaCode: 'default',
 		profileImage: avatar,
@@ -101,7 +102,7 @@ export class AuthService {
   //We use the industry-grade and battle-tested bcrypt algorithm to securely hash and salt passwords. 
 
 	async hashSecret(secret: string, id: string) {
-		const saltOrRounds = 10; // hash is particularized to the intra id of the user
+		const saltOrRounds = 10; 
 		this.logger.log('Salt : ' + saltOrRounds + ' Secret: ' +  secret); // testing purpose - TO BE REMOVED!
 		try {
 			return await bcryptjs.hash(secret, saltOrRounds);
@@ -113,8 +114,6 @@ export class AuthService {
 
 	async getOrCreateUser(data: any, response: Response) {
     	let token: string; 
-
-		this.logger.log('test create/find user ');
 		let player = await this.userService.getUserByLoginName(data.loginName);
 
 		if (!player) {
@@ -124,23 +123,22 @@ export class AuthService {
 
 				// ADDED JAKA: 							//	SAVE ORIG USER IMAGE TO THE ./uploads/ FOLDER
 				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
-				//console.log("Jaka: ImageURL: ", imageUrl);
 
 				// todo: replace ./uploads/ with .env var everywhere
             	const imagePath = `./uploads/${player.loginName}.jpg`;
 				try {
 					await this.userService.downloadAndSaveImage(imageUrl, imagePath);
 					await this.userService.updateProfileImage(player.loginName,	"uploads/" + player.loginName + ".jpg");
-					console.log("User image saved.");
+					this.logger.log("Create new player: User image saved.");
 				} catch(err) {
 					this.logger.error('Error updating profile image for player: ' + err);					
 				}
 			}
 			catch (err) {
-				this.logger.error('Error creating new player: ' + err);
+				this.logger.error('\x1b[31mError creating new player: \x1b[0m' + err);
 				return ;
 			}
-			const test = await this.userService.getUserByLoginName(data.loginName);
+			// const test = await this.userService.getUserByLoginName(data.loginName); Former test . REMOVE! 
 		}
 		
 		this.logger.log('getOrCreateUser: Current User:');
@@ -156,11 +154,13 @@ export class AuthService {
 		if (!token) {
 			throw new HttpException('Signing token failed.', HttpStatus.SERVICE_UNAVAILABLE);
 		}
+		let refreshToken = await this.signRefreshToken(player);
+		if (!refreshToken) {
+			throw new HttpException('Signing refresh token failed.', HttpStatus.SERVICE_UNAVAILABLE);
+		}
+		this.userService.updateRefreshToken(player.loginName, refreshToken);
 
 		this.logger.log('Set-Cookie token: ' + token);
-		// var expiryDate = new Date();
-		// expiryDate.setDate(expiryDate.getDate() + 1);
-		// console.log("expiry date: " + expiryDate);
 		const cookieAttributes = {
 			httpOnly: true,
 			path: '/',
@@ -178,16 +178,10 @@ export class AuthService {
 				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
 		}
 		response.append('Set-Cookie', cookieToken);
+		console.log('print token inside response: ' + response.getHeader("set-cookie"));  // test 
 
-		// // Jaka: Just for test: Separate cookies with user data, without httpOnly
-		// let cookieUsername = `cookieUserName=${player.loginName}; path=/;`;
-		// response.append('Set-Cookie', cookieUsername);
-		// let cookieProfileName = `cookieProfileName=${player.profileName}; path=/;`;
-		// response.append('Set-Cookie', cookieProfileName);
-		// let cookieProfileImage = `cookieProfileImage=${player.profileImage}; path=/;`;
-		// response.append('Set-Cookie', cookieProfileImage);
-
-		console.log('print token inside request: ' + response.getHeader("set-cookie"));  // test 
+		// Set status Online true
+		// await this.userService.setOnlineStatus(player.loginName, true);
 
 		// if 2fa true display profile else redirect to 2fa 
 		let path: string;
@@ -198,10 +192,10 @@ export class AuthService {
 			path = `${process.env.FRONTEND}/Login_2fa`;
 			// response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
 		}
-		else
+		else{
 			path = `${process.env.FRONTEND}`;
 			this.logger.log("Redirecting to: ", process.env.FRONTEND);
-			// return response.redirect(path); 														   // jaka, temp. added
+		}
 		return response.redirect(path);
 	}
 
@@ -221,12 +215,17 @@ export class AuthService {
   async signToken(player: CreateUserDto) {
 		let token: string;
 
-		const payload = { sub: player.intraId, username:player.loginName };  // https://docs.nestjs.com/security/authentication
+		let expiryDate = new Date();
+		expiryDate.setMinutes(expiryDate.getMinutes() + 10);
+		console.log("expiry date: " + expiryDate);
+
+		let time = expiryDate.valueOf();
+		console.log("time: " + time);
+
+		const payload = { sub: player.intraId, username:player.loginName, exp: time };  // https://docs.nestjs.com/security/authentication
 		try {
 			token = await this.jwtService.signAsync(payload, {
-				secret: process.env.JWT_SECRET,
-				// secret: player.hashedSecret,
-				expiresIn: '300s'
+				secret: process.env.JWT_SECRET
 			});
 		}
 		catch (err) {
@@ -235,44 +234,34 @@ export class AuthService {
 		return token;
 	}
 
-//   async expireToken(request: Request, response: Response): Promise<any> {
-// 	try{
-// 		let token = this.extractTokenFromHeader(request);
-// 		this.logger.log("extract token in order to erase: " + token);
-// 		const cookieAttributes = {
-// 			httpOnly: true,
-// 			path: '/',
-// 			sameSite: 'none',
-// 			expires: '1 Jan 1980 00:00:00 GMT',
-// 		};
-// 		let cookieToken = `token=${token};`;
-// 		for (let attribute in cookieAttributes) {
-// 			if (cookieAttributes[attribute] === true) {
-// 				cookieToken += ` ${attribute};`;
-// 			} else
-// 				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
-// 		}
-// 		response.status(200);
-// 		this.logger.log('Made token to expire');
+	async signRefreshToken(player: CreateUserDto) {
+		let refreshToken: string;
+		let expiryDate = new Date();
+		expiryDate.setMinutes(expiryDate.getDay() + 90);
+		console.log("expiry date: " + expiryDate);
 
-// 		const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
-// 		if (!payload)
-// 			console.log("!payload - expiry succesfull!!!!!!!!!");
-// 		else
-// 			console.log("payload still there: " + payload['sub']);
-// 	}
-// 	catch{
-// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited
-// 	}
-//   }
+		let time = expiryDate.valueOf();
+		console.log("time: " + time);
 
+		const payload = { sub: player.intraId, username:player.loginName, exp: time };  // https://docs.nestjs.com/security/authentication
+		try {
+			refreshToken = await this.jwtService.signAsync(payload, {
+				secret: process.env.JWT_SECRET
+			});
+		}
+		catch (err) {
+			throw new HttpException('Signing JWT token failed.', HttpStatus.SERVICE_UNAVAILABLE);
+		}
+		return refreshToken;
+	}
 
 async removeAuthToken(request: Request, response: Response): Promise<any> {
 	try{
+		this.logger.log("start removeAuthToken");
 		let cookies = request.get('Cookie');
-		console.log("verify cookie: " + cookies);
+		console.log("     verify cookie: " + cookies);
 		let existingToken = this.extractTokenFromHeader(request);
-		console.log("existingToken: " + existingToken);
+		console.log("     existingToken: " + existingToken);
 
 		let replaceToken = "";
 		const cookieAttributes = {
@@ -290,18 +279,10 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
 		response.setHeader('Set-Cookie', cookieToken);
 		this.logger.log('Made token to expire');
 	}
-	catch{
+	catch(err){
+		this.logger.error('\x1b[31mError removing the token from cookies: \x1b[0m' + err);
 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
 	}
-	// let new_cookie = response.getHeader('Cookie');
-	// if (!new_cookie){
-	// 	console.log("new cookie: !new_cookie");
-	// 	console.log("new cookie response: " + response.get('Cookie'));
-	// }
-	// else if (new_cookie === "")
-	// 	console.log("new cookie === empty")
-	// else
-	// 	console.log("new cookie response: " + response.get('Cookie'));
 	return response.sendStatus(200);
   }
 
@@ -309,7 +290,7 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
-    async extractUserFromRequest(request: Request): Promise<any> {
+    async extractUserdataFromToken(request: Request): Promise<any> { 
         const token = this.extractTokenFromHeader(request);
         if (!token) {
             throw new UnauthorizedException('Token not found');
@@ -331,7 +312,7 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');
-        console.log("arrays: " + arrays);
+        console.log("arrays: " + arrays); // TO BE REMOVED 
         for (let i = 0; arrays[i]; i++)
         {
             if (arrays[i].includes("token="))
@@ -340,7 +321,6 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
                 break ;
             }
         }
-        console.log('token: ' + token);
         return token;
     }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Logger, Request, Response, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Logger, Request, Req, Res, Body, Response, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { OpenAccess } from './guards/auth.openaccess';
 import { UserService } from 'src/user/user.service';
@@ -7,18 +7,19 @@ import { response } from 'express';
 import { AuthGuard } from './guards/auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { request } from 'https';
+import { JwtService } from '@nestjs/jwt';
 
 //.env 
 // Dotenv is a library used to inject environment variables from a file into your program 
-
 
 @OpenAccess()  // this allows it to work without being logged in 
 @Controller('auth')
 export class AuthController {
 	logger: Logger = new Logger('Auth Controllers');
-	
 	constructor(
 		private readonly authService: AuthService,
+		private readonly userService: UserService,
+		private readonly jwtService: JwtService
 		) {}		
 
 	//		STEP 1: LOGIN - redirect 
@@ -33,7 +34,6 @@ export class AuthController {
 
 		try{
 			this.logger.log('Redirecting to OAuth...');
-			this.logger.log('Restarting Auth path = ' + path);
 			return response.redirect(path);  // 302 http status 
 		}
 		catch(err){
@@ -43,18 +43,13 @@ export class AuthController {
 	// // if approved it will be redirected to your "redirect_uri" (API settings) with a temporary code in a GET "code" 
 	// // as well as the state you provided in the previous step in a "state" parameter
 
-
 	//		STEP 2 - GET request with temporary "code"
 	//--------------------------------------------------------------------------------
-	@OpenAccess()  // this should not be needed!!!!!!!!!!!!!!!!!!!!!
-	@Get('token') // 'token' - end point of address 
+	@OpenAccess()
+	@Get('token')
 	async getAuthorizationToken(@Request() request: any, @Response() response: any) {
-
 		const reqUrl = request['url'];
 		const requestCode = reqUrl.split('code=')[1];
-		// this.logger.log('OAuth code received: ' + requestCode);
-		console.log('Jaka: The whole request URL: ', reqUrl);
-		console.log('Jaka:           requestCode: ', requestCode);
 
 		//https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
 		const parameters = new URLSearchParams();
@@ -69,30 +64,66 @@ export class AuthController {
 			console.log('Jaka, AUTH response HEADERS:\n', response.getHeaders());
 			return await this.authService.exchangeCodeForAccessToken(parameters, response);
 		} catch (err) {
-			this.logger.log('getAuthToken: ' + err);
+			this.logger.log('\x1b[31mgetAuthToken: \x1b[0m' + err);
 		}
 	}
 
-	@Get('logout')   // to be connected with frontend
+	@Get('logout')
 	async logOut(@Request() req:any, @Response() res:any){
 		try{
-			// TO DO:  change online staatus to false 
+			this.logger.log("Start logout");
+			let payload = await this.authService.extractUserdataFromToken(req);
+			let user = await this.userService.getUserByLoginName(payload.username);
+			await this.userService.setOnlineStatus(user.loginName, false);
 			await this.authService.removeAuthToken(req, res);
-			this.logger.log('Clean Token Controller Point After Logout: ' + response.get('Cookie'))
+			await this.userService.updateRefreshToken(user.loginName, 'default'); 
 		}
 		catch(err){
-			this.logger.log('getAuthorizationLogout: ' + err);
+			this.logger.log('\x1b[31mUnable to logout: \x1b[0m' + err);
 		}
 	}
 
 	@Post('cleanToken')
 	async cleanToken(@Request() req:any, @Response() res:any){
 		try{
-			this.logger.log("Start cleanToken function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			this.logger.log("Start cleanToken function");
 			return await this.authService.removeAuthToken(req, res);
 		}
 		catch(err){
-			this.logger.log('cleanToken: ' + err);
+			this.logger.log('\x1b[31mUnable to cleanToken: \x1b[0m' + err);
+		}
+	}
+
+	@Post('updateAuth')
+	async updateToken(@Req() request : any, @Body() data: {name: any}, @Res() response: any){
+		try{
+			this.logger.log("Start updateAuth controller");
+			this.logger.log("data.name: " + data.name);
+			let player = await this.userService.getUserByLoginName(data.name); // retrieve user entity
+			console.log("player email: " + player.email);
+			let newToken = await this.authService.signToken(player);
+			console.log("UpdateAuth function - new token: " + newToken);
+
+			response.setHeader('Set-Cookie', newToken);
+			this.logger.log('New token set in the response header');
+
+			let newRefreshToken = await this.authService.signRefreshToken(player);
+			console.log("UpdateAuth function - new refreshToken: " + newRefreshToken);
+			this.userService.updateRefreshToken(player.loginName, newRefreshToken);
+			this.logger.log('New refresh token set in the database');
+			return true;
+		}catch(err){
+			this.logger.log('\x1b[31mUnable to updateToken: \x1b[0m' + err);
+		}
+	}
+
+	@Post('getPlayer')
+	async getPlayer(@Req() request : any, @Body() data: {name: any}){
+		try{
+			this.logger.log("player to be requested in the getPlayer Controller: " + data.name);
+			return await this.userService.getUserByLoginName(data.name);
+		}catch(err){
+			this.logger.log("Unable to get the player from the post request " + err);
 		}
 	}
 }

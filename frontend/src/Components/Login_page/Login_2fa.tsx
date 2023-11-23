@@ -121,8 +121,7 @@ import axios from "axios";
 import { data } from "jquery";
 import MainPage from "../main_page";
 import LoginPage from "./Login_auth";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 
@@ -192,32 +191,43 @@ const InputTFAcode = () => {
   };
 
   return (
-	<>
+	<Container 	className="d-flex justify-content-center align-items-center"
+				style={{ minHeight: "100vh" }}
+	>
 	  {tfa === false && tfaAttempts === 3 && <LoginPage />}  
 	  {tfa === false && tfaAttempts < 3 && (
-		<>
 		  <div>
-			<h4>Two Factor Authentication</h4><br></br>
-			<h5>
+			<h1>Trans Cendence</h1><br></br>
+			<h4>Two Factor Authentication</h4>
+			<h6>
 				{tfa === false && tfaAttempts === 1 && "New code has been sent. Careful, this is your second attempt!"}
 				{tfa === false && tfaAttempts === 2 && "Last attempt! Screw this one up and go back to start!"}
-				{tfa === false && tfaAttempts === 0 && "Click 'Send Code' to receive a code. Click 'Verify Code' to see if we'll let you in!"}
-			</h5>
-				<Form.Group>
-					<Form.Control
-					type="text"
-					placeholder="your code here"
-					value={inputValue}	// reset the field to empty
-					onChange={(e) => setInputValue(e.target.value)}
-					/>
-				</Form.Group>
-				<Button type="submit" onClick={handleSubmit}>
-			  	Verify Code
-				</Button>
+				{tfa === false && tfaAttempts === 0 && "Check your email and enter the code to see if we'll let you in!"}
+			</h6>
+			<Row className="align-items-center">
+				<Col>
+					<Form.Group>
+						<Form.Control	
+										className="input-default"
+										type="text"
+										placeholder="your code here"
+										value={inputValue}	// reset the field to empty
+										onChange={(e) => setInputValue(e.target.value)}
+						/>
+					</Form.Group>
+				</Col>
+				<Col xs='auto'>
+					<Button
+						className="button_default" 
+						type="submit"
+						onClick={handleSubmit}>
+						Verify Code
+					</Button>
+				</Col>
+			</Row>
 		  </div>
-		</>
 	  )}
-	</>
+	</Container>
   );
 };
 

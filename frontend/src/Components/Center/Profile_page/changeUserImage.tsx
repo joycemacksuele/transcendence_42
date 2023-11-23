@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { CurrUserData, CurrentUserContext } from './contextCurrentUser';
+import { Form, Button,  FormControl, Alert, InputGroup } from 'react-bootstrap';
+
 
 axios.defaults.withCredentials = true;
 
@@ -84,12 +86,23 @@ const ImageUpload: React.FC<ContextProps> = ({ updateContext }) => {
 
 
 	return (
-		<div style={myMargin}>
-			Change the image:
-			<form onSubmit={e => e.preventDefault()}>
-				<input type='file' accept='image/*' onChange={handleImageChange} />
-				<button onClick={handleUpload}> Upload </button>
-			</form>
+		// <div style={myMargin}>
+		<div className='profile-section'>
+			<p>Change the image:</p>
+			<Form onSubmit={e => e.preventDefault()}>
+				<Form.Group>
+					<Form.Control
+						type='file'
+						// label="Choose file"
+						accept="image/*"
+						onChange={handleImageChange} 
+					/>
+				</Form.Group>
+				<Button 
+					className='button_default'
+					onClick={handleUpload}> Upload
+				</Button>
+			</Form>
 		</div>
 	);
 };
