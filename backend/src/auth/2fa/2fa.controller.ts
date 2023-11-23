@@ -50,7 +50,7 @@ export class TwoFactorAuthController {
             if (codeToVerify === codeStored)
             {
     			await this.userService.setOnlineStatus(user.loginName, true);   // jaka
-                await this.userService.updateStoredTFACode(user.loginName, "default"); // jaka
+                await this.userService.updateStoredTFACode(user.loginName, "default"); // jaka  // WHY? 
                 this.logger.log('2fa verification successfull! Codes match!');
                 return true;
             }
