@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import {Col, Image, Row} from 'react-bootstrap';
+import {Col, Image, Row, Button} from 'react-bootstrap';
 
 import '../../../css/Profile-users-list.css'
 import {NavLink} from "react-router-dom";
@@ -127,14 +127,14 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 	}
 
 	const handleClickPrivateChat = () => {
-		const requestNewChatDto: RequestNewChatDto = {chatName: "mocked user1", chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
+		const requestNewChatDto: RequestNewChatDto = {chatName: "mocked user2", chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
 		// const requestNewChatDto: RequestNewChatDto = {chatName: userData.friend.loginName, chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
 		chatSocket.emit("createChat", requestNewChatDto);
 		console.log("[DisplayOneUser] handleClickPrivateChat called. requestNewChatDto:", requestNewChatDto);
 	};
 
 	return (
-		<Col className='bg-custom text-black p-3 rounded'>
+		<Col className='bg-custom text-black p-3 rounded one-user-section'>
 			<Row className="mb-5">
 				<Col>
 					<Image 	id="otherUserImage"
@@ -165,15 +165,17 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 						className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
 						onClick={handleClickPrivateChat}
 					>
-						<button>Private Chat</button>
+						<button className='button_default'>Private Chat</button>
 					</NavLink>
 				</Col>
 				<Col>
 					{/* onclick EXPECTS A FUNCTION WITH AN ARGUMENT OF TYPE MouseEvent<HTMLButtonElement */}
-					<button onClick={ () =>
-						handleButtonClick() }>
+					<Button
+						onClick={ () => handleButtonClick() }
+						className='button_default'
+					>
 							{IamFollowing ? 'Stop Following' : 'Start Following' }
-					</button>
+					</Button>
 				</Col>
 			</Row>
 		</Col>

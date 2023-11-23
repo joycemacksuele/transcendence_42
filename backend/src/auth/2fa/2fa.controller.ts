@@ -12,13 +12,17 @@ export class TwoFactorAuthController {
         private readonly tfaService: TwoFactorAuthService,
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
-        private readonly authService: AuthService
+        private readonly authService: AuthService   // added jaka, to enable extractUserdataFromToken()
         ) {}
     logger: Logger = new Logger('2FA mail controller');
 
     @Post('verify_code')
     async verifyTwoFactorAuthentification(@Req() request: any, @Body() data: {inputValue: string}){
         try{
+            // extractUserFromHeader
+            let payload = await this.authService.extractUserdataFromToken(request);
+            console.log("      ... payload.username: ", payload.username);
+
             this. logger.log('Start verify_code function: ');
             this. logger.log('code to verify: ' + data.inputValue);
 
@@ -28,9 +32,6 @@ export class TwoFactorAuthController {
                 this.logger.log('SQL Verification failed. Return false!');
                 return false;
             }
-            
-            let payload = await this.authService.extractUserFromRequest(request); // extract user from header
-            this.logger.log('Extracted user from header: ' + payload.username); // returns the token payload, NOT THE USER ENTITY
             
             let user = await this.userService.getUserByLoginName(payload.username); // retrieve user
             const codeStored = user.tfaCode;
@@ -48,8 +49,9 @@ export class TwoFactorAuthController {
             }
             if (codeToVerify === codeStored)
             {
+    			await this.userService.setOnlineStatus(user.loginName, true);   // jaka
+                await this.userService.updateStoredTFACode(user.loginName, "default"); // jaka  // WHY? 
                 this.logger.log('2fa verification successfull! Codes match!');
-                let temp = await this.userService.updateStoredTFACode(user.loginName, "default");
                 return true;
             }
             else {
@@ -67,8 +69,7 @@ export class TwoFactorAuthController {
     async resendVerificationMail(@Req() req, @Res() res: Response) {
         try {
             this.logger.log('Start resend_email_code');
-
-            let payload = await this.authService.extractUserFromRequest(req); // extract user from header
+            let payload = await this.authService.extractUserdataFromToken(req);
             this.logger.log('Extracted user from header: ', payload.username); // returns the token payload, NOT THE USER ENTITY
             
             let user = await this.userService.getUserByLoginName(payload.username); // retrieve user
@@ -86,8 +87,7 @@ export class TwoFactorAuthController {
     async toggleButtonTfa(@Req() req, @Res() res: Response) {
         try {
             this.logger.log('Start toggle_button_tfa');
-
-            let payload = await this.authService.extractUserFromRequest(req);
+            let payload = await this.authService.extractUserdataFromToken(req);
             this.logger.log("request.user: ", payload.username); // returns payload, not user entity
             
             let user = await this.userService.getUserByLoginName(payload.username);  // retrieve user entity

@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Button, Container, Row, Col } from 'react-bootstrap';
 
 axios.defaults.withCredentials = true; // jaka, is it needed here?
 
@@ -66,19 +67,25 @@ const LoginPage: React.FC = () => {
 	// 	  .catch((err) => console.error(err));
 	//   };
 
-  return (
-	<>
-    <div>
-      <h1>This is Login Page for Aouthx</h1>
-      <button onClick={handleClickAuth}>Login with OAuth</button> { response }
-      {/* <button onClick={handleClickAuth}>Login with OAuth</button> */}
-	  {/* <a href='http://localhost:3001/auth/login'>Click to Login</a> */}
-    </div>
-	{/* <div>
-		<button onClick={handleClickTest00}>Test Button 00</button> { response00 }
-  		</div>*/}
-	</>
-  );
+  
+	return (
+		<Container 	className='d-flex justify-content-center align-items-center'
+					style={{ minHeight: "100vh" }}
+		>
+			<div className='d-flex flex-column align-items-center'>
+				{/* <h1>This is Login Page for Auth</h1> */}
+				<h1>Trans Cendence</h1>
+					<Button
+						className='button_default'
+						onClick={handleClickAuth}>
+						Login with Auth
+					</Button>
+					{response && <div>{response}</div>}
+			</div>
+		</Container>
+	);
+
+
 };
 
 export default LoginPage;
