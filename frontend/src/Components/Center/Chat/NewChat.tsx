@@ -27,13 +27,13 @@ const NewChat = () => {
     const currUserData = useContext(CurrentUserContext) as CurrUserData;
     const [show, setShow] = useState(false);
 
-    const createChat = () => {
-        // const profileName = localStorage.getItem('profileName');
-        const loginName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
+    const createGroupChat = () => {
+        // todo change to intraName everywhere
+        const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
-        const requestNewChatDto: RequestNewChatDto = {chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: loginName};
+        const requestNewChatDto: RequestNewChatDto = {chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: intraName};
         chatSocket.emit("createChat", requestNewChatDto);
-        console.log("[NewChat] createChat called. requestNewChatDto:", requestNewChatDto);
+        console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 
         setChatPassword(null);
     };
@@ -48,11 +48,11 @@ const NewChat = () => {
                         type="submit"
                         onClick={ () => setShow(true)}
                     >
-                        New Chat
+                        New Group
                     </Button>
                     <Modal show={show} onHide={ () => {setShow(false)}}>
                         <Modal.Header closeButton>
-                            <Modal.Title>New Chat</Modal.Title>
+                            <Modal.Title>New Group</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <Form>
@@ -110,7 +110,7 @@ const NewChat = () => {
                                 Close
                             </Button>
                             <Button variant="primary" onClick={ () => {
-                                createChat();
+                                createGroupChat();
                                 setShow(false);
                                 // setSocketCount(socketCount + 1);
                             }}>

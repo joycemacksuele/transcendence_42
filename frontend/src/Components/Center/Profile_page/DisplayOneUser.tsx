@@ -1,9 +1,11 @@
-
-import React, {useEffect, useState } from 'react';
-import axios, { AxiosError } from 'axios';
-import { Navbar, Container, Nav, Row, Col, Image, Button } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import {Col, Image, Row, Button} from 'react-bootstrap';
 
 import '../../../css/Profile-users-list.css'
+import {NavLink} from "react-router-dom";
+import {ChatType, RequestNewChatDto} from "../Chat/Utils/ChatUtils.tsx";
+import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
 
 interface UserProps {
 	loginName: string;
@@ -124,6 +126,12 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
         setIamFollowing(!IamFollowing); // Toggle to the opposite state
 	}
 
+	const handleClickPrivateChat = () => {
+		const requestNewChatDto: RequestNewChatDto = {chatName: "mocked user2", chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
+		// const requestNewChatDto: RequestNewChatDto = {chatName: userData.friend.loginName, chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
+		chatSocket.emit("createChat", requestNewChatDto);
+		console.log("[DisplayOneUser] handleClickPrivateChat called. requestNewChatDto:", requestNewChatDto);
+	};
 
 	return (
 		<Col className='bg-custom text-black p-3 rounded one-user-section'>
@@ -150,13 +158,21 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 			</Row>
 			<Row className="mb-5">
 				<Col>
-					{/* <button onClick={handleClickPlaceholder}>Private Chat</button></Col> */}
-					<Button className='button_default'>Private Chat</Button></Col>
+					<NavLink
+						// eventKey="users"
+						// onClick={ () => handleClick('profile') }
+						to="/main_page/chat"
+						className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+						onClick={handleClickPrivateChat}
+					>
+						<button className='button_default'>Private Chat</button>
+					</NavLink>
+				</Col>
 				<Col>
 					{/* onclick EXPECTS A FUNCTION WITH AN ARGUMENT OF TYPE MouseEvent<HTMLButtonElement */}
 					<Button
 						onClick={ () => handleButtonClick() }
-						className='button_default'	
+						className='button_default'
 					>
 							{IamFollowing ? 'Stop Following' : 'Start Following' }
 					</Button>
