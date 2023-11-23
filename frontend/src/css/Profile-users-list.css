@@ -1,21 +1,5 @@
 
 
-button#make-friend {
-    background-color: green;
-    margin: 0 0 0 0;
-    padding: 1%;
-	color: white;
-    border-radius: 5%;
-}
-
-#make-friend {
-	font-size: 10px;
-}
-/* #list-users li {
-    padding: 0 0 2% 0;
-} */
-/* The above is old, before adding span colomns */
-
 
 #users {
     display: block;
@@ -23,7 +7,7 @@ button#make-friend {
     width: 40%;
 }
 
-.list-users {
+.profile-section .list-users {
     width: 100%;
     list-style-type: decimal;
     counter-reset: list-counter;
@@ -52,11 +36,11 @@ button#make-friend {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #ddd;
+    /* border: 1px solid #7f1818; */
     /* padding: 5px; */
     text-align: center;
 	border: none;
-	border-bottom: 1px solid #ddd;
+	/* border-bottom: 1px solid #721717; */
 }
 
 .column-titles > span {
@@ -78,13 +62,13 @@ button#make-friend {
 }
 
 .list-user-link:hover {
-    background-color: #c6b7b7;  /* choose any color you prefer */
+    /* background-color: #c6b7b7;  choose any color you prefer */
 }
 
  
 #otherUserImage {
-    width: 75px;
-    height: 75px;
+    width: 150px;
+    height: 150px;
     border-radius: 5%;
 }
 
@@ -97,4 +81,42 @@ button#make-friend {
 
 .selected {
     background: pink;
+}
+
+
+
+
+
+
+.profile-section .list-users .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Align items vertically */
+    padding: 3px;
+    border: 0px solid #8c3131;
+    background-color: rgb(212, 212, 186);
+}
+
+.profile-section .list-users .column-titles {
+    font-weight: bold;
+    background-color: rgb(212, 212, 186);
+}
+
+.profile-section .list-users .column-titles span,
+.profile-section .list-users .list-group-item span {
+    flex: 1; /* Each span takes equal width */
+    text-align: center; /* Center text within each span */
+    /* background-color: rgb(234, 234, 220); */
+    border-top: 1px grey solid;
+    padding: 7px;
+
+}
+
+.profile-section .list-users .column-titles span {
+    background-color: rgb(171, 171, 143);
+}
+
+.list-group-item:hover { 
+    background-color: rgb(230, 230, 91) !important;
+    cursor:pointer;
 }
