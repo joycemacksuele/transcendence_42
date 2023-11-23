@@ -39,6 +39,9 @@ export class CreateUserDto {
   hashedSecret: string;
 
   @IsString()
+  refreshToken: string;
+
+  @IsString()
   profileImage?: string;
 
   // @IsString()
