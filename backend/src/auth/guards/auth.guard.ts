@@ -35,6 +35,10 @@ export class AuthGuard implements CanActivate {
 
         // decode and verify the JWT token   
         const request = context.switchToHttp().getRequest();
+        // console.log('Jaka - content in request:', request);
+        //console.log('Jaka - content in request:', JSON.stringify(request, null, 2));
+
+
         const token = this.extractTokenFromHeader(request);
         this.logger.log('Auth Guard - First decode: ' + token);
         
@@ -57,9 +61,13 @@ export class AuthGuard implements CanActivate {
                 const param = new URLSearchParams();
                 param.append('name', userName);
                 await axios
-                .post(`${process.env.BACKEND}/auth/getPlayer`, userName)
+                // .post(`${process.env.BACKEND}/auth/getPlayer`, 'name=jmurovec') // param.name
+                // .post(`${process.env.BACKEND}/auth/getPlayer`, userName)
+                .post(`${process.env.BACKEND}/auth/getPlayer`, param)
+                // .post(`${process.env.BACKEND}/auth/getPlayer`, param.toString())
                 .then((response) => {
                     player = response.data;
+                    console.log('------------------------------------------------------------------');
                     this.logger.log('received player from first post request: ' + player.loginName); 				
                 })
                 .catch((error) => {
@@ -97,8 +105,7 @@ export class AuthGuard implements CanActivate {
                         this.logger.error('\x1b[31mUnable to update token in header: \x1b[0m');
                         throw new HttpException('Unable to update token in header', HttpStatus.UNAUTHORIZED);
                     });
-                this.logger.log("Reached the end of Auth Guard");
-
+                    
                 }
                 catch(err){
                     this.logger.error('\x1b[31mUPlayer does not exist in the database: \x1b[0m');
@@ -110,6 +117,7 @@ export class AuthGuard implements CanActivate {
             this.logger.error('\x1b[31mUnable to pass the Auth Guard: \x1b[0m');
             throw new UnauthorizedException();
         }   
+        this.logger.log("Reached the end of Auth Guard");
         return true;     
     }
 
