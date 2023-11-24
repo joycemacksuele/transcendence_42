@@ -1,13 +1,10 @@
-
-
-
 #users {
     display: block;
     justify-content: left;
     width: 40%;
 }
 
-.profile-section .list-users {
+.users-outer .list-users {
     width: 100%;
     list-style-type: decimal;
     counter-reset: list-counter;
@@ -80,7 +77,7 @@
 }
 
 .selected {
-    background: pink;
+    background: rgb(246, 227, 88);
 }
 
 
@@ -88,7 +85,7 @@
 
 
 
-.profile-section .list-users .list-group-item {
+.users-outer .list-users .list-group-item {
     display: flex;
     justify-content: space-between;
     align-items: center; /* Align items vertically */
@@ -97,13 +94,13 @@
     background-color: rgb(212, 212, 186);
 }
 
-.profile-section .list-users .column-titles {
+.users-outer .list-users .column-titles {
     font-weight: bold;
     background-color: rgb(212, 212, 186);
 }
 
-.profile-section .list-users .column-titles span,
-.profile-section .list-users .list-group-item span {
+.users-outer .list-users .column-titles span,
+.users-outer .list-users .list-group-item span {
     flex: 1; /* Each span takes equal width */
     text-align: center; /* Center text within each span */
     /* background-color: rgb(234, 234, 220); */
@@ -112,7 +109,7 @@
 
 }
 
-.profile-section .list-users .column-titles span {
+.users-outer .list-users .column-titles span {
     background-color: rgb(171, 171, 143);
 }
 
