@@ -5,6 +5,9 @@ import { ChatService } from './chat.service';
 import { RequestNewChatDto } from './dto/request-new-chat.dto';
 import { RequestMessageChatDto } from './dto/request-message-chat.dto';
 import { RequestRegisterChatDto } from './dto/request-register-chat.dto';
+import {NewChatEntity} from "./entities/new-chat.entity";
+import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
+import {IsStrongPassword} from "class-validator";
 
 /*
     Websockets tips:
@@ -63,18 +66,63 @@ export class ChatGateway
 
   handleDisconnect(clientSocket: Socket) {
     this.logger.log(`Client disconnected: ${clientSocket.id}`);
-    // Do we need to handle it?
+    // Do we need to handle it since it's being disconnected from the frontend to get here?
     // client.disconnect();
   }
 
   @SubscribeMessage('createChat')
-  // createChat(@MessageBody() requestNewChatDto: RequestNewChatDto) {
-  createChat(@MessageBody() requestNewChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
+  async createChat(@MessageBody() requestNewChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
-    this.logger.log('clientSocket.id: ' + clientSocket.id);
-    this.chatService.createChat(requestNewChatDto).then();
-    // clientSocket.join(requestNewChatDto.loginName);// + loginName of other person -> for groups ??
+    this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
+
+    this.chatService.createChat(requestNewChatDto).then(() => {
+      // If we could save a new chat in the database, get the whole table
+      this.chatService.getAllChats().then( (allChats) => {
+        // If we could get the whole table from the database, emit it to the frontend
+        clientSocket.emit("getChats", allChats);
+        this.logger.log('getChats -> all chats were emitted to the frontend');
+      });
+
+    });
+    // clientSocket.join(requestNewChatDto.chatName);// loginName + friendnName for DMs (OBS no repetition for groups)
     // this.logger.log('Socket rooms for the createChat: ' + clientSocket.rooms);
+  }
+
+  @SubscribeMessage('deleteChat')
+  async deleteChat(@MessageBody() chatId: number, @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('deleteChat -> clientSocket.id: ' + clientSocket.id);
+
+    this.chatService.deleteChat(chatId).then( () => {
+      this.logger.log('deleteChat -> chatId: ' + chatId);
+      // If we could delete the chat from the database, get the whole table
+      this.chatService.getAllChats().then( (allChats) => {
+        // If we could get the whole table from the database, emit it to the frontend
+        clientSocket.emit("getChats", allChats);
+        this.logger.log('getChats -> all chats were emitted to the frontend');
+      });
+    });
+  }
+
+  @SubscribeMessage('joinChat')
+  async joinChat(
+      @MessageBody('chatId') chatId: number,
+      @MessageBody('chatPassword') chatPassword: string,
+      @MessageBody('intraName') intraName: string,
+      @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
+    this.logger.log('joinChat -> chatId: ' + chatId + " intraName: " + intraName);
+    return await this.chatService.joinChat(chatId, chatPassword, intraName);
+  }
+
+  @SubscribeMessage('getChats')
+  async getChats(@ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('getChats -> clientSocket.id: ' + clientSocket.id);
+
+    this.chatService.getAllChats().then( (allChats) => {
+      // If we could get the whole table from the database, emit it to the frontend
+      clientSocket.emit("getChats", allChats);
+      this.logger.log('getChats -> all chats were emitted to the frontend');
+    });
   }
 
   @SubscribeMessage('messageChat')
@@ -90,31 +138,6 @@ export class ChatGateway
     this.logger.log('registerChat -> requestRegisterChatDto: ', requestRegisterChatDto);
     // const ret = this.chatService.messageChat(requestMessageChatDto);
     // this.ws_server.emit('new_chat', ret);
-    // return ret;
+    // return ret; if needed
   }
-
-  // @SubscribeMessage('findAllChat')
-  // findAll() {
-  //   this.logger.log('findAllChat called');
-  //   return this.chatService.findAll();
-  // }
-  //
-  // @SubscribeMessage('findOneChat')
-  // findOne(@MessageBody() id: number) {
-  //   this.logger.log('findOneChat called');
-  //   return this.chatService.findOne(id);
-  // }
-  //
-  // @SubscribeMessage('updateChat')
-  // update(@MessageBody() updateChatDto: UpdateChatDto) {
-  //   this.logger.log('updateChat called');
-  //   // return this.chatService.update(updateChatDto.id, updateChatDto);
-  //   return this.chatService.update(updateChatDto.id);
-  // }
-  //
-  // @SubscribeMessage('removeChat')
-  // remove(@MessageBody() id: number) {
-  //   this.logger.log('removeChat called');
-  //   return this.chatService.remove(id);
-  // }
 }
