@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import axios from 'axios';
-import {Col, Image, Row, Button} from 'react-bootstrap';
-
-import '../../../css/Profile-users-list.css'
-import {NavLink} from "react-router-dom";
+import React, {useContext, useEffect, useState} from 'react';
+import {CurrentUserContext, CurrUserData} from "./contextCurrentUser.tsx";
 import {ChatType, RequestNewChatDto} from "../Chat/Utils/ChatUtils.tsx";
 import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
+import axios from 'axios';
+
+import '../../../css/Profile-users-list.css'
+import {Col, Image, Row, Button} from 'react-bootstrap';
+import {NavLink} from "react-router-dom";
 
 interface UserProps {
 	loginName: string;
@@ -16,6 +17,9 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 	const [userData, setUserData] = useState<any>(null); // !todo: define the 'structure' of returned user data
 	const [IamFollowing, setIamFollowing] = useState(false);
 	const [myId, setMyId] = useState<number>();
+
+	const currUserData = useContext(CurrentUserContext) as CurrUserData;
+	const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
 	useEffect(() => { 
 
@@ -127,10 +131,26 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 	}
 
 	const handleClickPrivateChat = () => {
-		const requestNewChatDto: RequestNewChatDto = {chatName: "mocked user2", chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
-		// const requestNewChatDto: RequestNewChatDto = {chatName: userData.friend.loginName, chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
-		chatSocket.emit("createChat", requestNewChatDto);
-		console.log("[DisplayOneUser] handleClickPrivateChat called. requestNewChatDto:", requestNewChatDto);
+		console.log("[DisplayOneUser] handleClickPrivateChat");
+		if (!chatSocket.connected) {
+			chatSocket.connect();
+			chatSocket.on("connect", () => {
+				console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+				const requestNewChatDto: RequestNewChatDto = {chatName: loginName, chatType: ChatType.PRIVATE, chatPassword: null, loginName: intraName};
+				chatSocket.emit("createChat", requestNewChatDto);
+				console.log("[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:", requestNewChatDto);
+			});
+			chatSocket.on("disconnect", (reason) => {
+				if (reason === "io server disconnect") {
+					console.log("[DisplayOneUser] socket disconnected: ", reason);
+					// the disconnection was initiated by the server, you need to reconnect manually
+					chatSocket.connect();
+				}
+				// else the socket will automatically try to reconnect
+			});
+		} else {
+			console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+		}
 	};
 
 	return (

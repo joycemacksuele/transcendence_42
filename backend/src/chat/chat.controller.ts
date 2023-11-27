@@ -12,16 +12,22 @@ export class ChatController {
 		this.logger.log('constructor');
 	}
 
-	@Get('all-chat-names')
-	async getAllChatNames() {
-		this.logger.log('getAllChatNames');
-		return this.chatService.getAllChatNames();
+	@Get('all-chats')//not being used
+	async getAllChats() {
+		this.logger.log('getAllChats');
+		return this.chatService.getAllChats();
 	}
 
-	@Post()
+	@Post()// not being use
 	async createChat(@Body() requestNewChatDto: RequestNewChatDto) {
 		this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
 		// this.chatService.createChat(requestNewChatDto).then();
+	}
+
+	@Delete('delete-chat/:chatId')// not being used
+	deleteChat(@Param('chatId') chatId: number) {
+		this.logger.log('deleteChat -> chatId: ' + chatId);
+		this.chatService.deleteChat(chatId).then();
 	}
 }
 

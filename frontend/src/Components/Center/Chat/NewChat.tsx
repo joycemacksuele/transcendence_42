@@ -52,7 +52,7 @@ const NewChat = () => {
                     </Button>
                     <Modal show={show} onHide={ () => {setShow(false)}}>
                         <Modal.Header closeButton>
-                            <Modal.Title>New Group</Modal.Title>
+                            <Modal.Title>Create new chat group</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <Form>

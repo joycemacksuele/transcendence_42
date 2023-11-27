@@ -26,8 +26,6 @@ export class RequestNewChatDto {
     @IsOptional()
     chatPassword: string | null;
 
-    // @IsNotEmpty({ message: 'Required' })
-
     @IsString()
     @MinLength(3)
     @MaxLength(15)

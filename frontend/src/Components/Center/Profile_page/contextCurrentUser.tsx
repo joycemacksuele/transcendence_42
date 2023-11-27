@@ -6,6 +6,7 @@ import React from 'react';
 	be considered "global" or shared across multiple components, such as user authentication status, etc ...
 */
 
+// TODO can we make those not undefined?
 export interface CurrUserData {
 	loginName:	string | undefined;
 	profileName: string | undefined;
