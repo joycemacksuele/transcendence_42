@@ -8,6 +8,7 @@ import { Navbar, Container, Nav, Col, Image, Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { CurrentUserContext } from '../Center/Profile_page/contextCurrentUser';
 import '../../css/Header.css'
+import {chatSocket} from "../Center/Chat/Utils/ClientSocket.tsx";
 // import {  Tab, Tabs, NavDropdown, Row, Badge, Form } from 'react-bootstrap';
 // import { UserService } from '../../user/user.service';
 
@@ -58,6 +59,26 @@ const Header: React.FC = () => {
 	const image = 'http://localhost:3001/' + localStorage.getItem('profileImage') || undefined;
 	//console.log('Local Storage Image: ', image);
 
+	const connectToChatSocket = () => {
+		console.log("[Header] connectToChatSocket");
+		if (!chatSocket.connected) {
+			chatSocket.connect();
+			chatSocket.on("connect", () => {
+				console.log("[Header] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+			});
+			chatSocket.on("disconnect", (reason) => {
+				if (reason === "io server disconnect") {
+					console.log("[Header] socket disconnected: ", reason);
+					// the disconnection was initiated by the server, you need to reconnect manually
+					chatSocket.connect();
+				}
+				// else the socket will automatically try to reconnect
+			});
+		} else {
+			console.log("[Header] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+		}
+	}
+
     return (
         <Navbar bg="light" data-bs-theme="light" sticky="top" className="border-bottom">
             <Container fluid>
@@ -98,7 +119,7 @@ const Header: React.FC = () => {
 						<Nav.Item>
 							<NavLink
 								// eventKey="chat"
-								// onClick={ () => handleClick('profile')
+								onClick={connectToChatSocket}
 								to="chat"
 								className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
 								> Chat

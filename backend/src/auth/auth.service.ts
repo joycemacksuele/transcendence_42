@@ -216,7 +216,7 @@ export class AuthService {
 		let token: string;
 
 		let expiryDate = new Date();
-		expiryDate.setMinutes(expiryDate.getMinutes() + 10);
+		expiryDate.setMinutes(expiryDate.getMinutes() + 1000);
 		console.log("expiry date: " + expiryDate);
 
 		let time = expiryDate.valueOf();

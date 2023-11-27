@@ -23,8 +23,11 @@ import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 
 const Chat = () => {
-    const [chatClicked, setChatClicked] = useState<ResponseNewChatDto>({id: 0, chatType: ChatType.PUBLIC, chatName: '', chatMembers: []});
-    console.log("[Chat] chatClicked: ", chatClicked);
+
+    const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
+    if (chatClicked) {
+        console.log("[Chat] chatClicked: ", chatClicked);
+    }
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
     // useEffect without dependencies:
@@ -37,24 +40,26 @@ const Chat = () => {
         if (!chatSocket.connected) {
             chatSocket.connect();
             chatSocket.on("connect", () => {
-                console.log("[NewChat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+                console.log("[Chat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
             });
             chatSocket.on("disconnect", (reason) => {
                 if (reason === "io server disconnect") {
-                    console.log("[NewChat] socket disconnected: ", reason);
+                    console.log("[Chat] socket disconnected: ", reason);
                     // the disconnection was initiated by the server, you need to reconnect manually
                     chatSocket.connect();
                 }
                 // else the socket will automatically try to reconnect
             });
+        } else {
+            console.log("[Chat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
         }
 
         return () => {
-        //     console.log(`[NewChat] socket disconnected AND removeAllListeners`);
+        //     console.log(`[Chat] socket disconnected AND removeAllListeners`);
         //     // socket.removeAllListeners();
             if (chatSocket.connected) {
                 chatSocket.disconnect();
-                console.log("[NewChat] Inside useEffect return function (Chat Component was removed from DOM): Chat socket ", chatSocket.id, " was disconnected");
+                console.log("[Chat] Inside useEffect return function (Chat Component was removed from DOM): Chat socket id: ", chatSocket.id, " was disconnected");
             }
         };
     }, []);
@@ -124,8 +129,8 @@ const Chat = () => {
                     </Row>
                     {/* Members body */}
                     <Row className='h-100'>
-                        {chatClicked.chatType === ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
-                        {chatClicked.chatType != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> }
+                        {chatClicked?.chatType === ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
+                        {chatClicked?.chatType != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> }
                     </Row>
                 </Col>
 
