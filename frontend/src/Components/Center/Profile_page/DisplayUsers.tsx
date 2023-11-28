@@ -39,6 +39,7 @@ const handleClickDeleteDummies = () => {
 };
 
 const UsersList: React.FC = () => {
+
   const [users, setUsers] = useState<User[]>([]);
   const [displayList, setDisplayList] = useState(true);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
@@ -108,7 +109,7 @@ const UsersList: React.FC = () => {
                   .map((user) => (
                     <ListGroup.Item key={user.id}>
                       <span>{user.rank}.</span>
-
+{/* TODO THE CURRENT USER SHOULD NOT BE ADDED TO THIS LIST SINCE THEIR PROFILE IS ALREADY AT THE FIRST TAB AND WE DONT WANT FOR EXAMPLE TO FOLLOW OURSELVES OR SEND A CHAT TO OURSELVES */}
                       <span>
                         <a
                           href=""
