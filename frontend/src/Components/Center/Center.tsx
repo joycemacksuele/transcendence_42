@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-// import "../../css/Center.css";
 
 const Center = () => {
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
@@ -26,7 +27,7 @@ const handleInsertDataClick = () => {
 
 const deleteDummies = async () => {
   try {
-    await axios.delete("http://localhost:3001/users/");
+    await axiosInstance.delete("http://localhost:3001/users/");
     console.log("Dummies deleted successfully");
   } catch (error) {
     console.error("Error deleting dummies: ", error);
@@ -44,7 +45,7 @@ const UsersList: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get<User[]>(
+      const response = await axiosInstance.get<User[]>(
         "http://localhost:3001/users/all"
       ); // Assuming the server is running on the same host and port
       setUsers(response.data);
@@ -66,7 +67,7 @@ const UsersList: React.FC = () => {
 
   const deleteUsers = async () => {
     try {
-      await axios.delete("http://localhost:3001/users/");
+      await axiosInstance.delete("http://localhost:3001/users/");
       console.log("Dummies deleted successfully");
     } catch (error) {
       console.error("Error deleting all users: ", error);
@@ -85,12 +86,11 @@ const UsersList: React.FC = () => {
   };
 
   return (
-    // <Container fluid className='h-100 w-100'>
-    <>
+    <Container fluid className="h-100 w-100">
       <div className="users-outer">
-      {/* <div className="inner-section"> */}
+        {/* <div className="inner-section"> */}
         <Row text="dark">
-          <Col className="column-bckg text-black d-flex justify-content-left align-items-left p-3 rounded">
+          <Col className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded">
             {/* Button to trigger fetching the users */}
 
             {displayList && ( // Only render the list if dislpayList is true
@@ -132,7 +132,7 @@ const UsersList: React.FC = () => {
             )}
           </Col>
 
-          <Col className="column-bckg text-black p-3 rounded">
+          <Col className="column-bckg p-3 mx-3 rounded">
             {/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
             {selectedUser ? (
               <DisplayOneUser loginName={selectedUser} />
@@ -149,8 +149,7 @@ const UsersList: React.FC = () => {
           </Col>
         </Row>
       </div>
-      {/* </Container> */}
-    </>
+    </Container>
   );
 };
 

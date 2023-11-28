@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import {
-  Navbar,
-  Container,
-  Nav,
-  Row,
-  Col,
-  Image,
-  Button,
-} from "react-bootstrap";
-
+import { Row, Col, Image, Button } from "react-bootstrap";
 import "../../../css/profile-users-list.css";
+import axiosInstance from "../../Other/AxiosInstance";
 
 interface UserProps {
   loginName: string;
@@ -27,7 +19,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
     const fetchUserData = async () => {
       let response;
       try {
-        response = await axios.get(
+        response = await axiosInstance.get(
           `http://localhost:3001/users/get-user/${loginName}`
         );
         setUserData(response.data);
@@ -42,7 +34,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
       try {
         console.log("Checking if I follow this user ... ");
 
-        const responseAmIFollowing = await axios.get(
+        const responseAmIFollowing = await axiosInstance.get(
           `http://localhost:3001/friendship/followingExists/${myId}/${response.data.id}`
         );
         console.log("   responseAmIFollowing: ", responseAmIFollowing);
@@ -70,7 +62,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
           "localstorage-profileName: ",
           localStorage.getItem("profileName")
         );
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem(
             "profileName"
           )}`
@@ -89,7 +81,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
   async function startFollowing() {
     const friendId = userData.id; // todo: fetch the id (the to-be friend)
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `http://localhost:3001/friendship/${myId}/addFriend/${friendId}`
       );
       console.log("Success: Friendship added: ", response.data);
@@ -113,7 +105,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 
   async function stopFollowing() {
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `http://localhost:3001/friendship/${myId}/removeFriend/${userData.id}`
       );
       console.log("Success remnoving a friend: ", response);
@@ -149,7 +141,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
   };
 
   return (
-    <Col className="column-bckg text-black p-3 rounded one-user-sectio">
+    <Col className="column-bckg p-3 rounded inner-section">
       <Row className="mb-5">
         <Col>
           <Image
@@ -166,12 +158,13 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
           <p>online: {userData.onlineStatus ? "Yes" : "No"}</p>
         </Col>
       </Row>
-      <Row className="mb-5">
-        {/* <Row>Name: { userData.profileName } </Row> */}
-        <Row>Rank: {userData.rank} </Row>
-        <Row>Games played: {userData.gamesPlayed} </Row>
-        <Row>Games won: {userData.gamesWon} </Row>
-        <Row>Games lost: {userData.gamesLost} </Row>
+      <Row className="mb-3">
+        <Col className="mx-3">
+          <Row>Rank: {userData.rank} </Row>
+          <Row>Games played: {userData.gamesPlayed} </Row>
+          <Row>Games won: {userData.gamesWon} </Row>
+          <Row>Games lost: {userData.gamesLost} </Row>
+        </Col>
       </Row>
       <Row className="mb-5">
         <Col>
