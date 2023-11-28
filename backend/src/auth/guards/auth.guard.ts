@@ -41,7 +41,7 @@ export class AuthGuard implements CanActivate {
 
         const token = this.extractTokenFromHeader(request);
         this.logger.log('Auth Guard - First decode: ' + token);
-        
+
         if (!token || token === ""){
             throw new UnauthorizedException();  // player must be thrown out !!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
@@ -67,31 +67,30 @@ export class AuthGuard implements CanActivate {
                 // .post(`${process.env.BACKEND}/auth/getPlayer`, param.toString())
                 .then((response) => {
                     player = response.data;
-                    console.log('------------------------------------------------------------------');
-                    this.logger.log('received player from first post request: ' + player.loginName); 				
+                    this.logger.log('received player from first post request: ' + player.loginName);
                 })
                 .catch((error) => {
                     this.logger.error('\x1b[31mUnable to get player entity: \x1b[0m');
                     throw new HttpException('Unable to get player entity', HttpStatus.UNAUTHORIZED);
                 });
-                
-                try{                
+
+                try{
                     let refreshToken = player.refreshToken;
                     if (refreshToken === 'default')
                     {
-                        this.logger.error('\x1b[31mRefresh token unavailable. Player needs to log in again: \x1b[0m'); // throw you out to log in 
+                        this.logger.error('\x1b[31mRefresh token unavailable. Player needs to log in again: \x1b[0m'); // throw you out to log in
                         return false;
                     }
                     const payloadRefreshToken = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_SECRET});
                     let expiryRefreshToken = await this.tokenExpired(payloadRefreshToken.exp);
                     this.logger.log("Auth Guard - existing refresh token: " + refreshToken);
-                    
-                    if (expiryRefreshToken === true) // refresh token is expired 
+
+                    if (expiryRefreshToken === true) // refresh token is expired
                     {
                         this.logger.error('\x1b[31mError token is expired. Player needs to log in again: \x1b[0m');
                         return false;
                     }
-                    
+
                     // ----------------------------------------------- create and store new tokens
                     this.logger.log("verify again expired token before post : " + token);
                     await axios
@@ -110,7 +109,7 @@ export class AuthGuard implements CanActivate {
                 catch(err){
                     this.logger.error('\x1b[31mUPlayer does not exist in the database: \x1b[0m');
                     throw new UnauthorizedException();
-                }         
+                }
             }
         }
         catch(err){
@@ -124,7 +123,7 @@ export class AuthGuard implements CanActivate {
     async tokenExpired(expiryDate: number): Promise<boolean> {
         let timeNow = new Date();
         this.logger.log("tokenExpired function: expiryDate" + expiryDate + ' timeNow: ' + timeNow);
-        if (timeNow.valueOf() > expiryDate) // token is expired 
+        if (timeNow.valueOf() > expiryDate) // token is expired
         {
             this.logger.log("return true if expired");
             return true

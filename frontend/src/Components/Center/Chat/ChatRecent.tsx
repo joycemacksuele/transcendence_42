@@ -69,7 +69,7 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                                 key={chat.id}
                                 variant="flush"
                             >
-                                {chat.chatType == ChatType.PRIVATE &&
+                                {chat.chatType === ChatType.PRIVATE &&
                                     <ListGroup.Item
                                         as="li"
                                         className="justify-content-between align-items-start"
