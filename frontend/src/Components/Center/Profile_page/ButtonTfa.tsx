@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Form, Button, FormControl, Alert, InputGroup } from "react-bootstrap";
+import axiosInstance from "../../Other/AxiosInstance";
+import { Form, Button } from "react-bootstrap";
 
 // import { CurrentUserContext, CurrUserData } from './contextCurrentUser';
 
@@ -15,7 +16,7 @@ const ButtonTfa: React.FC = () => {
     console.log("Clicked button TFA");
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         "http://localhost:3001/2fa/toggle_button_tfa"
       );
 

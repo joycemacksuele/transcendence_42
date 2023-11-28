@@ -193,8 +193,9 @@ export class AuthService {
 			// response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
 		}
 		else{
-			path = `${process.env.FRONTEND}`;
-			this.logger.log("Redirecting to: ", process.env.FRONTEND);
+			// path = `${process.env.FRONTEND}`; // changed jaka, it was redirectong to login page, if tfa-enabled was deleted from local storage
+			path = `${process.env.FRONTEND}/main_page`;
+			this.logger.log("Redirecting to: ", path);
 		}
 		return response.redirect(path);
 	}

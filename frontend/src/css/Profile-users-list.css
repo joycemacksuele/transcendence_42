@@ -1,7 +1,7 @@
 #users {
     display: block;
     justify-content: left;
-    width: 40%;
+    /* width: 40%; */
 }
 
 .users-outer .list-users {
@@ -79,10 +79,6 @@
 .selected {
     background: rgb(246, 227, 88);
 }
-
-
-
-
 
 
 .users-outer .list-users .list-group-item {
