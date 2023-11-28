@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import axiosInstance from "../../Other/AxiosInstance";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
-import { ListGroup, Form, Button, Container, Row, Col } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 
 // Custom CSS
 // import '../../../css/Profile-users-list.css'
@@ -35,7 +36,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 
   // const fetchUsers = async () => {
   // 	try {
-  // 		const response = await axios.get<User[]>(
+  // 		const response = await axiosInstance.get<User[]>(
   // 			"http://localhost:3001/users/all"
   // 		); // Assuming the server is running on the same host and port
   // 		setUsers(response.data);
@@ -47,7 +48,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 
   const fetchMyId = async () => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem(
           "profileName"
         )}`
@@ -66,7 +67,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
   const fetchFriends = async (myId: number) => {
     console.log("Fetch Friends, myId: ", myId);
     try {
-      const response = await axios.get<User[]>(
+      const response = await axiosInstance.get<User[]>(
         `http://localhost:3001/friendship/${myId}/friends`
       );
       setFriends(response.data);
@@ -112,7 +113,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 
   // const deleteDummies = async () => {
   // 	try {
-  // 		await axios.delete("http://localhost:3001/users/");
+  // 		await axiosInstance.delete("http://localhost:3001/users/");
   // 		console.log("Dummies deleted successfully");
   // 	} catch (error) {
   // 		console.error("Error deleting dummies: ", error);

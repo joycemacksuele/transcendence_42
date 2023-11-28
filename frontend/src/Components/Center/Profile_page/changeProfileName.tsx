@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
+import axiosInstance from "../../Other/AxiosInstance";
 import { CurrentUserContext, CurrUserData } from "./contextCurrentUser";
 import { Form, Button, FormControl, Alert, InputGroup } from "react-bootstrap";
 
@@ -34,7 +35,7 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
     }
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         "http://localhost:3001/users/change_profile_name",
         { profileName },
         { validateStatus: () => true }
@@ -90,25 +91,6 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
       }
     }
   };
-
-  // return (
-  // 		<div style={myMargin}>
-  // 			Change your profile name:
-  // 			<form onSubmit={handleSubmit}>
-  // 				<input
-  // 						type="text"
-  // 						value={profileName}
-  // 						onChange={(e) => setProfileName(e.target.value)}
-  // 						placeholder="New Profile Name"
-  // 				/> &nbsp;
-
-  // 				<button type="submit">Submit</button>
-  // 				{ !profileName && errorMessage && <p style={{ color: 'red' }}> { errorMessage } </p> }
-  // 				{  profileName && <p style={{ color: 'orange' }}>You are typing ...</p>}
-  // 				{ !profileName && !errorMessage && <p style={{ color: 'green' }}> { OkMessage } </p> }
-  // 			</form>
-  // 		</div>
-  // );
 
   return (
     <div className="inner-section">

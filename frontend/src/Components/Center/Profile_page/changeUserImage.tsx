@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
+import axiosInstance from "../../Other/AxiosInstance";
 import { CurrUserData, CurrentUserContext } from "./contextCurrentUser";
 import { Form, Button, FormControl, Alert, InputGroup } from "react-bootstrap";
 
@@ -64,8 +65,8 @@ const ImageUpload: React.FC<ContextProps> = ({ updateContext }) => {
       console.log("ChangeImage: selected image B): ", selectedImage);
 
       // The URL string needs to be inside backticks `...`
-      // const response = await axios.post(`http://localhost:3001/change_profile_image/${loginName}`, formData, {
-      const response = await axios.post(
+      // const response = await axiosInstance.post(`http://localhost:3001/change_profile_image/${loginName}`, formData, {
+      const response = await axiosInstance.post(
         `http://localhost:3001/change_profile_image`,
         formData,
         {
