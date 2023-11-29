@@ -15,7 +15,7 @@ export class ChatService {
   private readonly logger = new Logger(ChatService.name);
 
   constructor(
-      @InjectRepository(NewChatEntity)
+//      @InjectRepository(NewChatEntity)
       public readonly chatRepository: ChatRepository,
       public readonly userService: UserService
   ) {
@@ -93,11 +93,9 @@ export class ChatService {
     // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
     // console.log("ChatService query.getQuery(): ", query.getQuery());
     // return this.chatRepository.query(query.getQuery());
-    return this.chatRepository.find({
-      order: {
-        id: "DESC",
-      },
-    });
+    const out = await this.chatRepository.findChats();
+//    const out2 = await this.chatRepository.findOma();
+    return out;
   }
 
   deleteChat(chatId: number) {

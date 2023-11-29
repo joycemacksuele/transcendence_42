@@ -25,6 +25,8 @@ import { UserEntity } from '../user/user.entity';
 import { FriendshipModule } from '../friendships/friendship.module';
 import { Friendship } from '../friendships/friendship.entity';
 
+import { DataSource } from "typeorm";
+
 import { DuplicateService } from '../duplicate/duplicate.service';
 
 import { ChatModule } from '../chat/chat.module';
@@ -73,6 +75,7 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
       entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity],
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
+      logging: ["query"] // added Robert, for testing
     }),
     TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
     UserModule,
@@ -110,7 +113,7 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
 
 export class AppModule implements NestModule {
     private readonly logger = new Logger(AppModule.name);
-    constructor() {
+    constructor(private dataSource: DataSource) {
         this.logger.log('constructor');
   }
 
