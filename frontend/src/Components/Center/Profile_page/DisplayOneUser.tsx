@@ -166,7 +166,8 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
       <Row className="mb-3">
         <Col>
           <h4>{userData.profileName}</h4>
-          <p>online: {userData.onlineStatus ? "Yes" : "No"}</p>
+          <p>online: {userData.onlineStatus ? "Yes" : "No"}
+          < br/>playing: No (hardcoded)</p>
         </Col>
       </Row>
       <Row className="mb-3">
@@ -183,10 +184,10 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 						// eventKey="users"
 						// onClick={ () => handleClick('profile') }
 						to="/main_page/chat"
-						className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+						// className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
 						onClick={handleClickPrivateChat}
 					>
-						<button className='button_default'>Private Chat</button>
+						<Button className='button_default'>Private Chat</Button>
 					</NavLink>
         </Col>
         <Col>
