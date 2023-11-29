@@ -7,6 +7,8 @@ import * as bcryptjs from 'bcryptjs';
 import {RequestNewChatDto} from "./dto/request-new-chat.dto";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
 import {MessageBody} from "@nestjs/websockets";
+import {UserService} from "src/user/user.service";
+import {UserEntity} from "src/user/user.entity";
 
 @Injectable()
 export class ChatService {
@@ -15,7 +17,7 @@ export class ChatService {
   constructor(
       @InjectRepository(NewChatEntity)
       public readonly chatRepository: ChatRepository,
-      // public readonly userService: UserService
+      public readonly userService: UserService
   ) {
     this.logger.log('constructor');
   }
@@ -24,11 +26,11 @@ export class ChatService {
     const chatEntity = new NewChatEntity();
     chatEntity.chatName = requestNewChatDto.chatName;
     chatEntity.chatType = requestNewChatDto.chatType;
-    chatEntity.chatCreator = requestNewChatDto.loginName;
-    chatEntity.chatAdmins = [];
-    chatEntity.chatAdmins.push(requestNewChatDto.loginName);
-    chatEntity.chatMembers = [];
-    chatEntity.chatMembers.push(requestNewChatDto.loginName);
+    chatEntity.creator = await this.userService.getUserByLoginName(requestNewChatDto.loginName);
+    chatEntity.admins = [];
+    chatEntity.admins.push(chatEntity.creator);
+    chatEntity.users = [];
+    chatEntity.users.push(chatEntity.creator);
     // chatEntity.chatBannedUsers = [];
     if (requestNewChatDto.chatType == ChatType.PROTECTED) {
       if (requestNewChatDto.chatPassword == null) {
@@ -61,15 +63,16 @@ export class ChatService {
 
       this.logger.log('[joinChat] chatPassword: ', chatPassword);
       // TODO HERE EVERYTIME ITS CREATEING A NEW HASH SO THE COMPARE IS NOT WORKING
-      bcryptjs.hash(chatPassword, 10).then((password) => {
+      bcryptjs.hash(chatPassword, 10).then(async (password) => {
         this.logger.log('[joinChat] password: ', password);
         this.logger.log('[joinChat] foundEntityToJoin.chatPassword: ', foundEntityToJoin.chatPassword);
 
         if (bcryptjs.compare(password, foundEntityToJoin.chatPassword)) {
           this.logger.log('[joinChat] Password if ok');
           // Now we have the entity to update the member's array
-          foundEntityToJoin.chatMembers = foundEntityToJoin.chatMembers.concat(intraName);
-          this.logger.log('[joinChat] new members list: ' + foundEntityToJoin.chatMembers);
+          const foundUser : UserEntity = await this.userService.getUserByLoginName(intraName);
+          foundEntityToJoin.users = foundEntityToJoin.users.concat(foundUser);
+          this.logger.log('[joinChat] new members list: ' + foundEntityToJoin.users);
           this.chatRepository.save(foundEntityToJoin).then(r => {
             this.logger.log('[joinChat] chatId should match: ' + chatId + " = " + r.id);
           });
