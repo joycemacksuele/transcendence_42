@@ -1,5 +1,6 @@
 import {IsString, IsEnum, IsNumber, IsStrongPassword, IsArray, ValidateNested, ArrayMinSize} from 'class-validator';
 import {ChatType} from '../utils/chat-utils'
+import {UserEntity} from "src/user/user.entity";
 
 export class ResponseNewChatDto {
 
@@ -25,5 +26,5 @@ export class ResponseNewChatDto {
     @IsArray()
     @ValidateNested({ each: true })
     @ArrayMinSize(2)
-    chatMembers: string[];
+    users: UserEntity[];
 }
