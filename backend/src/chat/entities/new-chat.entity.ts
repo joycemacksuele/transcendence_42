@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany, ManyToOne } from 'typeorm';
 import { ChatType } from '../utils/chat-utils';
 import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 import { UserEntity } from 'src/user/user.entity';
@@ -33,26 +33,30 @@ export class NewChatEntity {
     chatPassword: string;
 
     // the creator can kick, ban, mute anyone on the channel (even admins)
-    @Column({
+/*    @Column({
         nullable: true,
     })
     chatCreator: string;
+*/
 
     // when the group is created, the admin is the owner (creator)
     // later on in another screen the admin will be able to add more admins to the room
     // the admin can kick, ban, mute others on the channel (besides the creator)
-    @Column({
+/*    @Column({
         type: "simple-json",
         nullable: true,
     })
     chatAdmins: string[]
-
+*/
     // it includes the current user
-    @Column({
+/*    @Column({
         type: "simple-json",
         nullable: true,
     })
     chatMembers: string[]
+*/
+    @ManyToOne(() => UserEntity, (user) => user.rooms_created)
+    creator: UserEntity;
 
     @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
     chatmessages: ChatMessageEntity[];
@@ -60,4 +64,8 @@ export class NewChatEntity {
     @ManyToMany(() => UserEntity)
     @JoinTable()
     users: UserEntity[];
+
+    @ManyToMany(() => UserEntity)
+    @JoinTable()
+    admins: UserEntity[];
 }
