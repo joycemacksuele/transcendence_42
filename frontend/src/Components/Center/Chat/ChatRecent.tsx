@@ -48,7 +48,7 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                     {chatInfo.map((chat: ResponseNewChatDto) => (
                         <>
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
-                            {chat.chatMembers.indexOf(intraName) != -1 && <ListGroup
+                            {chat.users.indexOf(intraName) != -1 && <ListGroup
                                 key={chat.id}
                                 variant="flush"
                             >

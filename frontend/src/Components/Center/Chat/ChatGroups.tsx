@@ -46,7 +46,7 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
                         <>
                             {/* If current user is not a member of the chat (i.e. is not in the members array) */}
                             {/* And char is not private  (i.e. is a public or protected group) */}
-                            {chat.chatMembers.indexOf(intraName) == -1 && chat.chatType != ChatType.PRIVATE && <ListGroup
+                            {chat.users.indexOf(intraName) == -1 && chat.chatType != ChatType.PRIVATE && <ListGroup
                                 key={chat.id}
                                 variant="flush"
                             >

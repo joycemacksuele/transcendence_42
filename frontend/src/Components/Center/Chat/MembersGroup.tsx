@@ -42,7 +42,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
             <Row className='me-auto'>
                 {/*<Card.Body>*/}
                     <Stack gap={2}>
-                        {chatClicked?.chatMembers.map((member: string) => (
+                        {chatClicked?.users.map((member: string) => (
                             <ListGroup
                                 key={member}
                                 variant="flush"
@@ -143,13 +143,13 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                     </Button>
 
                     {/* Leave Room = when we are a member channel */}
-                    {chatClicked?.chatMembers.indexOf(intraName) != -1 && <Button
+                    {chatClicked?.users.indexOf(intraName) != -1 && <Button
                         variant="warning"
                     >
                         Leave group
                     </Button>}
 
-                    {chatClicked?.chatMembers.indexOf(intraName) == -1 && <Button
+                    {chatClicked?.users.indexOf(intraName) == -1 && <Button
                         variant="primary"
                         onClick={ () => setShowPasswordModal(true)}
                     >
