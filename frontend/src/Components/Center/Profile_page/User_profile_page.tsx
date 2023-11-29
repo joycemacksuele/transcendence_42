@@ -4,6 +4,7 @@ import ButtonTfa from "./ButtonTfa";
 import FriendsList from "./DisplayFriends";
 import ChangeProfileName from "./changeProfileName";
 import MyStatistics from "./MyStatistics";
+import MatchHistory from "./MatchHistory";
 import ChangeTheme from "./ChangeTheme";
 import { CurrUserData } from "./contextCurrentUser";
 
@@ -60,6 +61,8 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
           {/* <Row className='h-75'> */}
           <h5>MY STATISTICS</h5>
           <MyStatistics />
+          <br /><h5>MATCH HISTORY</h5>
+          <MatchHistory />
         </Col>
 
         <Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
