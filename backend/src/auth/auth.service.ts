@@ -11,7 +11,7 @@ import { TwoFactorAuthService } from './2fa/2fa.service';
 export class AuthService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly jwtService: JwtService, 
+		public readonly jwtService: JwtService, 
 		private readonly tfaService: TwoFactorAuthService,
 		// private readonly userRepository: UserRepository
 		) {}
