@@ -22,7 +22,8 @@ export class AuthMiddleware implements NestMiddleware {
 
     try{
         token = this.authService.extractTokenFromHeader(request);
-        // token = ""; // TEST
+        // if (request.path === "/users/all")
+        //     token = ""; // TEST
         this.logger.log("ExistingToken: " + token);
     }catch(err){
         throw new UnauthorizedException('Player not authorized! Exiting Ping Pong! ' + err);
