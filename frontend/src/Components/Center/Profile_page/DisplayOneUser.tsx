@@ -7,11 +7,8 @@ import '../../../css/Profile-users-list.css'
 import {NavLink} from "react-router-dom";
 import {ChatType, RequestNewChatDto} from "../Chat/Utils/ChatUtils.tsx";
 import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
-import axios from 'axios';
 
 import '../../../css/Profile-users-list.css'
-import {Col, Image, Row, Button} from 'react-bootstrap';
-import {NavLink} from "react-router-dom";
 
 interface UserProps {
   loginName: string;
