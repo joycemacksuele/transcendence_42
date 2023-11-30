@@ -51,41 +51,40 @@ export class ChatService {
   }
 
   async joinChat(chatId: number, chatPassword: string, intraName: string)  {
-    if (chatPassword == null) {
-      throw new Error('Password is required for PROTECTED group');
-    }
-
     await this.chatRepository.findOneOrFail({
       where: {
         id: chatId,
       },
-    }).then((foundEntityToJoin) => {
+    }).then(async (foundEntityToJoin) => {
+      if (foundEntityToJoin.chatType == ChatType.PROTECTED && foundEntityToJoin.chatPassword == null) {
+          throw new Error('Password is required for PROTECTED group');
+      } else if (foundEntityToJoin.chatType == ChatType.PROTECTED) {
+          this.logger.log('[joinChat] chatPassword: ', chatPassword);
+          // TODO HERE EVERYTIME ITS CREATEING A NEW HASH SO THE COMPARE IS NOT WORKING
+          bcryptjs.hash(chatPassword, 10).then(async (password) => {
+            this.logger.log('[joinChat] password: ', password);
+            this.logger.log('[joinChat] foundEntityToJoin.chatPassword: ', foundEntityToJoin.chatPassword);
 
-      this.logger.log('[joinChat] chatPassword: ', chatPassword);
-      // TODO HERE EVERYTIME ITS CREATEING A NEW HASH SO THE COMPARE IS NOT WORKING
-      bcryptjs.hash(chatPassword, 10).then(async (password) => {
-        this.logger.log('[joinChat] password: ', password);
-        this.logger.log('[joinChat] foundEntityToJoin.chatPassword: ', foundEntityToJoin.chatPassword);
-
-        if (bcryptjs.compare(password, foundEntityToJoin.chatPassword)) {
-          this.logger.log('[joinChat] Password if ok');
-          // Now we have the entity to update the member's array
-          const foundUser : UserEntity = await this.userService.getUserByLoginName(intraName);
-          foundEntityToJoin.users = foundEntityToJoin.users.concat(foundUser);
-          this.logger.log('[joinChat] new members list: ' + foundEntityToJoin.users);
-          this.chatRepository.save(foundEntityToJoin).then(r => {
-            this.logger.log('[joinChat] chatId should match: ' + chatId + " = " + r.id);
+            if (bcryptjs.compare(password, foundEntityToJoin.chatPassword)) {
+              this.logger.log('[joinChat] Password if ok');
+              // Now we have the entity to update the member's array
+              const foundUser : UserEntity = await this.userService.getUserByLoginName(intraName);
+              this.chatRepository.joinChat(foundUser, foundEntityToJoin);
+              return true;
+            }
+          }).catch((err) => {
+            throw new Error('[joinChat] Can not hash password -> err: ' + err);
           });
-          return true;
-        }
+        } else {
+           this.logger.log('[joinChat] No password required, join');
+           // Now we have the entity to update the member's array
+           const foundUser : UserEntity = await this.userService.getUserByLoginName(intraName);
+           this.chatRepository.joinChat(foundUser, foundEntityToJoin);
+	}
       }).catch((err) => {
-        throw new Error('[joinChat] Can not hash password -> err: ' + err);
+          throw new Error('[joinChat] Could not find chat entity to join -> err: ' + err);
       });
-    }).catch((err) => {
-      throw new Error('[joinChat] Could not find chat entity to join -> err: ' + err);
-    });
-    return true;
-
+      return true;
   }
 
   async getAllChats(): Promise<ResponseNewChatDto[]> {
