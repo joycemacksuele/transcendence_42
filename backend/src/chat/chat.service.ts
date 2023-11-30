@@ -22,17 +22,20 @@ export class ChatService {
     this.logger.log('constructor');
   }
 
-  async createChat(requestNewChatDto: RequestNewChatDto)  {
+  async createChat(requestNewChatDto: RequestNewChatDto, creator: string)  {
     const chatEntity = new NewChatEntity();
     chatEntity.chatName = requestNewChatDto.chatName;
     chatEntity.chatType = requestNewChatDto.chatType;
-    chatEntity.creator = await this.userService.getUserByLoginName(requestNewChatDto.loginName);
+    chatEntity.creator = await this.userService.getUserByLoginName(creator);
     chatEntity.admins = [];
     chatEntity.admins.push(chatEntity.creator);
     chatEntity.users = [];
     chatEntity.users.push(chatEntity.creator);
     // chatEntity.chatBannedUsers = [];
-    if (requestNewChatDto.chatType == ChatType.PROTECTED) {
+    if (requestNewChatDto.chatType == ChatType.PRIVATE) {
+      chatEntity.chatName = "Private conversation between " + creator + " and " + requestNewChatDto.loginName;
+      chatEntity.users.push(await this.userService.getUserByLoginName(requestNewChatDto.loginName));
+    } else if (requestNewChatDto.chatType == ChatType.PROTECTED) {
       if (requestNewChatDto.chatPassword == null) {
         throw new Error('Password is required for PROTECTED group');
       }
