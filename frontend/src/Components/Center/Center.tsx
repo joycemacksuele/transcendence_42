@@ -1,17 +1,16 @@
 import { Outlet } from "react-router-dom";
-import "../../css/Center.css";
 
 const Center = () => {
 
   return (
     <>
-    <div id='div-center'>
+    {/* <div id='div-center'> */}
 
         <Outlet />
         {/* OUTLET: Inside this component (Center) there is outlet - access to other components (Chat, game ...)
                     They are specified as 'Routes' in the top App component.
                     Now they can be displayed within the Center component via the 'Outlet'. */}
-    </div>
+    {/* </div> */}
     </>
   );
 };
