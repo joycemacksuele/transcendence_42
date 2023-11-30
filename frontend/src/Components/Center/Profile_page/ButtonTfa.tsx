@@ -17,7 +17,7 @@ const ButtonTfa: React.FC = () => {
 		console.log('Clicked button TFA');
 		
 		try {
-			const response = await axios.post('http://localhost:3001/2fa/toggle_button_tfa');
+			const response = await axios.post('http://jemoederinator.local:3001/2fa/toggle_button_tfa');
 		
 			console.log('   response.data.tfaEnabled: ', response.data.tfaEnabled);
 

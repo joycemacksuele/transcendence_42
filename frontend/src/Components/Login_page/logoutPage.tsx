@@ -9,7 +9,7 @@ const LogoutPage = () => {
 	useEffect(() => {
 		const handleLogout = async () => {
 			try {
-				const response = await axios.get('http://localhost:3001/auth/logout');
+				const response = await axios.get('http://jemoederinator.local:3001/auth/logout');
 				console.log('HandleLogout: Trying to log out ...', response.data.message);
 				navigate('/'); // Redirect to the root of your application
 			} catch (error) {

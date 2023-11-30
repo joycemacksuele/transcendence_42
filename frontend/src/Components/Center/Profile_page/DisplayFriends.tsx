@@ -40,7 +40,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 	// const fetchUsers = async () => {
 	// 	try {
 	// 		const response = await axios.get<User[]>(
-	// 			"http://localhost:3001/users/all"
+	// 			"http://jemoederinator.local:3001/users/all"
 	// 		); // Assuming the server is running on the same host and port
 	// 		setUsers(response.data);
 	// 		console.log('Jaka, retreived users', response.data);
@@ -53,7 +53,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 
 	const fetchMyId = async () => {
 		try {
-			const response = await axios.get(`http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem('profileName')}`);
+			const response = await axios.get(`http://jemoederinator.local:3001/users/get-user-by-profilename/${localStorage.getItem('profileName')}`);
 			//setMyId(response.data.id);	// todo: is this the correct id ??
 			console.log("Fetched myID: ", response.data.id);
 			console.log("Fetched user data: ", response.data);
@@ -69,7 +69,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 	const fetchFriends = async (myId: number) => {
 		console.log("Fetch Friends, myId: ", myId);
 		try {
-			const response = await axios.get<User[]>(`http://localhost:3001/friendship/${myId}/friends`);
+			const response = await axios.get<User[]>(`http://jemoederinator.local:3001/friendship/${myId}/friends`);
 			setFriends(response.data);
 			console.log('Retrieved friends (response.data): ', response.data);
 		} catch (error) {
@@ -117,7 +117,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 
 	// const deleteDummies = async () => {
 	// 	try {
-	// 		await axios.delete("http://localhost:3001/users/");
+	// 		await axios.delete("http://jemoederinator.local:3001/users/");
 	// 		console.log("Dummies deleted successfully");
 	// 	} catch (error) {
 	// 		console.error("Error deleting dummies: ", error);
@@ -151,7 +151,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 									//className={`list-user-link ${user.loginName === selectedUser ? 'selected' : ''} `}
 									onClick={(e) => handleUserClick(e, friend.loginName)}
 								>
-									<img src={"http://localhost:3001/" + friend.profileImage}
+									<img src={"http://jemoederinator.local:3001/" + friend.profileImage}
 										id="profileImage_tiny"
 									/>
 									{friend.profileName}

@@ -12,7 +12,7 @@
 // 	console.log("Verification email sent:");
 // 	try {
 // 		const response = await axios.post(
-// 			"http://localhost:3001/2fa/send_tfa_code"
+// 			"http://jemoederinator.local:3001/2fa/send_tfa_code"
 // 			);
 // 			console.log("email sent, response.data:", response.data);
 // 		} catch (error) {
@@ -30,7 +30,7 @@
 //   let axiosConfig = {
 // 	headers: {
 // 	  // 'Content-Type': 'application/json;charset=UTF-8',
-// 	  // "Access-Control-Allow-Origin": "http://localhost:3000",
+// 	  // "Access-Control-Allow-Origin": "http://jemoederinator.local:3000",
 // 	},
 //   };
 
@@ -38,7 +38,7 @@
 // 	e.preventDefault();
 // 	try {
 // 	  const response = await axios.post(
-// 		"http://localhost:3001/2fa/verify_code",
+// 		"http://jemoederinator.local:3001/2fa/verify_code",
 // 		{ inputValue },
 // 		axiosConfig
 // 	  );
@@ -53,7 +53,7 @@
 // 		//console.log("Input TfaCode response: ", JSON.stringify(response));
 // 		if (tfaAttempts + 1 === 3){
 // 			const responseCleanCookies = await axios.get(
-// 				"http://localhost:3001/auth/cleanToken",
+// 				"http://jemoederinator.local:3001/auth/cleanToken",
 // 				axiosConfig
 // 			  );
 // 			  console.log("clean Token response: " + responseCleanCookies.cookie);
@@ -129,7 +129,7 @@ const re_sendVerificationEmail = async () => {
   console.log("Re-send Verification email:");
   try {
 		const response = await axios.post(
-		  "http://localhost:3001/2fa/resend_email_code"  // TO DO - change to env variable 
+		  "http://jemoederinator.local:3001/2fa/resend_email_code"  // TO DO - change to env variable 
 		  );
 		console.log("    email sent, response.data:", response.data);
   } catch (error) {
@@ -146,7 +146,7 @@ const InputTFAcode = () => {
   let axiosConfig = {
 	headers: {
 	  // 'Content-Type': 'application/json;charset=UTF-8',
-	  // "Access-Control-Allow-Origin": "http://localhost:3000",
+	  // "Access-Control-Allow-Origin": "http://jemoederinator.local:3000",
 	},
   };
 
@@ -155,7 +155,7 @@ const InputTFAcode = () => {
 	try {
 		console.log(document.cookie);
 	  const response = await axios.post(
-		"http://localhost:3001/2fa/verify_code",  // TO DO change to the env variable 
+		"http://jemoederinator.local:3001/2fa/verify_code",  // TO DO change to the env variable 
 		{ inputValue },
 		axiosConfig
 	  );
@@ -172,7 +172,7 @@ const InputTFAcode = () => {
 		{
 			console.log("Supposedly cleaning cookies on the backend");
 			const responseCleanCookies = await axios.post(
-				"http://localhost:3001/auth/cleanToken",  // TO DO change to the environment variable 
+				"http://jemoederinator.local:3001/auth/cleanToken",  // TO DO change to the environment variable 
 				axiosConfig
 			  );
 			  console.log("clean Token response: " + responseCleanCookies.cookie);
