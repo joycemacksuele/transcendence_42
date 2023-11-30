@@ -10,7 +10,7 @@ import {chatSocket} from "./Utils/ClientSocket.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
@@ -20,11 +20,10 @@ import '../../../css/Chat.css'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
 
 const Chat = () => {
-    const [chatClicked, setChatClicked] = useState<ResponseNewChatDto>({id: 0, chatType: ChatType.PUBLIC, chatName: ''});
+    const [chatClicked, setChatClicked] = useState<ResponseNewChatDto>({id: 0, chatType: ChatType.PUBLIC, chatName: '', chatMembers: []});
     console.log("[Chat] chatClicked: ", chatClicked);
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
@@ -38,7 +37,7 @@ const Chat = () => {
         if (!chatSocket.connected) {
             chatSocket.connect();
             chatSocket.on("connect", () => {
-                console.log("[NewChat] socket connected: " + chatSocket.connected + " -> socket id: " + chatSocket.id);
+                console.log("[NewChat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
             });
             chatSocket.on("disconnect", (reason) => {
                 if (reason === "io server disconnect") {
@@ -93,7 +92,7 @@ const Chat = () => {
                             </Nav.Item>
                         </Nav>
                     </Row>
-                    {/* Recent or Group's body */}
+                    {/* Recent or Group body */}
                     <Row className='h-100'>
                         {activeContentLeft === 'recent' && <ChatRecent setChatClicked={setChatClicked} /> }
                         {activeContentLeft === 'groups' && <ChatGroups setChatClicked={setChatClicked} /> }
@@ -110,27 +109,26 @@ const Chat = () => {
                 {/* Members column */}
                 <Col className='col-md-3'>
                     {/* Members header */}
-                    <Row className='h-100'>
-                        <Card.Header>
-                            <Nav
-                                className="border-bottom"
-                                activeKey="members"
-                                variant="underline"
-                                fill
-                            >
-                                <Nav.Item>
-                                    <Nav.Link href="members" disabled>Members</Nav.Link>
-                                </Nav.Item>
-                            </Nav>
-                        </Card.Header>
-                        {/* Members body */}
-                        <Card.Body>
-                            {chatClicked.chatType === ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
-                            {chatClicked.chatType === ChatType.PUBLIC || chatClicked.chatType === ChatType.PROTECTED && <MembersGroup chatClicked={chatClicked}/> }
-                        </Card.Body>
+                    <Row className='h-10'>
+                        <Nav
+                            className="border-bottom p-0"
+                            activeKey="members"
+                            variant="underline"
+                            fill
+                            // onSelect={(k) => handleClick(k)}
+                        >
+                            <Nav.Item>
+                                <Nav.Link href="members" disabled>Members</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
                     </Row>
-
+                    {/* Members body */}
+                    <Row className='h-100'>
+                        {chatClicked.chatType === ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
+                        {chatClicked.chatType != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> }
+                    </Row>
                 </Col>
+
             </Row>
         </Container>
     )

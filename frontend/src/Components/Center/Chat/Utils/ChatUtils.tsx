@@ -1,3 +1,4 @@
+// This is mapped to request-new-chat.dto.ts on the backend
 export interface RequestNewChatDto {
     // socketId: string;
     chatName: string;// Can also be a login name
@@ -6,11 +7,13 @@ export interface RequestNewChatDto {
     loginName: string;
 }
 
+// This is mapped to response-new-chat.dto.ts on the backend
 export interface ResponseNewChatDto {
     id: number;
     chatName: string;// Can also be a login name
     chatType: ChatType;
     // chatPassword: string | null;
+    chatMembers: string[];
 }
 
 export enum ChatType {
