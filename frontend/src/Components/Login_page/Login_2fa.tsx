@@ -131,7 +131,7 @@ const re_sendVerificationEmail = async () => {
 		const response = await axios.post(
 		  "http://localhost:3001/2fa/resend_email_code"  // TO DO - change to env variable 
 		  );
-		console.log("    email sent, response.data:", response.data);
+		console.log("    email sent, response.data:", response.data , "response.status: ", response.status);
   } catch (error) {
 	console.error("Error sending verification email:", error);
   }

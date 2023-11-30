@@ -4,7 +4,7 @@ import { OpenAccess } from './guards/auth.openaccess';
 import { UserService } from 'src/user/user.service';
 import { UserRepository } from 'src/user/user.repository';
 import { response } from 'express';
-import { AuthGuard } from './guards/auth.guard';
+// import { AuthGuard } from './guards/auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { request } from 'https';
 import { JwtService } from '@nestjs/jwt';
@@ -75,55 +75,74 @@ export class AuthController {
 			let payload = await this.authService.extractUserdataFromToken(req);
 			let user = await this.userService.getUserByLoginName(payload.username);
 			await this.userService.setOnlineStatus(user.loginName, false);
-			await this.authService.removeAuthToken(req, res);
+			// await this.authService.removeAuthToken(req, res);
+			res.clearCookie('Cookie');
 			await this.userService.updateRefreshToken(user.loginName, 'default'); 
+			this.logger.log("Removed tokens. Logging out!");
 		}
 		catch(err){
 			this.logger.log('\x1b[31mUnable to logout: \x1b[0m' + err);
 		}
 	}
 
-	@Post('cleanToken')
-	async cleanToken(@Request() req:any, @Response() res:any){
-		try{
-			this.logger.log("Start cleanToken function");
-			return await this.authService.removeAuthToken(req, res);
-		}
-		catch(err){
-			this.logger.log('\x1b[31mUnable to cleanToken: \x1b[0m' + err);
-		}
-	}
+	// @Post('cleanToken')
+	// async cleanToken(@Request() req:any, @Response() res:any){
+	// 	try{
+	// 		this.logger.log("Start cleanToken function");
+	// 		return await this.authService.removeAuthToken(req, res);
+	// 	}
+	// 	catch(err){
+	// 		this.logger.log('\x1b[31mUnable to cleanToken: \x1b[0m' + err);
+	// 	}
+	// }
 
-	@Post('updateAuth')
-	async updateToken(@Req() request : any, @Body() data: {name: any}, @Res() response: any){
-		try{
-			this.logger.log("Start updateAuth controller");
-			this.logger.log("data.name: " + data.name);
-			let player = await this.userService.getUserByLoginName(data.name); // retrieve user entity
-			console.log("player email: " + player.email);
-			let newToken = await this.authService.signToken(player);
-			console.log("UpdateAuth function - new token: " + newToken);
+	// @Post('updateAuth')
+	// async updateToken(@Req() request : any, @Body() data: {name: any}, @Res() response: any){
+	// 	try{
+	// 		this.logger.log("Start updateAuth controller ---------");
+	// 		this.logger.log("data.name: " + data.name);
+	// 		let player = await this.userService.getUserByLoginName(data.name); // retrieve user entity
+	// 		console.log("player email: " + player.email);
+	// 		let newToken = await this.authService.signToken(player);
+	// 		console.log("UpdateAuth function - new token: " + newToken);
 
-			response.setHeader('Set-Cookie', newToken);
-			this.logger.log('New token set in the response header');
+	// 		let cookies = request.get('Cookie'); // not needed
+	// 		console.log("     verify cookie: " + cookies); // not needed
+	// 		// const cookieAttributes = {
+	// 		// httpOnly: true,
+	// 		// path: '/',
+	// 		// sameSite: 'none',
+	// 		// };
+	// 		// let cookieToken = `token=${newToken};`;
+	// 		// for (let attribute in cookieAttributes) {
+	// 		// if (cookieAttributes[attribute] === true) {
+	// 		// 	cookieToken += ` ${attribute};`;
+	// 		// } else
+	// 		// 	cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
+	// 		// }
+	// 		// response.setHeader('Set-Cookie', cookieToken);
 
-			let newRefreshToken = await this.authService.signRefreshToken(player);
-			console.log("UpdateAuth function - new refreshToken: " + newRefreshToken);
-			this.userService.updateRefreshToken(player.loginName, newRefreshToken);
-			this.logger.log('New refresh token set in the database');
-			return true;
-		}catch(err){
-			this.logger.log('\x1b[31mUnable to updateToken: \x1b[0m' + err);
-		}
-	}
+	// 		// this.logger.log('New token set in the response header');
 
-	@Post('getPlayer')
-	async getPlayer(@Req() request : any, @Body() data: {name: any}){
-		try{
-			this.logger.log("player to be requested in the getPlayer Controller: " + data.name);
-			return await this.userService.getUserByLoginName(data.name);
-		}catch(err){
-			this.logger.log("Unable to get the player from the post request " + err);
-		}
-	}
+	// 		let newRefreshToken = await this.authService.signRefreshToken(player);
+	// 		console.log("UpdateAuth function - new refreshToken: " + newRefreshToken);
+	// 		await this.userService.updateRefreshToken(player.loginName, newRefreshToken);
+	// 		this.logger.log('New refresh token set in the database');
+	// 		// console.log(request);
+	// 		return true; //await this.authService.replaceToken(request, response, newToken);
+	// 	}catch(err){
+	// 		this.logger.log('\x1b[31mUnable to updateToken: \x1b[0m' + err);
+	// 	}
+	// 	return false;
+	// }
+
+	// @Post('getPlayer')
+	// async getPlayer(@Req() request : any, @Body() data: {name: any}){
+	// 	try{
+	// 		this.logger.log("player to be requested in the getPlayer Controller: " + data.name);
+	// 		return await this.userService.getUserByLoginName(data.name);
+	// 	}catch(err){
+	// 		this.logger.log("Unable to get the player from the post request " + err);
+	// 	}
+	// }
 }
