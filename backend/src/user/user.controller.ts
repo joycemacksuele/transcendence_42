@@ -85,6 +85,7 @@ export class UserController {
 	): Promise<UserEntity>
 	{
 		this.logger.log('[BACKEND LOG] getUser');
+		// throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED); // jaka: just for testing
 		return (this.userService.getUserByLoginName(loginName));
 	}
 

@@ -1,0 +1,47 @@
+@import url('./default.css');
+
+/* ************************************************* */
+/****** CUSTOM COLORS TO CHANGE THE THEME ************/
+
+body {
+  background-color: #e4d31e;
+}
+
+/* Background of outer div  */
+.column-bckg {
+  background: rgb(15, 90, 30) !important;
+  border: rgb(184, 183, 183) solid 1px;
+  border: rgb(220, 17, 50) solid 1px;
+}
+
+/* Most inner sections inside each div in the center: */
+.inner-section {
+  background: rgb(165, 165, 79);
+  border: 1px rgb(184, 99, 99) solid;
+}
+
+
+button.button_default {
+  background-color: #46bdb5;
+}
+button.button_default:hover {
+  border-color: #dcfb92;
+  background-color: #c72121;
+}
+button.button_default:focus,
+button.button_default:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.form-control::file-selector-button {
+  background-color: rgb(213, 230, 245);
+}
+
+
+
+/* BROWSER'S OWN SETTINGS */
+/* @media (prefers-color-scheme: light) {
+  :root {
+    color: #107edf;
+  }
+} */
