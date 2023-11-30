@@ -26,7 +26,7 @@ const LogoutPage = () => {
 
   return (
     <div id="logout-page">
-      <p>LOGOUT PAGE</p>
+      <p>GO AWAY!</p>
     </div>
   );
 };
