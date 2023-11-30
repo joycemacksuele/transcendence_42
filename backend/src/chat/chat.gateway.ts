@@ -8,6 +8,8 @@ import { RequestRegisterChatDto } from './dto/request-register-chat.dto';
 import {NewChatEntity} from "./entities/new-chat.entity";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
 import {IsStrongPassword} from "class-validator";
+import { AuthService } from "src/auth/auth.service";
+import { JwtService } from '@nestjs/jwt';
 
 /*
     Websockets tips:
@@ -32,7 +34,10 @@ export class ChatGateway
 {
   private readonly logger = new Logger(ChatGateway.name);
 
-  constructor(private readonly chatService: ChatService) {
+  constructor(
+	private readonly chatService: ChatService,
+	public readonly authService : AuthService
+) {
     this.logger.log('Constructor');
   }
 
@@ -52,11 +57,15 @@ export class ChatGateway
         socket.join("newChat");
         this.logger.log('Socket rooms: ' + socket.rooms);
       })
-      // const token = clientSocket.handshake.headers.cookie.split('=')[1];
-      // this.logger.log('token: ', token);
-      // const decodedToken = this.authService.validateJwt(token);
-      // const user = await this.authService.validateUser(decodedToken.id);
-      // clientSocket.data.user = user;
+      const token = clientSocket.handshake.headers.cookie.split('=')[1];
+      this.logger.log('token: ', token);
+      this.logger.log('token: ', token);
+      try {
+          const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+          clientSocket.data.user = payload.username;
+      } catch {
+            throw new UnauthorizedException('Invalid token');
+      }
     } catch {
       this.logger.log('UnauthorizedException -> Socket disconnected:', clientSocket.id);
       clientSocket.emit('error', new UnauthorizedException());
@@ -75,7 +84,7 @@ export class ChatGateway
     this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
     this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
 
-    this.chatService.createChat(requestNewChatDto).then(() => {
+    this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(() => {
       // If we could save a new chat in the database, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
