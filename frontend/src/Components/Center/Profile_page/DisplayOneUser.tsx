@@ -28,7 +28,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 		const fetchUserData = async () => {
 			let response;
 			try {
-				response = await axios.get(`http://localhost:3001/users/get-user/${loginName}`);
+				response = await axios.get(`http://jemoederinator.local:3001/users/get-user/${loginName}`);
 				setUserData(response.data);
 				console.log("Fetched userData: ", response);
 			} catch (error) {
@@ -41,7 +41,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 			try {
 				console.log("Checking if I follow this user ... ");
 				
-				const responseAmIFollowing = await axios.get(`http://localhost:3001/friendship/followingExists/${myId}/${response.data.id}`);
+				const responseAmIFollowing = await axios.get(`http://jemoederinator.local:3001/friendship/followingExists/${myId}/${response.data.id}`);
 				console.log("   responseAmIFollowing: ", responseAmIFollowing);
 				if (responseAmIFollowing.data) {
 					// setIamFollowing(!!responseAmIFollowing.data); // DOUBLE !! CONVERT TO BOOL
@@ -65,7 +65,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 				// todo: ask, what if localstorage is manipulated or deleted?
 				// 		Maybe there could be a function without arguments, only depending on the token, to fetch my data ???
 				console.log("localstorage-profileName: ", localStorage.getItem('profileName'));
-				const response = await axios.get(`http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem("profileName")}`);
+				const response = await axios.get(`http://jemoederinator.local:3001/users/get-user-by-profilename/${localStorage.getItem("profileName")}`);
 				setMyId(response.data.id);
 				//setIamFollowing(response.data.IamFollowing);
 				console.log("Fetched My Data: ", response);
@@ -80,7 +80,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 	async function startFollowing() {
 		const friendId = userData.id; // todo: fetch the id (the to-be friend)
 		try {
-			const response = await axios.post(`http://localhost:3001/friendship/${myId}/addFriend/${friendId}`);
+			const response = await axios.post(`http://jemoederinator.local:3001/friendship/${myId}/addFriend/${friendId}`);
 			console.log("Success: Friendship added: ", response.data);
 		}
 		catch (error: any) {
@@ -100,7 +100,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 	
 	async function stopFollowing() {
 		try {
-			const response = await axios.post(`http://localhost:3001/friendship/${myId}/removeFriend/${userData.id}`);
+			const response = await axios.post(`http://jemoederinator.local:3001/friendship/${myId}/removeFriend/${userData.id}`);
 			console.log("Success remnoving a friend: ", response);
 		} catch (error: any) {
 			console.error("Error removing a friend");
@@ -158,7 +158,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 			<Row className="mb-5">
 				<Col>
 					<Image 	id="otherUserImage"
-							src={"http://localhost:3001/" + userData.profileImage }
+							src={"http://jemoederinator.local:3001/" + userData.profileImage }
 							alt="no_image_found"
 					/>
 				</Col>	{/* todo: the url should come form .env */ }

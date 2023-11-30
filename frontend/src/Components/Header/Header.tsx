@@ -54,9 +54,9 @@ const Header: React.FC = () => {
 
 	
 	// THE CORRECT PATH FOR STORED IMAGES, EXAMPLE:
-	//  src={`http://localhost:3001/uploads/jmurovec-4d1c6f5c-2f78-49fc-9f11-0a3488e2c665.jpg`}
+	//  src={`http://jemoederinator.local:3001/uploads/jmurovec-4d1c6f5c-2f78-49fc-9f11-0a3488e2c665.jpg`}
 	//  IN main.ts NEEDS TO BE ENABLED THE CORRECT FOLDER: app.use(...)
-	const image = 'http://localhost:3001/' + localStorage.getItem('profileImage') || undefined;
+	const image = 'http://jemoederinator.local:3001/' + localStorage.getItem('profileImage') || undefined;
 	//console.log('Local Storage Image: ', image);
 
 	const connectToChatSocket = () => {
