@@ -45,18 +45,17 @@ export class TwoFactorAuthController {
             {
                 this.logger.log('codeStored === default');
                 throw new HttpException('Internal Server Error: Verification email was not sent', HttpStatus.INTERNAL_SERVER_ERROR); 
-                // redirect to the auth page? how? 
             }
             if (codeToVerify === codeStored)
             {
-    			await this.userService.setOnlineStatus(user.loginName, true);   // jaka
-                await this.userService.updateStoredTFACode(user.loginName, "default"); // jaka  // WHY? 
+    			await this.userService.setOnlineStatus(user.loginName, true);
+                await this.userService.updateStoredTFACode(user.loginName, "default");
                 this.logger.log('2fa verification successfull! Codes match!');
                 return true;
             }
             else {
                 this.logger.log('2fa verification failed! Codes did not match!');
-                // let temp = await this.userService.updateStoredTFACode(user.loginName, "default");
+                let temp = await this.userService.updateStoredTFACode(user.loginName, "default");
                 return false; 
             }
         } catch(err) {
