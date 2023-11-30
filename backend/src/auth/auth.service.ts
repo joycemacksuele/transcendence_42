@@ -216,7 +216,7 @@ export class AuthService {
 		let token: string;
 
 		let expiryDate = new Date();
-		expiryDate.setMinutes(expiryDate.getMinutes() + 10);
+		expiryDate.setMinutes(expiryDate.getMinutes() + 1);
 		console.log("expiry date: " + expiryDate);
 
 		let time = expiryDate.valueOf();
@@ -286,6 +286,41 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
 	return response.sendStatus(200);
   }
 
+  async replaceToken(request: Request, response: Response, newToken: any): Promise<any> {
+	try{
+		this.logger.log("start replaceToken");
+		let cookies = request.get('Cookie'); // not needed
+		console.log("     verify cookie: " + cookies); // not needed
+		let existingToken = this.extractTokenFromHeader(request); // not needed
+		console.log("     existingToken: " + existingToken); // not needed
+
+		let replaceToken = newToken;
+		const cookieAttributes = {
+			httpOnly: true,
+			path: '/',
+			sameSite: 'none',
+		};
+		let cookieToken = `token=${replaceToken};`;
+		for (let attribute in cookieAttributes) {
+			if (cookieAttributes[attribute] === true) {
+				cookieToken += ` ${attribute};`;
+			} else
+				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
+		}
+		// request.res.cookie('token=', newToken, {httpOnly: true, path: '/', sameSite: 'none'});
+		// response.setHeader('Set-Cookie', cookieToken);
+		request.cookies('Set-Cookie', cookieToken)
+		this.logger.log('Replaced token in header');
+		return true;
+
+	}catch(err){
+			this.logger.error('\x1b[31mError unable to replace header : \x1b[0m' + err);
+			throw new HttpException('Failed to replace header', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
+		}
+  }
+
+
+
 // ADDED JAKA:
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
@@ -307,12 +342,14 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
         let cookie: string;
         let token: string;
 
+		// console.log(request);
+
         cookie = request.get('Cookie');
         this.logger.log('extract Token from Header - full cookie: ' + cookie);
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');
-        console.log("arrays: " + arrays); // TO BE REMOVED 
+        // console.log("arrays: " + arrays); // TO BE REMOVED 
         for (let i = 0; arrays[i]; i++)
         {
             if (arrays[i].includes("token="))
