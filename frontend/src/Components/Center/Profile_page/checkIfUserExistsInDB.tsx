@@ -18,7 +18,7 @@ interface CheckResponse {
 export const checkIfUserExistsInDB = async (): Promise<CheckResponse> => {
 	console.log("Start checkifUserExistsinDB():");
 	try {
-		const response:AxiosResponse< CheckResponse > = await axios.get< CheckResponse >("http://localhost:3001/users/check_if_user_in_db");
+		const response:AxiosResponse< CheckResponse > = await axios.get< CheckResponse >("http://jemoederinator.local:3001/users/check_if_user_in_db");
 		console.log("................ CheckifUserExistsinDB: response.data: ", response.data);
 		return response.data;
 	} catch (error) {

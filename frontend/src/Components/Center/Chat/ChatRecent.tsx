@@ -60,13 +60,13 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                                 >
 
                                     {chat.chatType === ChatType.PROTECTED && <Image
-                                        src={`http://localhost:3001/resources/protected-chat.png`}
+                                        src={`http://jemoederinator.local:3001/resources/protected-chat.png`}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
                                     {chat.chatType != ChatType.PROTECTED && <Image
-                                        src={`http://localhost:3001/resources/chat.png`}
+                                        src={`http://jemoederinator.local:3001/resources/chat.png`}
                                         className="me-1"
                                         width={30}
                                         alt="chat"

@@ -54,7 +54,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                                     onClick={ () => setShowMemberModal(true)}
                                 >
                                     <Image
-                                        src={`http://localhost:3001/resources/member.png`}
+                                        src={`http://jemoederinator.local:3001/resources/member.png`}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
@@ -71,7 +71,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                                     </Modal.Header>
                                     <Modal.Body>
                                         <Button
-                                            href="http://localhost:3000/main_page/game"
+                                            href="http://jemoederinator.local:3000/main_page/game"
                                             className="me-4 mb-3"
                                             variant="success"
                                         >
@@ -79,7 +79,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                                         </Button>
                                         <Button
                                             className="me-4 mb-3"
-                                            href="http://localhost:3000/main_page/users"
+                                            href="http://jemoederinator.local:3000/main_page/users"
                                             variant="primary"
                                         >
                                             Go to profile
