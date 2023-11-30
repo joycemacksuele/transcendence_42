@@ -2,15 +2,13 @@ import {Logger, Module} from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthGuard } from './guards/auth.guard';
+// import { AuthGuard } from './guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { UserService } from 'src/user/user.service';
 import { TwoFactorAuthService } from './2fa/2fa.service';
 import { UserModule } from 'src/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
-import { UserRepository } from 'src/user/user.repository';
-
 
 @Module({
   imports: [
@@ -25,10 +23,10 @@ import { UserRepository } from 'src/user/user.repository';
   
   providers: [
   AuthService,
-  {
-    provide: APP_GUARD,
-    useClass: AuthGuard, 
-  }, 
+  // {
+  //   provide: APP_GUARD,
+  //   useClass: AuthGuard, 
+  // }, 
   UserService, 
   TwoFactorAuthService,
   ],

@@ -48,7 +48,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { DummyUsersController } from 'src/dummies/dummyUsers.controller';
 import { UploadImageController } from 'src/user/change_profile_image_or_name/change_profile_image';
 import { AddUsernameMiddleware } from 'src/user/change_profile_image_or_name/change_profile_image';
-import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
+import { NestModule, MiddlewareConsumer , RequestMethod} from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
+import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
 
 // To read: https://docs.nestjs.com/techniques/database
 /*
@@ -121,5 +122,11 @@ export class AppModule implements NestModule {
     consumer
       .apply(AddUsernameMiddleware)
       .forRoutes(UploadImageController);
+    consumer
+      .apply(AuthMiddleware)
+       .exclude(
+        { path: 'auth/login', method: RequestMethod.ALL },
+        { path: 'auth/token', method: RequestMethod.ALL })
+      .forRoutes({ path: '/**', method: RequestMethod.ALL });
   }
 }

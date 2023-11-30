@@ -10,9 +10,9 @@ import PlayGamePage from "./Components/Center/Game/Game";
 import UsersList from "./Components/Center/Profile_page/DisplayUsers";
 import PageNotFound from "./Components/Other/PageNotFound.tsx";
 import LogoutPage from './Components/Login_page/logoutPage.tsx';
+import ForcedLogout from './Components/Other/ForcedLogout.tsx';
 import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_page/contextCurrentUser.tsx';
-import AuthCallbackPage from './Components/Login_page/AuthCallbackPage.tsx';
-import "./index.css";
+// import AuthCallbackPage from './Components/Login_page/AuthCallbackPage.tsx';
 
 
 // 'Context' provides a way to pass data through the component tree without having to pass 
@@ -36,19 +36,20 @@ const App_jaka: React.FC = () => {
 		<>
 		<CurrentUserContext.Provider value={currUserData as CurrUserData}>
 			<Routes>
-				<Route path="/"					element={<LoginAuth />} />
+				<Route path="/"				element={<LoginAuth />} />
+				<Route path="/Login_2fa"	element={<InputTFAcode />} />
 				{/* <Route path="/auth-callback"	element={<AuthCallbackPage />}/> */}
-				<Route path="/Login_2fa"					element={<InputTFAcode />} />
 
 				<Route 	path="/main_page" element={<MainPage updateContext={ setCurrUserData } />} >
-					<Route path="/main_page/profile" element={<UserProfilePage updateContext={ setCurrUserData } />} />
-					<Route path="/main_page/chat" element={<ChatPage />} />
-					<Route path="/main_page/game" element={<PlayGamePage />} />
-					<Route path="/main_page/users" element={<UsersList />} />
+					<Route path="/main_page/profile"	element={<UserProfilePage updateContext={ setCurrUserData } />} />
+					<Route path="/main_page/chat"		element={<ChatPage />} />
+					<Route path="/main_page/game"		element={<PlayGamePage />} />
+					<Route path="/main_page/users"		element={<UsersList />} />
 				</Route>
 
-				<Route path="logout"	element={<LogoutPage />} />
-				<Route path="*"			element={<PageNotFound />} />
+				<Route path="logout"		element={<LogoutPage />} />
+				<Route path="forced-logout"	element={<ForcedLogout />} />
+				<Route path="*"				element={<PageNotFound />} />
 			</Routes>
 		</CurrentUserContext.Provider>
 		</>

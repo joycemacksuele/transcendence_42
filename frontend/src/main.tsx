@@ -1,10 +1,8 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import "./index.css";
 import App_jaka from "./App_jaka.tsx";
-
-
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 /*
   jQuery
@@ -12,6 +10,7 @@ import App_jaka from "./App_jaka.tsx";
   single line of code. jQuery is often used in communication with the DOM to make changes to JavaScript elements.
  */
 
+localStorage.setItem('css-file', 'default.css');
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Router>
