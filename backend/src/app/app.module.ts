@@ -46,6 +46,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { DummyUsersController } from 'src/dummies/dummyUsers.controller';
 import { UploadImageController } from 'src/user/change_profile_image_or_name/change_profile_image';
 import { AddUsernameMiddleware } from 'src/user/change_profile_image_or_name/change_profile_image';
+import { MatchModule } from 'src/matches/match.module';
+import { MatchEntity } from 'src/matches/match.entity';
 import { NestModule, MiddlewareConsumer , RequestMethod} from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
 import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
 
@@ -71,7 +73,7 @@ import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
-      entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity],
+      entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity, MatchEntity],
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
     }),
@@ -81,7 +83,8 @@ import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
     TwoFactorAuthModule,
     DatabaseModule,
     MailerModule,
-    FriendshipModule
+    FriendshipModule,
+    MatchModule
   ],
 
   controllers: [

@@ -7,6 +7,15 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { TwoFactorAuthService } from './2fa/2fa.service';
 
+
+interface JwtPayload {
+	sub: number;
+	username: string;
+	exp: number;
+	iat: number;
+  }  
+
+
 @Injectable()
 export class AuthService {
 	constructor(
@@ -185,7 +194,8 @@ export class AuthService {
 			path = `${process.env.FRONTEND}/Login_2fa`;
 		}
 		else{
-			path = `${process.env.FRONTEND}/main_page`;
+			// path = `${process.env.FRONTEND}`; // changed jaka, it was redirectong to login page, if tfa-enabled was deleted from local storage
+			path = `${process.env.FRONTEND}/main_page/profile`;
 			this.logger.log("Redirecting to: ", path);
 		}
 		return response.redirect(path);
@@ -313,7 +323,7 @@ export class AuthService {
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
-    async extractUserdataFromToken(request: Request): Promise<any> { 
+    async extractUserdataFromToken(request: Request): Promise<JwtPayload> { 
         const token = this.extractTokenFromHeader(request);
         if (!token) {
             throw new UnauthorizedException('Token not found');
@@ -331,7 +341,7 @@ export class AuthService {
         let token: string;
 
         cookie = request.get('Cookie');
-        this.logger.log('extract Token from Header - full cookie: ' + cookie); // COMMENT
+        // this.logger.log('extract Token from Header - full cookie: ' + cookie); // COMMENT
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');

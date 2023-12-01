@@ -1,0 +1,249 @@
+[
+    {
+        "Id": "fbbc117a2a146b7127a185d5b39ddfbc81e121d4cbd5ac2d218c5c485f195ad8",
+        "Created": "2023-11-23T11:03:49.128224027Z",
+        "Path": "docker-entrypoint.sh",
+        "Args": [
+            "sh",
+            "-c",
+            "npm install \u0026\u0026 npm run dev"
+        ],
+        "State": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 137,
+            "Error": "",
+            "StartedAt": "2023-11-29T00:08:21.354795724Z",
+            "FinishedAt": "2023-11-29T09:28:21.947383663Z"
+        },
+        "Image": "sha256:8e81ac769c958d05f1bc43df0bfbce0f609e2a36c8e1b48a1b3535bbc1a0e1b1",
+        "ResolvConfPath": "/var/lib/docker/containers/fbbc117a2a146b7127a185d5b39ddfbc81e121d4cbd5ac2d218c5c485f195ad8/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/fbbc117a2a146b7127a185d5b39ddfbc81e121d4cbd5ac2d218c5c485f195ad8/hostname",
+        "HostsPath": "/var/lib/docker/containers/fbbc117a2a146b7127a185d5b39ddfbc81e121d4cbd5ac2d218c5c485f195ad8/hosts",
+        "LogPath": "/var/lib/docker/containers/fbbc117a2a146b7127a185d5b39ddfbc81e121d4cbd5ac2d218c5c485f195ad8/fbbc117a2a146b7127a185d5b39ddfbc81e121d4cbd5ac2d218c5c485f195ad8-json.log",
+        "Name": "/frontend",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "trans_21nov_default",
+            "PortBindings": {
+                "8000/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "3000"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "KernelMemory": 0,
+            "KernelMemoryTCP": 0,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "Mounts": [
+                {
+                    "Type": "bind",
+                    "Source": "/Users/jmb/Desktop/projects/transcendence/trans_21nov/frontend",
+                    "Target": "/frontend"
+                }
+            ],
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/3046faf8d72f11cff4ef6345ecda378ac8019d94fab1ea5592ce6c3351b9a301-init/diff:/var/lib/docker/overlay2/fc3725fc2e2be6b10b53aa122179cf3163b67f82f76d704612fb665fdea2157d/diff:/var/lib/docker/overlay2/bcd9b76cc334115bf0a3384e7e02b5f17344c404755bf0a67521cd531b782fd8/diff:/var/lib/docker/overlay2/1838715f2cd5862cc96da3907bd1b932791f728c1db77f24fe5964197b03a3fb/diff:/var/lib/docker/overlay2/4e8e3b8da9e928f7047bd333a258ffb38833287cf7a265041a5a18ebb70093d7/diff:/var/lib/docker/overlay2/4500ae34da3f4d2ea3a7de2296fe014ca24ac50bd2e70656ac8b8e69ccac0caf/diff:/var/lib/docker/overlay2/5a201018b92c0995940f235a0ec815ddd3cce2d6ae00bfeb3d50bf69160d38aa/diff:/var/lib/docker/overlay2/f7549bb1a04bead61b121aa86a5a21c4cd8958e54724549089087136710c6863/diff:/var/lib/docker/overlay2/b33aabd91861ff15e71b0e7d9368e37c9f18d93fd078aef28e63d041d6e2c3dc/diff",
+                "MergedDir": "/var/lib/docker/overlay2/3046faf8d72f11cff4ef6345ecda378ac8019d94fab1ea5592ce6c3351b9a301/merged",
+                "UpperDir": "/var/lib/docker/overlay2/3046faf8d72f11cff4ef6345ecda378ac8019d94fab1ea5592ce6c3351b9a301/diff",
+                "WorkDir": "/var/lib/docker/overlay2/3046faf8d72f11cff4ef6345ecda378ac8019d94fab1ea5592ce6c3351b9a301/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/Users/jmb/Desktop/projects/transcendence/trans_21nov/frontend",
+                "Destination": "/frontend",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+            }
+        ],
+        "Config": {
+            "Hostname": "fbbc117a2a14",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "8000/tcp": {}
+            },
+            "Tty": true,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NODE_VERSION=18.16.0",
+                "YARN_VERSION=1.22.19"
+            ],
+            "Cmd": [
+                "sh",
+                "-c",
+                "npm install \u0026\u0026 npm run dev"
+            ],
+            "Image": "node:18.16.0",
+            "Volumes": {
+                "/frontend": {}
+            },
+            "WorkingDir": "/frontend",
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "67296be66ad0bb54bbc80dd573d3026e54bb8d7e128d2208840832ff968c3e73",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "nest_app:service_started,postgres_db:service_started",
+                "com.docker.compose.image": "sha256:8e81ac769c958d05f1bc43df0bfbce0f609e2a36c8e1b48a1b3535bbc1a0e1b1",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "trans_21nov",
+                "com.docker.compose.project.config_files": "/Users/jmb/Desktop/projects/transcendence/trans_21nov/docker-compose.yml",
+                "com.docker.compose.project.working_dir": "/Users/jmb/Desktop/projects/transcendence/trans_21nov",
+                "com.docker.compose.service": "react_app",
+                "com.docker.compose.version": "2.13.0"
+            }
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "b92bfad4e2863b91fdd357f27b82c04ac08ba0f60851607d73e7daf4be4e97bf",
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "Ports": {},
+            "SandboxKey": "/var/run/docker/netns/b92bfad4e286",
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "",
+            "Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "MacAddress": "",
+            "Networks": {
+                "trans_21nov_default": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "frontend",
+                        "react_app",
+                        "fbbc117a2a14"
+                    ],
+                    "NetworkID": "caf78c14ab8e3dee5b233ac258f268d9dc26b735e1a771ca56c1dda3efe64fc5",
+                    "EndpointID": "",
+                    "Gateway": "",
+                    "IPAddress": "",
+                    "IPPrefixLen": 0,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "",
+                    "DriverOpts": null
+                }
+            }
+        }
+    }
+]
