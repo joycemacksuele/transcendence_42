@@ -167,8 +167,8 @@ const InputTFAcode = () => {
         // console.log("Input TfaCode response: ", JSON.stringify(response));
         if (tfaAttempts + 1 === 3) {
           console.log("Supposedly cleaning cookies on the backend");
-          const responseCleanCookies = await axiosInstance.post(
-            "http://localhost:3001/auth/cleanToken", // TO DO change to the environment variable
+          const responseCleanCookies = await axiosInstance.get(
+            "http://localhost:3001/auth/logout", // TO DO change to the environment variable
             axiosConfig
           );
           console.log(
@@ -197,16 +197,16 @@ const InputTFAcode = () => {
       {tfa === false && tfaAttempts === 3 && <LoginPage />}
       {tfa === false && tfaAttempts < 3 && (
         <div>
-          <h1>Trans Cendence</h1>
+          <h1>Unfriendly Ping Pong</h1>
           <br></br>
           <h4>Two Factor Authentication</h4>
           <h6>
             {tfa === false &&
               tfaAttempts === 1 &&
-              "New code has been sent. Careful, this is your second attempt!"}
+              "New code has been sent. Careful, I'm running out of patience!"}
             {tfa === false &&
               tfaAttempts === 2 &&
-              "Last attempt! Screw this one up and go back to start!"}
+              "Last attempt! Screw this one up and we're done playing!"}
             {tfa === false &&
               tfaAttempts === 0 &&
               "Check your email and enter the code to see if we'll let you in!"}
