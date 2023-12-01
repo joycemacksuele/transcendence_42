@@ -11,6 +11,15 @@ import { TwoFactorAuthService } from './2fa/2fa.service';
 import { request } from 'http';
 import { Express } from 'express';
 
+
+interface JwtPayload {
+	sub: number;
+	username: string;
+	exp: number;
+	iat: number;
+  }  
+
+
 @Injectable()
 export class AuthService {
 	constructor(
@@ -194,7 +203,7 @@ export class AuthService {
 		}
 		else{
 			// path = `${process.env.FRONTEND}`; // changed jaka, it was redirectong to login page, if tfa-enabled was deleted from local storage
-			path = `${process.env.FRONTEND}/main_page`;
+			path = `${process.env.FRONTEND}/main_page/profile`;
 			this.logger.log("Redirecting to: ", path);
 		}
 		return response.redirect(path);
@@ -291,7 +300,7 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
-    async extractUserdataFromToken(request: Request): Promise<any> { 
+    async extractUserdataFromToken(request: Request): Promise<JwtPayload> { 
         const token = this.extractTokenFromHeader(request);
         if (!token) {
             throw new UnauthorizedException('Token not found');
@@ -309,11 +318,11 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
         let token: string;
 
         cookie = request.get('Cookie');
-        this.logger.log('extract Token from Header - full cookie: ' + cookie);
+        //this.logger.log('extract Token from Header - full cookie: ' + cookie);
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');
-        console.log("arrays: " + arrays); // TO BE REMOVED 
+        //console.log("arrays: " + arrays); // TO BE REMOVED 
         for (let i = 0; arrays[i]; i++)
         {
             if (arrays[i].includes("token="))

@@ -84,6 +84,29 @@ button.button_default:focus-visible {
 }
 
 
+
+/* MATCHES */
+.match-row {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: left;
+  margin-bottom: 10px;
+}
+
+.players {
+  /* flex-shrink: 0; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* text-align: left; */
+}
+.score {
+  flex-grow: 1;
+  margin-left: 20px;
+  text-align: left;
+  overflow: hidden;
+}
+
 /* ************************************************* */
 /****** CUSTOM COLORS TO CHANGE THE THEME ************/
 
