@@ -5,11 +5,7 @@ import * as bcryptjs from 'bcryptjs';
 import { CreateUserDto } from 'src/user/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
-import { UserRepository } from 'src/user/user.repository';
-import { ConfigService } from '@nestjs/config';
 import { TwoFactorAuthService } from './2fa/2fa.service';
-import { request } from 'http';
-import { Express } from 'express';
 
 
 interface JwtPayload {
@@ -83,7 +79,6 @@ export class AuthService {
 		});
 
 	const hash = await this.hashSecret(secret, id);  // CORINA - TO DO - is this actually necesary? 
-	this.logger.log('Hash: ' + hash);  // testing purposes - TO BE REMOVED!  
 
 	const dto: CreateUserDto = {
 		loginName: login,
@@ -91,7 +86,7 @@ export class AuthService {
 		intraId: +id,
 		email: email,
 		onlineStatus: false,		// at logout change to 'false'
-		hashedSecret: hash,
+		hashedSecret: hash,         // might not be necessary and might need to be removed 
 		refreshToken: 'default',
 		tfaEnabled: true,
 		tfaCode: 'default',
@@ -147,7 +142,6 @@ export class AuthService {
 				this.logger.error('\x1b[31mError creating new player: \x1b[0m' + err);
 				return ;
 			}
-			// const test = await this.userService.getUserByLoginName(data.loginName); Former test . REMOVE! 
 		}
 		
 		this.logger.log('getOrCreateUser: Current User:');
@@ -174,7 +168,6 @@ export class AuthService {
 			httpOnly: true,
 			path: '/',
 			sameSite: 'none',
-			// expires: `${expiryDate}`,
 		};
 
 		// Variant B)
@@ -199,7 +192,6 @@ export class AuthService {
 			this.logger.log('Two factor authentication enabled! Sending verification mail.');
 			this.tfaService.sendVerificationMail(player);
 			path = `${process.env.FRONTEND}/Login_2fa`;
-			// response.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
 		}
 		else{
 			// path = `${process.env.FRONTEND}`; // changed jaka, it was redirectong to login page, if tfa-enabled was deleted from local storage
@@ -226,7 +218,7 @@ export class AuthService {
 		let token: string;
 
 		let expiryDate = new Date();
-		expiryDate.setMinutes(expiryDate.getMinutes() + 100);
+		expiryDate.setMinutes(expiryDate.getMinutes() + 10);
 		console.log("expiry date: " + expiryDate);
 
 		let time = expiryDate.valueOf();
@@ -265,15 +257,46 @@ export class AuthService {
 		return refreshToken;
 	}
 
-async removeAuthToken(request: Request, response: Response): Promise<any> {
-	try{
-		this.logger.log("start removeAuthToken");
-		let cookies = request.get('Cookie');
-		console.log("     verify cookie: " + cookies);
-		let existingToken = this.extractTokenFromHeader(request);
-		console.log("     existingToken: " + existingToken);
+// async removeAuthToken(request: Request, response: Response): Promise<any> {
+// 	try{
+// 		this.logger.log("start removeAuthToken");
+// 		let cookies = request.get('Cookie');
+// 		console.log("     verify cookie: " + cookies);
+// 		let existingToken = this.extractTokenFromHeader(request);
+// 		console.log("     existingToken: " + existingToken);
 
-		let replaceToken = "";
+// 		let replaceToken = "";
+// 		const cookieAttributes = {
+// 			httpOnly: true,
+// 			path: '/',
+// 			sameSite: 'none',
+// 		};
+// 		let cookieToken = `token=${replaceToken};`;
+// 		for (let attribute in cookieAttributes) {
+// 			if (cookieAttributes[attribute] === true) {
+// 				cookieToken += ` ${attribute};`;
+// 			} else
+// 				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
+// 		}
+// 		response.setHeader('Set-Cookie', cookieToken);
+// 		this.logger.log('Made token to expire');
+// 	}
+// 	catch(err){
+// 		this.logger.error('\x1b[31mError removing the token from cookies: \x1b[0m' + err);
+// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
+// 	}
+// 	return response.sendStatus(200);
+//   }
+
+  async replaceToken(request: Request, response: Response, newToken: any): Promise<any> {
+	try{
+		this.logger.log("start replaceToken");
+		let cookies = request.get('Cookie'); // not needed
+		console.log("     verify cookie: " + cookies); // not needed
+		let existingToken = this.extractTokenFromHeader(request); // not needed
+		console.log("     existingToken: " + existingToken); // not needed
+
+		let replaceToken = newToken;
 		const cookieAttributes = {
 			httpOnly: true,
 			path: '/',
@@ -286,14 +309,14 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
 			} else
 				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
 		}
-		response.setHeader('Set-Cookie', cookieToken);
-		this.logger.log('Made token to expire');
-	}
-	catch(err){
-		this.logger.error('\x1b[31mError removing the token from cookies: \x1b[0m' + err);
-		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
-	}
-	return response.sendStatus(200);
+		request.cookies('Set-Cookie', cookieToken)
+		this.logger.log('Replaced token in header');
+		return true;
+
+	}catch(err){
+			this.logger.error('\x1b[31mError unable to replace header : \x1b[0m' + err);
+			throw new HttpException('Failed to replace header', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
+		}
   }
 
 // ADDED JAKA:
@@ -318,11 +341,10 @@ async removeAuthToken(request: Request, response: Response): Promise<any> {
         let token: string;
 
         cookie = request.get('Cookie');
-        //this.logger.log('extract Token from Header - full cookie: ' + cookie);
+        // this.logger.log('extract Token from Header - full cookie: ' + cookie); // COMMENT
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');
-        //console.log("arrays: " + arrays); // TO BE REMOVED 
         for (let i = 0; arrays[i]; i++)
         {
             if (arrays[i].includes("token="))

@@ -11,7 +11,8 @@ import { UserRepository } from './user/user.repository';
 import { AuthService } from './auth/auth.service';
 import { DataSource } from "typeorm";
 // import { ConfigModule } from '@nestjs/config';
-import { AuthGuard } from './auth/guards/auth.guard';
+// import { AuthGuard } from './auth/guards/auth.guard';
+// import { UnauthorizedExceptionFilter } from './auth/guards/auth.exception.filter';
 import cookieParser from 'cookie-parser';
 import * as express from 'express';
 import {Logger, ValidationPipe} from '@nestjs/common'
@@ -42,7 +43,8 @@ async function main() {
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
   // app.useGlobalGuards(new AuthGuard(new DataSource({type: "postgres"}), new UserService(new UserRepository), new JwtService,  new Reflector));
-  app.useGlobalGuards(new AuthGuard(new JwtService,  new Reflector));
+  // app.useGlobalGuards(new AuthGuard(new JwtService,  new Reflector));
+  // app.useGlobalFilters(new UnauthorizedExceptionFilter());
 	app.use(cookieParser());
 
   // app.use((req, res, next) => {
