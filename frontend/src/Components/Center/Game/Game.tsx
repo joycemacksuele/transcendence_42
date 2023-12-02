@@ -4,7 +4,7 @@ import { GameState } from "./Gamestate";
 import { drawScene } from "./CanvasDraw";
 import GameSelection from "./GameSelection";
 
-function Game({ player }: { player: string }) {
+function Game() {
   const apiAddress = "http://jemoederinator.local:3001";
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const width = window.innerWidth;
@@ -12,7 +12,9 @@ function Game({ player }: { player: string }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [gameState, setGameState] = useState<GameState | undefined>(undefined);
 
-  player = "Testuser";
+  //test
+  const player = "Testuser";
+
   useEffect(() => {
     const newSocket = io(apiAddress, { transports: ["websocket"] });
     setSocket(newSocket);
@@ -27,8 +29,8 @@ function Game({ player }: { player: string }) {
 
   useEffect(() => {
     socket?.on("connect", () => {
-      socket.emit("identify", player);
-      console.log(`connected to server pong ${socket.id} as player ${player}`);
+      //socket.emit("identify", player);
+      //console.log(`connected to server pong ${socket.id} as player ${player}`);
     });
     socket?.on("stateUpdate", (newdata: GameState) => setGameState(newdata));
 
