@@ -9,7 +9,7 @@ export class AppService {
   }
 
   getHello(): string {
-    console.log('[BACKEND LOG] getHello AppService');
+    console.log('getHello AppService');
     return '[BACKEND] Hello World!';
   }
 

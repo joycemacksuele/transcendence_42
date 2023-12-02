@@ -64,8 +64,8 @@ export class UserController {
 
 	@Post()
 	async createUser(@Body() createUserDto: CreateUserDto) {
-		this.logger.log('[BACKEND LOG] createUser');
-		this.logger.log('[BACKEND LOG] Received user data:', JSON.stringify(createUserDto));
+		this.logger.log('createUser');
+		this.logger.log('Received user data:', JSON.stringify(createUserDto));
 		return this.userService.createUser(createUserDto);// UserEntity
 	}
 
@@ -73,7 +73,7 @@ export class UserController {
     // GET ALL USERS
     @Get('all')
     async getAllUsers(): Promise<UserEntity[]> {
-        this.logger.log('[BACKEND LOG] getAllUsers');
+        this.logger.log('getAllUsers');
         return (this.userService.getAllUsers());
     }
 	
@@ -84,7 +84,7 @@ export class UserController {
 		@Param('loginName') loginName: string
 	): Promise<UserEntity>
 	{
-		this.logger.log('[BACKEND LOG] getUser');
+		this.logger.log('getUser');
 		return (this.userService.getUserByLoginName(loginName));
 	}
 
@@ -94,7 +94,7 @@ export class UserController {
 		@Param('profileName') profileName: string
 	): Promise<UserEntity>
 	{	
-		this.logger.log('[BACKEND LOG] getUser');
+		this.logger.log('getUser');
 		return (this.userService.getUserByProfileName(profileName));
 	}
 
@@ -104,9 +104,9 @@ export class UserController {
 		console.log('DELETE All Dummies');
 		try {
 			await this.userService.deleteDummies();
-			this.logger.log('[BACKEND LOG] from nest user.controller: All dummies deleted.');
+			this.logger.log('from nest user.controller: All dummies deleted.');
 		} catch (error) {
-			this.logger.error('[BACKEND LOG] from nest user.controller: Error deleting dummies.', error);
+			this.logger.error('from nest user.controller: Error deleting dummies.', error);
 		}
 	}
 
@@ -190,7 +190,7 @@ export class UserController {
 	// It needs the @Param decorator to be able to pass the arg to the function getUserById( id )'
 	// @Get(':id')
 	// async findById(@Param('id') id: number): Promise<UserEntity | undefined> {
-	//   this.logger.log('[BACKEND LOG] findById');
+	//   this.logger.log('findById');
 	//   return this.userService.getUserById(id);
 	// }
 

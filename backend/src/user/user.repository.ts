@@ -21,19 +21,19 @@ export class UserRepository extends Repository<UserEntity> {
 	// Added custom methods:
 	// Find users by their email, fetch users based on specific criteria, or perform complex database queries related to users.
 	// async findByName(name: string): Promise<UserEntity | undefined> {
-	// 	console.log('[BACKEND LOG] findByName');
+	// 	console.log('findByName');
 	// 	const options: FindOneOptions<UserEntity> = { where: { name } };
 	// 	return this.findOne( options );
 	// }
 
 	// async findById(id: number): Promise<UserEntity | undefined> {
-	// 	console.log('[BACKEND LOG] findById');
+	// 	console.log('findById');
 	// 	const options: FindOneOptions<UserEntity> = { where: { id } };
 	// 	return this.findOne( options );
 	// }
 
 	// async getAllUsers(): Promise<UserEntity[]> {
-	// 	console.log('[BACKEND LOG] UserService.getAllUsers');
+	// 	console.log('UserService.getAllUsers');
 	// 	return this.find();
 	//   }
 }
