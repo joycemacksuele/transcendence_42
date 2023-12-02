@@ -15,7 +15,7 @@ import { Express } from 'express';
 export class AuthService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly jwtService: JwtService, 
+		public readonly jwtService: JwtService,
 		private readonly tfaService: TwoFactorAuthService,
 		// private readonly userRepository: UserRepository
 		) {}
