@@ -8,201 +8,242 @@ import {NavLink} from "react-router-dom";
 import {ChatType, RequestNewChatDto} from "../Chat/Utils/ChatUtils.tsx";
 import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
 
-import '../../../css/Profile-users-list.css'
-
 interface UserProps {
-  loginName: string;
+	loginName: string;
 }
 
+const getCurrentUsername = async () => {
+
+	try {
+		const response = await axiosInstance.get('http://jemoederinator.local:3001/users/get-current-username');
+		console.log('=================== username: ', response.data.username);
+		return response.data.username;
+	} catch (error) {
+		console.error('Error getting current username: ', error);
+		return null;
+	}
+}
+
+
+
+
+
 const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
-  const [userData, setUserData] = useState<any>(null); // !todo: define the 'structure' of returned user data
-  const [IamFollowing, setIamFollowing] = useState(false);
-  const [myId, setMyId] = useState<number>();
 
-  useEffect(() => {
-    if (!myId) return; // GUARD CLAUSE: wait until myID is available
+	const [userData, setUserData] = useState<any>(null); // !todo: define the 'structure' of returned user data
+	const [IamFollowing, setIamFollowing] = useState(false);
+	const [myId, setMyId] = useState<number>();
+	const [showButtons, setShowButtons] = useState(true);
 
-    const fetchUserData = async () => {
-      let response;
-      try {
-        response = await axiosInstance.get(
-          `http://jemoederinator.local:3001/users/get-user/${loginName}`
-        );
-        setUserData(response.data);
-        console.log("Fetched userData: ", response);
-      } catch (error) {
-        console.error("Error fetching user's data: ", error);
-        return;
-      }
 
-      if (!response.data.id) return; // GUARD CLAUSE: wait until id is available
+	// if the current user is displayed, do not show the buttons
+	useEffect(() => {
+		const compareUserNames = async () => {
+			const currUsername = await getCurrentUsername();
+			console.log('=================== compare: ', currUsername, ", ", loginName);
 
-      try {
-        console.log("Checking if I follow this user ... ");
+			if (currUsername === loginName) {
+				// do not show buttons
+				setShowButtons(false);
+			} else {
+				setShowButtons(true);
+			}
+		};
+	
+		compareUserNames();
+	}, [loginName]);
+	const buttonsVisible = showButtons ? {} : { display: 'none'};
 
-        const responseAmIFollowing = await axiosInstance.get(
-          `http://jemoederinator.local:3001/friendship/followingExists/${myId}/${response.data.id}`
-        );
-        console.log("   responseAmIFollowing: ", responseAmIFollowing);
-        if (responseAmIFollowing.data) {
-          // setIamFollowing(!!responseAmIFollowing.data); // DOUBLE !! CONVERT TO BOOL
-          console.log("    YES");
-          setIamFollowing(true);
-        } else {
-          console.log("    NO ");
-          setIamFollowing(false);
-        }
-      } catch (error) {
-        console.log("Error fetching if friendship/following exists", error);
-      }
-    };
-    fetchUserData();
-  }, [loginName, myId]);
+	useEffect(() => {
+		if (!myId) return; // GUARD CLAUSE: wait until myID is available
 
-  useEffect(() => {
-    const fetchMyData = async () => {
-      try {
-        // todo: ask, what if localstorage is manipulated or deleted?
-        // 		Maybe there could be a function without arguments, only depending on the token, to fetch my data ???
-        console.log(
-          "localstorage-profileName: ",
-          localStorage.getItem("profileName")
-        );
-        const response = await axiosInstance.get(
-          `http://jemoederinator.local:3001/users/get-user-by-profilename/${localStorage.getItem(
-            "profileName"
-          )}`
-        );
-        setMyId(response.data.id);
-        //setIamFollowing(response.data.IamFollowing);
-        console.log("Fetched My Data: ", response);
-      } catch (error) {
-        console.error("Error catching my data: ", error);
-      }
-    };
-    fetchMyData();
-  }, []);
 
-  // async function handleAddFriend( event: React.MouseEvent<HTMLButtonElement>) {
-  async function startFollowing() {
-    const friendId = userData.id; // todo: fetch the id (the to-be friend)
-    try {
-      const response = await axiosInstance.post(
-        `http://jemoederinator.local:3001/friendship/${myId}/addFriend/${friendId}`
-      );
-      console.log("Success: Friendship added: ", response.data);
-    } catch (error: any) {
-      console.error("Error adding a friend: " /*, error*/);
-      if (axios.isAxiosError(error)) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          alert(error.response.data.message);
-        } else {
-          alert("An axiosError occured while adding a friend.");
-        }
-      } else {
-        alert("Another (non axios) error occured while adding a friend.");
-      }
-    }
-  }
 
-  async function stopFollowing() {
-    try {
-      const response = await axiosInstance.post(
-        `http://jemoederinator.local:3001/friendship/${myId}/removeFriend/${userData.id}`
-      );
-      console.log("Success remnoving a friend: ", response);
-    } catch (error: any) {
-      console.error("Error removing a friend");
-      if (axios.isAxiosError(error)) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          console.log(error.response.data.message);
-        } else {
-          console.log("An axiosError while removing a friend");
-        }
-      } else {
-        console.log("Another error while removing a friend");
-      }
-    }
-  }
 
-  if (!userData) {
-    return <div>Loading ...</div>;
-  }
 
-  const handleButtonClick = async () => {
-    if (IamFollowing) {
-      await stopFollowing();
-    } else {
-      await startFollowing();
-    }
-    setIamFollowing(!IamFollowing); // Toggle to the opposite state
-  };
 
-  const handleClickPrivateChat = () => {
+		const fetchUserData = async () => {
+			let response;
+			try {
+				response = await axiosInstance.get(
+					`http://jemoederinator.local:3001/users/get-user/${loginName}`
+				);
+				setUserData(response.data);
+				console.log("Fetched userData: ", response);
+			} catch (error) {
+				console.error("Error fetching user's data: ", error);
+				return;
+			}
+
+			if (!response.data.id) return; // GUARD CLAUSE: wait until id is available
+
+			try {
+				console.log("Checking if I follow this user ... ");
+
+				const responseAmIFollowing = await axiosInstance.get(
+					`http://jemoederinator.local:3001/friendship/followingExists/${myId}/${response.data.id}`
+				);
+				console.log("   responseAmIFollowing: ", responseAmIFollowing);
+				if (responseAmIFollowing.data) {
+					// setIamFollowing(!!responseAmIFollowing.data); // DOUBLE !! CONVERT TO BOOL
+					console.log("    YES");
+					setIamFollowing(true);
+				} else {
+					console.log("    NO ");
+					setIamFollowing(false);
+				}
+			} catch (error) {
+				console.log("Error fetching if friendship/following exists", error);
+			}
+		};
+		fetchUserData();
+	}, [loginName, myId]);
+
+	useEffect(() => {
+		const fetchMyData = async () => {
+			try {
+				// todo: ask, what if localstorage is manipulated or deleted?
+				// 		Maybe there could be a function without arguments, only depending on the token, to fetch my data ???
+				console.log(
+					"localstorage-profileName: ",
+					localStorage.getItem("profileName")
+				);
+				const response = await axiosInstance.get(
+					`http://jemoederinator.local:3001/users/get-user-by-profilename/${localStorage.getItem(
+						"profileName"
+					)}`
+				);
+				setMyId(response.data.id);
+				//setIamFollowing(response.data.IamFollowing);
+				console.log("Fetched My Data: ", response);
+			} catch (error) {
+				console.error("Error catching my data: ", error);
+			}
+		};
+		fetchMyData();
+	}, []);
+
+	// async function handleAddFriend( event: React.MouseEvent<HTMLButtonElement>) {
+	async function startFollowing() {
+		const friendId = userData.id; // todo: fetch the id (the to-be friend)
+		try {
+			const response = await axiosInstance.post(
+				`http://jemoederinator.local:3001/friendship/${myId}/addFriend/${friendId}`
+			);
+			console.log("Success: Friendship added: ", response.data);
+		} catch (error: any) {
+			console.error("Error adding a friend: " /*, error*/);
+			if (axios.isAxiosError(error)) {
+				if (
+					error.response &&
+					error.response.data &&
+					error.response.data.message
+				) {
+					alert(error.response.data.message);
+				} else {
+					alert("An axiosError occured while adding a friend.");
+				}
+			} else {
+				alert("Another (non axios) error occured while adding a friend.");
+			}
+		}
+	}
+
+	async function stopFollowing() {
+		try {
+			const response = await axiosInstance.post(
+				`http://jemoederinator.local:3001/friendship/${myId}/removeFriend/${userData.id}`
+			);
+			console.log("Success remnoving a friend: ", response);
+		} catch (error: any) {
+			console.error("Error removing a friend");
+			if (axios.isAxiosError(error)) {
+				if (
+					error.response &&
+					error.response.data &&
+					error.response.data.message
+				) {
+					console.log(error.response.data.message);
+				} else {
+					console.log("An axiosError while removing a friend");
+				}
+			} else {
+				console.log("Another error while removing a friend");
+			}
+		}
+	}
+
+	if (!userData) {
+		return <div>Loading ...</div>;
+	}
+
+	const handleButtonClick = async () => {
+		if (IamFollowing) {
+			await stopFollowing();
+		} else {
+			await startFollowing();
+		}
+		setIamFollowing(!IamFollowing); // Toggle to the opposite state
+	};
+
+	const handleClickPrivateChat = () => {
 		const requestNewChatDto: RequestNewChatDto = {chatName: "mocked user2", chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
 		// const requestNewChatDto: RequestNewChatDto = {chatName: userData.friend.loginName, chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
 		chatSocket.emit("createChat", requestNewChatDto);
 		console.log("[DisplayOneUser] handleClickPrivateChat called. requestNewChatDto:", requestNewChatDto);
 	};
 
-  return (
-    <Col className="column-bckg p-3 rounded inner-section">
-      <Row className="mb-5">
-        <Col>
-          <Image
-            id="otherUserImage"
-            src={"http://jemoederinator.local:3001/" + userData.profileImage}
-            alt="no_image_found"
-          />
-        </Col>{" "}
-        {/* todo: the url should come form .env */}
-      </Row>
-      <Row className="mb-3">
-        <Col>
-          <h4>{userData.profileName}</h4>
-          <p>online: {userData.onlineStatus ? "Yes" : "No"}</p>
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col className="mx-3">
-          <Row>Rank: {userData.rank} </Row>
-          <Row>Games played: {userData.gamesPlayed} </Row>
-          <Row>Games won: {userData.gamesWon} </Row>
-          <Row>Games lost: {userData.gamesLost} </Row>
-        </Col>
-      </Row>
-      <Row className="mb-5">
-        <Col>
-          <NavLink
+	return (
+		<Col className="column-bckg p-3 rounded inner-section">
+			<Row className="mb-5">
+				<Col>
+					<Image
+						id="otherUserImage"
+						src={"http://jemoederinator.local:3001/" + userData.profileImage}
+						alt="no_image_found"
+					/>
+				</Col>{" "}
+				{/* todo: the url should come form .env */}
+			</Row>
+			<Row className="mb-3">
+				<Col>
+					<h4>{userData.profileName}</h4>
+					<p>online: {userData.onlineStatus ? "Yes" : "No"}
+					< br/>playing: No (hardcoded)</p>
+				</Col>
+			</Row>
+			<Row className="mb-3">
+				<Col className="mx-3">
+					<Row>Rank: {userData.rank} </Row>
+					<Row>Games played: {userData.gamesPlayed} </Row>
+					<Row>Games won: {userData.gamesWon} </Row>
+					<Row>Games lost: {userData.gamesLost} </Row>
+				</Col>
+			</Row>
+			<Row className="mb-5 user-buttons" style={buttonsVisible}>
+				<Col>
+					<NavLink
 						// eventKey="users"
 						// onClick={ () => handleClick('profile') }
 						to="/main_page/chat"
-						className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+						// className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
 						onClick={handleClickPrivateChat}
 					>
-						<button className='button_default'>Private Chat</button>
+						<Button className='button_default'>Private Chat</Button>
 					</NavLink>
-        </Col>
-        <Col>
-          {/* onclick EXPECTS A FUNCTION WITH AN ARGUMENT OF TYPE MouseEvent<HTMLButtonElement */}
-          <Button
-            onClick={() => handleButtonClick()}
-            className="button_default"
-          >
-            {IamFollowing ? "Stop Following" : "Start Following"}
-          </Button>
-        </Col>
-      </Row>
-    </Col>
-  );
+				</Col>
+				<Col>
+					{/* onclick EXPECTS A FUNCTION WITH AN ARGUMENT OF TYPE MouseEvent<HTMLButtonElement */}
+					<Button
+						onClick={() => handleButtonClick()}
+						className="button_default"
+					>
+						{IamFollowing ? "Stop Following" : "Start Following"}
+					</Button>
+				</Col>
+			</Row>
+		</Col>
+	);
 };
 
 export default DisplayOneUser;
