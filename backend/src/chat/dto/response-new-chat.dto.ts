@@ -1,5 +1,6 @@
 import {IsString, IsEnum, IsNumber, IsStrongPassword, IsArray, ValidateNested, ArrayMinSize} from 'class-validator';
 import {ChatType} from '../utils/chat-utils'
+import {UserEntity} from "src/user/user.entity";
 
 export class ResponseNewChatDto {
 
@@ -7,12 +8,20 @@ export class ResponseNewChatDto {
     id: number;
 
     @IsString()
-    chatName: string;
+    name: string;
 
     // if chatType == PROTECTED
     // it has to be hashed before saved to the database
     @IsEnum(ChatType)
-    chatType: ChatType;
+    type: ChatType;
+
+    @IsString()
+    creator: string;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @ArrayMinSize(2)
+    admins: string[];
 
     // PRIVATE   | is a DM - can't be joined  | only members can see it
     // PUBLIC    | everyone can join it       | everyone can see it
@@ -20,10 +29,11 @@ export class ResponseNewChatDto {
     // @IsString()
     // @IsOptional()
     // @IsStrongPassword()
-    // chatPassword: string | undefined;
+    // password: string | undefined;
 
     @IsArray()
     @ValidateNested({ each: true })
     @ArrayMinSize(2)
-    chatMembers: string[];
+    // users: UserEntity[];
+    users: string[];
 }

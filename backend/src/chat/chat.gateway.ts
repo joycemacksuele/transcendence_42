@@ -7,7 +7,8 @@ import { RequestMessageChatDto } from './dto/request-message-chat.dto';
 import { RequestRegisterChatDto } from './dto/request-register-chat.dto';
 import {NewChatEntity} from "./entities/new-chat.entity";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
-import {IsStrongPassword} from "class-validator";
+import { AuthService } from "src/auth/auth.service";
+import { JwtService } from '@nestjs/jwt';
 
 /*
     Websockets tips:
@@ -32,7 +33,10 @@ export class ChatGateway
 {
   private readonly logger = new Logger(ChatGateway.name);
 
-  constructor(private readonly chatService: ChatService) {
+  constructor(
+      private readonly chatService: ChatService,
+      public readonly authService : AuthService
+  ) {
     this.logger.log('Constructor');
   }
 
@@ -47,19 +51,20 @@ export class ChatGateway
     try {
       this.logger.log('Socket connected: ' + clientSocket.id);
 
-      clientSocket.on("connected", (socket) => {
-        this.logger.log('Socket rooms: ' + socket.rooms);
-        socket.join("newChat");
-        this.logger.log('Socket rooms: ' + socket.rooms);
-      })
-      // const token = clientSocket.handshake.headers.cookie.split('=')[1];
-      // this.logger.log('token: ', token);
-      // const decodedToken = this.authService.validateJwt(token);
-      // const user = await this.authService.validateUser(decodedToken.id);
-      // clientSocket.data.user = user;
+      const token = clientSocket.handshake.headers.cookie.split('=')[1];
+      if (!token) {
+        throw new UnauthorizedException('Token not found');
+      }
+      this.logger.log('token: ' + token);
+      // try {
+      //   const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+      //   clientSocket.data.user = payload.username;
+      // } catch {
+      //   throw new UnauthorizedException('Invalid token');
+      // }
     } catch {
-      this.logger.log('UnauthorizedException -> Socket disconnected:', clientSocket.id);
-      clientSocket.emit('error', new UnauthorizedException());
+      this.logger.log('UnauthorizedException -> Socket disconnected:' + clientSocket.id);
+      clientSocket.emit('error' + new UnauthorizedException());
       // clientSocket.disconnect();
     }
   }
@@ -72,19 +77,21 @@ export class ChatGateway
 
   @SubscribeMessage('createChat')
   async createChat(@MessageBody() requestNewChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
-    this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
     this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
+    this.logger.log('createChat -> clientSocket.data.user: ' + clientSocket.data.user);
+    this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
 
-    this.chatService.createChat(requestNewChatDto).then(() => {
+    this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(() => {
+      this.logger.log('getChats -> chat'+ requestNewChatDto.name + 'was created');
       // If we could save a new chat in the database, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
-        clientSocket.emit("getChats", allChats);
+        clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
         this.logger.log('getChats -> all chats were emitted to the frontend');
       });
 
     });
-    // clientSocket.join(requestNewChatDto.chatName);// loginName + friendnName for DMs (OBS no repetition for groups)
+    // clientSocket.join(requestNewChatDto.name);// loginName + friendnName for DMs (OBS no repetition for groups)
     // this.logger.log('Socket rooms for the createChat: ' + clientSocket.rooms);
   }
 
@@ -93,7 +100,7 @@ export class ChatGateway
     this.logger.log('deleteChat -> clientSocket.id: ' + clientSocket.id);
 
     this.chatService.deleteChat(chatId).then( () => {
-      this.logger.log('deleteChat -> chatId: ' + chatId);
+      this.logger.log('deleteChat -> chat'+ chatId + 'was deleted');
       // If we could delete the chat from the database, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
@@ -111,7 +118,17 @@ export class ChatGateway
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('joinChat -> chatId: ' + chatId + " intraName: " + intraName);
-    return await this.chatService.joinChat(chatId, chatPassword, intraName);
+    return await this.chatService.joinChat(chatId, chatPassword, intraName);// todo clientSocket.data.user
+  }
+
+  @SubscribeMessage('leaveChat')
+  async leaveChat(
+      @MessageBody('chatId') chatId: number,
+      @MessageBody('intraName') intraName: string,
+      @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
+    this.logger.log('leaveChat -> chatId: ' + chatId + " intraName: " + intraName);
+    return await this.chatService.leaveChat(chatId, intraName);// todo clientSocket.data.user
   }
 
   @SubscribeMessage('getChats')

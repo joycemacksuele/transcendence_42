@@ -45,11 +45,11 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className='me-auto'>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.map((chat: ResponseNewChatDto) => (
+                    {chatInfo.map((chat: ResponseNewChatDto, mapStaticKey) => (
                         <>
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
-                            {chat.chatMembers.indexOf(intraName) != -1 && <ListGroup
-                                key={chat.id}
+                            {chat.users.indexOf(intraName) != -1 && <ListGroup
+                                key={mapStaticKey}
                                 variant="flush"
                             >
                                 <ListGroup.Item
@@ -59,19 +59,19 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                                     onClick={() => setChatClicked(chat)}
                                 >
 
-                                    {chat.chatType === ChatType.PROTECTED && <Image
+                                    {chat.type == ChatType.PROTECTED && <Image
                                         src={`http://localhost:3001/resources/protected-chat.png`}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
-                                    {chat.chatType != ChatType.PROTECTED && <Image
+                                    {chat.type != ChatType.PROTECTED && <Image
                                         src={`http://localhost:3001/resources/chat.png`}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
-                                    {chat.chatName}
+                                    {chat.name}
                                 </ListGroup.Item>
                             </ListGroup>}
                         </>

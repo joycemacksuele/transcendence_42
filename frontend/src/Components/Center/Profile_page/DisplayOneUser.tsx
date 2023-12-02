@@ -136,7 +136,7 @@ const DisplayOneUser: React.FC<UserProps> = ( { loginName }) => {
 			chatSocket.connect();
 			chatSocket.on("connect", () => {
 				console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
-				const requestNewChatDto: RequestNewChatDto = {chatName: loginName, chatType: ChatType.PRIVATE, chatPassword: null, loginName: intraName};
+				const requestNewChatDto: RequestNewChatDto = {name: loginName, type: ChatType.PRIVATE, password: null, loginName: intraName};
 				chatSocket.emit("createChat", requestNewChatDto);
 				console.log("[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:", requestNewChatDto);
 			});
