@@ -12,7 +12,7 @@ import { PonggameService } from "./ponggame.service";
 import { GameState } from "./dto/game-state.dto";
 
 import { AuthService } from "src/auth/auth.service";
-import { JwtService } from '@nestjs/jwt';
+import { JwtService } from "@nestjs/jwt";
 
 @WebSocketGateway({
   cors: {
@@ -73,7 +73,23 @@ export class PonggameGateway
       const payload = await this.authService.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
-      console.log(payload);
+      console.log(payload.username);
+
+      const userId = payload.username;
+
+      this._socketIdUserId.set(client.id, userId);
+      this._userIdSocketId.set(userId, client.id);
+      const matchId = this.ponggameService.getMatchId(userId);
+      if (matchId == "") {
+        //if not get the selection screen
+        client.emit(
+          "stateUpdate",
+          this.ponggameService.getInitMatch("Default")
+        );
+      } else {
+        //if part of the game then join the match
+        client.join(matchId);
+      }
     } catch {
       console.log("No payload");
     }
@@ -88,25 +104,25 @@ export class PonggameGateway
     this._socketIdUserId.delete(client.id);
   }
 
-  @SubscribeMessage("identify")
-  identify(@MessageBody() identity: string, @ConnectedSocket() client: Socket) {
-    console.log(
-      `client has been identified as ${identity} with the socket id of ${client.id}`
-    );
-    //register the socketid to the user id
-    this._socketIdUserId.set(client.id, identity);
-    //register the userid to the socketid
-    this._userIdSocketId.set(identity, client.id);
-    //check if the user is already part of a match
-    const matchId = this.ponggameService.getMatchId(identity);
-    if (matchId == "") {
-      //if not get the selection screen
-      client.emit("stateUpdate", this.ponggameService.getInitMatch("Default"));
-    } else {
-      //if part of the game then join the match
-      client.join(matchId);
-    }
-  }
+  //   @SubscribeMessage("identify")
+  //   identify(@MessageBody() identity: string, @ConnectedSocket() client: Socket) {
+  //     console.log(
+  //       `client has been identified as ${identity} with the socket id of ${client.id}`
+  //     );
+  //     //register the socketid to the user id
+  //     this._socketIdUserId.set(client.id, identity);
+  //     //register the userid to the socketid
+  //     this._userIdSocketId.set(identity, client.id);
+  //     //check if the user is already part of a match
+  //     const matchId = this.ponggameService.getMatchId(identity);
+  //     if (matchId == "") {
+  //       //if not get the selection screen
+  //       client.emit("stateUpdate", this.ponggameService.getInitMatch("Default"));
+  //     } else {
+  //       //if part of the game then join the match
+  //       client.join(matchId);
+  //     }
+  //   }
 
   @SubscribeMessage("joinDefaultGame")
   joinDefaultGame(

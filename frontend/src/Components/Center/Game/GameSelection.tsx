@@ -4,12 +4,10 @@ import "./Button.css";
 
 function GameSelection(props: { socket: Socket | null; player: string }) {
   function joinDefaultGame() {
-    console.log(`${props.socket?.id}`);
     props.socket?.emit("joinDefaultGame", props.player);
   }
 
   function joinCustomGame() {
-    console.log(`${props.socket?.id}`);
     props.socket?.emit("joinCustomGame", props.player);
   }
   return (
