@@ -152,7 +152,7 @@ export class PonggameGateway
   procesInput(@MessageBody() input: number, @ConnectedSocket() client: Socket) {
     const userId = this._socketIdUserId.get(client.id);
     const matchId = this.ponggameService.getMatchId(userId);
-    console.log("update" + matchId);
+    //console.log("update" + matchId);
     if (matchId != "") {
       this.ponggameService.updateUserInput(matchId, userId, input);
     }
