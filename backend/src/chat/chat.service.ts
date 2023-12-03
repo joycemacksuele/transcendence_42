@@ -49,7 +49,7 @@ export class ChatService {
     }
     // const new_chat = this.chatRepository.create(requestNewChatDto);// this can create an Entity out of an object if var name matches
     this.chatRepository.save(chatEntity).then(r => {
-      this.logger.log('NewChatEntity id: ' +  r.id);
+      this.logger.log('NewChatEntity chat created: ' + r.name);
     });
   }
 
