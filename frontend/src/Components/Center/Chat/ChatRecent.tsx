@@ -45,17 +45,17 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className='me-auto'>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.map((chat: ResponseNewChatDto, mapStaticKey) => (
+                    {chatInfo.map((chat: ResponseNewChatDto) => (
                         <>
                             {chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
-                                key={mapStaticKey}
+                                key={chat.id}
                                 className="hidden"
                             >
                             </ListGroup>}
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
                             {chat.users.indexOf(intraName) != -1 && <ListGroup
-                                key={mapStaticKey}
+                                key={chat.id}
                                 variant="flush"
                             >
                                 <ListGroup.Item

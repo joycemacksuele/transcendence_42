@@ -5,7 +5,7 @@ import {UserEntity} from "src/user/user.entity";
 
 @Injectable()
 export class ChatRepository extends Repository<NewChatEntity> {
-	private readonly logger = new Logger(ChatRepository.name);;
+	private readonly logger = new Logger(ChatRepository.name);
 	constructor(private dataSource: DataSource)
 	{
 		super(NewChatEntity, dataSource.createEntityManager());
@@ -26,12 +26,12 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	}
 
 	public async findChats() {
-		const amusers = await this
+		const newChatTable: NewChatEntity[] = await this
 			.createQueryBuilder("new_chat")
 			.orderBy('new_chat.id', 'DESC')
 			.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
 			.getRawMany();
-		return await Promise.all(amusers.map(async (chat) => {
+		return await Promise.all(newChatTable.map(async (chat: NewChatEntity) => {
 			const chatUsers = await this
 				.createQueryBuilder("new_chat")
 				.select('user.loginName as "users"')
@@ -41,6 +41,21 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			chat.users = chatUsers.map((usersList) => {
 				return usersList.users;
 			});
+			const chatAdmins = await this
+				.createQueryBuilder("new_chat")
+				.select('user.loginName as "users"')
+				.where('new_chat.id = :id', {id: chat.id})
+				.leftJoin("new_chat.admins", "user")
+				.getRawMany();
+			chat.admins = chatAdmins.map((adminsList) => {
+				return adminsList.users;
+			});
+			chat.creator = await this
+				.createQueryBuilder("new_chat")
+				.select('user.loginName as "users"')
+				.where('new_chat.id = :id', {id: chat.id})
+				.leftJoin("new_chat.creator", "user")
+				.getRawOne();
 			return chat;
 		}));
 	}
