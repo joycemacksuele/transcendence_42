@@ -30,17 +30,18 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [chatPassword, setChatPassword] = useState<string | null>(null);
 
+    // todo get it from database
     const currUserData = useContext(CurrentUserContext) as CurrUserData;
     const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
     const joinGroupChat = () => {
         console.log("[MembersGroup] Will join the chat", chatClicked?.name, "id", chatClicked?.id);
-        chatSocket.emit("joinChat", {chatId: chatClicked?.id, chatPassword: chatPassword, intraName: intraName});
+        chatSocket.emit("joinChat", {chatId: chatClicked?.id, chatPassword: chatPassword});
         setChatPassword(null);
     };
     const leaveGroupChat = () => {
         console.log("[MembersGroup] Will leave the chat", chatClicked?.name, "id", chatClicked?.id);
-        chatSocket.emit("leaveChat", {chatId: chatClicked?.id, intraName: intraName});
+        chatSocket.emit("leaveChat", {chatId: chatClicked?.id});
     };
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT

@@ -78,17 +78,18 @@ export class UserController {
     }
 	
 	
-	// GET ONE USER DATA BY LOGIN NAME
+	// GET USER DATA BY LOGIN NAME
 	@Get('get-user/:loginName')
 	async getUserData(
 		@Param('loginName') loginName: string
 	): Promise<UserEntity>
 	{
 		this.logger.log('getUser');
+		// throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED); // jaka: just for testing
 		return (this.userService.getUserByLoginName(loginName));
 	}
 
-	// GET ONE USER DATA BY LOGIN NAME
+	// GET USER DATA BY LOGIN NAME
 	@Get('get-user-by-profilename/:profileName')
 	async getUserDataByProfileName(
 		@Param('profileName') profileName: string
@@ -97,6 +98,16 @@ export class UserController {
 		this.logger.log('getUser');
 		return (this.userService.getUserByProfileName(profileName));
 	}
+
+	// GET CURRENT USER DATA
+	@Get('get-current-username')
+	async getCurrentUser(@Req() req: Request) {
+		const response = await this.authService.extractUserdataFromToken(req);
+		//console.log("======================== username: ", response.username)
+		return { username: response.username };
+	}
+
+
 
 	// DELETE DUMMIES
 	@Delete()

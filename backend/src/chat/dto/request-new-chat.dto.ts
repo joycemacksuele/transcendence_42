@@ -24,9 +24,9 @@ export class RequestNewChatDto {
     @IsOptional()
     password: string | null;
 
-    @IsString()
-    @MinLength(3)
-    @MaxLength(15)
-    @IsNotEmpty({ message: 'Required' })
-    loginName: string;// todo rename to friendId? or friendProfileName -> use clientSocket.data.user for current user
+    // @IsString()
+    // @MinLength(3)
+    // @MaxLength(15)
+    // @IsNotEmpty({ message: 'Required' })
+    // loginName: string;// todo rename to friendId? or friendProfileName -> use clientSocket.data.user for current user
 }

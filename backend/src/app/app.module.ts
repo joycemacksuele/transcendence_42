@@ -46,7 +46,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { DummyUsersController } from 'src/dummies/dummyUsers.controller';
 import { UploadImageController } from 'src/user/change_profile_image_or_name/change_profile_image';
 import { AddUsernameMiddleware } from 'src/user/change_profile_image_or_name/change_profile_image';
-import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
+import { MatchModule } from 'src/matches/match.module';
+import { MatchEntity } from 'src/matches/match.entity';
+import { NestModule, MiddlewareConsumer , RequestMethod} from '@nestjs/common'; // jaka: needed for uploading images via diskStorage (Multer)
+import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
 
 // To read: https://docs.nestjs.com/techniques/database
 /*
@@ -70,9 +73,10 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
       username: 'transcendence_user',
       password: '***REMOVED***',
       database: 'mydb',
-      entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity],
+      entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity, MatchEntity],
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
+      logging: ["query"],
     }),
     TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
     UserModule,
@@ -80,7 +84,8 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common'; // jaka: needed
     TwoFactorAuthModule,
     DatabaseModule,
     MailerModule,
-    FriendshipModule
+    FriendshipModule,
+    MatchModule
   ],
 
   controllers: [
@@ -118,5 +123,11 @@ export class AppModule implements NestModule {
     consumer
       .apply(AddUsernameMiddleware)
       .forRoutes(UploadImageController);
+    consumer
+      .apply(AuthMiddleware)
+       .exclude(
+        { path: 'auth/login', method: RequestMethod.ALL },
+        { path: 'auth/token', method: RequestMethod.ALL })
+      .forRoutes({ path: '/**', method: RequestMethod.ALL });
   }
 }
