@@ -1,8 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
-import { Repository, DataSource } from 'typeorm';
-import { NewChatEntity } from './entities/new-chat.entity';
-import { ResponseNewChatDto } from "./dto/response-new-chat.dto";
-import { UserEntity } from "src/user/user.entity";
+import {DataSource, Repository} from 'typeorm';
+import {NewChatEntity} from './entities/new-chat.entity';
+import {UserEntity} from "src/user/user.entity";
 
 @Injectable()
 export class ChatRepository extends Repository<NewChatEntity> {
@@ -32,19 +31,18 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.orderBy('new_chat.id', 'DESC')
 			.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
 			.getRawMany();
-		const newUsers = await Promise.all(amusers.map(async (chat) => {
+		return await Promise.all(amusers.map(async (chat) => {
 			const chatUsers = await this
 				.createQueryBuilder("new_chat")
 				.select('user.loginName as "users"')
-				.where('new_chat.id = :id', { id: chat.id })
+				.where('new_chat.id = :id', {id: chat.id})
 				.leftJoin("new_chat.users", "user")
 				.getRawMany();
-			chat.users = await chatUsers.map((userslist) => {
-				return userslist.users;
+			chat.users = chatUsers.map((usersList) => {
+				return usersList.users;
 			});
 			return chat;
 		}));
-		return newUsers;
 	}
 
 	/*
