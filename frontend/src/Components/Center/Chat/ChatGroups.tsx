@@ -9,6 +9,7 @@ import Image from "react-bootstrap/Image";
 import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
 
+
 type PropsHeader = {
     setChatClicked: (chatClicked: ResponseNewChatDto) => void;
 };
@@ -47,6 +48,12 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
                 <Stack gap={2}>
                     {chatInfo.map((chat: ResponseNewChatDto, mapStaticKey) => (
                         <>
+                            {chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
+                                key={mapStaticKey}
+                                className="hidden"
+                            >
+                            </ListGroup>}
+
                             {/* If current user is not a member of the chat (i.e. is not in the members array) */}
                             {/* And char is not private  (i.e. is a public or protected group) */}
                             {chat.users.indexOf(intraName) == -1 && chat.type != ChatType.PRIVATE && <ListGroup
