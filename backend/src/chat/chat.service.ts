@@ -58,7 +58,7 @@ export class ChatService {
     const foundUser : UserEntity = await this.userService.getUserByLoginName(intraName);
     // this.logger.log('[joinChat] new members list: ' + foundEntityToJoin.users);
     this.chatRepository.joinChat(foundUser, foundEntityToJoin).then(r => {
-      this.logger.log('[joinChat] joined chat -> chatId should match: ' + chatId + " = " + r.id);
+      this.logger.log('[saveNewUserToChat] joined chat -> chatId should match: ' + chatId + " = " + r.id);
     });
     return true;
   }
@@ -97,27 +97,11 @@ export class ChatService {
     return false;
   }
 
-  deleteUserFromChat(foundEntityToJoin: NewChatEntity, intraName: string, chatId: number) {
-    // Now we have the entity to update the member's array
-    foundEntityToJoin.users.forEach( (item, index) => {
-      if(item.loginName === intraName) {
-        foundEntityToJoin.users.splice(index, 1);
-      }
-    });
-    this.logger.log('[deleteUserFromChat] new members list: ' + foundEntityToJoin.users);
-    this.chatRepository.save(foundEntityToJoin).then(r => {
-      this.logger.log('[deleteUserFromChat] left chat -> chatId should match: ' + chatId + " = " + r.id);
-    });
-    return true;
-  }
-
   async leaveChat(chatId: number, intraName: string)  {
-    await this.chatRepository.findOneOrFail({
-      where: {
-        id: chatId,
-      },
-    }).then((foundEntityToJoin) => {
-        return this.deleteUserFromChat(foundEntityToJoin, intraName, chatId);
+    await this.chatRepository.getOneChat(chatId).then(async (foundEntityToLeave: NewChatEntity) => {
+      const userEntity = await this.userService.getUserByLoginName(intraName);
+      // Now we have the entity to update the member's array
+      return await this.chatRepository.deleteUserFromChat(foundEntityToLeave, userEntity);
     }).catch((err) => {
       throw new Error('[leaveChat] Could not find chat entity to join -> err: ' + err);
     });

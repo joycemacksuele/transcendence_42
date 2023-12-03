@@ -45,17 +45,18 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className='me-auto'>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.map((chat: ResponseNewChatDto) => (
+                    {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
                         <>
+                            {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
                             {chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
-                                key={chat.id}
+                                key={key}
                                 className="hidden"
                             >
                             </ListGroup>}
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
                             {chat.users.indexOf(intraName) != -1 && <ListGroup
-                                key={chat.id}
+                                key={key}
                                 variant="flush"
                             >
                                 <ListGroup.Item

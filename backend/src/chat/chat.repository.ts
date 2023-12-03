@@ -26,6 +26,15 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		return chatUsers
 	}
 
+	public async getOneChat(chatId: number) {
+		return await this
+			.createQueryBuilder("new_chat")
+			.where('new_chat.id = :id', {id: chatId})
+			.leftJoinAndSelect("new_chat.users", "user")
+			.leftJoinAndSelect("new_chat.admins", "admin")
+			.getOne();
+	}
+
 	public async getAllChats() {
 		const newChatTable: NewChatEntity[] = await this
 			.createQueryBuilder("new_chat")
@@ -64,6 +73,17 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			});
 			return responseDto;
 		}));
+	}
+
+	public async deleteUserFromChat(foundEntityToJoin: NewChatEntity, userEntity: UserEntity) {
+		console.log("foundEntityToJoin.users: ", foundEntityToJoin);
+		foundEntityToJoin.users = foundEntityToJoin.users.filter((user: UserEntity) => {
+			return user.id !== userEntity.id;
+		});
+		await this
+			.manager
+			.save(foundEntityToJoin);
+		return true
 	}
 
 	/*
