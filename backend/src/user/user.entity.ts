@@ -14,10 +14,9 @@
 */
 
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-
 import { Friendship } from 'src/friendships/friendship.entity';
-
 import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
+import { NewChatEntity } from 'src/chat/entities/new-chat.entity';
 
 
 @Entity()
@@ -97,4 +96,7 @@ export class UserEntity {
 
 	@OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.creator)
 	chatmessages: ChatMessageEntity[] | null;
+
+	@OneToMany(() => NewChatEntity, (newchat) => newchat.creator)
+	rooms_created: NewChatEntity[];
 }

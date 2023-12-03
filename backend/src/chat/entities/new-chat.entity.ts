@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany, ManyToOne } from 'typeorm';
 import { ChatType } from '../utils/chat-utils';
 import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 import { UserEntity } from 'src/user/user.entity';
@@ -13,7 +13,7 @@ export class NewChatEntity {
     id: number;
 
     @Column()
-    chatName: string;
+    name: string;
 
     // PRIVATE   | is a DM - can't be joined  | only members can see it
     // PUBLIC    | everyone can join it       | everyone can see it
@@ -23,41 +23,45 @@ export class NewChatEntity {
         enum: ChatType,
         default: ChatType.PUBLIC,
     })
-    chatType: ChatType;
+    type: ChatType;
 
     // if chatType == PROTECTED
     // it has to be hashed before saved to the database
     @Column({
         nullable: true,
     })
-    chatPassword: string;
+    password: string;
 
     // the creator can kick, ban, mute anyone on the channel (even admins)
-    @Column({
-        nullable: true,
-    })
-    chatCreator: string;
+    @ManyToOne(() => UserEntity, (user) => user.rooms_created)
+    creator: UserEntity;
+    // @Column({
+    //     nullable: true,
+    // })
+    // creator: string;
 
     // when the group is created, the admin is the owner (creator)
     // later on in another screen the admin will be able to add more admins to the room
     // the admin can kick, ban, mute others on the channel (besides the creator)
-    @Column({
-        type: "simple-json",
-        nullable: true,
-    })
-    chatAdmins: string[]
+    @ManyToMany(() => UserEntity)
+    @JoinTable()
+    admins: UserEntity[];
+    // @Column({
+    //     type: "simple-json",
+    //     nullable: true,
+    // })
+    // admins: string[];
 
     // it includes the current user
-    @Column({
-        type: "simple-json",
-        nullable: true,
-    })
-    chatMembers: string[]
-
-    @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
-    chatmessages: ChatMessageEntity[];
-
     @ManyToMany(() => UserEntity)
     @JoinTable()
     users: UserEntity[];
+    // @Column({
+    //     type: "simple-json",
+    //     nullable: true,
+    // })
+    // users: string[];
+
+    @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
+    messages: ChatMessageEntity[];
 }

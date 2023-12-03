@@ -20,7 +20,7 @@ interface JwtPayload {
 export class AuthService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly jwtService: JwtService, 
+		public readonly jwtService: JwtService,
 		private readonly tfaService: TwoFactorAuthService,
 		// private readonly userRepository: UserRepository
 		) {}
@@ -218,7 +218,7 @@ export class AuthService {
 		let token: string;
 
 		let expiryDate = new Date();
-		expiryDate.setMinutes(expiryDate.getMinutes() + 10);
+		expiryDate.setMinutes(expiryDate.getMinutes() + 1000);
 		console.log("expiry date: " + expiryDate);
 
 		let time = expiryDate.valueOf();
