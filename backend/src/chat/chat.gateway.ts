@@ -29,7 +29,8 @@ import { JwtService } from '@nestjs/jwt';
     //allowedHeaders: ["instant-chat-header"],
   }})
 export class ChatGateway
-    implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+    implements OnGatewayConnection, OnGatewayDisconnect
+    // implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(ChatGateway.name);
 
@@ -43,36 +44,47 @@ export class ChatGateway
   @WebSocketServer()
   ws_server: Server;
 
-  afterInit() {
-    this.logger.log('Initialized');
-  }
+  // afterInit() {
+  //   this.logger.log('Initialized');
+  // }
 
   async handleConnection(clientSocket: Socket) {
     try {
-      this.logger.log('Socket connected: ' + clientSocket.id);
+      this.logger.log('[handleConnection] Socket connected: ' + clientSocket.id);
 
-      const token_index = clientSocket.handshake.headers.cookie.indexOf("token");
-      const token_key = clientSocket.handshake.headers.cookie.substring(token_index);
-      const token = token_key.split('=')[1];
-      this.logger.log('token: ' + token);
+      let token = null;
+      // this.logger.log('[handleConnection] header: ', clientSocket.handshake.headers);
+      // this.logger.log('[handleConnection] cookie: ', clientSocket.handshake.headers.cookie);
+      if (clientSocket.handshake.headers.cookie) {
+        const token_index_start = clientSocket.handshake.headers.cookie.indexOf("token");
+        const token_key_value = clientSocket.handshake.headers.cookie.substring(token_index_start);
+        // this.logger.log('[handleConnection] token_key_value: ' + token_key_value);
+
+        if (token_key_value.includes(";")) {
+          const token_index_end = token_key_value.indexOf(";");
+          const token_key_value_2 = token_key_value.substring(0, token_index_end);
+          token = token_key_value_2.split('=')[1];
+        } else {
+          token = token_key_value.split('=')[1];
+        }
+        this.logger.log('[handleConnection] token: ' + token);
+      }
       try {
         const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-        this.logger.log('payload.username: ' + payload.username);
+        this.logger.log('[handleConnection] payload.username: ' + payload.username);
         clientSocket.data.user = payload.username;
       } catch {
         throw new UnauthorizedException('Invalid token');
       }
-    } catch {
-      this.logger.log('UnauthorizedException -> Socket disconnected:' + clientSocket.id);
+    } catch (error) {
+      this.logger.log('[handleConnection] ' + error);
       clientSocket.emit('error', new UnauthorizedException());
-      //   clientSocket.disconnect();
+      clientSocket.disconnect();
     }
   }
 
   handleDisconnect(clientSocket: Socket) {
-    this.logger.log(`Client disconnected: ${clientSocket.id}`);
-    // Do we need to handle it since it's being disconnected from the frontend to get here?
-    // client.disconnect();
+    this.logger.log(`[handleDisconnect] Socket disconnected: ${clientSocket.id}`);
   }
 
   @SubscribeMessage('createChat')
@@ -91,7 +103,8 @@ export class ChatGateway
       });
 
     });
-    // clientSocket.join(requestNewChatDto.name);// clientSocket.data.user + chat name for DMs (OBS no repetition for groups)
+    // chat name for private chat  = friend's name
+    // clientSocket.join(clientSocket.data.user + requestNewChatDto.name;);// clientSocket.data.user + chat name for DMs (OBS no repetition for groups)
     // this.logger.log('Socket rooms for the createChat: ' + clientSocket.rooms);
   }
 
