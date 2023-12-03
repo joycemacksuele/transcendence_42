@@ -101,7 +101,7 @@ export class ChatGateway
     this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
 
     this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(() => {
-      this.logger.log('getChats -> chat'+ requestNewChatDto.name + 'was created');
+      this.logger.log('getChats -> chat' + requestNewChatDto.name + 'was created');
       // If we could save a new chat in the database, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
@@ -145,7 +145,7 @@ export class ChatGateway
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('joinChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
-    return await this.chatService.joinChat(chatId, chatPassword, clientSocket.data.user);// todo clientSocket.data.user
+    return await this.chatService.joinChat(chatId, chatPassword, clientSocket.data.user);
   }
 
   @SubscribeMessage('leaveChat')
@@ -154,7 +154,7 @@ export class ChatGateway
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('leaveChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
-    return await this.chatService.leaveChat(chatId, clientSocket.data.user);// todo clientSocket.data.user
+    return await this.chatService.leaveChat(chatId, clientSocket.data.user);
   }
 
   @SubscribeMessage('getChats')
