@@ -46,10 +46,10 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className='me-auto'>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.map((chat: ResponseNewChatDto, mapStaticKey) => (
+                    {chatInfo.map((chat: ResponseNewChatDto) => (
                         <>
                             {chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
-                                key={mapStaticKey}
+                                key={chat.id}
                                 className="hidden"
                             >
                             </ListGroup>}
@@ -57,7 +57,7 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
                             {/* If current user is not a member of the chat (i.e. is not in the members array) */}
                             {/* And char is not private  (i.e. is a public or protected group) */}
                             {chat.users.indexOf(intraName) == -1 && chat.type != ChatType.PRIVATE && <ListGroup
-                                key={mapStaticKey}
+                                key={chat.id}
                                 variant="flush"
                             >
                                 <ListGroup.Item
