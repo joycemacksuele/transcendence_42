@@ -134,7 +134,7 @@ export class ChatService {
     //     id: "DESC",
     //   },
     // });
-    return await this.chatRepository.findChats();
+    return await this.chatRepository.getAllChats();
   }
 
   deleteChat(chatId: number) {
