@@ -20,10 +20,10 @@ export class DuplicateService {
 	async checkDuplicate(user: string, login: string) {
 		let response: boolean = true;
 		// this.logger.log('OAuth code received: ' + requestCode);
-//		console.log('Jaka: The whole request URL: ', reqUrl);
-//		console.log('Jaka:           requestCode: ', requestCode);
+//		this.logger.log('Jaka: The whole request URL: ', reqUrl);
+//		this.logger.log('Jaka:           requestCode: ', requestCode);
 		if (user == login) {
-			console.log("checkDuplicate(), return TRUE. user: ", user, "login: ", login);
+			this.logger.log("checkDuplicate(), return TRUE. user: ", user, "login: ", login);
 			return false; // ???		
 		}
 
@@ -47,7 +47,7 @@ export class DuplicateService {
 	// This request needs to be performed on the server side, over a secure connection
 
 	async exchangeCodeForAccessToken(clientData: any, user: string, login: string) {
-		// console.log('Start Exchange Code for token');
+		// this.logger.log('Start Exchange Code for token');
 		let access_token: string;
 		let response: boolean = true;
 		await axios
@@ -88,9 +88,9 @@ export class DuplicateService {
 				found = false;
 			} else {
 				this.logger.log('match');
-				console.log(response['data'][0].login);		// The response is an array of objects, not just one object
+				this.logger.log(response['data'][0].login);		// The response is an array of objects, not just one object
 
-				console.log("      current loginName != searched user   -> found: TRUE: forbidden to change profilename");
+				this.logger.log("      current loginName != searched user   -> found: TRUE: forbidden to change profilename");
 				found = true;
 			}
 
