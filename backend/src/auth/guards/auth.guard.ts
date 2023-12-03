@@ -46,28 +46,28 @@
 //         // if (expiry1 === true)
 //         // {
 //         //     token = "";
-//         //     console.log("replaced token with empty string: " + token);
+//         //     this.logger.log("replaced token with empty string: " + token);
 //         // }
 
 //         // I've had enough of you! Go away! 
 
 //         // ---------------------------------------
 //         if (!token || token === ""){
-//             console.log("player must be thrown out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//             this.logger.log("player must be thrown out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 //             throw new UnauthorizedException();  // player must be thrown out !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //         }
 //         try{
 //             const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
 //             request['user'] = payload;
-//             console.log("Payload after first decode: " , payload);
+//             this.logger.log("Payload after first decode: " , payload);
 //             let userName = payload.username;
-//             console.log("payload.user: " + userName + ', payload.exp: ' + payload.exp);
+//             this.logger.log("payload.user: " + userName + ', payload.exp: ' + payload.exp);
 
 //             let expiry = await this.tokenExpired(payload.exp);
 //             let player : UserEntity;
 //             if (expiry === true)
 //             {
-//                 console.log("Token is expired. Start new tokens: ------------------------------------" + expiry);
+//                 this.logger.log("Token is expired. Start new tokens: ------------------------------------" + expiry);
 //                 // ----------------------------------------------- get user entity from database
 //                 const paramName = new URLSearchParams();
 //                 paramName.append('name', userName);
@@ -103,9 +103,9 @@
 
                    
 //                     let cookies = request.get('Cookie'); // not needed
-// 		            console.log("     verify cookie: " + cookies); // not needed
+// 		            this.logger.log("     verify cookie: " + cookies); // not needed
 // 		            let existingToken = this.extractTokenFromHeader(request); // not needed
-// 		            console.log("     existingToken: " + existingToken); // not needed
+// 		            this.logger.log("     existingToken: " + existingToken); // not needed
 
 // 		            let replaceToken = await this.signToken(player);
 //             		const cookieAttributes = {
@@ -146,7 +146,7 @@
 //                 }         
 //             }
 //             else{
-//                 console.log("Token not expired. Exit Function------------------------------------- " + expiry );
+//                 this.logger.log("Token not expired. Exit Function------------------------------------- " + expiry );
 //             }
 //         }
 //         catch(err){
@@ -191,7 +191,7 @@
 //             token, {secret: process.env.SECRET}
 //             )
 //             request['user'] = payload;
-//             console.log(payload);
+//             this.logger.log(payload);
 //         }
 //         catch{
 //             throw new UnauthorizedException();
@@ -207,7 +207,7 @@
 //         if (!cookie)
 //             return undefined;
 //         var arrays = cookie.split(';');
-//         // console.log("arrays: " + arrays);
+//         // this.logger.log("arrays: " + arrays);
 //         for (let i = 0; arrays[i]; i++)
 //         {
 //             if (arrays[i].includes("token="))
@@ -216,7 +216,7 @@
 //                 break ;
 //             }
 //         }
-//         // console.log('token: ' + token);
+//         // this.logger.log('token: ' + token);
 //         return token;
 //     }
 
@@ -225,10 +225,10 @@
 
 // 		let expiryDate = new Date();
 // 		expiryDate.setMinutes(expiryDate.getMinutes() + 1);
-// 		console.log("expiry date: " + expiryDate);
+// 		this.logger.log("expiry date: " + expiryDate);
 
 // 		let time = expiryDate.valueOf();
-// 		console.log("time: " + time);
+// 		this.logger.log("time: " + time);
 
 // 		const payload = { sub: player.intraId, username:player.loginName, exp: time };  // https://docs.nestjs.com/security/authentication
 // 		try {

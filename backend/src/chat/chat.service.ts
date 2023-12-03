@@ -35,8 +35,8 @@ export class ChatService {
     // chatEntity.bannedUsers = [];
     if (requestNewChatDto.type == ChatType.PRIVATE) {
       // If it is a PRIVATE chat we need to add the friend to the users list
-      // chatEntity.name = "mock friend";//creator + requestNewChatDto.loginName;// TODO this should be coming from the frontend already
-      chatEntity.users.push(await this.userService.getUserByLoginName(creator));
+      // chat name for private chat  = friend's name
+      chatEntity.users.push(await this.userService.getUserByLoginName(requestNewChatDto.name));
     } else if (requestNewChatDto.type == ChatType.PROTECTED) {
       if (requestNewChatDto.password == null) {
         throw new Error('Password is required for PROTECTED group');
@@ -127,7 +127,7 @@ export class ChatService {
   async getAllChats(): Promise<ResponseNewChatDto[]> {
     this.logger.log('getAllChats');
     // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
-    // console.log("ChatService query.getQuery(): ", query.getQuery());
+    // this.logger.log("ChatService query.getQuery(): ", query.getQuery());
     // return this.chatRepository.query(query.getQuery());
     // return this.chatRepository.find({
     //   order: {
