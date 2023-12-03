@@ -1,14 +1,21 @@
-import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import {
+  ConnectedSocket,
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer
+} from '@nestjs/websockets';
+import {Server, Socket} from 'socket.io';
 import {Logger, UnauthorizedException, UsePipes, ValidationPipe} from '@nestjs/common';
-import { ChatService } from './chat.service';
-import { RequestNewChatDto } from './dto/request-new-chat.dto';
-import { RequestMessageChatDto } from './dto/request-message-chat.dto';
-import { RequestRegisterChatDto } from './dto/request-register-chat.dto';
-import {NewChatEntity} from "./entities/new-chat.entity";
+import {ChatService} from './chat.service';
+import {RequestNewChatDto} from './dto/request-new-chat.dto';
+import {RequestMessageChatDto} from './dto/request-message-chat.dto';
+import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
+import {AuthService} from "src/auth/auth.service";
+import {ChatType} from "./utils/chat-utils";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
-import { AuthService } from "src/auth/auth.service";
-import { JwtService } from '@nestjs/jwt';
 
 /*
     Websockets tips:
@@ -103,9 +110,17 @@ export class ChatGateway
       });
 
     });
-    // chat name for private chat  = friend's name
-    // clientSocket.join(clientSocket.data.user + requestNewChatDto.name;);// clientSocket.data.user + chat name for DMs (OBS no repetition for groups)
-    // this.logger.log('Socket rooms for the createChat: ' + clientSocket.rooms);
+
+    // Join the specific room after chat was created
+    if (requestNewChatDto.type == ChatType.PRIVATE) {
+      // chat name for private chat  = friend's name
+      clientSocket.join(clientSocket.data.user + requestNewChatDto.name);
+      this.logger.log('Socket has joined room ' + clientSocket.data.user + requestNewChatDto.name);
+    } else {
+      clientSocket.join(requestNewChatDto.name);// TODO no repetition for groups names since wit would join the same room
+      this.logger.log('Socket has joined room ' + requestNewChatDto.name);
+    }
+    this.logger.log('Socket rooms for the createChat: ', clientSocket.rooms.size);
   }
 
   @SubscribeMessage('deleteChat')
