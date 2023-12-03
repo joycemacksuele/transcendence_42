@@ -59,9 +59,9 @@ export class UserService {
 
 
   async getUserByLoginName(loginName: string): Promise<UserEntity> {
-    console.log("getUserByLoginName function " + loginName);
+    this.logger.log("getUserByLoginName function " + loginName);
     const options: FindOneOptions<UserEntity> = { where: { loginName } };
-    // console.log("getUserByLoginName function options: " + options);
+    // this.logger.log("getUserByLoginName function options: " + options);
 
 	  return this.userRepository.findOne( options );
   }
@@ -88,7 +88,7 @@ export class UserService {
 
   async updateRefreshToken(loginName: string, refreshToken: string) {
      const response = await this.userRepository.update({ loginName} , { refreshToken });
-    console.log('updaterefreshtoken function after: ' + refreshToken);
+    this.logger.log('updaterefreshtoken function after: ' + refreshToken);
   }
 
   async enableTFA(loginName: string, tfaEnabled: boolean) {
@@ -121,7 +121,7 @@ export class UserService {
     
     if (user) {
       user.onlineStatus = status;
-      console.log("setOnlineStatus(): ", user.onlineStatus);
+      this.logger.log("setOnlineStatus(): ", user.onlineStatus);
       await this.userRepository.save(user);
     } else {
       throw new NotFoundException(`User with login name ${loginName} not found`);
