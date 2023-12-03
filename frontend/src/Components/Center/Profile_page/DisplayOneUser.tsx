@@ -24,10 +24,6 @@ const getCurrentUsername = async () => {
 	}
 }
 
-
-
-
-
 const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 
 	const [userData, setUserData] = useState<any>(null); // !todo: define the 'structure' of returned user data
@@ -49,18 +45,13 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 				setShowButtons(true);
 			}
 		};
-	
+
 		compareUserNames();
 	}, [loginName]);
 	const buttonsVisible = showButtons ? {} : { display: 'none'};
 
 	useEffect(() => {
 		if (!myId) return; // GUARD CLAUSE: wait until myID is available
-
-
-
-
-
 
 		const fetchUserData = async () => {
 			let response;
@@ -187,10 +178,26 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 	};
 
 	const handleClickPrivateChat = () => {
-		const requestNewChatDto: RequestNewChatDto = {chatName: "mocked user2", chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
-		// const requestNewChatDto: RequestNewChatDto = {chatName: userData.friend.loginName, chatType: ChatType.PRIVATE, chatPassword: null, loginName: loginName};
-		chatSocket.emit("createChat", requestNewChatDto);
-		console.log("[DisplayOneUser] handleClickPrivateChat called. requestNewChatDto:", requestNewChatDto);
+		console.log("[DisplayOneUser] handleClickPrivateChat");
+		if (!chatSocket.connected) {
+			chatSocket.connect();
+			chatSocket.on("connect", () => {
+				console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+				const requestNewChatDto: RequestNewChatDto = {name: loginName, type: ChatType.PRIVATE, password: null};
+				chatSocket.emit("createChat", requestNewChatDto);
+				console.log("[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:", requestNewChatDto);
+			});
+			chatSocket.on("disconnect", (reason) => {
+				if (reason === "io server disconnect") {
+					console.log("[DisplayOneUser] socket disconnected: ", reason);
+					// the disconnection was initiated by the server, you need to reconnect manually
+					chatSocket.connect();
+				}
+				// else the socket will automatically try to reconnect
+			});
+		} else {
+			console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+		}
 	};
 
 	return (
@@ -247,4 +254,3 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 };
 
 export default DisplayOneUser;
-
