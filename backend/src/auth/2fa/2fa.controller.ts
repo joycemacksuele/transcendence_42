@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res, HttpException, HttpStatus } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, Res, HttpException, HttpStatus } from "@nestjs/common";
 import { Response } from 'express';
 import { Logger } from "@nestjs/common";
 import { TwoFactorAuthService } from "./2fa.service";
@@ -45,18 +45,17 @@ export class TwoFactorAuthController {
             {
                 this.logger.log('codeStored === default');
                 throw new HttpException('Internal Server Error: Verification email was not sent', HttpStatus.INTERNAL_SERVER_ERROR); 
-                // redirect to the auth page? how? 
             }
             if (codeToVerify === codeStored)
             {
-    			await this.userService.setOnlineStatus(user.loginName, true);   // jaka
-                await this.userService.updateStoredTFACode(user.loginName, "default"); // jaka  // WHY? 
+    			await this.userService.setOnlineStatus(user.loginName, true);
+                await this.userService.updateStoredTFACode(user.loginName, "default");
                 this.logger.log('2fa verification successfull! Codes match!');
                 return true;
             }
             else {
                 this.logger.log('2fa verification failed! Codes did not match!');
-                // let temp = await this.userService.updateStoredTFACode(user.loginName, "default");
+                let temp = await this.userService.updateStoredTFACode(user.loginName, "default");
                 return false; 
             }
         } catch(err) {
@@ -83,18 +82,32 @@ export class TwoFactorAuthController {
         }
     }
 
+
+    @Get('get-status')
+    async get2faStatus(@Req() req, @Res() res: Response) {
+        try {
+            let payload = await this.authService.extractUserdataFromToken(req);
+            let user    = await this.userService.getUserByLoginName(payload.username);
+            // console.log('tfastatus: ', user.tfaEnabled);
+            res.json({ tfaStatus: user.tfaEnabled });
+        } catch (error) {
+            console.error('Error fetching tfa status.');
+        }
+    }
+
+
     @Post('toggle_button_tfa')
     async toggleButtonTfa(@Req() req, @Res() res: Response) {
         try {
-            this.logger.log('Start toggle_button_tfa');
+            // this.logger.log('Start toggle_button_tfa');
             let payload = await this.authService.extractUserdataFromToken(req);
-            this.logger.log("request.user: ", payload.username); // returns payload, not user entity
+            // this.logger.log("request.user: ", payload.username); // returns payload, not user entity
             
             let user = await this.userService.getUserByLoginName(payload.username);  // retrieve user entity
             if (!user) {
                 throw new Error('toggle_button_tfa: User not found');
             }
-            this.logger.log("verify user: user.email- ", user.email);
+            // this.logger.log("verify user: user.email- ", user.email);
 
             // Toggle TFA status
             const updatedTfaStatus = !user.tfaEnabled;

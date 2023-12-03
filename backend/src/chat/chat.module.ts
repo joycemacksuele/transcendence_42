@@ -1,8 +1,8 @@
 import {Logger, Module} from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatController } from "./chat.controller";
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatRepository } from "./chat.repository";
 import { NewChatEntity } from './entities/new-chat.entity';
 import { ChatMessageEntity } from "./entities/chat-message.entity";

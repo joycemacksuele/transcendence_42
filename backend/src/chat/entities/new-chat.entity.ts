@@ -33,35 +33,35 @@ export class NewChatEntity {
     password: string;
 
     // the creator can kick, ban, mute anyone on the channel (even admins)
-    // @ManyToMany(() => UserEntity, (user) => user.loginName)
-    // creator: UserEntity;
-    @Column({
-        nullable: true,
-    })
-    creator: string;
+    @ManyToOne(() => UserEntity, (user) => user.rooms_created)
+    creator: UserEntity;
+    // @Column({
+    //     nullable: true,
+    // })
+    // creator: string;
 
     // when the group is created, the admin is the owner (creator)
     // later on in another screen the admin will be able to add more admins to the room
     // the admin can kick, ban, mute others on the channel (besides the creator)
-    // @ManyToMany(() => UserEntity)
-    // @JoinTable()
-    // admins: UserEntity[];
-    @Column({
-        type: "simple-json",
-        nullable: true,
-    })
-    admins: string[];
+    @ManyToMany(() => UserEntity)
+    @JoinTable()
+    admins: UserEntity[];
+    // @Column({
+    //     type: "simple-json",
+    //     nullable: true,
+    // })
+    // admins: string[];
 
     // it includes the current user
-    // @ManyToMany(() => UserEntity)
-    // @JoinTable()
-    // users: UserEntity[];
-    @Column({
-        type: "simple-json",
-        nullable: true,
-    })
-    users: string[];
+    @ManyToMany(() => UserEntity)
+    @JoinTable()
+    users: UserEntity[];
+    // @Column({
+    //     type: "simple-json",
+    //     nullable: true,
+    // })
+    // users: string[];
 
-    // @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
-    // messages: ChatMessageEntity[];
+    @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
+    messages: ChatMessageEntity[];
 }

@@ -51,21 +51,21 @@ export class ChatGateway
     try {
       this.logger.log('Socket connected: ' + clientSocket.id);
 
-      const token = clientSocket.handshake.headers.cookie.split('=')[1];
-      if (!token) {
-        throw new UnauthorizedException('Token not found');
-      }
+      const token_index = clientSocket.handshake.headers.cookie.indexOf("token");
+      const token_key = clientSocket.handshake.headers.cookie.substring(token_index);
+      const token = token_key.split('=')[1];
       this.logger.log('token: ' + token);
-      // try {
-      //   const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-      //   clientSocket.data.user = payload.username;
-      // } catch {
-      //   throw new UnauthorizedException('Invalid token');
-      // }
+      try {
+        const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+        this.logger.log('payload.username: ' + payload.username);
+        clientSocket.data.user = payload.username;
+      } catch {
+        throw new UnauthorizedException('Invalid token');
+      }
     } catch {
       this.logger.log('UnauthorizedException -> Socket disconnected:' + clientSocket.id);
-      clientSocket.emit('error' + new UnauthorizedException());
-      // clientSocket.disconnect();
+      clientSocket.emit('error', new UnauthorizedException());
+      //   clientSocket.disconnect();
     }
   }
 
@@ -91,7 +91,7 @@ export class ChatGateway
       });
 
     });
-    // clientSocket.join(requestNewChatDto.name);// loginName + friendnName for DMs (OBS no repetition for groups)
+    // clientSocket.join(requestNewChatDto.name);// clientSocket.data.user + chat name for DMs (OBS no repetition for groups)
     // this.logger.log('Socket rooms for the createChat: ' + clientSocket.rooms);
   }
 
@@ -114,21 +114,19 @@ export class ChatGateway
   async joinChat(
       @MessageBody('chatId') chatId: number,
       @MessageBody('chatPassword') chatPassword: string,
-      @MessageBody('intraName') intraName: string,
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
-    this.logger.log('joinChat -> chatId: ' + chatId + " intraName: " + intraName);
-    return await this.chatService.joinChat(chatId, chatPassword, intraName);// todo clientSocket.data.user
+    this.logger.log('joinChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
+    return await this.chatService.joinChat(chatId, chatPassword, clientSocket.data.user);// todo clientSocket.data.user
   }
 
   @SubscribeMessage('leaveChat')
   async leaveChat(
       @MessageBody('chatId') chatId: number,
-      @MessageBody('intraName') intraName: string,
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
-    this.logger.log('leaveChat -> chatId: ' + chatId + " intraName: " + intraName);
-    return await this.chatService.leaveChat(chatId, intraName);// todo clientSocket.data.user
+    this.logger.log('leaveChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
+    return await this.chatService.leaveChat(chatId, clientSocket.data.user);// todo clientSocket.data.user
   }
 
   @SubscribeMessage('getChats')
@@ -147,7 +145,7 @@ export class ChatGateway
     this.logger.log('messageChat -> requestMessageChatDto: ', requestMessageChatDto);
     // const ret = this.chatService.messageChat(requestMessageChatDto);
     // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
-    // this.ws_server.emit.to(requestNewChatDto.loginName).('message', ret);
+    // this.ws_server.emit.to(clientSocket.data.user).('message', ret);
   }
 
   @SubscribeMessage('registerChat')
