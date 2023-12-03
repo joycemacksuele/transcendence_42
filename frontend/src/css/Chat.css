@@ -7,3 +7,9 @@
     /*display: flex;*/
     /*overflow-y: scroll;*/
 }
+
+ul.dropdown-menu {
+    /*width: auto;*/
+    height: 50vw;
+    overflow-y: scroll;
+}

@@ -31,7 +31,7 @@ const NewChat = () => {
         // todo change to intraName everywhere
         const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
-        const requestNewChatDto: RequestNewChatDto = {chatName: chatName, chatType: chatType, chatPassword: chatPassword, loginName: intraName};
+        const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword, loginName: intraName};
         chatSocket.emit("createChat", requestNewChatDto);
         console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 
@@ -52,7 +52,7 @@ const NewChat = () => {
                     </Button>
                     <Modal show={show} onHide={ () => {setShow(false)}}>
                         <Modal.Header closeButton>
-                            <Modal.Title>New Group</Modal.Title>
+                            <Modal.Title>Create new chat group</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <Form>

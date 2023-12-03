@@ -76,6 +76,7 @@ import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
       entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity, MatchEntity],
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
+      logging: ["query"],
     }),
     TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
     UserModule,
