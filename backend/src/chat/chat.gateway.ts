@@ -15,6 +15,7 @@ import {RequestMessageChatDto} from './dto/request-message-chat.dto';
 import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
 import {ChatType} from "./utils/chat-utils";
+import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
 
 /*
     Websockets tips:
