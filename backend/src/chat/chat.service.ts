@@ -124,7 +124,7 @@ export class ChatService {
     return false;
   }
 
-  async getAllChats(): Promise<ResponseNewChatDto[]> {
+  async getAllChats() {
     this.logger.log('getAllChats');
     // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
     // this.logger.log("ChatService query.getQuery(): ", query.getQuery());
@@ -134,7 +134,7 @@ export class ChatService {
     //     id: "DESC",
     //   },
     // });
-    return await this.chatRepository.findChats();
+    return await this.chatRepository.getAllChats();
   }
 
   deleteChat(chatId: number) {
