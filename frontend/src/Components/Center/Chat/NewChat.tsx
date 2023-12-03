@@ -26,10 +26,8 @@ const NewChat = () => {
     const [show, setShow] = useState(false);
 
     const createGroupChat = () => {
-        // todo change to intraName everywhere
-        // const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
-
         const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword};
+        console.log("[DisplayOneUser] createChat AQUIIIIIIIIII 2");
         chatSocket.emit("createChat", requestNewChatDto);
         console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 
