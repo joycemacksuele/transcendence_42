@@ -9,7 +9,6 @@ import Form from 'react-bootstrap/Form';
 
 import {ChatType, RequestNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx"
-import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
 
 // type PropsHeader = {
 //     // recentChatList: RequestNewChatDto[];
@@ -24,14 +23,13 @@ const NewChat = () => {
     const [chatType, setChatType] = useState<ChatType>(ChatType.PUBLIC);
     const [chatPassword, setChatPassword] = useState<string | null>(null);
 
-    const currUserData = useContext(CurrentUserContext) as CurrUserData;
     const [show, setShow] = useState(false);
 
     const createGroupChat = () => {
         // todo change to intraName everywhere
-        const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
+        // const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
-        const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword, loginName: intraName};
+        const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword};
         chatSocket.emit("createChat", requestNewChatDto);
         console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 

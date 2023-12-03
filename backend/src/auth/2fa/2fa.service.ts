@@ -41,17 +41,17 @@ export class TwoFactorAuthService {
 	{
 		if (value === null)
 		{
-			console.log("value null");
+			this.logger.log("value null");
 			return false;
 		} 
 		if (value.length !== 6)
 		{
-			console.log("length: " + value.length);
+			this.logger.log("length: " + value.length);
 			return false;
 		} 
 		if (typeof(+value) !== "number")
 		{
-			console.log("not a number: ");
+			this.logger.log("not a number: ");
 			return false;
 		}
 		return true;
