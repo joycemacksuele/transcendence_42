@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router';
 import React, { useContext } from 'react';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/js/bootstrap.min.js';
 
 import { Navbar, Container, Nav, Col, Image, Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';

@@ -1,0 +1,154 @@
+
+:root {
+  /* font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
+  /* line-height: 1.1; */
+  /* font-weight: 100; */
+
+  color-scheme: dark;
+  /* color: rgba(218, 17, 17, 0.87); */
+  /* background-color: #242424; */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  /* jaka */
+  /* --inner-section-background: rgb(124, 124, 18); NOWHERE ??? */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  /* display: flex; */
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.input-default {
+  /* margin: 10px !important; */
+}
+
+button.button_default {
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 0.6em 1.2em;
+  margin: 5px;
+  font-size: 0.8em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #a19c94;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button.button_default:hover {
+  border-color: #dcfb92;
+  background-color: #c08f8f;
+}
+button.button_default:focus,
+button.button_default:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Background of outer div (column)  */
+.column-bckg {
+	margin-top: 2%;
+	/* margin-left: 2%; */
+}
+
+.inner-section {
+  margin: 5% 0 5% 0;
+  padding: 4%;
+  width: 100%;
+  color: black;
+}
+
+
+
+/* MATCHES */
+.match-row {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: left;
+  margin-bottom: 10px;
+}
+
+.players {
+  /* flex-shrink: 0; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* text-align: left; */
+}
+.score {
+  flex-grow: 1;
+  margin-left: 20px;
+  text-align: left;
+  overflow: hidden;
+}
+
+/* ************************************************* */
+/****** CUSTOM COLORS TO CHANGE THE THEME ************/
+
+body {
+  background-color: #e6dddd;
+}
+
+/* Background of outer div  */
+.column-bckg {
+  background: rgb(255, 253, 239);
+  border: rgb(184, 183, 183) solid 1px;
+  /* border: rgb(137, 137, 243) solid 1px; */
+}
+
+/* Most inner sections inside each div in the center: */
+.inner-section {
+  background-color: rgb(236, 236, 187);
+  border: 1px rgb(225, 200, 156) solid;
+  border-radius: 2%;
+}
+
+
+button.button_default {
+  background-color: #a19c94;
+}
+button.button_default:hover {
+  border-color: #dcfb92;
+  background-color: #c08f8f;
+}
+button.button_default:focus,
+button.button_default:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+
+.form-control::file-selector-button {
+  background-color: rgb(213, 230, 245);
+}
+
+/* BROWSER'S OWN SETTINGS */
+/* @media (prefers-color-scheme: light) {
+  :root {
+    color: #107edf;
+  }
+} */

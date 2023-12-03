@@ -4,7 +4,7 @@ export interface RequestNewChatDto {
     name: string;// Can also be a login name
     type: ChatType;
     password: string | null;
-    loginName: string;
+    // loginName: string;
 }
 
 // This is mapped to response-new-chat.dto.ts on the backend
