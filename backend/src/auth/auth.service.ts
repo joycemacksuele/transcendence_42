@@ -20,7 +20,7 @@ interface JwtPayload {
 export class AuthService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly jwtService: JwtService, 
+		public readonly jwtService: JwtService,
 		private readonly tfaService: TwoFactorAuthService,
 		// private readonly userRepository: UserRepository
 		) {}
@@ -180,7 +180,7 @@ export class AuthService {
 				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
 		}
 		response.append('Set-Cookie', cookieToken);
-		console.log('print token inside response: ' + response.getHeader("set-cookie"));  // test 
+		this.logger.log('print token inside response: ' + response.getHeader("set-cookie"));  // test
 
 		// Set status Online true
 		// await this.userService.setOnlineStatus(player.loginName, true);
@@ -218,11 +218,11 @@ export class AuthService {
 		let token: string;
 
 		let expiryDate = new Date();
-		expiryDate.setMinutes(expiryDate.getMinutes() + 10);
-		console.log("expiry date: " + expiryDate);
+		expiryDate.setMinutes(expiryDate.getMinutes() + 1000);
+		this.logger.log("expiry date: " + expiryDate);
 
 		let time = expiryDate.valueOf();
-		console.log("time: " + time);
+		this.logger.log("time: " + time);
 
 		const payload = { sub: player.intraId, username:player.loginName, exp: time };  // https://docs.nestjs.com/security/authentication
 		try {
@@ -240,10 +240,10 @@ export class AuthService {
 		let refreshToken: string;
 		let expiryDate = new Date();
 		expiryDate.setMinutes(expiryDate.getDay() + 90);
-		console.log("expiry date: " + expiryDate);
+		this.logger.log("expiry date: " + expiryDate);
 
 		let time = expiryDate.valueOf();
-		console.log("time: " + time);
+		this.logger.log("time: " + time);
 
 		const payload = { sub: player.intraId, username:player.loginName, exp: time };  // https://docs.nestjs.com/security/authentication
 		try {
@@ -261,9 +261,9 @@ export class AuthService {
 // 	try{
 // 		this.logger.log("start removeAuthToken");
 // 		let cookies = request.get('Cookie');
-// 		console.log("     verify cookie: " + cookies);
+// 		this.logger.log("     verify cookie: " + cookies);
 // 		let existingToken = this.extractTokenFromHeader(request);
-// 		console.log("     existingToken: " + existingToken);
+// 		this.logger.log("     existingToken: " + existingToken);
 
 // 		let replaceToken = "";
 // 		const cookieAttributes = {
@@ -292,9 +292,9 @@ export class AuthService {
 	try{
 		this.logger.log("start replaceToken");
 		let cookies = request.get('Cookie'); // not needed
-		console.log("     verify cookie: " + cookies); // not needed
+		this.logger.log("     verify cookie: " + cookies); // not needed
 		let existingToken = this.extractTokenFromHeader(request); // not needed
-		console.log("     existingToken: " + existingToken); // not needed
+		this.logger.log("     existingToken: " + existingToken); // not needed
 
 		let replaceToken = newToken;
 		const cookieAttributes = {

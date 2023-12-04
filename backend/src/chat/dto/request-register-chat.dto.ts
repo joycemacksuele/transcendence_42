@@ -6,7 +6,7 @@ export class RequestRegisterChatDto {
     @MinLength(2)
     @MaxLength(20)
     @IsNotEmpty({ message: 'Required' })
-    chatName: string;
+    name: string;
 */
     @IsString()
     @MinLength(5)
@@ -18,5 +18,5 @@ export class RequestRegisterChatDto {
     @MinLength(3)
     @MaxLength(10)
     @IsNotEmpty({ message: 'Required' })
-    loginName: string;
+    loginName: string;// todo rename to friendId? or friendProfileName -> use clientSocket.data.user for current user
 }

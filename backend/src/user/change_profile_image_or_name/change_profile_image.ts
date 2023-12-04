@@ -1,4 +1,16 @@
-import { Controller, Injectable, Post, Body, Req, UploadedFile, UseInterceptors, NestMiddleware, Param, ParseIntPipe } from '@nestjs/common';
+import {
+	Controller,
+	Injectable,
+	Post,
+	Body,
+	Req,
+	UploadedFile,
+	UseInterceptors,
+	NestMiddleware,
+	Param,
+	ParseIntPipe,
+	Logger
+} from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -40,14 +52,14 @@ export class AddUsernameMiddleware implements NestMiddleware {
 async function deleteOldProfileImages(loginName: string) {
 	const uploadsDir = path.join(__dirname,  `../../../${process.env.UPLOADS}`); // pulled from.env
 	try {
-		console.log('Deleting old profile image of userName: ', loginName);
+		this.logger.log('Deleting old profile image of userName: ', loginName);
 		const images = await fs.readdir(uploadsDir);
 
 		const imagesToDelete = images.filter(file => file.includes(loginName));
-		console.log('      Files detected for deletion:', imagesToDelete);
+		this.logger.log('      Files detected for deletion:', imagesToDelete);
 
 		for (const img of imagesToDelete) {
-			console.log('         ... deleting: ', img)
+			this.logger.log('         ... deleting: ', img)
 			await fs.unlink(path.join(uploadsDir, img));
 		}
 	} catch (error) {
@@ -69,7 +81,7 @@ const storage = {
 			//const sanitizedUserName = user.replace(/\s+/g, '_');  // Replacing spaces with underscores
 
 			await deleteOldProfileImages(username); // Delete old profile images
-			console.log('Old profile images deleted for loginName:', username);
+			this.logger.log('Old profile images deleted for loginName:', username);
 		
 			const uniqueSuffix = uuidv4();
 			const extension: string = Path.parse(file.originalname).ext;
@@ -82,9 +94,10 @@ const storage = {
 
 @Controller()
 export class UploadImageController {
+	private readonly logger = new Logger(UploadImageController.name);
 	constructor( 	private readonly userService: UserService,
 					private readonly authService: AuthService) {
-		console.log('constructor changeImage');
+		this.logger.log('Constructor');
 	}
 
 
@@ -102,18 +115,18 @@ export class UploadImageController {
 
 		// extract user from request token 
 		let payload = await this.authService.extractUserdataFromToken(req);
-		console.log("      ... payload.username: ", payload.username);
+		this.logger.log("      ... payload.username: ", payload.username);
 
 		// req['username'] = user.username; // add username to request object
 		req.user = { username: payload.username };
-		//console.log('\n\nChange Image, Request received for userName: ', loginName);
-		console.log('\n\nChange Image, Request received for userName: ', user.username);
+		//this.logger.log('\n\nChange Image, Request received for userName: ', loginName);
+		this.logger.log('\n\nChange Image, Request received for userName: ', user.username);
 		const imagePath = file.path;
-		console.log('New image path:', imagePath);
+		this.logger.log('New image path:', imagePath);
 		
 		// await this.userService.updateProfileImage(loginName, imagePath);
 		await this.userService.updateProfileImage(user.username, imagePath);
-		console.log('Profile image updated.');
+		this.logger.log('Profile image updated.');
 		return file
     }		
 }

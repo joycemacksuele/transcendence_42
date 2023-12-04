@@ -6,74 +6,123 @@ import {ChatRepository} from "./chat.repository";
 import * as bcryptjs from 'bcryptjs';
 import {RequestNewChatDto} from "./dto/request-new-chat.dto";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
+import {MessageBody} from "@nestjs/websockets";
+import {UserService} from "../user/user.service";
+import {UserEntity} from "src/user/user.entity";
 
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
 
   constructor(
-      @InjectRepository(NewChatEntity)
+      // @InjectRepository(NewChatEntity)
       public readonly chatRepository: ChatRepository,
-      // public readonly userService: UserService
+      public readonly userService: UserService
   ) {
     this.logger.log('constructor');
   }
 
-  ////////////////////////////////////////////////////////////// Functions for Gateway
-
-  async createChat(requestNewChatDto: RequestNewChatDto)  {
-    const chat_entity = new NewChatEntity();
-    chat_entity.chatName = requestNewChatDto.chatName;
-    chat_entity.chatType = requestNewChatDto.chatType;
-    chat_entity.chatCreator = requestNewChatDto.loginName;
-    chat_entity.chatAdmins = [];
-    chat_entity.chatAdmins.push(requestNewChatDto.loginName);
-    chat_entity.chatMembers = [];
-    chat_entity.chatMembers.push(requestNewChatDto.loginName);
-    // chat_entity.chatBannedUsers = [];
-    if (requestNewChatDto.chatType == ChatType.PROTECTED) {
-      if (requestNewChatDto.chatPassword == null) {
-        throw new Error('Password is required for PROTECTED_CHANNEL');
+  async createChat(requestNewChatDto: RequestNewChatDto, creator: string)  {
+    const chatEntity= new NewChatEntity();
+    chatEntity.name = requestNewChatDto.name;
+    chatEntity.type = requestNewChatDto.type;
+    chatEntity.password = null;
+    chatEntity.creator = await this.userService.getUserByLoginName(creator);
+    chatEntity.admins = [];
+    chatEntity.admins.push(chatEntity.creator);
+    chatEntity.users = [];
+    chatEntity.users.push(chatEntity.creator);
+    // chatEntity.bannedUsers = [];
+    if (requestNewChatDto.type == ChatType.PRIVATE) {
+      // If it is a PRIVATE chat we need to add the friend to the users list
+      // chat name for private chat  = friend's name
+      chatEntity.users.push(await this.userService.getUserByLoginName(requestNewChatDto.name));
+    } else if (requestNewChatDto.type == ChatType.PROTECTED) {
+      if (requestNewChatDto.password == null) {
+        throw new Error('Password is required for PROTECTED group');
       }
       try {
-        chat_entity.chatPassword = await bcryptjs.hash(requestNewChatDto.chatPassword, 10);
+        chatEntity.password = await bcryptjs.hash(requestNewChatDto.password, 10);
       } catch (err) {
         throw new Error('Can not hash password');
       }
-    } else {
-      requestNewChatDto.chatPassword = null;
     }
     // const new_chat = this.chatRepository.create(requestNewChatDto);// this can create an Entity out of an object if var name matches
-    // await this.chatRepository.save(chat_entity);
-    this.chatRepository.save(chat_entity).then(r => {
-      this.logger.log('NewChatEntity id: ' +  r.id);
+    this.chatRepository.save(chatEntity).then(r => {
+      this.logger.log('NewChatEntity chat created: ' + r.name);
     });
   }
 
-  ////////////////////////////////////////////////////////////// Functions for Controller
-  async getAllChatNames(): Promise<ResponseNewChatDto[]> {
-    this.logger.log('getAllChatNames');
-    // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
-    // console.log("ChatService query.getQuery(): ", query.getQuery());
-    // return this.chatRepository.query(query.getQuery());
-    return this.chatRepository.find();
+  async saveNewUserToChat(foundEntityToJoin: NewChatEntity, intraName: string, chatId: number) {
+    // Now we have the entity to update the member's array
+    const foundUser : UserEntity = await this.userService.getUserByLoginName(intraName);
+    // this.logger.log('[joinChat] new members list: ' + foundEntityToJoin.users);
+    this.chatRepository.joinChat(foundUser, foundEntityToJoin).then(r => {
+      this.logger.log('[saveNewUserToChat] joined chat -> chatId should match: ' + chatId + " = " + r.id);
+    });
+    return true;
   }
 
+  async joinChat(chatId: number, password: string, intraName: string)  {
+    await this.chatRepository.findOneOrFail({
+      where: {
+        id: chatId,
+      },
+    }).then((foundEntityToJoin) => {
+      if (foundEntityToJoin.type == ChatType.PROTECTED && foundEntityToJoin.password == null) {
+        throw new Error('Password is required for PROTECTED group');
+      } else if (foundEntityToJoin.type == ChatType.PROTECTED) {
+        // Join a PROTECTED chat
+        this.logger.log('[joinChat] password: ', password);
+        // TODO HERE EVERYTIME ITS CREATING A NEW HASH SO THE COMPARE IS NOT WORKING
+        bcryptjs.hash(password, 10).then((password) => {
+          this.logger.log('[joinChat] password: ', password);
+          this.logger.log('[joinChat] foundEntityToJoin.password: ', foundEntityToJoin.password);
 
-  // findAll() {
-  //   return `This action returns all chat`;
-  // }
-  //
-  // findOne(id: number) {
-  //   return `This action returns a #${id} chat`;
-  // }
-  //
-  // // update(id: number, updateChatDto: UpdateChatDto) {
-  // update(id: number) {
-  //   return `This action updates a #${id} chat`;
-  // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} chat`;
-  // }
+          if (bcryptjs.compare(password, foundEntityToJoin.password)) {
+            this.logger.log('[joinChat] Password if ok, joining the chat');
+            return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
+          }
+        }).catch((err) => {
+          throw new Error('[joinChat] Can not hash password -> err: ' + err);
+        });
+      } else {
+        // Join a PUBLIC OR PRIVATE chat
+        this.logger.log('[joinChat] No password required, joining the chat');
+        return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
+      }
+    }).catch((err) => {
+      throw new Error('[joinChat] Could not find chat entity to join -> err: ' + err);
+    });
+    return false;
+  }
+
+  async leaveChat(chatId: number, intraName: string)  {
+    await this.chatRepository.getOneChat(chatId).then(async (foundEntityToLeave: NewChatEntity) => {
+      const userEntity = await this.userService.getUserByLoginName(intraName);
+      // Now we have the entity to update the member's array
+      return await this.chatRepository.deleteUserFromChat(foundEntityToLeave, userEntity);
+    }).catch((err) => {
+      throw new Error('[leaveChat] Could not find chat entity to join -> err: ' + err);
+    });
+    return false;
+  }
+
+  async getAllChats() {
+    this.logger.log('getAllChats');
+    // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
+    // this.logger.log("ChatService query.getQuery(): ", query.getQuery());
+    // return this.chatRepository.query(query.getQuery());
+    // return this.chatRepository.find({
+    //   order: {
+    //     id: "DESC",
+    //   },
+    // });
+    return await this.chatRepository.getAllChats();
+  }
+
+  deleteChat(chatId: number) {
+    return this.chatRepository.delete(chatId);
+  }
+
 }
