@@ -163,16 +163,18 @@ export function drawScene(
 
   drawBlankCanvas(context, width, height);
   if (gameState == undefined) return;
-  if (gameState.currentState == "Message") {
+
+  const currentState = gameState.currentState;
+  if (currentState == "Message" || currentState == "Queue") {
     drawMessage(context, width, height, gameState.stateMessage);
-  } else if (gameState.currentState == "Playing") {
+  } else if (currentState == "Playing") {
     if (gameState.timer > 0) {
       drawMessage(context, width, height, gameState.stateMessage);
     }
     drawField(context, width, height);
 
     drawCurrentGameState(context, width, height, gameState);
-  } else if (gameState.currentState == "End") {
+  } else if (currentState == "End") {
     drawMessage(context, width, height, gameState.stateMessage);
     drawField(context, width, height);
     drawCurrentGameState(context, width, height, gameState);

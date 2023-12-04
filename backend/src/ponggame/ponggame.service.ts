@@ -17,14 +17,18 @@ export class PonggameService {
 
   playerDisconnected(userId: string) {
     const matchId = this._userMatch.get(userId);
-    if (matchId != undefined) {
-      const match = this._currentMatches.get(matchId);
-      if (match != undefined && match.currentState == "Playing") {
-        match.currentState = "End";
-        match.stateMessage = "Opponent disconnected. You win be default";
-      }
-      this._userMatch.delete(userId);
+    if (matchId == undefined) return;
+    const match = this._currentMatches.get(matchId);
+    if (match != undefined && match.currentState == "Playing") {
+      match.currentState = "End";
+      match.stateMessage = "Opponent disconnected. You win be default";
+    } else if (match != undefined && match.currentState == "Queue") {
+      match.currentState = "End";
+      match.stateMessage = "Opponent left before the game started";
+      if (match.gameType == "Default") this._queueDefaultMatchId = "";
+      else if (match.gameType == "Custom") this._queueCustomMatchId = "";
     }
+    this._userMatch.delete(userId);
   }
 
   cleanUpMatches() {
@@ -36,7 +40,8 @@ export class PonggameService {
     this._currentMatches.forEach((gameState, matchId) => {
       if (
         gameState.currentState != "Message" &&
-        gameState.currentState != "End"
+        gameState.currentState != "End" &&
+        gameState.currentState != "Queue"
       )
         this._currentMatches[matchId] = this._gameLogic.updateState(gameState);
     });
@@ -88,9 +93,8 @@ export class PonggameService {
   createNewMatch(userId: string, matchType: string): string {
     const newMatch = this.getInitMatch(matchType);
     const currentMatchId = "match" + userId;
-    console.log("creating new game" + currentMatchId);
     newMatch.roomName = currentMatchId;
-    newMatch.currentState = "Message";
+    newMatch.currentState = "Queue";
     newMatch.stateMessage = "Waiting for opponent...";
     newMatch.player1info = userId;
     this._currentMatches.set(currentMatchId, newMatch);
