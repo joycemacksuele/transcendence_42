@@ -53,7 +53,7 @@ backend/node_modules/
 jspm_packages/
 backend/_database_volume
 backend/_pgadmin_data
-backend/uploads
+backend/uploads/*
 package-lock.json
 frontend/package-lock.json
 backend/package-lock.json

@@ -64,6 +64,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
     }
   };
 
+  
   const fetchFriends = async (myId: number) => {
     console.log("Fetch Friends, myId: ", myId);
     try {
@@ -76,6 +77,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
       console.error("Error fetching friends: ", error);
     }
   };
+
 
   const fetchData = async () => {
     try {
@@ -97,6 +99,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
     fetchData();
     // fetchFriends();
   }, []);
+
 
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
     e.preventDefault();

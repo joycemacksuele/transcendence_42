@@ -78,4 +78,26 @@ export class MatchService {
 		console.log('Matches found: ', matches);
 		return matches;
 	}
+
+	async getMatchHistoryByUserId(userId: number): Promise<MatchEntity[]> {
+		// const matches = await this.matchRepository.find({ 
+		// 	where: [
+		// 		{ player1: { id: userId } },
+		// 		{ player2: { id: userId } }
+		// 	],
+		// 	relations: ['player1', 'player2'] 
+		// });
+		// console.log('Matches found: ', matches);
+		// return matches;
+		
+		const matches = await this.matchRepository.createQueryBuilder('match')
+		.where('match.player1Id = :userId OR match.player2Id = :userId', { userId })
+		.getMany();
+
+		// const matches = await this.matchRepository.createQueryBuilder('match').getMany();
+			
+		console.log('Matches found for userId: ', userId);
+		//console.log('Matches found: ', matches);
+		return matches;
+	}
 }
