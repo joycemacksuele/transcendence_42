@@ -9,11 +9,13 @@ const LogoutPage = () => {
   useEffect(() => {
     const handleLogout = async () => {
       try {
+        console.log('Start handle logout() ---> send request to /auth/logout');
         const response = await axiosInstance.get(
           "http://localhost:3001/auth/logout"
         );
+        
         console.log(
-          "HandleLogout: Trying to log out ...",
+          "HandleLogout(): Trying to log out ...",
           response.data.message
         );
         navigate("/"); // Redirect to the root of your application

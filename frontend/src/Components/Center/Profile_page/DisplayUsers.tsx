@@ -43,6 +43,7 @@ const UsersList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [displayList, setDisplayList] = useState(true);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [showMatchHistory, setShowMatchHistory] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -84,6 +85,7 @@ const UsersList: React.FC = () => {
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
     e.preventDefault();
     setSelectedUser(loginName);
+    setShowMatchHistory(false);
   };
 
   return (
@@ -136,7 +138,10 @@ const UsersList: React.FC = () => {
           <Col className="column-bckg p-3 mx-3 rounded">
             {/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
             {selectedUser ? (
-              <DisplayOneUser loginName={selectedUser} />
+              <DisplayOneUser loginName={selectedUser}
+                              showMatchHistory={showMatchHistory}
+                              setShowMatchHistory={setShowMatchHistory}
+              />
             ) : (
               <p>
                 <br />

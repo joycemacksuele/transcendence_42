@@ -7,13 +7,20 @@ import '../../../css/Profile-users-list.css'
 import {NavLink} from "react-router-dom";
 import {ChatType, RequestNewChatDto} from "../Chat/Utils/ChatUtils.tsx";
 import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
-import MatchHistory from "./MatchHistory.tsx";
 
 interface UserProps {
 	loginName: string;
 }
 
+// const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
+// const handleClickOnUser = (loginName: string) => {
+// 	setSelectedUser(loginName);
+// };
+
+// const handleClickBack = () => {
+// 	setSelectedUser(null);
+// };
 
 
 
@@ -32,29 +39,12 @@ const getCurrentUsername = async () => {
 
 
 
-const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
-											 setShowMatchHistory: React.Dispatch<React.SetStateAction<boolean>> }
-							  > 
-	= ({ loginName, showMatchHistory, setShowMatchHistory }) => {
+const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 
 	const [userData, setUserData] = useState<any>(null); // !todo: define the 'structure' of returned user data
 	const [IamFollowing, setIamFollowing] = useState(false);
 	const [myId, setMyId] = useState<number>();
 	const [showButtons, setShowButtons] = useState(true);
-
-
-
-	// const [showMatchHistory, setShowMatchHistory] = useState<boolean>(false);
-
-	// const handleClickOnUser = () => {
-	// 	console.log("Show match history for specific user");
-	// 	setShowMatchHistory(true);
-	// };
-
-	// const handleClickGoBack = () => {
-	// 	setShowMatchHistory(false);
-	// };
-
 
 
 	// if the current user is displayed, do not show the buttons
@@ -77,6 +67,11 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 
 	useEffect(() => {
 		if (!myId) return; // GUARD CLAUSE: wait until myID is available
+
+
+
+
+
 
 		const fetchUserData = async () => {
 			let response;
@@ -211,9 +206,6 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 
 	return (
 		<Col className="column-bckg p-3 rounded inner-section">
-
-		{!showMatchHistory ? (
-			<>
 			<Row className="mb-5">
 				<Col>
 					<Image
@@ -261,30 +253,17 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 					</Button>
 				</Col>
 				<Col>
-						<Button
-							className='button_default'
-							// onClick={() => handleClickOnUser()}
-							// onClick={handleClickOnUser}
-							onClick={ () => setShowMatchHistory(true)}
-						>
-							Match History
-						</Button>
+					<NavLink
+						// to="/"
+						// onClick={}
+					>
+						<Button className='button_default'>Match History</Button>
+					</NavLink>
 				</Col>
 			</Row>
-			</>
-
-		) : (	// ELSE: DISPLAY MATCH HISTORY 
-
-			<>
-				{/* <button onClick={handleClickGoBack}>Back</button> */}
-				<button onClick={ () => setShowMatchHistory(false) }>Back to profile</button>
-				<MatchHistory loginName={loginName}/>
-			</>
-		)}
-
-
 		</Col>
 	);
 };
 
 export default DisplayOneUser;
+
