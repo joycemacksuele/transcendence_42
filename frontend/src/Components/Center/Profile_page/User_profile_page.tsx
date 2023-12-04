@@ -21,7 +21,9 @@ type ContextProps = {
 };
 
 const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
+
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [showMatchHistory, setShowMatchHistory] = useState(false);
 
   const handleClickOnUser = (loginName: string) => {
     setSelectedUser(loginName);
@@ -61,8 +63,9 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
           {/* <Row className='h-75'> */}
           <h5>MY STATISTICS</h5>
           <MyStatistics />
-          <br /><h5>MATCH HISTORY</h5>
-          <MatchHistory />
+          <br /><h5>MY MATCH HISTORY</h5>
+          {/* <MatchHistory /> */}
+          <MatchHistory loginName={selectedUser}/>
         </Col>
 
         <Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
@@ -73,7 +76,12 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
             ) : (
               <>
                 <button onClick={handleClickBack}>Back</button>
-                <DisplayOneUser loginName={selectedUser} />
+                <DisplayOneUser loginName={selectedUser} 
+                                showMatchHistory={showMatchHistory}
+                                setShowMatchHistory={setShowMatchHistory}
+                
+                
+                />
               </>
             )}
           </div>

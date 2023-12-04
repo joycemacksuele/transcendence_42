@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../Other/AxiosInstance";
 
-
-interface UserProps {
-	loginName: string | null;
-}
-
-
 interface Match {
 	id: number;
 	player1Id: number;
@@ -31,21 +25,13 @@ const AddDummyMatches = async () => {
 			};
 			const dummyMatch2 = {
 				player1Id: 1,
-				player2Id: 3, 
-				player1Score: 55, 
-				player2Score: 44,
-				winnerId: 1,
-			};
-			const dummyMatch3 = {
-				player1Id: 1,
-				player2Id: 4, 
+				player2Id: 2, 
 				player1Score: 55, 
 				player2Score: 44,
 				winnerId: 1,
 			};
 			await axiosInstance.post('http://localhost:3001/matches/add-match', dummyMatch1);
 			await axiosInstance.post('http://localhost:3001/matches/add-match', dummyMatch2);
-			await axiosInstance.post('http://localhost:3001/matches/add-match', dummyMatch3);
 			localStorage.setItem('dummyMatchAdded', 'true');
 		}
 	} catch (error) {
@@ -54,11 +40,7 @@ const AddDummyMatches = async () => {
 };
 
 
-const MatchHistory: React.FC<UserProps> = ({ loginName }) => {
-
-	// console.log("Start MatcHistory(), loginName: ", loginName);
-
-	if (loginName === null) { loginName = "jmurovec"}; // jaka TODO: this is temp solution, it needs to know the difference when to display the history of current user and when of specific other user !!!
+const MatchHistory = () => {
 
 	const [matchHistory, setMatchHistory] = useState<Match[] | null> (null);
 	
@@ -70,7 +52,7 @@ const MatchHistory: React.FC<UserProps> = ({ loginName }) => {
 			let response;
 			try {
 				response = await axiosInstance.get(
-					`http://localhost:3001/matches/history/${loginName}`
+					`http://localhost:3001/matches/history/1`
 				);
 				console.log("Match history: response: ", response);
 				setMatchHistory(response.data);
@@ -84,8 +66,6 @@ const MatchHistory: React.FC<UserProps> = ({ loginName }) => {
 
 	// if (!response.data.id) return; // GUARD CLAUSE: wait until id is available
 	if (!matchHistory) return <div className="inner-section">Fetching match history ...</div>;
-
-	if (matchHistory.length === 0) return <div className="inner-section">This user has no match history</div>
 
 	return (
 		<div className="inner-section">
