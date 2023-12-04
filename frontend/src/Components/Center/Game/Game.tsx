@@ -12,9 +12,6 @@ function Game() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [gameState, setGameState] = useState<GameState | undefined>(undefined);
 
-  //test
-  const player = "Testuser";
-
   useEffect(() => {
     const newSocket = io(apiAddress, { transports: ["websocket"] });
     setSocket(newSocket);
@@ -28,10 +25,6 @@ function Game() {
   }, []);
 
   useEffect(() => {
-    socket?.on("connect", () => {
-      //socket.emit("identify", player);
-      //console.log(`connected to server pong ${socket.id} as player ${player}`);
-    });
     socket?.on("stateUpdate", (newdata: GameState) => setGameState(newdata));
 
     //add keylistener
@@ -52,25 +45,22 @@ function Game() {
 
   function handleKeyDown(event: KeyboardEvent) {
     if (event.repeat) return;
-    //console.log("keypressed " + event.code);
-    if (event.code == "KeyA") {
+    if (event.code == "KeyS") {
       socket?.emit("playerinput", 1);
-    } else if (event.code == "KeyQ") {
+    } else if (event.code == "KeyW") {
       socket?.emit("playerinput", -1);
     }
   }
 
   function handleKeyUp(event: KeyboardEvent) {
-    //console.log("keyup " + event.code);
-    if (event.code == "KeyA" || event.code == "KeyQ") {
+    if (event.code == "KeyW" || event.code == "KeyS") {
       socket?.emit("playerinput", 0);
     }
   }
-
   return (
     <>
       {gameState?.currentState == "Selection" ? (
-        <GameSelection socket={socket} player={player} />
+        <GameSelection socket={socket} />
       ) : (
         <canvas ref={canvasRef} width={width} height={height} />
       )}
