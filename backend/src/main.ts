@@ -5,10 +5,6 @@
 
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from './user/user.service';
-import { UserRepository } from './user/user.repository';
-import { AuthService } from './auth/auth.service';
 import { DataSource } from "typeorm";
 // import { ConfigModule } from '@nestjs/config';
 // import { AuthGuard } from './auth/guards/auth.guard';
@@ -17,11 +13,34 @@ import cookieParser from 'cookie-parser';
 import * as express from 'express';
 import {Logger, ValidationPipe} from '@nestjs/common'
 
+import mysql, { ConnectionOptions } from 'mysql2';
+
+
 async function main() {
   let logger = new Logger(main.name);
+  
+  const access: ConnectionOptions = {
+    user: `${process.env.POSTGRES_USER}`,
+    database: `${process.env.DATABASE}`,
+  };
+  
+  const connection = mysql.createConnection(access);
 
   const app = await NestFactory.create(AppModule);
 
+  app.get('/database/:loginName', async (req: any, res: any) => {
+    const {userQuery} = req.params;
+    
+    const onlyLettersAndNumbers = /^[A-Za-z0-9]+$/;
+    if (!userQuery.match(onlyLettersAndNumbers)){
+      return res.status(400).json({err: "Numbers and letters! No funny business here!"})
+    }
+
+    const query = `SELECT * FROM Repository WHERE TAG = '${userQuery}' AND public = 1`;
+    const [rows] = connection.query(query, [userQuery]);
+    res.json(rows);
+  })
+  
   // Enable CORS for all routes (this app will turn on port 3001 (backend), but the frontend and database
   // will run on a different port, so it's good to add all other origin ports running (i.e.: that will
   // try to access/send requests to the backend) as a Cors option).
@@ -33,6 +52,15 @@ async function main() {
     credentials: true,
   });
   
+  
+  // mysql - for sql injections
+  // ---------------------------------------------------------------
+
+  app.get('')
+  // ---------------------------------------------------------------
+
+
+
   // To globally validate user's input, ie: changing profileName ... @maxLength, etc 
   app.useGlobalPipes(new ValidationPipe());
 
