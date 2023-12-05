@@ -19,7 +19,6 @@ interface UserProps {
 
 // TODO: change this to fetch user from jwt
 const getCurrentUsername = async () => {
-
 	try {
 		const response = await axiosInstance.get('http://localhost:3001/users/get-current-username');
 		console.log('=================== username: ', response.data.username);
@@ -295,11 +294,9 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 			<>
 				{/* <button onClick={handleClickGoBack}>Back</button> */}
 				<button onClick={ () => setShowMatchHistory(false) }>Back to profile</button>
-				<MatchHistory loginName={loginName}/>
+				<MatchHistory loginName={loginName} />
 			</>
 		)}
-
-
 		</Col>
 	);
 };
