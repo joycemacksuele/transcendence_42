@@ -91,6 +91,8 @@ button.button_default:focus-visible {
   /* justify-content: space-between; */
   align-items: left;
   margin-bottom: 10px;
+  border-bottom: 1px grey solid;
+  padding-bottom: 10px;
 }
 
 .players {

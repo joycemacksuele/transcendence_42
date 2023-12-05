@@ -11,6 +11,7 @@ export class MatchController {
 
 	@Post('/add-match')
 	async addMatch(@Body() MatchDto: MatchDto) { // todo: check if in body?
+		// console.log('Controller: Post add-match');
 		return this.matchService.createMatch(MatchDto);
 	}
 

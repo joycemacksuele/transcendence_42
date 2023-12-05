@@ -17,11 +17,11 @@ interface Match {
 	profileName2: string;
 	player1Score: number;
 	player2Score: number;
-	timeStamp: Date;
+	timeStamp: number;
 }
 
 
-function formatDate(dateString: Date) {
+function formatDate(dateString: number) {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const date = new Date(dateString);
     const day = date.getDate();
@@ -97,44 +97,40 @@ const AddDummyMatches = async () => {
 };
 
 
-const MatchHistory: React.FC<UserProps> = (props) => {
+const MatchHistory: React.FC<UserProps> = ({ loginName }) => {
 
-	const [loginName, setLoginName] = useState<string | null>(props.loginName);
+	// console.log("Start MatcHistory(), loginName: ", loginName);
+
+	
+	if (loginName === null) { 
+		loginName = 'jmurovec';
+		// loginName = fetchCurrentUser();
+	}
+	
+
+	// jaka TODO: this is temp solution, it needs to know the difference when to display the history of current user and when of specific other user !!!
+	
 	const [matchHistory, setMatchHistory] = useState<Match[] | null> (null);
-	console.log("Start MatcHistory(), loginName: ", props.loginName);
-
-
-	useEffect(() => {
-		const init = async () => {
-			if (!loginName) {
-				const currUserLoginName = await fetchCurrentUser();
-				setLoginName(currUserLoginName);
-			}
-		}
-		init();
-	}, [loginName]);
-
 	
 	useEffect(() => {
 		
 		AddDummyMatches();
 
 		const fetchMatchHistory = async () => {
-			if (loginName) {
-				try {
-					let response = await axiosInstance.get(
-						`http://localhost:3001/matches/history/${loginName}`
-					);
-					console.log("Match history: response: ", response);
-					setMatchHistory(response.data);
-				} catch (error) {
-					console.error('Error fetching match history', error);
-					return;
-				}
+			let response;
+			try {
+				response = await axiosInstance.get(
+					`http://localhost:3001/matches/history/${loginName}`
+				);
+				console.log("Match history: response: ", response);
+				setMatchHistory(response.data);
+			} catch (error) {
+				console.error('Error fetching match history', error);
+				return;
 			} 
 		};
 		fetchMatchHistory();
-	}, [loginName]);
+	}, []);
 
 	// if (!response.data.id) return; // GUARD CLAUSE: wait until id is available
 	if (!matchHistory) return <div className="inner-section">Fetching match history ...</div>;
