@@ -63,7 +63,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
           {/* <Row className='h-75'> */}
           <h5>MY STATISTICS</h5>
           <MyStatistics />
-          <br /><h5>MY MATCH HISTORY</h5>
+          {/* <br /><h5>MY MATCH HISTORY</h5> */}
           {/* <MatchHistory /> */}
           <MatchHistory loginName={selectedUser}/>
         </Col>

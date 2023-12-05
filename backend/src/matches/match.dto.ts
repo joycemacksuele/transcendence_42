@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, Min, Max, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, Min, Max, IsString, IsDate } from 'class-validator';
 
 export class MatchDto {
 	@IsInt()
@@ -25,6 +25,7 @@ export class MatchDto {
 	winnerId: number;
     
 	// todo jaka: do we need timestamp ?
-	// @IsNotEmpty()
-	// timestamp: Date;
+	@IsNotEmpty()
+	// @IsDate()
+	timeStamp: Date;
 }

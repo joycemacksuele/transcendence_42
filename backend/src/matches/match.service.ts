@@ -29,9 +29,10 @@ export class MatchService {
 
 
 	async createMatch(matchDto: MatchDto): Promise<MatchEntity> {
+		// console.log('START CREATE MATCH');
 		try {
-			console.log(' --------------------------- Create Match()');
-			console.log(' --------------------------- player1Id: ', matchDto.player1Id);
+			// console.log(' --------------------------- Create Match()');
+			// console.log(' --------------------------- player1Id: ', matchDto.player1Id);
 			const player1 = await this.userRepository.findOne({ where: { id: matchDto.player1Id } });
 			const player2 = await this.userRepository.findOne({ where: { id: matchDto.player2Id } });
 			
@@ -39,7 +40,7 @@ export class MatchService {
 				throw new BadRequestException('One or both players not found');
 			}
 			
-			console.log(' --------------------------- Create Match()', matchDto);
+			// console.log(' --------------------------- Create Match(), matchDTO: ', matchDto);
 			const match = new MatchEntity();
 			match.player1 		= player1;
 			match.player2 		= player2;
@@ -48,7 +49,7 @@ export class MatchService {
 			match.player1Score 	= matchDto.player1Score;
 			match.player2Score 	= matchDto.player2Score;
 			match.winnerId		= matchDto.winnerId;
-			// match.timestamp		= matchDto.timestamp;
+			match.timeStamp		= new Date(matchDto.timeStamp);
 
 			return await this.matchRepository.save(match);
 		} catch (error) {
