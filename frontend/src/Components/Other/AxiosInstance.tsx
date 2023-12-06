@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-	baseURL: 'https://localhost:3000', //todo:  import from .env
-	// baseURL: process.env.REACT_APP_FRONTEND // it is not used anywhere
+	baseURL: import.meta.env.VITE_BACKEND_URL
 });
 
 axiosInstance.interceptors.response.use(

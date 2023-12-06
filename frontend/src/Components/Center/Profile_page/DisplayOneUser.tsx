@@ -20,7 +20,7 @@ interface UserProps {
 // TODO: change this to fetch user from jwt
 const getCurrentUsername = async () => {
 	try {
-		const response = await axiosInstance.get('http://localhost:3001/users/get-current-username');
+		const response = await axiosInstance.get('/users/get-current-username');
 		console.log('=================== username: ', response.data.username);
 		return response.data.username;
 	} catch (error) {
@@ -81,7 +81,7 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 			let response;
 			try {
 				response = await axiosInstance.get(
-					`http://localhost:3001/users/get-user/${loginName}`
+					`/users/get-user/${loginName}`
 				);
 				setUserData(response.data);
 				console.log("Fetched userData: ", response);
@@ -96,7 +96,7 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 				console.log("Checking if I follow this user ... ");
 
 				const responseAmIFollowing = await axiosInstance.get(
-					`http://localhost:3001/friendship/followingExists/${myId}/${response.data.id}`
+					`/friendship/followingExists/${myId}/${response.data.id}`
 				);
 				console.log("   responseAmIFollowing: ", responseAmIFollowing);
 				if (responseAmIFollowing.data) {
@@ -124,7 +124,7 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 					localStorage.getItem("profileName")
 				);
 				const response = await axiosInstance.get(
-					`http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem(
+					`/users/get-user-by-profilename/${localStorage.getItem(
 						"profileName"
 					)}`
 				);
@@ -143,7 +143,7 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 		const friendId = userData.id; // todo: fetch the id (the to-be friend)
 		try {
 			const response = await axiosInstance.post(
-				`http://localhost:3001/friendship/${myId}/addFriend/${friendId}`
+				`/friendship/${myId}/addFriend/${friendId}`
 			);
 			console.log("Success: Friendship added: ", response.data);
 		} catch (error: any) {
@@ -167,7 +167,7 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 	async function stopFollowing() {
 		try {
 			const response = await axiosInstance.post(
-				`http://localhost:3001/friendship/${myId}/removeFriend/${userData.id}`
+				`/friendship/${myId}/removeFriend/${userData.id}`
 			);
 			console.log("Success remnoving a friend: ", response);
 		} catch (error: any) {
@@ -234,7 +234,7 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 				<Col>
 					<Image
 						id="otherUserImage"
-						src={"http://localhost:3001/" + userData.profileImage}
+						src={import.meta.env.VITE_BACKEND_URL + "/" + userData.profileImage}
 						alt="no_image_found"
 					/>
 				</Col>{" "}

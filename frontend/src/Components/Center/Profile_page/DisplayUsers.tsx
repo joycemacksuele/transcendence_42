@@ -27,7 +27,7 @@ const handleInsertDataClick = () => {
 
 const deleteDummies = async () => {
   try {
-    await axiosInstance.delete("http://localhost:3001/users/");
+    await axiosInstance.delete("/users/");
     console.log("Dummies deleted successfully");
   } catch (error) {
     console.error("Error deleting dummies: ", error);
@@ -48,7 +48,7 @@ const UsersList: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const response = await axiosInstance.get<User[]>(
-        "http://localhost:3001/users/all"
+        "/users/all"
       ); // Assuming the server is running on the same host and port
       setUsers(response.data);
       console.log("Jaka, retreived users", response.data);
@@ -69,7 +69,7 @@ const UsersList: React.FC = () => {
 
   const deleteUsers = async () => {
     try {
-      await axiosInstance.delete("http://localhost:3001/users/");
+      await axiosInstance.delete("/users/");
       console.log("Dummies deleted successfully");
     } catch (error) {
       console.error("Error deleting all users: ", error);
@@ -121,7 +121,7 @@ const UsersList: React.FC = () => {
                           onClick={(e) => handleUserClick(e, user.loginName)}
                         >
                           <img
-                            src={"http://localhost:3001/" + user.profileImage}
+                            src={import.meta.env.VITE_BACKEND_URL + "/" + user.profileImage}
                             id="profileImage_tiny"
                           />
                           {user.profileName}

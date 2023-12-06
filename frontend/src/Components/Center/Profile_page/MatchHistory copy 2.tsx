@@ -39,7 +39,7 @@ function formatDate(dateString: number) {
 const fetchCurrentUser = async () => {
 	console.log('================= Fetch current user ');
 	try {
-		let response = await axiosInstance.get('http://localhost:3001/users/get-current-username');
+		let response = await axiosInstance.get('/users/get-current-username');
 		console.log('================= fetched: ', response.data.username);
 		return response.data.username;
 	} catch (error) {
@@ -79,9 +79,9 @@ const AddDummyMatches = async () => {
 				winnerId: 1,
 				timeStamp: new Date(),
 			};
-			await axiosInstance.post('http://localhost:3001/matches/add-match', dummyMatch1);
-			await axiosInstance.post('http://localhost:3001/matches/add-match', dummyMatch2);
-			await axiosInstance.post('http://localhost:3001/matches/add-match', dummyMatch3);
+			await axiosInstance.post('/matches/add-match', dummyMatch1);
+			await axiosInstance.post('/matches/add-match', dummyMatch2);
+			await axiosInstance.post('/matches/add-match', dummyMatch3);
 			localStorage.setItem('dummyMatchAdded', 'true');
 		}
 	} catch (error) {
@@ -120,7 +120,7 @@ const MatchHistory: React.FC<UserProps> = ({ loginName }) => {
 			let response;
 			try {
 				response = await axiosInstance.get(
-					`http://localhost:3001/matches/history/${loginName}`
+					`/matches/history/${loginName}`
 				);
 				console.log("Match history: response: ", response);
 				setMatchHistory(response.data);

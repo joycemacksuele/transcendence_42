@@ -30,8 +30,8 @@ const AddDummyMatches = async () => {
 				player2Score: 44,
 				winnerId: 1,
 			};
-			await axiosInstance.post('http://localhost:3001/matches/add-match', dummyMatch1);
-			await axiosInstance.post('http://localhost:3001/matches/add-match', dummyMatch2);
+			await axiosInstance.post('/matches/add-match', dummyMatch1);
+			await axiosInstance.post('/matches/add-match', dummyMatch2);
 			localStorage.setItem('dummyMatchAdded', 'true');
 		}
 	} catch (error) {
@@ -52,7 +52,7 @@ const MatchHistory = () => {
 			let response;
 			try {
 				response = await axiosInstance.get(
-					`http://localhost:3001/matches/history/1`
+					`/matches/history/1`
 				);
 				console.log("Match history: response: ", response);
 				setMatchHistory(response.data);

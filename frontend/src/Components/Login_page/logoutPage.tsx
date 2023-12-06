@@ -11,16 +11,17 @@ const LogoutPage = () => {
       try {
         console.log('Start handle logout() ---> send request to /auth/logout');
         const response = await axiosInstance.get(
-          "http://localhost:3001/auth/logout"
+          "/auth/logout"
         );
-        
+
+
         console.log(
           "HandleLogout(): Trying to log out ...",
           response.data.message
         );
         navigate("/"); // Redirect to the root of your application
       } catch (error) {
-        console.error("Logout failed:", error);
+        console.error("LogoutPage: Logout failed:", error);
       }
     };
     handleLogout();
