@@ -127,7 +127,7 @@ const re_sendVerificationEmail = async () => {
   console.log("Re-send Verification email:");
   try {
     const response = await axiosInstance.post(
-      "http://localhost:3001/2fa/resend_email_code" // TO DO - change to env variable
+      "/2fa/resend_email_code" // TO DO - change to env variable
     );
     console.log("    email sent, response.data:", response.data);
   } catch (error) {
@@ -153,7 +153,7 @@ const InputTFAcode = () => {
     try {
       console.log(document.cookie);
       const response = await axiosInstance.post(
-        "http://localhost:3001/2fa/verify_code", // TO DO change to the env variable
+        "/2fa/verify_code", // TO DO change to the env variable
         { inputValue },
         axiosConfig
       );
@@ -168,7 +168,7 @@ const InputTFAcode = () => {
         if (tfaAttempts + 1 === 3) {
           console.log("Supposedly cleaning cookies on the backend");
           const responseCleanCookies = await axiosInstance.get(
-            "http://localhost:3001/auth/logout", // TO DO change to the environment variable
+            "/auth/logout", // TO DO change to the environment variable
             axiosConfig
           );
           console.log(

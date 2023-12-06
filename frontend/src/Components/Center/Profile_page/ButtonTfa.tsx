@@ -14,7 +14,7 @@ const ButtonTfa: React.FC = () => {
   useEffect( () => {
     const fetch2fastatus = async () => {
       try {
-        const response = await axiosInstance.get('http://localhost:3001/2fa/get-status');
+        const response = await axiosInstance.get('/2fa/get-status');
         settfaStatus(response.data.tfaStatus   );
         // console.log('Fetched 2fa status: ', response.data.tfaStatus);
       } catch (error) {
@@ -32,7 +32,7 @@ const ButtonTfa: React.FC = () => {
 
     try {
       const response = await axiosInstance.post(
-        "http://localhost:3001/2fa/toggle_button_tfa"
+        "/2fa/toggle_button_tfa"
       );
       console.log("   response.data.tfaEnabled: ", response.data.tfaEnabled);
 
