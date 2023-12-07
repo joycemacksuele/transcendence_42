@@ -149,9 +149,16 @@ const UsersList: React.FC = () => {
                 <br /> &larr; Select a user from the list
               </p>
             )}
-            <button onClick={handleInsertDataClick}>Create dummies</button>
+            <button 
+              onClick={handleInsertDataClick}
+              className="button-custom"
+            >Create dummies
+            </button>
             &nbsp;&nbsp;
-            <button onClick={handleClickDeleteDummies}>Delete dummies</button>
+            <button
+              onClick={handleClickDeleteDummies}
+              className="button-custom"  
+            >Delete dummies</button>
           </Col>
         </Row>
       </div>

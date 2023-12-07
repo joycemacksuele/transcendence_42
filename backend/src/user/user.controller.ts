@@ -99,14 +99,31 @@ export class UserController {
 		return (this.userService.getUserByProfileName(profileName));
 	}
 
-	// GET CURRENT USER DATA
-	@Get('get-current-username')
+
+	// GET CURRENT USER ENTITY
+	@Get('get-current-user')
 	async getCurrentUser(@Req() req: Request) {
-		const response = await this.authService.extractUserdataFromToken(req);
-		//this.logger.log("======================== username: ", response.username)
-		return { username: response.username };
+		try {
+			const payload = await this.authService.extractUserdataFromToken(req);
+			const currUser = await this.userService.getUserByLoginName(payload.username);
+			return currUser;
+		} catch (error) {
+			console.error('Error fetching current user:', error);
+		}
 	}
 
+
+	// GET CURRENT USER NAME
+	@Get('get-current-username')
+	async getCurrentUserName(@Req() req: Request) {
+		try {
+			const response = await this.authService.extractUserdataFromToken(req);
+			//this.logger.log("======================== username: ", response.username)
+			return { username: response.username };
+		} catch (error) {
+			console.error('Error fetching current username:', error);
+		}
+	}
 
 
 	// DELETE DUMMIES

@@ -132,7 +132,7 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 				//setIamFollowing(response.data.IamFollowing);
 				console.log("Fetched My Data: ", response);
 			} catch (error) {
-				console.error("Error catching my data: ", error);
+				console.error("Error fetching my data: ", error);
 			}
 		};
 		fetchMyData();

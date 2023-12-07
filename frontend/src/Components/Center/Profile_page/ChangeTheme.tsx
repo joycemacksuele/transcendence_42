@@ -18,7 +18,11 @@ const ChangeTheme = () => {
 	return (
 		<div className="inner-section">
 			<p>Change Theme</p>
-			<select value={theme} onChange={ e => setTheme(e.target.value )}>
+			<select
+				value={theme}
+				onChange={ e => setTheme(e.target.value )}
+				className='button-custom'
+			>
 				<option value='default.css'>Default</option>
 				<option value='ugly.css'>Ugly</option>
 				<option value='beautiful.css'>Beautiful</option>
