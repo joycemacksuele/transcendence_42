@@ -27,7 +27,7 @@ const handleInsertDataClick = () => {
 
 const deleteDummies = async () => {
   try {
-    await axiosInstance.delete("http://localhost:3001/users/");
+    await axiosInstance.delete("/users/");
     console.log("Dummies deleted successfully");
   } catch (error) {
     console.error("Error deleting dummies: ", error);
@@ -43,11 +43,12 @@ const UsersList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [displayList, setDisplayList] = useState(true);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [showMatchHistory, setShowMatchHistory] = useState(false);
 
   const fetchUsers = async () => {
     try {
       const response = await axiosInstance.get<User[]>(
-        "http://localhost:3001/users/all"
+        "/users/all"
       ); // Assuming the server is running on the same host and port
       setUsers(response.data);
       console.log("Jaka, retreived users", response.data);
@@ -68,7 +69,7 @@ const UsersList: React.FC = () => {
 
   const deleteUsers = async () => {
     try {
-      await axiosInstance.delete("http://localhost:3001/users/");
+      await axiosInstance.delete("/users/");
       console.log("Dummies deleted successfully");
     } catch (error) {
       console.error("Error deleting all users: ", error);
@@ -84,6 +85,7 @@ const UsersList: React.FC = () => {
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
     e.preventDefault();
     setSelectedUser(loginName);
+    setShowMatchHistory(false);
   };
 
   return (
@@ -119,7 +121,7 @@ const UsersList: React.FC = () => {
                           onClick={(e) => handleUserClick(e, user.loginName)}
                         >
                           <img
-                            src={"http://localhost:3001/" + user.profileImage}
+                            src={import.meta.env.VITE_BACKEND_URL + "/" + user.profileImage}
                             id="profileImage_tiny"
                           />
                           {user.profileName}
@@ -136,7 +138,10 @@ const UsersList: React.FC = () => {
           <Col className="column-bckg p-3 mx-3 rounded">
             {/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
             {selectedUser ? (
-              <DisplayOneUser loginName={selectedUser} />
+              <DisplayOneUser loginName={selectedUser}
+                              showMatchHistory={showMatchHistory}
+                              setShowMatchHistory={setShowMatchHistory}
+              />
             ) : (
               <p>
                 <br />
@@ -144,9 +149,16 @@ const UsersList: React.FC = () => {
                 <br /> &larr; Select a user from the list
               </p>
             )}
-            <button onClick={handleInsertDataClick}>Create dummies</button>
+            <button 
+              onClick={handleInsertDataClick}
+              className="button-custom"
+            >Create dummies
+            </button>
             &nbsp;&nbsp;
-            <button onClick={handleClickDeleteDummies}>Delete dummies</button>
+            <button
+              onClick={handleClickDeleteDummies}
+              className="button-custom"  
+            >Delete dummies</button>
           </Col>
         </Row>
       </div>
