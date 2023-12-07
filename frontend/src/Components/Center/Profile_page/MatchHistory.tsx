@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
-import { ListGroup } from "react-bootstrap";
+import { Row, Col, ListGroup } from "react-bootstrap";
 
 
 interface UserProps {
@@ -31,12 +31,12 @@ function formatDate(dateString: Date) {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
 
-    return `${day}.${month}${year}, ${hours}:${minutes} `;
+    return `${day}. ${month}${year}, ${hours}:${minutes} `;
 }
 
 
 // fetch the current user
-const fetchCurrentUser = async () => {
+const fetchCurrentUserName = async () => {
 	console.log('================= Fetch current user ');
 	try {
 		let response = await axiosInstance.get('/users/get-current-username');
@@ -108,7 +108,7 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 	useEffect(() => {
 		const init = async () => {
 			if (!loginName) {
-				const currUserLoginName = await fetchCurrentUser();
+				const currUserLoginName = await fetchCurrentUserName();
 				setLoginName(currUserLoginName);
 			}
 		}
@@ -145,28 +145,35 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 	return (
 		<>
 		< br/>< br/><h5>MATCH HISTORY OF {loginName}</h5>
-		<div className="inner-section">
-		<ListGroup>
-			<ListGroup.Item className="column-titles">
-              <span>Time</span>
-              <span>Players</span>
-              <span>Result</span>
-            </ListGroup.Item>
-			{/* <p>Jaka vs Cpopa: 5 : 2</p> */}
-			{ matchHistory.map(match => ( 
-				<div key={match.id} className="match-row">
-					<div>
-						{formatDate(match.timeStamp)}
-					</div>
-					<div className="players">
-						{match.profileName1}-{match.profileName2}
-					</div>
-					<div className="score">
-						{match.player1Score}:{match.player2Score}
-					</div>
-				</div>
-			)) }
-		</ListGroup>
+		<div className="users-outer">
+			<Row>
+				<Col className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded">
+
+					<ListGroup className="list-users">
+						<ListGroup.Item className="column-titles">
+						<span>Time</span>
+						<span>Players</span>
+						<span>Result</span>
+						</ListGroup.Item>
+						{/* <p>Jaka vs Cpopa: 5 : 2</p> */}
+						{ matchHistory.map(match => (
+							<ListGroup.Item>
+								<div key={match.id} className="match-row">
+									<div id='match-timestamp'>
+										{formatDate(match.timeStamp)}
+									</div>
+									<div className="players">
+										{match.profileName1}-{match.profileName2}
+									</div>
+									<div className="score">
+										{match.player1Score}:{match.player2Score}
+									</div>
+								</div>
+							</ListGroup.Item>
+						)) }
+					</ListGroup>
+				</Col>
+			</Row>
 		</div>
 		</>
 	);
