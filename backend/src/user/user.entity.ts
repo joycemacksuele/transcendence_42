@@ -70,6 +70,9 @@ export class UserEntity {
 	@Column({default: 'default'})
 	tfaCode: string;
 
+	@Column({default: true})
+	isFirstLogin: boolean;
+
 	/* @OneToMany()  Is a decorator from TypeORM
 		A User entity can have friends - can be associated with multiple instances of Friendship entity.
 

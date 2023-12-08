@@ -11,83 +11,112 @@ import { CurrUserData } from "./contextCurrentUser";
 // Importing bootstrap and other modules
 import { Container, Row, Col} from "react-bootstrap";
 import DisplayOneUser from "./DisplayOneUser";
+import axiosInstance from "../../Other/AxiosInstance";
 
 // interface User {
 // 	name: string;
 // }
 
+
 type ContextProps = {
   updateContext: (updateUserData: CurrUserData) => void;
 };
+
+
+interface WelcomeMessageProps {
+	onClose: () => void;
+}
+
+const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onClose }) => {
+
+  return (
+	<div className="welcome-message-overlay">
+	  <div className="welcome-message">
+	  	<h3>Welcome!</h3>
+		<p>If you like you can change your profile name< br/>and your photo!</p>
+		<button className="button-custom" onClick={onClose}>Close</button>
+	  </div>
+	</div>
+  );
+};
+
+
 
 const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
+  // const [isFirstLogin, setIsFirstLogin] = useState<boolean>(true);
 
   const handleClickOnUser = (loginName: string) => {
-    setSelectedUser(loginName);
+	setSelectedUser(loginName);
   };
 
   const handleClickBack = () => {
-    setSelectedUser(null);
+	setSelectedUser(null);
   };
 
-  // const [dummy, setDummy] = useState(false);
-  // const handleClose = () => setDummy(false);
-  // const handleShow = () => setDummy(true);
-  // const [roomName, setRoomName] = useState('');
-  // const [groupType, setGroupType] = useState(ChatUtils.PUBLIC);
-  // const [roomPassword, setRoomPassword] = useState('');
-
-  // const dummyFunction00 = () => {
-  // 	console.log("Called dummy function");
-  // };
-
-  // const dummyFunction01 = (arg: any) => {
-  // 	console.log("Called dummy function, arg: ", arg);
-  // };
+  useEffect(() => {
+	const greetingIfFirstLogin = async () => {
+	  try {
+		  const response = await axiosInstance.get("users/get-is-first-login");
+		  if (response.data.isFirstLogin === true) {
+		  setShowWelcomeMessage(true);
+		}
+	  } catch (error) {
+		console.error("Error fetching isFirstLogin status", error);
+	  }
+	};
+	greetingIfFirstLogin();
+  }, []); 
 
   return (
-    <Container fluid>
-      <Row>
-        <Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
-          <h5>MY PROFILE PAGE</h5>
-          <ChangeProfileName updateContext={updateContext} />
-          <ImageUpload updateContext={updateContext} />
-          <ButtonTfa />
-          <ChangeTheme />
-        </Col>
+	<Container fluid className="container-max-width">
+	  <Row>
+		<Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
+		  <h5>MY PROFILE PAGE</h5>
+		  <ChangeProfileName updateContext={updateContext} />
+		  <ImageUpload updateContext={updateContext} />
+		  <ButtonTfa />
+		  <ChangeTheme />
+		</Col>
 
-        <Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
-          {/* <Row className='h-75'> */}
-          <h5>MY STATISTICS</h5>
-          <MyStatistics />
-          {/* <br /><h5>MY MATCH HISTORY</h5> */}
-          {/* <MatchHistory /> */}
-          <MatchHistory loginName={selectedUser}/>
-        </Col>
+		<Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
+		  {/* <Row className='h-75'> */}
+		  <h5>MY STATISTICS</h5>
+		  <MyStatistics />
+		  {/* <br /><h5>MY MATCH HISTORY</h5> */}
+		  {/* <MatchHistory /> */}
+		  <MatchHistory loginName={selectedUser}/>
+		</Col>
 
-        <Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
-          <div>
-            <h5>MY FRIENDS</h5>
-            {!selectedUser ? (
-              <FriendsList clickOnUser={handleClickOnUser} />
-            ) : (
-              <>
-                <button onClick={handleClickBack}>Back</button>
-                <DisplayOneUser loginName={selectedUser} 
-                                showMatchHistory={showMatchHistory}
-                                setShowMatchHistory={setShowMatchHistory}
-                
-                
-                />
-              </>
-            )}
-          </div>
-        </Col>
-      </Row>
-    </Container>
+		<Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
+		  <div>
+			<h5>MY FRIENDS</h5>
+			{!selectedUser ? (
+			  <FriendsList clickOnUser={handleClickOnUser} />
+			) : (
+			  <>
+				<button className="button-back"
+						onClick={handleClickBack}>
+					&larr; back to list
+				</button>
+				<DisplayOneUser loginName={selectedUser} 
+								showMatchHistory={showMatchHistory}
+								setShowMatchHistory={setShowMatchHistory}
+				/>
+			  </>
+			)}
+		  </div>
+		</Col>
+	  </Row>
+
+	  {showWelcomeMessage && (
+		<WelcomeMessage onClose={() => setShowWelcomeMessage(false)} />
+	  )}
+	
+	</Container>
   );
 };
 

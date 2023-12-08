@@ -293,7 +293,10 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 
 			<>
 				{/* <button onClick={handleClickGoBack}>Back</button> */}
-				<button onClick={ () => setShowMatchHistory(false) }>Back to profile</button>
+				<button className="button-back"
+						onClick={ () => setShowMatchHistory(false) }>
+					&larr; back to profile
+				</button>
 				<MatchHistory loginName={loginName} />
 			</>
 		)}

@@ -89,7 +89,7 @@ const UsersList: React.FC = () => {
   };
 
   return (
-    <Container fluid className="h-100 w-100">
+    <Container fluid className="h-100 w-100 container-max-width">
       <div className="users-outer">
         {/* <div className="inner-section"> */}
         <Row text="dark">
