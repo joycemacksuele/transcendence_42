@@ -12,7 +12,7 @@ const LoginPage = () => {
   return (
     <div>
       <h1>Welcome to this page</h1>
-      <button onClick={handleLogin}>Login with OAuth</button>
+      <button onClick={handleLogin}>Login without OAuth</button>
     </div>
   );
 };
