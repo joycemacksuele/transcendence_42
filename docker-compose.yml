@@ -57,13 +57,13 @@ services:
             # - ./backend:/backend
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
               # - ./_backend_volume:/myapp:rw,uid=<501>,gid=<20>
-        env_file:
-            - ./.env
 #        restart: on-failure
         depends_on:
             - postgres_db
 #            postgres_db:
 #                condition: service_healthy
+        env_file:
+            - ./.env
         environment:
             - POSTGRES_DB=mydb
             - POSTGRES_HOST=postgres_db
@@ -117,6 +117,10 @@ services:
         #            postgres_db:
         #                condition: service_started
         tty: true
+        env_file:
+            - ./.env
+        environment:
+            - VITE_BACKEND=${VITE_BACKEND}
 
     # --------------------------------------------- Extra: PgAdmin
     pgadmin:
