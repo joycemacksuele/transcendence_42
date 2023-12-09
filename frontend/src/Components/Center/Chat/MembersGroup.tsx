@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useRef} from "react";
 import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 
 // Importing bootstrap and other modules
@@ -26,6 +26,8 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
         console.log("[MembersGroup] chatClicked: ", chatClicked);
     }
 
+    const inputRef = useRef(null);
+
     const [showMemberModal, setShowMemberModal] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [chatPassword, setChatPassword] = useState<string | null>(null);
@@ -44,7 +46,14 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
         chatSocket.emit("leaveChat", {chatId: chatClicked?.id});
     };
 
+    const addAdmin = (member: string) => {
+        console.log("[MembersGroup] member [", member, "] will be added to chat [", chatClicked?.chatName, "]");
+        chatSocket.emit("addAdmin", {chatId: chatClicked?.id, newAdmin: member});
+    };
+
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
+    // todo only show some buttons like add admin/kick/mute/ban if curr user is admin or creator
+    // todo and also only show if the clicked person is not already an admin, banned/kicked/muted
     return (
         <>
             {/* Members row */}
@@ -57,6 +66,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                                 variant="flush"
                             >
                                 <ListGroup.Item
+                                    ref={inputRef}
                                     as="li"
                                     className="justify-content-between align-items-start"
                                     variant="light"
@@ -98,9 +108,10 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                                         {chatClicked?.admins.indexOf(intraName) != -1 || chatClicked?.creator == intraName && <Button
                                             className="me-4 mb-3"
                                             variant="primary"
-                                            onClick={ () => {
+                                            value={member}
+                                            onClick={ (event) => {
                                                 setShowMemberModal(false);
-                                                // addAsAdmin(member);
+                                                addAdmin(member);// todo
                                             }}
                                         >
                                             Add as admin
