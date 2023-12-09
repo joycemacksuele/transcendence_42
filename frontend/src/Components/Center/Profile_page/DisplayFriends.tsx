@@ -151,7 +151,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
                       onClick={(e) => handleUserClick(e, friend.loginName)}
                     >
                       <img
-                        src={import.meta.env.VITE_BACKEND_URL + "/" + friend.profileImage}
+                        src={import.meta.env.VITE_BACKEND + "/" + friend.profileImage}
                         id="profileImage_tiny"
                       />
                       {friend.profileName}

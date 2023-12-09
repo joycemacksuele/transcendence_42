@@ -18,6 +18,7 @@ import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_pa
 // be considered "global" or shared across multiple components, such as user authentication status, etc ...
 
 const App: React.FC = () => {
+	// console.log("envvvvvvvvvvvvvv VITE", import.meta.env.VITE_BACKEND_URL);
 
 	/*
 		The mechanism for updating the info about the current user in the database, ie: custom profileName.
