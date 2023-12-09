@@ -37,7 +37,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
   // const fetchUsers = async () => {
   // 	try {
   // 		const response = await axiosInstance.get<User[]>(
-  // 			"http://localhost:3001/users/all"
+  // 			"/users/all"
   // 		); // Assuming the server is running on the same host and port
   // 		setUsers(response.data);
   // 		console.log('Jaka, retreived users', response.data);
@@ -49,7 +49,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
   const fetchMyId = async () => {
     try {
       const response = await axiosInstance.get(
-        `http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem(
+        `/users/get-user-by-profilename/${localStorage.getItem(
           "profileName"
         )}`
       );
@@ -64,11 +64,12 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
     }
   };
 
+  
   const fetchFriends = async (myId: number) => {
     console.log("Fetch Friends, myId: ", myId);
     try {
       const response = await axiosInstance.get<User[]>(
-        `http://localhost:3001/friendship/${myId}/friends`
+        `/friendship/${myId}/friends`
       );
       setFriends(response.data);
       console.log("Retrieved friends (response.data): ", response.data);
@@ -76,6 +77,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
       console.error("Error fetching friends: ", error);
     }
   };
+
 
   const fetchData = async () => {
     try {
@@ -98,6 +100,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
     // fetchFriends();
   }, []);
 
+
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
     e.preventDefault();
     setSelectedFriend(loginName);
@@ -113,7 +116,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
 
   // const deleteDummies = async () => {
   // 	try {
-  // 		await axiosInstance.delete("http://localhost:3001/users/");
+  // 		await axiosInstance.delete("/users/");
   // 		console.log("Dummies deleted successfully");
   // 	} catch (error) {
   // 		console.error("Error deleting dummies: ", error);
@@ -148,7 +151,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
                       onClick={(e) => handleUserClick(e, friend.loginName)}
                     >
                       <img
-                        src={"http://localhost:3001/" + friend.profileImage}
+                        src={import.meta.env.VITE_BACKEND + "/" + friend.profileImage}
                         id="profileImage_tiny"
                       />
                       {friend.profileName}

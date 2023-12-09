@@ -7,15 +7,20 @@ import '../../../css/Profile-users-list.css'
 import {NavLink} from "react-router-dom";
 import {ChatType, RequestNewChatDto} from "../Chat/Utils/ChatUtils.tsx";
 import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
+import MatchHistory from "./MatchHistory.tsx";
 
 interface UserProps {
 	loginName: string;
 }
 
-const getCurrentUsername = async () => {
 
+
+
+
+// TODO: change this to fetch user from jwt
+const getCurrentUsername = async () => {
 	try {
-		const response = await axiosInstance.get('http://localhost:3001/users/get-current-username');
+		const response = await axiosInstance.get('/users/get-current-username');
 		console.log('=================== username: ', response.data.username);
 		return response.data.username;
 	} catch (error) {
@@ -24,12 +29,31 @@ const getCurrentUsername = async () => {
 	}
 }
 
-const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
+
+
+const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
+											 setShowMatchHistory: React.Dispatch<React.SetStateAction<boolean>> }
+							  > 
+	= ({ loginName, showMatchHistory, setShowMatchHistory }) => {
 
 	const [userData, setUserData] = useState<any>(null); // !todo: define the 'structure' of returned user data
 	const [IamFollowing, setIamFollowing] = useState(false);
 	const [myId, setMyId] = useState<number>();
 	const [showButtons, setShowButtons] = useState(true);
+
+
+
+	// const [showMatchHistory, setShowMatchHistory] = useState<boolean>(false);
+
+	// const handleClickOnUser = () => {
+	// 	console.log("Show match history for specific user");
+	// 	setShowMatchHistory(true);
+	// };
+
+	// const handleClickGoBack = () => {
+	// 	setShowMatchHistory(false);
+	// };
+
 
 
 	// if the current user is displayed, do not show the buttons
@@ -57,7 +81,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 			let response;
 			try {
 				response = await axiosInstance.get(
-					`http://localhost:3001/users/get-user/${loginName}`
+					`/users/get-user/${loginName}`
 				);
 				setUserData(response.data);
 				console.log("Fetched userData: ", response);
@@ -72,7 +96,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 				console.log("Checking if I follow this user ... ");
 
 				const responseAmIFollowing = await axiosInstance.get(
-					`http://localhost:3001/friendship/followingExists/${myId}/${response.data.id}`
+					`/friendship/followingExists/${myId}/${response.data.id}`
 				);
 				console.log("   responseAmIFollowing: ", responseAmIFollowing);
 				if (responseAmIFollowing.data) {
@@ -100,7 +124,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 					localStorage.getItem("profileName")
 				);
 				const response = await axiosInstance.get(
-					`http://localhost:3001/users/get-user-by-profilename/${localStorage.getItem(
+					`/users/get-user-by-profilename/${localStorage.getItem(
 						"profileName"
 					)}`
 				);
@@ -108,7 +132,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 				//setIamFollowing(response.data.IamFollowing);
 				console.log("Fetched My Data: ", response);
 			} catch (error) {
-				console.error("Error catching my data: ", error);
+				console.error("Error fetching my data: ", error);
 			}
 		};
 		fetchMyData();
@@ -119,7 +143,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 		const friendId = userData.id; // todo: fetch the id (the to-be friend)
 		try {
 			const response = await axiosInstance.post(
-				`http://localhost:3001/friendship/${myId}/addFriend/${friendId}`
+				`/friendship/${myId}/addFriend/${friendId}`
 			);
 			console.log("Success: Friendship added: ", response.data);
 		} catch (error: any) {
@@ -143,7 +167,7 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 	async function stopFollowing() {
 		try {
 			const response = await axiosInstance.post(
-				`http://localhost:3001/friendship/${myId}/removeFriend/${userData.id}`
+				`/friendship/${myId}/removeFriend/${userData.id}`
 			);
 			console.log("Success remnoving a friend: ", response);
 		} catch (error: any) {
@@ -203,11 +227,14 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 
 	return (
 		<Col className="column-bckg p-3 rounded inner-section">
+
+		{!showMatchHistory ? (
+			<>
 			<Row className="mb-5">
 				<Col>
 					<Image
 						id="otherUserImage"
-						src={"http://localhost:3001/" + userData.profileImage}
+						src={import.meta.env.VITE_BACKEND + "/" + userData.profileImage}
 						alt="no_image_found"
 					/>
 				</Col>{" "}
@@ -249,7 +276,27 @@ const DisplayOneUser: React.FC<UserProps> = ({ loginName }) => {
 						{IamFollowing ? "Stop Following" : "Start Following"}
 					</Button>
 				</Col>
+				<Col>
+						<Button
+							className='button_default'
+							// onClick={() => handleClickOnUser()}
+							// onClick={handleClickOnUser}
+							onClick={ () => setShowMatchHistory(true)}
+						>
+							Match History
+						</Button>
+				</Col>
 			</Row>
+			</>
+
+		) : (	// ELSE: DISPLAY MATCH HISTORY 
+
+			<>
+				{/* <button onClick={handleClickGoBack}>Back</button> */}
+				<button onClick={ () => setShowMatchHistory(false) }>Back to profile</button>
+				<MatchHistory loginName={loginName} />
+			</>
+		)}
 		</Col>
 	);
 };
