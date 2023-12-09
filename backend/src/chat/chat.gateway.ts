@@ -106,9 +106,8 @@ export class ChatGateway
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
         clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
-        this.logger.log('getChats -> all chats were emitted to the frontend');
+        this.logger.log('getChats -> all chats were emitted to the frontend');// todo need to return? or throw
       });
-
     });
 
     // Join the specific room after chat was created
@@ -133,7 +132,7 @@ export class ChatGateway
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
         clientSocket.emit("getChats", allChats);
-        this.logger.log('getChats -> all chats were emitted to the frontend');
+        this.logger.log('getChats -> all chats were emitted to the frontend');// todo need to return? or throw
       });
     });
   }
@@ -156,6 +155,16 @@ export class ChatGateway
     this.logger.log('leaveChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
     return await this.chatService.leaveChat(chatId, clientSocket.data.user);
   }
+
+  // @SubscribeMessage('addAdmin')
+  // async addAdmin(
+  //     @MessageBody('chatId') chatId: number,
+  //     @MessageBody('newAdmin') newAdmin: string,
+  //     @ConnectedSocket() clientSocket: Socket) {
+  //   this.logger.log('clientSocket.id: ' + clientSocket.id);
+  //   this.logger.log('joinChat -> chatId: ' + chatId + " newAdmin: " + newAdmin);
+  //   return await this.chatService.addAdmin(chatId, newAdmin);// todo need to return? or throw
+  // }
 
   @SubscribeMessage('getChats')
   async getChats(@ConnectedSocket() clientSocket: Socket) {
