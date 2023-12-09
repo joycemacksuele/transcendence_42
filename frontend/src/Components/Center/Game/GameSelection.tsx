@@ -3,22 +3,20 @@ import { Socket } from "socket.io-client";
 import "./Button.css";
 
 function GameSelection(props: { socket: Socket | null }) {
-  function joinDefaultGame() {
-    props.socket?.emit("joinDefaultGame");
+
+  function joinGame(type: string){
+    props.socket?.emit('joinGame',type);
   }
 
-  function joinCustomGame() {
-    props.socket?.emit("joinCustomGame");
-  }
   return (
     <>
     <div style={{"height":"80vh"}} className="  d-flex justify-content-center align-items-center">
 <div>
     <h1>Match Making</h1>
-    <Button variant="dark" onClick={joinDefaultGame}>
+    <Button variant="dark" onClick={() => joinGame('Default')}>
       Play classic Game
     </Button>
-    <Button variant="dark" onClick={joinCustomGame}>
+    <Button variant="dark" onClick={() => joinGame('Default')}>
       Play custom Game
     </Button>
 <p></p>
