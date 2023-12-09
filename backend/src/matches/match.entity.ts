@@ -38,4 +38,6 @@ export class MatchEntity {
 	@Column()
 	winnerId: number;
 
+	@Column()
+	timeStamp: Date;
 }

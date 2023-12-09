@@ -6,7 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "typeRoots":["node_modules/@types", "src/types"], // for npm install axios and npm install @types/axios
-    "types": ["react", "react-dom", "react-router-dom", "jquery"], // for Form Input Field
+    "types": ["react", "react-dom", "react-router-dom", "jquery", "node"], // for Form Input Field
     "allowSyntheticDefaultImports": true,
 
     /* Bundler mode */
