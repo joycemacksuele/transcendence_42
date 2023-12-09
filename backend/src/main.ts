@@ -15,33 +15,52 @@ import {Logger, ValidationPipe} from '@nestjs/common'
 
 import mysql, { ConnectionOptions } from 'mysql2';
 
-
 async function main() {
   let logger = new Logger(main.name);
   
-  const access: ConnectionOptions = {
-    user: `${process.env.POSTGRES_USER}`,
-    database: `${process.env.DATABASE}`,
-  };
-  
-  const connection = mysql.createConnection(access);
+  // const access: ConnectionOptions = {
+  //   host:  'localhost',
+  //   user: `${process.env.POSTGRES_USER}`,
+  //   database: `${process.env.DATABASE}`,
+  // };  
 
+
+  // var connection = mysql.createConnection({
+  //   host     : `${process.env.POSTGRES_HOST}`,
+  //   user     : `${process.env.POSTGRES_USER}`,
+  //   password : `${process.env.POSTGRES_PASSWORD}`,
+  //   database : `${process.env.DATABASE}`,
+  //   // socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
+  // });
+  // connection.connect();
+  // // const connection = mysql.createConnection(access);
+
+
+
+// const access: ConnectionOptions = {
+//   user: `${process.env.POSTGRES_USER}`,
+//   database: `${process.env.DATABASE}`,
+// };
+// let defaultPORT = 3306;
+// const conn = mysql.createConnection(access);
+// conn.connect();
+  
   const app = await NestFactory.create(AppModule);
-
-  app.get('/database/:loginName', async (req: any, res: any) => {
-    const {userQuery} = req.params;
-    
-    const onlyLettersAndNumbers = /^[A-Za-z0-9]+$/;
-    if (!userQuery.match(onlyLettersAndNumbers)){
-      return res.status(400).json({err: "Numbers and letters! No funny business here!"})
-    }
-
-    const query = `SELECT * FROM Repository WHERE TAG = '${userQuery}' AND public = 1`;
-    const [rows] = connection.query(query, [userQuery]);
-    res.json(rows);
-  })
   
-  // Enable CORS for all routes (this app will turn on port 3001 (backend), but the frontend and database
+  //   app.get('/database/:loginName', async (req: any, res: any) => {
+    //     const {userQuery} = req.params;
+    
+    //     const onlyLettersAndNumbers = /^[A-Za-z0-9]+$/;
+    //     if (!userQuery.match(onlyLettersAndNumbers)){
+//       return res.status(400).json({err: "Numbers and letters! No funny business here!"})
+//     }
+
+//     const query = `SELECT * FROM Repository WHERE TAG = '${userQuery}' AND public = 1`;
+//     const [rows] = connection.query(query, [userQuery]);
+//     res.json(rows);
+//   })
+  
+// Enable CORS for all routes (this app will turn on port 3001 (backend), but the frontend and database
   // will run on a different port, so it's good to add all other origin ports running (i.e.: that will
   // try to access/send requests to the backend) as a Cors option).
   app.enableCors({
@@ -53,11 +72,11 @@ async function main() {
   });
   
   
-  // mysql - for sql injections
-  // ---------------------------------------------------------------
+  // // mysql - for sql injections
+  // // ---------------------------------------------------------------
 
-  app.get('')
-  // ---------------------------------------------------------------
+  // app.get('')
+  // // ---------------------------------------------------------------
 
 
 
