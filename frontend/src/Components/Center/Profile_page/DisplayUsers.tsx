@@ -121,7 +121,7 @@ const UsersList: React.FC = () => {
                           onClick={(e) => handleUserClick(e, user.loginName)}
                         >
                           <img
-                            src={import.meta.env.VITE_BACKEND_URL + "/" + user.profileImage}
+                            src={import.meta.env.VITE_BACKEND + "/" + user.profileImage}
                             id="profileImage_tiny"
                           />
                           {user.profileName}
