@@ -102,7 +102,7 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 	const [loginName, setLoginName] = useState<string | null>(props.loginName);
 	const [matchHistory, setMatchHistory] = useState<Match[] | null> (null);
 	// console.log("Start MatcHistory(), loginName: ", props.loginName);
-	// console.log("BASE URL: ", `${import.meta.env.VITE_BACKEND_URL}`);
+	// console.log("BASE URL: ", `${import.meta.env.VITE_BACKEND}`);
 
 
 	useEffect(() => {
