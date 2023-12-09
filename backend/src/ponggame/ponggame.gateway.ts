@@ -12,7 +12,6 @@ import { PonggameService } from "./ponggame.service";
 import { GameState } from "./dto/game-state.dto";
 
 import { AuthService } from "src/auth/auth.service";
-//import { JwtService } from "@nestjs/jwt";
 
 @WebSocketGateway({
   cors: {
@@ -86,7 +85,7 @@ export class PonggameGateway
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`pong game client id ${client.id} disconnected`);
+console.log(`pong game client id ${client.id} disconnected`);
     this.ponggameService.playerDisconnected(
       this._socketIdUserId.get(client.id),
     );
@@ -94,21 +93,15 @@ export class PonggameGateway
     this._socketIdUserId.delete(client.id);
   }
 
-  @SubscribeMessage("joinDefaultGame")
-  joinDefaultGame(@ConnectedSocket() client: Socket) {
-    const userId = this._socketIdUserId.get(client.id);
-    console.log('joining default game' + userId);
-    const matchId = this.ponggameService.joinGame(userId, 'Default');
-    client.join(matchId);
-  }
 
-  @SubscribeMessage('joinCustomGame')
-  joinCustomGame(
+
+  @SubscribeMessage('joinGame')
+  joinGame(
     @ConnectedSocket() client: Socket,
+    @MessageBody() type: string
   ) {
     const userId = this._socketIdUserId.get(client.id);
-    console.log('joining custom game ' + userId);
-    const matchId = this.ponggameService.joinGame(userId, 'Custom');
+    const matchId= this.ponggameService.joinGame(userId, type);
     client.join(matchId);
   }
 
