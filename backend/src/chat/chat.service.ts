@@ -53,6 +53,23 @@ export class ChatService {
     });
   }
 
+  // async addAdmin(chatId: number, newAdmin: string)  {
+  //   await this.chatRepository.findOneOrFail({
+  //     where: {
+  //       id: chatId,
+  //     },
+  //   }).then((foundEntityToJoin) => {
+  //     // Now we have the entity to update the member's array
+  //     foundEntityToJoin.admins = foundEntityToJoin.admins.concat(newAdmin);
+  //     this.logger.log('[joinChat] new admins list: ' + foundEntityToJoin.admins);
+  //     this.chatRepository.save(foundEntityToJoin).then(r => {
+  //       this.logger.log('[joinChat] chatId should match: ' + chatId + " = " + r.id);
+  //     });
+  //   }).catch((err) => {
+  //     throw new Error('[joinChat] Could not find chat entity to join -> err: ' + err);
+  //   });
+  // }
+
   async saveNewUserToChat(foundEntityToJoin: NewChatEntity, intraName: string, chatId: number) {
     // Now we have the entity to update the member's array
     const foundUser : UserEntity = await this.userService.getUserByLoginName(intraName);
@@ -108,7 +125,7 @@ export class ChatService {
     return false;
   }
 
-  async getAllChats() {
+  async getAllChats(): Promise<ResponseNewChatDto[]> {
     this.logger.log('getAllChats');
     // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
     // this.logger.log("ChatService query.getQuery(): ", query.getQuery());

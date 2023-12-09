@@ -1,4 +1,13 @@
-import {IsString, IsEnum, IsNumber, IsStrongPassword, IsArray, ValidateNested, ArrayMinSize} from 'class-validator';
+import {
+    IsString,
+    IsEnum,
+    IsNumber,
+    IsStrongPassword,
+    IsArray,
+    ValidateNested,
+    ArrayMinSize,
+    MinLength, MaxLength, IsNotEmpty
+} from 'class-validator';
 import {ChatType} from '../utils/chat-utils'
 import {UserEntity} from "src/user/user.entity";
 
