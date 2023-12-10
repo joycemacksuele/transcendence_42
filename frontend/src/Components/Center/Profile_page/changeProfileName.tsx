@@ -36,7 +36,7 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
     try {
       const response = await axiosInstance.post(
-        "http://jemoederinator.local:3001/users/change_profile_name",
+        "/users/change_profile_name",
         { profileName },
         { validateStatus: () => true }
       ); // validateStatus: All http responses will be successfull, regardless if the status code is Error. This allows more flexible error handling below

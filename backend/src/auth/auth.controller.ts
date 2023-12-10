@@ -57,7 +57,7 @@ export class AuthController {
 
 		try {
 			this.logger.log('getAuthorizationToken: ' + response);
-			console.log('Jaka, AUTH response HEADERS:\n', response.getHeaders());
+			this.logger.log('Jaka, AUTH response HEADERS:\n', response.getHeaders());
 			return await this.authService.exchangeCodeForAccessToken(parameters, response);
 		} catch (err) {
 			this.logger.log('\x1b[31mgetAuthToken: \x1b[0m' + err);
@@ -65,7 +65,8 @@ export class AuthController {
 	}
 
 	@Get('logout')
-	async logOut(@Request() req:any, @Response() res:any){
+	// async logOut(@Request() req:any, @Response() res:any){
+		async logOut(@Request() req:any, @Response() res:any){
 		try{
 			this.logger.log("Start logout");
 			let payload = await this.authService.extractUserdataFromToken(req);
@@ -74,9 +75,11 @@ export class AuthController {
 			res.clearCookie('Cookie');
 			await this.userService.updateRefreshToken(user.loginName, 'default'); 
 			this.logger.log("Removed tokens. Logging out!");
+			res.status(200).send({ message: 'Logout succesful'});
 		}
 		catch(err){
 			this.logger.log('\x1b[31mUnable to logout: \x1b[0m' + err);
+			res.status(500).send({ message: "Logout failed" });
 		}
 	}
 }

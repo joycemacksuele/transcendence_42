@@ -65,9 +65,8 @@ const ImageUpload: React.FC<ContextProps> = ({ updateContext }) => {
       console.log("ChangeImage: selected image B): ", selectedImage);
 
       // The URL string needs to be inside backticks `...`
-      // const response = await axiosInstance.post(`http://jemoederinator.local:3001/change_profile_image/${loginName}`, formData, {
       const response = await axiosInstance.post(
-        `http://jemoederinator.local:3001/change_profile_image`,
+        `/change_profile_image`,
         formData,
         {
           headers: {
