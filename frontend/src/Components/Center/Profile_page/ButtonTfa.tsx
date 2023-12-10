@@ -40,7 +40,7 @@ const ButtonTfa: React.FC = () => {
       if (response.data.tfaEnabled !== undefined)
         settfaStatus(response.data.tfaEnabled);
     } catch (error) {
-      if (error instanceof Egit mergerror) {
+      if (error instanceof Error) {
         console.error(error.message);
       } else {
         console.error("Unkown error: ", error);
