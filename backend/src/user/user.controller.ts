@@ -64,8 +64,8 @@ export class UserController {
 
 	@Post()
 	async createUser(@Body() createUserDto: CreateUserDto) {
-		this.logger.log('[BACKEND LOG] createUser');
-		this.logger.log('[BACKEND LOG] Received user data:', JSON.stringify(createUserDto));
+		this.logger.log('createUser');
+		this.logger.log('Received user data:', JSON.stringify(createUserDto));
 		return this.userService.createUser(createUserDto);// UserEntity
 	}
 
@@ -73,7 +73,7 @@ export class UserController {
     // GET ALL USERS
     @Get('all')
     async getAllUsers(): Promise<UserEntity[]> {
-        this.logger.log('[BACKEND LOG] getAllUsers');
+        this.logger.log('getAllUsers');
         return (this.userService.getAllUsers());
     }
 	
@@ -84,7 +84,7 @@ export class UserController {
 		@Param('loginName') loginName: string
 	): Promise<UserEntity>
 	{
-		this.logger.log('[BACKEND LOG] getUser');
+		this.logger.log('getUser');
 		// throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED); // jaka: just for testing
 		return (this.userService.getUserByLoginName(loginName));
 	}
@@ -95,29 +95,46 @@ export class UserController {
 		@Param('profileName') profileName: string
 	): Promise<UserEntity>
 	{	
-		this.logger.log('[BACKEND LOG] getUser');
+		this.logger.log('getUser');
 		return (this.userService.getUserByProfileName(profileName));
 	}
 
-	// GET CURRENT USER DATA
-	@Get('get-current-username')
+
+	// GET CURRENT USER ENTITY
+	@Get('get-current-user')
 	async getCurrentUser(@Req() req: Request) {
-		const response = await this.authService.extractUserdataFromToken(req);
-		//console.log("======================== username: ", response.username)
-		return { username: response.username };
+		try {
+			const payload = await this.authService.extractUserdataFromToken(req);
+			const currUser = await this.userService.getUserByLoginName(payload.username);
+			return currUser;
+		} catch (error) {
+			console.error('Error fetching current user:', error);
+		}
 	}
 
+
+	// GET CURRENT USER NAME
+	@Get('get-current-username')
+	async getCurrentUserName(@Req() req: Request) {
+		try {
+			const response = await this.authService.extractUserdataFromToken(req);
+			//this.logger.log("======================== username: ", response.username)
+			return { username: response.username };
+		} catch (error) {
+			console.error('Error fetching current username:', error);
+		}
+	}
 
 
 	// DELETE DUMMIES
 	@Delete()
 	async deleteDummies(): Promise<void> {
-		console.log('DELETE All Dummies');
+		this.logger.log('DELETE All Dummies');
 		try {
 			await this.userService.deleteDummies();
-			this.logger.log('[BACKEND LOG] from nest user.controller: All dummies deleted.');
+			this.logger.log('from nest user.controller: All dummies deleted.');
 		} catch (error) {
-			this.logger.error('[BACKEND LOG] from nest user.controller: Error deleting dummies.', error);
+			this.logger.error('from nest user.controller: Error deleting dummies.', error);
 		}
 	}
 
@@ -128,18 +145,18 @@ export class UserController {
     try {
       // get user and loginName from request-token
       let payload = await this.authService.extractUserdataFromToken(request);
-      console.log("      ... payload.username: ", payload.username);
+      this.logger.log("      ... payload.username: ", payload.username);
 
 
       // Check if user with the same loginName already exists
-      console.log('Endpoint: Check_if_user_in_db()');
+      this.logger.log('Endpoint: Check_if_user_in_db()');
       const existingUser = await this.userService.getUserByLoginName(payload.username);
       if (existingUser) {
-        console.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
+        this.logger.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
         return { exists: true, user: existingUser};
         // return { message: 'This loginName already exists in database == the current user.'};
       }
-      console.log('Endpoint: Check_if_user_in_db, LoginName:', existingUser); // jaka, temp
+      this.logger.log('Endpoint: Check_if_user_in_db, LoginName:', existingUser); // jaka, temp
       
       return { exists: false }; 
       // return { message: 'CHECK User does not exist in the database.' };
@@ -153,15 +170,15 @@ export class UserController {
   @Post('change_profile_name')
   async changeProfileName(@Req() request: Request, @Body() data: ChangeProfileNameDTO): Promise<{ message: string }> {
     try {
-      console.log('Changing the profile name:, new profileName: ', data.profileName);
+      this.logger.log('Changing the profile name:, new profileName: ', data.profileName);
 
       // get user and loginName from request-token
       let payload = await this.authService.extractUserdataFromToken(request);
-      console.log("      ... payload.username: ", payload.username);
+      this.logger.log("      ... payload.username: ", payload.username);
 
 
       const user = await this.userService.getUserByLoginName(payload.username);
-      // console.log('Jaka, found profile name: ', user.profileName  );
+      // this.logger.log('Jaka, found profile name: ', user.profileName  );
       if (!user) {
 	      throw new HttpException('User with this loginName not found', HttpStatus.I_AM_A_TEAPOT);
         // return {message: 'User with this loginName not found'};
@@ -201,7 +218,7 @@ export class UserController {
 	// It needs the @Param decorator to be able to pass the arg to the function getUserById( id )'
 	// @Get(':id')
 	// async findById(@Param('id') id: number): Promise<UserEntity | undefined> {
-	//   this.logger.log('[BACKEND LOG] findById');
+	//   this.logger.log('findById');
 	//   return this.userService.getUserById(id);
 	// }
 

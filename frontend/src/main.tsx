@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import App_jaka from "./App_jaka.tsx";
+import App from "./app.tsx";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 /*
@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <Router>
     {/* StrictMode was re-rendereing the components twice, to find errors as far as I know */}
 
-    <App_jaka />
+    <App />
 
     {/* </ StrictMode > */}
   </Router>

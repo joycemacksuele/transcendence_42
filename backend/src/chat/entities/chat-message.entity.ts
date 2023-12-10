@@ -29,6 +29,6 @@ export class ChatMessageEntity {
     @ManyToOne(() => UserEntity, (user) => user.chatmessages)
     creator: UserEntity;
 
-    @ManyToOne(() => NewChatEntity, (newchat) => newchat.chatmessages)
+    @ManyToOne(() => NewChatEntity, (newchat) => newchat.messages)
     chatbox: NewChatEntity;
 }

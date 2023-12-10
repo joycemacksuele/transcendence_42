@@ -40,7 +40,7 @@ export class Friendship {
 
 /* SOMETHING WAS CAUSING ERROR:
 	
-	backend   | [BACKEND LOG] UserEntity constructor
+	backend   | UserEntity constructor
 	database  | 2023-10-20 12:39:57.918 UTC [71] ERROR:  duplicate key value violates unique constraint "pg_class_relname_nsp_index"
 	database  | 2023-10-20 12:39:57.918 UTC [71] DETAIL:  Key (relname, relnamespace)=(friendship_id_seq, 2200) already exists.
 	database  | 2023-10-20 12:39:57.918 UTC [71] STATEMENT:  CREATE TABLE "friendship" ("id" SERIAL NOT NULL, "userId" integer NOT NULL, "friendId" integer NOT NULL, CONSTRAINT "UQ_8ec05157173d01ac1497990a020" UNIQUE ("userId", "friendId"), CONSTRAINT "PK_dbd6fb568cd912c5140307075cc" PRIMARY KEY ("id"))

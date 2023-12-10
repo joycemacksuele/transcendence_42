@@ -13,3 +13,7 @@ ul.dropdown-menu {
     height: 50vw;
     overflow-y: scroll;
 }
+
+.hidden {
+    display: none;
+}
