@@ -43,6 +43,9 @@ export class PonggameGateway
         const currentGames = ponggameService.getCurrentMatches();
         currentGames.forEach((gamestate: GameState) => {
           this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
+            if (gamestate.currentState == "End"){
+                this.server.socketsLeave(gamestate.roomName);
+            }
         });
         ponggameService.cleanUpMatches();
         this._processingGamestates = false;
@@ -114,6 +117,14 @@ console.log(`pong game client id ${client.id} disconnected`);
     }
   }
 
+@SubscribeMessage('requestPlayerPartOfGame')
+  requestPlayerPartOfGame(@MessageBody() userId: string, @ConnectedSocket() client: Socket){
+    let partOfMatch : boolean = false;
+    if (this.ponggameService.getMatchId(userId) != ""){
+        partOfMatch = true;
+    }
+    client.emit('responsePlayerPartOfGame',partOfMatch);
+  }
 
   //test function
   print_out_socketId() {
