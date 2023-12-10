@@ -16,7 +16,7 @@ import { AuthService } from "src/auth/auth.service";
 @WebSocketGateway({
   cors: {
     //    origin: '*', //!DEV allowing any origin
-    origin: "http://jemoederinator.local:3000", // allow the origin http://jemoederinator.local:5173
+    origin: "http://localhost:3000", // allow the origin http://localhost:5173
     credentials: true,
   },
 })

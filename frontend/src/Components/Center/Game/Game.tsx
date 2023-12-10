@@ -5,7 +5,7 @@ import { drawScene } from "./CanvasDraw";
 import GameSelection from "./GameSelection";
 
 function Game() {
-  const apiAddress = "http://jemoederinator.local:3001";
+  const apiAddress = "http://localhost:3001";
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const width = window.innerWidth;
   const height = window.innerHeight - 70;
