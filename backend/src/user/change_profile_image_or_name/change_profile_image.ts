@@ -1,4 +1,16 @@
-import { Controller, Injectable, Post, Body, Req, UploadedFile, UseInterceptors, NestMiddleware, Param, ParseIntPipe } from '@nestjs/common';
+import {
+	Controller,
+	Injectable,
+	Post,
+	Body,
+	Req,
+	UploadedFile,
+	UseInterceptors,
+	NestMiddleware,
+	Param,
+	ParseIntPipe,
+	Logger
+} from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -39,14 +51,17 @@ export class AddUsernameMiddleware implements NestMiddleware {
 // added jaka
 async function deleteOldProfileImages(loginName: string) {
 	const uploadsDir = path.join(__dirname,  `../../../${process.env.UPLOADS}`); // pulled from.env
+	// this.logger.log('Deleting old profile image of userName: ', loginName);
+	console.log('Deleting old profile image of userName: ', loginName);
 	try {
-		console.log('Deleting old profile image of userName: ', loginName);
 		const images = await fs.readdir(uploadsDir);
 
 		const imagesToDelete = images.filter(file => file.includes(loginName));
+		// this.logger.log('      Files detected for deletion:', imagesToDelete);
 		console.log('      Files detected for deletion:', imagesToDelete);
 
 		for (const img of imagesToDelete) {
+			// this.logger.log('         ... deleting: ', img)
 			console.log('         ... deleting: ', img)
 			await fs.unlink(path.join(uploadsDir, img));
 		}
@@ -55,65 +70,53 @@ async function deleteOldProfileImages(loginName: string) {
 	}
 }
 
-  
-const storage = {
-	storage: diskStorage({
-		destination: `./${process.env.UPLOADS}`,		// pulled from .env
+/*
+This is using the package 'Multer' to interact with the FileSYstem in order to store the uploaded image and rename its filename. The orig name is dropped and the new filename gets the user's loginName + randomly generated string + the extention (ie: jpg).
 
-		filename: async function (req, file, cb) {
-			// const user = req.params.loginName;
-			const username = req['username'];	// user the username from the request object
-			if (!username) {
-				return cb(new Error('From diskStorage: Username not found'), '');
-			}
-			//const sanitizedUserName = user.replace(/\s+/g, '_');  // Replacing spaces with underscores
+The object 'storage' is a result of the function diskStorage(). It provides the configuration about how the uploaded file should be treated. DiskStorage() takes an object as argument, which has 2 properties: destination and anonymous function.
+*/  
+const storage = diskStorage({
+	destination: `./${process.env.UPLOADS}`,		// pulled from .env
 
-			await deleteOldProfileImages(username); // Delete old profile images
-			console.log('Old profile images deleted for loginName:', username);
-		
-			const uniqueSuffix = uuidv4();
-			const extension: string = Path.parse(file.originalname).ext;
-			const filename: string = `${username}-${uniqueSuffix}${extension}`;
-			cb(null, filename);
+	filename: async function (req, file, cb) {
+		// const user = req.params.loginName;
+		const username = req['username'];	// user the username from the request object
+		if (!username) {
+			return cb(new Error('From diskStorage: Username not found'), '');
 		}
-	})
-}
+		//const sanitizedUserName = user.replace(/\s+/g, '_');  // Replacing spaces with underscores (not needed, since the whole name is replaced.)
+		await deleteOldProfileImages(username); // Delete old profile images
+		// this.logger.log('Old profile images deleted for loginName:', username);
+		console.log('Old profile images deleted for loginName:', username);
+		const uniqueSuffix = uuidv4();
+		const extension: string = Path.parse(file.originalname).ext;
+		const filename: string = `${username}-${uniqueSuffix}${extension}`;
+		cb(null, filename);
+	}
+});
 
 
 @Controller()
 export class UploadImageController {
+	private readonly logger = new Logger(UploadImageController.name);
 	constructor( 	private readonly userService: UserService,
 					private readonly authService: AuthService) {
-		console.log('constructor changeImage');
+		this.logger.log('Constructor');
 	}
 
-
 	// @UseGuards(JwtGuard)  // add guards
-	// @Post('change_profile_image/:loginName')
 	@Post('change_profile_image')
-	@UseInterceptors(FileInterceptor('image', storage))
+	@UseInterceptors(FileInterceptor('image', { storage }))
 		
 	async uploadFile(
-		// @Param('loginName') loginName: string,		// ParseIntPipe: to extract parameter from the URL
 		@UploadedFile() file: any,
 		@GetCurrentUser() user: any,
-		@Req() req: Request,		// jaka: this gives acces to token's payload content, when JwtGuard is inabled: const loginName = req.user.loginName;
+		//@Req() req: Request,		// jaka: Not needed because of @GetCurrentUser
 	) {
-
-		// extract user from request token 
-		let payload = await this.authService.extractUserdataFromToken(req);
-		console.log("      ... payload.username: ", payload.username);
-
-		// req['username'] = user.username; // add username to request object
-		req.user = { username: payload.username };
-		//console.log('\n\nChange Image, Request received for userName: ', loginName);
-		console.log('\n\nChange Image, Request received for userName: ', user.username);
 		const imagePath = file.path;
-		console.log('New image path:', imagePath);
-		
-		// await this.userService.updateProfileImage(loginName, imagePath);
+		this.logger.log('New image path:', imagePath);
 		await this.userService.updateProfileImage(user.username, imagePath);
-		console.log('Profile image updated.');
+		this.logger.log('Profile image updated.');
 		return file
     }		
 }

@@ -21,10 +21,10 @@ export class TwoFactorAuthController {
         try{
             // extractUserFromHeader
             let payload = await this.authService.extractUserdataFromToken(request);
-            console.log("      ... payload.username: ", payload.username);
+            this.logger.log("      ... payload.username: ", payload.username);
 
-            this. logger.log('Start verify_code function: ');
-            this. logger.log('code to verify: ' + data.inputValue);
+            this.logger.log('Start verify_code function: ');
+            this.logger.log('code to verify: ' + data.inputValue);
 
             let sqlCheck = await this.tfaService.inputCheck(data.inputValue);  // sql input verification 
             if (sqlCheck === false)
@@ -88,7 +88,7 @@ export class TwoFactorAuthController {
         try {
             let payload = await this.authService.extractUserdataFromToken(req);
             let user    = await this.userService.getUserByLoginName(payload.username);
-            // console.log('tfastatus: ', user.tfaEnabled);
+            // this.logger.log('tfastatus: ', user.tfaEnabled);
             res.json({ tfaStatus: user.tfaEnabled });
         } catch (error) {
             console.error('Error fetching tfa status.');

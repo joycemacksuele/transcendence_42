@@ -37,7 +37,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
             <Row className='me-auto'>
                 <Stack gap={3}>
                     <ListGroup
-                        key={chatClicked?.chatName}
+                        key={chatClicked?.name}
                         variant="flush"
                     >
                         <ListGroup.Item
@@ -54,7 +54,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                                 width={30}
                                 alt="chat"
                             />
-                            {chatClicked?.chatName}
+                            {chatClicked?.name}
                         </ListGroup.Item>
                         <Modal
                             // size="sm"

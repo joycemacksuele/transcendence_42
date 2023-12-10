@@ -129,8 +129,8 @@ const Chat = () => {
                     </Row>
                     {/* Members body */}
                     <Row className='h-100'>
-                        {chatClicked?.chatType === ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
-                        {chatClicked?.chatType != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> }
+                        {chatClicked?.type === ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
+                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> }
                     </Row>
                 </Col>
 

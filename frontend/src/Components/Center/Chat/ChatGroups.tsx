@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
 import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
-import axios from "axios";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -8,6 +7,8 @@ import Stack from 'react-bootstrap/Stack';
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
+import {chatSocket} from "./Utils/ClientSocket.tsx";
+
 
 type PropsHeader = {
     setChatClicked: (chatClicked: ResponseNewChatDto) => void;
@@ -21,17 +22,20 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
     const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
     useEffect(() => {
-        axios.get<ResponseNewChatDto[]>(
-            "http://jemoederinator.local:3001/chat/all-chats"
-        ).then((response) => {
-            console.log("[ChatGroups] response.data: ", response.data);
-            setChatInfo(response.data);
-        }).catch((error) => {
-            console.error('[ChatGroups] Error on the chat controller for the all-chats endpoint: ', error);
+        console.log("[ChatRecent] inside useEffect -> socket connected? ", chatSocket.connected);
+        console.log("[ChatRecent] inside useEffect -> socket id: ", chatSocket.id);
+
+        chatSocket.emit("getChats");
+        chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
+            const oldData = JSON.stringify(chatInfo);
+            const newData = JSON.stringify(allChats);
+            if (oldData != newData) {
+                setChatInfo(allChats);
+            }
         });
 
         return () => {
-            console.log("[ChatGroups] Inside useEffect return function (ChatGroups Component was removed from DOM)");
+            console.log("[ChatRecent] Inside useEffect return function (ChatRecent Component was removed from DOM)");
         };
     }, []);
 
@@ -40,14 +44,21 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
         <>
             {/* Available groups row */}
             <Row className='me-auto'>
-
+                {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.map((chat: ResponseNewChatDto) => (
+                    {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
                         <>
+                            {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
+                            {chat.users.indexOf(intraName) != -1 && chat.type == ChatType.PRIVATE && <ListGroup
+                                key={key + 1}
+                                className="hidden"
+                            >
+                            </ListGroup>}
+
                             {/* If current user is not a member of the chat (i.e. is not in the members array) */}
                             {/* And char is not private  (i.e. is a public or protected group) */}
-                            {chat.users.indexOf(intraName) == -1 && chat.chatType != ChatType.PRIVATE && <ListGroup
-                                key={chat.id}
+                            {chat.users.indexOf(intraName) == -1 && chat.type != ChatType.PRIVATE && <ListGroup
+                                key={key + 1}
                                 variant="flush"
                             >
                                 <ListGroup.Item
@@ -56,19 +67,19 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
                                     variant="light"
                                     onClick={() => setChatClicked(chat)}
                                 >
-                                    { chat.chatType == ChatType.PROTECTED && <Image
-                                        src={`http://jemoederinator.local:3001/resources/protected-chat.png`}
+                                    { chat.type == ChatType.PROTECTED && <Image
+                                        src={`http://localhost:3001/resources/protected-chat.png`}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
-                                    { chat.chatType != ChatType.PROTECTED && <Image
-                                        src={`http://jemoederinator.local:3001/resources/chat.png`}
+                                    { chat.type != ChatType.PROTECTED && <Image
+                                        src={`http://localhost:3001/resources/chat.png`}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
-                                    {chat.chatName}
+                                    {chat.name}
                                 </ListGroup.Item>
                             </ListGroup>}
                         </>

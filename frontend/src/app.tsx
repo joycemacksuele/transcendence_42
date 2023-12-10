@@ -12,15 +12,13 @@ import PageNotFound from "./Components/Other/PageNotFound.tsx";
 import LogoutPage from './Components/Login_page/logoutPage.tsx';
 import ForcedLogout from './Components/Other/ForcedLogout.tsx';
 import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_page/contextCurrentUser.tsx';
-// import AuthCallbackPage from './Components/Login_page/AuthCallbackPage.tsx';
-
 
 // 'Context' provides a way to pass data through the component tree without having to pass 
 // props down manually at every level. This is especially useful for sharing data that can 
 // be considered "global" or shared across multiple components, such as user authentication status, etc ...
 
-
-const App_jaka: React.FC = () => {
+const App: React.FC = () => {
+	// console.log("envvvvvvvvvvvvvv VITE", import.meta.env.VITE_BACKEND_URL);
 
 	/*
 		The mechanism for updating the info about the current user in the database, ie: custom profileName.
@@ -29,7 +27,7 @@ const App_jaka: React.FC = () => {
 	const [currUserData, setCurrUserData] = useState <CurrUserData | null> ({
 		loginName: '',
 		profileName: '',
-		loginImage: '',
+		profileImage: '',
 	});
 
 	return (
@@ -56,4 +54,4 @@ const App_jaka: React.FC = () => {
 	);
 };
 
-export default App_jaka;
+export default App;

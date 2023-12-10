@@ -89,22 +89,34 @@ button.button_default:focus-visible {
 .match-row {
   display: flex;
   /* justify-content: space-between; */
-  align-items: left;
+  align-items: center;
   margin-bottom: 10px;
+  border-bottom: 1px grey solid;
+  padding-bottom: 10px;
+  justify-content: space-around;
+  width: 100%;
+}
+
+#match-timestamp {
+  font-size:smaller;
+}
+
+#match-timestamp,
+.players,
+.score {
+  flex: 1;
+  text-align: center;
 }
 
 .players {
-  /* flex-shrink: 0; */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* text-align: left; */
 }
+
 .score {
-  flex-grow: 1;
-  margin-left: 20px;
-  text-align: left;
-  overflow: hidden;
+  /* flex-grow: 1; */
+  /* margin-left: 20px; */
 }
 
 /* ************************************************* */
@@ -144,6 +156,20 @@ button.button_default:focus-visible {
 
 .form-control::file-selector-button {
   background-color: rgb(213, 230, 245);
+}
+
+.button-custom {
+  background-color: rgb(213, 230, 245);
+  color: rgb(55, 47, 47);
+  border: none;
+  border-radius: 5%;
+  padding: 10px;
+  border: 1px solid rgb(193, 173, 173);
+}
+
+.button-custom:hover {
+  background-color: rgb(174, 200, 224);
+  cursor: pointer;
 }
 
 /* BROWSER'S OWN SETTINGS */

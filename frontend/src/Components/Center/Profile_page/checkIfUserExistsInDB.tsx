@@ -21,7 +21,7 @@ export const checkIfUserExistsInDB = async (): Promise<CheckResponse> => {
   try {
     const response: AxiosResponse<CheckResponse> =
       await axiosInstance.get<CheckResponse>(
-        "http://jemoederinator.local:3001/users/check_if_user_in_db"
+        "/users/check_if_user_in_db"
       );
     console.log(
       "................ CheckifUserExistsinDB: response.data: ",
