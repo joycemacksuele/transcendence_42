@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {NewChatEntity} from "./entities/new-chat.entity";
 import {ChatType} from "./utils/chat-utils";
@@ -6,7 +6,7 @@ import {ChatRepository} from "./chat.repository";
 import * as bcryptjs from 'bcryptjs';
 import {RequestNewChatDto} from "./dto/request-new-chat.dto";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
-import {MessageBody} from "@nestjs/websockets";
+import {MessageBody, WsException} from "@nestjs/websockets";
 import {UserService} from "../user/user.service";
 import {UserEntity} from "src/user/user.entity";
 
