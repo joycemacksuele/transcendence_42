@@ -11,7 +11,7 @@
 // 	console.log("Verification email sent:");
 // 	try {
 // 		const response = await axiosInstance.post(
-// 			"http://jemoederinator.local:3001/2fa/send_tfa_code"
+// 			"http://localhost:3001/2fa/send_tfa_code"
 // 			);
 // 			console.log("email sent, response.data:", response.data);
 // 		} catch (error) {
@@ -29,7 +29,7 @@
 //   let axiosConfig = {
 // 	headers: {
 // 	  // 'Content-Type': 'application/json;charset=UTF-8',
-// 	  // "Access-Control-Allow-Origin": "http://jemoederinator.local:3000",
+// 	  // "Access-Control-Allow-Origin": "http://localhost:3000",
 // 	},
 //   };
 
@@ -37,7 +37,7 @@
 // 	e.preventDefault();
 // 	try {
 // 	  const response = await axiosInstance.post(
-// 		"http://jemoederinator.local:3001/2fa/verify_code",
+// 		"http://localhost:3001/2fa/verify_code",
 // 		{ inputValue },
 // 		axiosConfig
 // 	  );
@@ -52,7 +52,7 @@
 // 		//console.log("Input TfaCode response: ", JSON.stringify(response));
 // 		if (tfaAttempts + 1 === 3){
 // 			const responseCleanCookies = await axiosInstance.get(
-// 				"http://jemoederinator.local:3001/auth/cleanToken",
+// 				"http://localhost:3001/auth/cleanToken",
 // 				axiosConfig
 // 			  );
 // 			  console.log("clean Token response: " + responseCleanCookies.cookie);
@@ -144,7 +144,7 @@ const InputTFAcode = () => {
   let axiosConfig = {
     headers: {
       // 'Content-Type': 'application/json;charset=UTF-8',
-      // "Access-Control-Allow-Origin": "http://jemoederinator.local:3000",
+      // "Access-Control-Allow-Origin": "http://localhost:3000",
     },
   };
 
