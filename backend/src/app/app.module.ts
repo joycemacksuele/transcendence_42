@@ -14,9 +14,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { DatabaseModule } from '../database/database.module';
-import { DatabaseController } from '../database/database.controller';
-
 import { UserModule } from '../user/user.module';
 import { UserController } from '../user/user.controller';
 import { UserService } from '../user/user.service';
@@ -82,7 +79,6 @@ import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
     UserModule,
     ChatModule,
     TwoFactorAuthModule,
-    DatabaseModule,
     MailerModule,
     FriendshipModule,
     MatchModule
@@ -93,7 +89,6 @@ import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
     UserController,
     TwoFactorAuthController,
     AuthController,
-    DatabaseController,
     DummyUsersController, // jaka, testing
     UploadImageController,
     // GetUserNameFromIntra, // jaka, testing
