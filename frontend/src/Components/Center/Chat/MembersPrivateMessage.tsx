@@ -24,7 +24,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
             chatSocket.emit("deleteChat", chatId);
             console.log("[MembersPrivateMessage] deleteChat called -> chatId ", chatId, " was deleted");
         }
-        // axios.delete(`http://jemoederinator.local:3001/chat/delete-chat/${chatId}`
+        // axios.delete(`http://localhost:3001/chat/delete-chat/${chatId}`
         // ).catch((error) => {
         //     console.error('Check: Error on the chat controller for the delete-chat endpoint: ', error);
         // });
@@ -47,7 +47,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                             onClick={ () => setShow(true)}
                         >
                             <Image
-                                src={`http://jemoederinator.local:3001/resources/member.png`}
+                                src={`http://localhost:3001/resources/member.png`}
                                 className="me-1"
                                 // id="profileImage_tiny"
                                 // roundedCircle
@@ -66,7 +66,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                             </Modal.Header>
                             <Modal.Body>
                                 <Button
-                                    href="http://jemoederinator.local:3000/main_page/game"
+                                    href="http://localhost:3000/main_page/game"
                                     // to="/main_page/chat"
                                     className="me-3"
                                     variant="success"
@@ -75,7 +75,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                                 </Button>
                                 <Button
                                     className="me-3"
-                                    href="http://jemoederinator.local:3000/main_page/users"
+                                    href="http://localhost:3000/main_page/users"
                                     variant="primary"
                                     // onClick={ () => setShow(false)}
                                 >
