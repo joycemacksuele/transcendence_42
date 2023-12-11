@@ -11,11 +11,8 @@ import { Logger, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
-
-import { DatabaseModule } from "../database/database.module";
-import { DatabaseController } from "../database/database.controller";
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 import { UserModule } from "../user/user.module";
 import { UserController } from "../user/user.controller";
@@ -91,7 +88,6 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
     UserModule,
     ChatModule,
     TwoFactorAuthModule,
-    DatabaseModule,
     MailerModule,
     FriendshipModule,
     MatchModule,
@@ -103,7 +99,6 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
     UserController,
     TwoFactorAuthController,
     AuthController,
-    DatabaseController,
     DummyUsersController, // jaka, testing
     UploadImageController,
     // GetUserNameFromIntra, // jaka, testing

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {NewChatEntity} from "./entities/new-chat.entity";
 import {ChatType} from "./utils/chat-utils";
@@ -6,7 +6,7 @@ import {ChatRepository} from "./chat.repository";
 import * as bcryptjs from 'bcryptjs';
 import {RequestNewChatDto} from "./dto/request-new-chat.dto";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
-import {MessageBody} from "@nestjs/websockets";
+import {MessageBody, WsException} from "@nestjs/websockets";
 import {UserService} from "../user/user.service";
 import {UserEntity} from "src/user/user.entity";
 
@@ -35,7 +35,7 @@ export class ChatService {
     // chatEntity.bannedUsers = [];
     if (requestNewChatDto.type == ChatType.PRIVATE) {
       // If it is a PRIVATE chat we need to add the friend to the users list
-      // chat name for private chat  = friend's name
+      // chat name for private chat = friend's name
       chatEntity.users.push(await this.userService.getUserByLoginName(requestNewChatDto.name));
     } else if (requestNewChatDto.type == ChatType.PROTECTED) {
       if (requestNewChatDto.password == null) {
@@ -52,6 +52,23 @@ export class ChatService {
       this.logger.log('NewChatEntity chat created: ' + r.name);
     });
   }
+
+  // async addAdmin(chatId: number, newAdmin: string)  {
+  //   await this.chatRepository.findOneOrFail({
+  //     where: {
+  //       id: chatId,
+  //     },
+  //   }).then((foundEntityToJoin) => {
+  //     // Now we have the entity to update the member's array
+  //     foundEntityToJoin.admins = foundEntityToJoin.admins.concat(newAdmin);
+  //     this.logger.log('[joinChat] new admins list: ' + foundEntityToJoin.admins);
+  //     this.chatRepository.save(foundEntityToJoin).then(r => {
+  //       this.logger.log('[joinChat] chatId should match: ' + chatId + " = " + r.id);
+  //     });
+  //   }).catch((err) => {
+  //     throw new Error('[joinChat] Could not find chat entity to join -> err: ' + err);
+  //   });
+  // }
 
   async saveNewUserToChat(foundEntityToJoin: NewChatEntity, intraName: string, chatId: number) {
     // Now we have the entity to update the member's array
@@ -108,7 +125,7 @@ export class ChatService {
     return false;
   }
 
-  async getAllChats() {
+  async getAllChats(): Promise<ResponseNewChatDto[]> {
     this.logger.log('getAllChats');
     // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
     // this.logger.log("ChatService query.getQuery(): ", query.getQuery());
