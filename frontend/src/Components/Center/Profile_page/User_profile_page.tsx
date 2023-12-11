@@ -28,7 +28,6 @@ interface WelcomeMessageProps {
 }
 
 const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onClose }) => {
-
   return (
 	<div className="welcome-message-overlay">
 	  <div className="welcome-message">

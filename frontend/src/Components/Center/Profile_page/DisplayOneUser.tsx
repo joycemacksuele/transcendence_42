@@ -10,18 +10,21 @@ import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
 import MatchHistory from "./MatchHistory.tsx";
 
 interface UserProps {
+	id: number;
 	loginName: string;
+	profileName: string;
+	profileImage: string;
+	onlineStatus: boolean;
+	gamesLost: number;
+  	gamesPlayed: number;
+  	gamesWon: number;
+	rank: number;
 }
 
-
-
-
-
-// TODO: change this to fetch user from jwt
 const getCurrentUsername = async () => {
 	try {
 		const response = await axiosInstance.get('/users/get-current-username');
-		console.log('=================== username: ', response.data.username);
+		// console.log('=================== username: ', response.data.username);
 		return response.data.username;
 	} catch (error) {
 		console.error('Error getting current username: ', error);
@@ -36,24 +39,10 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 							  > 
 	= ({ loginName, showMatchHistory, setShowMatchHistory }) => {
 
-	const [userData, setUserData] = useState<any>(null); // !todo: define the 'structure' of returned user data
+	const [userData, setUserData] = useState<UserProps | null>(null);
 	const [IamFollowing, setIamFollowing] = useState(false);
 	const [myId, setMyId] = useState<number>();
 	const [showButtons, setShowButtons] = useState(true);
-
-
-
-	// const [showMatchHistory, setShowMatchHistory] = useState<boolean>(false);
-
-	// const handleClickOnUser = () => {
-	// 	console.log("Show match history for specific user");
-	// 	setShowMatchHistory(true);
-	// };
-
-	// const handleClickGoBack = () => {
-	// 	setShowMatchHistory(false);
-	// };
-
 
 
 	// if the current user is displayed, do not show the buttons
@@ -61,10 +50,8 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 		const compareUserNames = async () => {
 			const currUsername = await getCurrentUsername();
 			console.log('=================== compare: ', currUsername, ", ", loginName);
-
 			if (currUsername === loginName) {
-				// do not show buttons
-				setShowButtons(false);
+				setShowButtons(false);	// do not show buttons
 			} else {
 				setShowButtons(true);
 			}
@@ -74,15 +61,15 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 	}, [loginName]);
 	const buttonsVisible = showButtons ? {} : { display: 'none'};
 
+
 	useEffect(() => {
 		if (!myId) return; // GUARD CLAUSE: wait until myID is available
 
 		const fetchUserData = async () => {
 			let response;
 			try {
-				response = await axiosInstance.get(
-					`/users/get-user/${loginName}`
-				);
+				response = await axiosInstance.get(`/users/get-user/${loginName}`);
+				// response = await axiosInstance.get('/users/get-current-user');
 				setUserData(response.data);
 				console.log("Fetched userData: ", response);
 			} catch (error) {
@@ -93,12 +80,11 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 			if (!response.data.id) return; // GUARD CLAUSE: wait until id is available
 
 			try {
-				console.log("Checking if I follow this user ... ");
-
+				//console.log("Checking if I follow this user ... ");
 				const responseAmIFollowing = await axiosInstance.get(
 					`/friendship/followingExists/${myId}/${response.data.id}`
 				);
-				console.log("   responseAmIFollowing: ", responseAmIFollowing);
+				//console.log("   responseAmIFollowing: ", responseAmIFollowing);
 				if (responseAmIFollowing.data) {
 					// setIamFollowing(!!responseAmIFollowing.data); // DOUBLE !! CONVERT TO BOOL
 					console.log("    YES");
@@ -108,29 +94,19 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 					setIamFollowing(false);
 				}
 			} catch (error) {
-				console.log("Error fetching if friendship/following exists", error);
+				console.error("Error fetching if friendship/following exists", error);
 			}
 		};
 		fetchUserData();
 	}, [loginName, myId]);
 
+
 	useEffect(() => {
 		const fetchMyData = async () => {
 			try {
-				// todo: ask, what if localstorage is manipulated or deleted?
-				// 		Maybe there could be a function without arguments, only depending on the token, to fetch my data ???
-				console.log(
-					"localstorage-profileName: ",
-					localStorage.getItem("profileName")
-				);
-				const response = await axiosInstance.get(
-					`/users/get-user-by-profilename/${localStorage.getItem(
-						"profileName"
-					)}`
-				);
+				const response = await axiosInstance.get('/users/get-current-user');
 				setMyId(response.data.id);
 				//setIamFollowing(response.data.IamFollowing);
-				console.log("Fetched My Data: ", response);
 			} catch (error) {
 				console.error("Error fetching my data: ", error);
 			}
@@ -138,14 +114,12 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 		fetchMyData();
 	}, []);
 
-	// async function handleAddFriend( event: React.MouseEvent<HTMLButtonElement>) {
+
 	async function startFollowing() {
 		const friendId = userData.id; // todo: fetch the id (the to-be friend)
 		try {
-			const response = await axiosInstance.post(
-				`/friendship/${myId}/addFriend/${friendId}`
-			);
-			console.log("Success: Friendship added: ", response.data);
+			await axiosInstance.post(`/friendship/${myId}/addFriend/${friendId}`);
+			//console.log("Success: Friendship added: ", response.data);
 		} catch (error: any) {
 			console.error("Error adding a friend: " /*, error*/);
 			if (axios.isAxiosError(error)) {
@@ -154,22 +128,20 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 					error.response.data &&
 					error.response.data.message
 				) {
-					alert(error.response.data.message);
+					console.error(error.response.data.message);
 				} else {
-					alert("An axiosError occured while adding a friend.");
+					console.error("An axiosError occured while adding a friend.");
 				}
 			} else {
-				alert("Another (non axios) error occured while adding a friend.");
+				console.error("Another (non axios) error occured while adding a friend.");
 			}
 		}
 	}
 
 	async function stopFollowing() {
 		try {
-			const response = await axiosInstance.post(
-				`/friendship/${myId}/removeFriend/${userData.id}`
-			);
-			console.log("Success remnoving a friend: ", response);
+			await axiosInstance.post(`/friendship/${myId}/removeFriend/${userData.id}`);
+			// console.log("Success remnoving a friend: ", response);
 		} catch (error: any) {
 			console.error("Error removing a friend");
 			if (axios.isAxiosError(error)) {
@@ -178,12 +150,12 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 					error.response.data &&
 					error.response.data.message
 				) {
-					console.log(error.response.data.message);
+					console.error(error.response.data.message);
 				} else {
-					console.log("An axiosError while removing a friend");
+					console.error("An axiosError while removing a friend");
 				}
 			} else {
-				console.log("Another error while removing a friend");
+				console.error("Another error while removing a friend");
 			}
 		}
 	}
@@ -193,6 +165,10 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 	}
 
 	const handleButtonClick = async () => {
+		if (!userData) { 
+			console.error("Error, userData is not available");
+			return;
+		}
 		if (IamFollowing) {
 			await stopFollowing();
 		} else {
@@ -201,8 +177,9 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 		setIamFollowing(!IamFollowing); // Toggle to the opposite state
 	};
 
+
 	const handleClickPrivateChat = () => {
-		console.log("[DisplayOneUser] handleClickPrivateChat");
+		// console.log("[DisplayOneUser] handleClickPrivateChat");
 		if (!chatSocket.connected) {
 			chatSocket.connect();
 			chatSocket.on("connect", () => {
@@ -235,10 +212,11 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 					<Image
 						id="otherUserImage"
 						src={import.meta.env.VITE_BACKEND_URL + "/" + userData.profileImage}
+						// src={"http://localhost:3001" + "/" + userData.profileImage}
+
 						alt="no_image_found"
 					/>
 				</Col>{" "}
-				{/* todo: the url should come form .env */}
 			</Row>
 			<Row className="mb-3">
 				<Col>

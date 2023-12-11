@@ -4,8 +4,6 @@ import axiosInstance from "../../Other/AxiosInstance";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import { ListGroup } from "react-bootstrap";
 
-// Custom CSS
-// import '../../../css/Profile-users-list.css'
 
 axios.defaults.withCredentials = true;
 
@@ -24,55 +22,29 @@ interface FriendsListProps {
 }
 
 const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
-  // const [users, setUsers] = useState<User[]>([]);
-  //const [myId, setMyId] = useState<User>();
   const [friends, setFriends] = useState<User[]>([]);
   const [displayList, setDisplayList] = useState(true);
   const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
 
-  // const handleInsertDataClick = () => {
-  // 	insertDummyUsers();
-  // };
-
-  // const fetchUsers = async () => {
-  // 	try {
-  // 		const response = await axiosInstance.get<User[]>(
-  // 			"/users/all"
-  // 		); // Assuming the server is running on the same host and port
-  // 		setUsers(response.data);
-  // 		console.log('Jaka, retreived users', response.data);
-  // 	} catch (error) {
-  // 		console.error("Error retrieving users:", error);
-  // 	}
-  // };
 
   const fetchMyId = async () => {
     try {
-      const response = await axiosInstance.get(
-        `/users/get-user-by-profilename/${localStorage.getItem(
-          "profileName"
-        )}`
-      );
-      //setMyId(response.data.id);	// todo: is this the correct id ??
-      console.log("Fetched myID: ", response.data.id);
-      console.log("Fetched user data: ", response.data);
+      const response = await axiosInstance.get('/users/get-current-user');
       return response.data.id;
-      // return Promise.resolve();	// OTHERWISE THE ASYNC CAN BE TOO QUICK AND myID IS STILL UNDEFINED
     } catch (error) {
-      console.error("Error fetching user's ID: ", error);
-      throw error; // this gives the error to the calling function fetchData()
-    }
+      console.error("Error getting current user", error);
+      throw error;
+    }  
   };
 
-  
   const fetchFriends = async (myId: number) => {
-    console.log("Fetch Friends, myId: ", myId);
+    // console.log("Fetch Friends, myId: ", myId);
     try {
       const response = await axiosInstance.get<User[]>(
         `/friendship/${myId}/friends`
       );
       setFriends(response.data);
-      console.log("Retrieved friends (response.data): ", response.data);
+      // console.log("Retrieved friends (response.data): ", response.data);
     } catch (error) {
       console.error("Error fetching friends: ", error);
     }
@@ -82,7 +54,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
   const fetchData = async () => {
     try {
       const response = await fetchMyId();
-      fetchFriends(response);
+      await fetchFriends(response);
     } catch (error) {
       console.error("Error in fetchData: ", error);
     }
@@ -95,37 +67,16 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
       // Set a flag in local storage to indicate dummies have been inserted
       localStorage.setItem("dummiesInserted", "true");
     }
-    //fetchUsers();
     fetchData();
-    // fetchFriends();
   }, []);
 
 
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
+    console.log('< < < < < < < < < < < friend.loginame: ', loginName);
     e.preventDefault();
     setSelectedFriend(loginName);
     clickOnUser(loginName);
   };
-
-  // const handleClick = () => {
-  // 	if (!displayList) {
-  // 		fetchUsers();
-  // 	}
-  // 	setDisplayList(!displayList);
-  // };
-
-  // const deleteDummies = async () => {
-  // 	try {
-  // 		await axiosInstance.delete("/users/");
-  // 		console.log("Dummies deleted successfully");
-  // 	} catch (error) {
-  // 		console.error("Error deleting dummies: ", error);
-  // 	}
-  // };
-
-  // const handleClickDeleteDummies = () => {
-  // 	deleteDummies();
-  // };
 
   return (
     <div className="users-outer">
@@ -152,6 +103,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
                     >
                       <img
                         src={import.meta.env.VITE_BACKEND_URL + "/" + friend.profileImage}
+                        // src={"http://localhost:3001" + "/" + friend.profileImage}
                         id="profileImage_tiny"
                       />
                       {friend.profileName}
