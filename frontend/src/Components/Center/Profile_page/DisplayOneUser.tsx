@@ -211,7 +211,7 @@ const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
 				<Col>
 					<Image
 						id="otherUserImage"
-						src={import.meta.env.VITE_BACKEND_URL + "/" + userData.profileImage}
+						src={import.meta.env.VITE_BACKEND + "/" + userData.profileImage}
 						// src={"http://localhost:3001" + "/" + userData.profileImage}
 						alt="no_image_found"
 					/>

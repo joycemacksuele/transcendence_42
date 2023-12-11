@@ -106,7 +106,7 @@ services:
         env_file:
             - ./.env
         environment:
-            - VITE_BACKEND_URL:${VITE_BACKEND_URL}
+            - VITE_BACKEND:${VITE_BACKEND}
         depends_on:
             - nest_app
             - postgres_db
