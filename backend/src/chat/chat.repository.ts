@@ -13,19 +13,6 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		this.logger.log('constructor');
 	}
 
-	public async joinChat(user : UserEntity, chat : NewChatEntity) {
-		let chatUsers = await this
-			.createQueryBuilder("new_chat")
-			.where('new_chat.id = :id', { id: chat.id })
-			.leftJoinAndSelect("new_chat.users", "user")
-			.getOne();
-		chatUsers.users.push(user);
-		await this
-			.manager
-			.save(chatUsers);
-		return chatUsers
-	}
-
 	public async getOneChat(chatId: number) {
 		return await this
 			.createQueryBuilder("new_chat")
@@ -86,11 +73,29 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		return true
 	}
 
-	/*
-        public async findOma() {
-            const amusers = await this.find();
-            this.logger.log("Xerp", amusers);
-            return amusers;
-        }
-    */
+	public async joinChat(user : UserEntity, chat : NewChatEntity) {
+		let chatUsers = await this
+			.createQueryBuilder("new_chat")
+			.where('new_chat.id = :id', { id: chat.id })
+			.leftJoinAndSelect("new_chat.users", "user")
+			.getOne();
+		chatUsers.users.push(user);
+		await this
+			.manager
+			.save(chatUsers);
+		return chatUsers
+	}
+
+	public async addAdmin(user : UserEntity, chat : NewChatEntity) {
+		let chatAdmins = await this
+			.createQueryBuilder("new_chat")
+			.where('new_chat.id = :id', { id: chat.id })
+			.leftJoinAndSelect("new_chat.admins", "admin")
+			.getOne();
+		chatAdmins.admins.push(user);
+		await this
+			.manager
+			.save(chatAdmins);
+		return chatAdmins
+	}
 }

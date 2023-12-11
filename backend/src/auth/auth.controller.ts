@@ -26,8 +26,8 @@ export class AuthController {
 	@Get('login')
 	async getLoginPage(@Request() request:any, @Response() response: any){
 		let id = process.env.CLIENT_ID;
-		let path = `https://api.intra.42.fr/oauth/authorize?client_id=${id}&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth%2Ftoken&response_type=code`;
-
+		let redir_path = process.env.REDIRECT_URL_ENCODED;
+		let path = `https://api.intra.42.fr/oauth/authorize?client_id=${id}&redirect_uri=${redir_path}&response_type=code`;
 		try{
 			this.logger.log('Redirecting to OAuth...');
 			return response.redirect(path);  // 302 http status 
