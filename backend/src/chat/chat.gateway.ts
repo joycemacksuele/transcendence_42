@@ -58,7 +58,7 @@ export class ChatGateway
         this.logger.log('Socket rooms: ' + socket.rooms);
       })
       const token = clientSocket.handshake.headers.cookie.split('=')[1];
-      this.logger.log('token: ', token);
+      this.logger.log('cookie: ', clientSocket.handshake.headers.cookie);
       this.logger.log('token: ', token);
       try {
           const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
