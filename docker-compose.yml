@@ -52,13 +52,13 @@ services:
             # - ./backend:/backend
             # here it was myapp and now I put nonsense... it should be the direcotry inside the container that we want to save things on the host machine... maybe that is only necessary for the database???
               # - ./_backend_volume:/myapp:rw,uid=<501>,gid=<20>
-        env_file:
-            - ./.env
 #        restart: on-failure
         depends_on:
             - postgres_db
 #            postgres_db:
 #                condition: service_healthy
+        env_file:
+            - ./.env
         environment:
             - POSTGRES_DB=${POSTGRES_DB}
             - POSTGRES_HOST=${POSTGRES_HOST}
@@ -116,27 +116,29 @@ services:
         #                condition: service_started
         tty: true
 
+
+
     # --------------------------------------------- Extra: PgAdmin
-    pgadmin:
-        container_name: pgadmin
-        image: dpage/pgadmin4:7
-        logging:
-            driver: none
-        ports:
-            - "${PGADMIN_LISTEN_PORT}:${PGADMIN_LISTEN_PORT}"
-        volumes:
-            - ./backend/_pgadmin_data:/var/lib/pgadmin
-        env_file:
-            - ./.env
-        environment:
-            - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-            - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-            - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
-            - PGADMIN_CONFIG_SERVER_MODE=${PGADMIN_CONFIG_SERVER_MODE}
-            - GUNICORN_ACCESS_LOGFILE=${GUNICORN_ACCESS_LOGFILE}
+#     pgadmin:
+#         container_name: pgadmin
+#         image: dpage/pgadmin4:7
+#         logging:
+#             driver: none
+#         ports:
+#             - "${PGADMIN_LISTEN_PORT}:${PGADMIN_LISTEN_PORT}"
+#         volumes:
+#             - ./backend/_pgadmin_data:/var/lib/pgadmin
+#         env_file:
+#             - ./.env
+#         environment:
+#            - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+#            - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+#            - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
+#            - PGADMIN_CONFIG_SERVER_MODE=${PGADMIN_CONFIG_SERVER_MODE}
+#            - GUNICORN_ACCESS_LOGFILE=${GUNICORN_ACCESS_LOGFILE}
 #            - PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED=False
-        depends_on:
-            - postgres_db
+#         depends_on:
+#             - postgres_db
 
 # volumes:
 #      - ./<host_machine_dir_path>:/<container_data_dir_path>

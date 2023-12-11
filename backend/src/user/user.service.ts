@@ -53,7 +53,9 @@ export class UserService {
 
   async getAllUsers(): Promise<UserEntity[]> {
     this.logger.log('getAllUsers');
-    return this.userRepository.find();
+    const users = await this.userRepository.find();
+    // this.logger.log(users);
+    return users;
     // return this.userRepository.getAllUsers();
   }
 

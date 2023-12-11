@@ -1,4 +1,4 @@
-import {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -6,9 +6,11 @@ import Stack from 'react-bootstrap/Stack';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
 
-import {ChatType, RequestNewChatDto} from "./Utils/ChatUtils.tsx";
+import {ChatType, RequestNewChatDto, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx"
+import {Alert} from "react-bootstrap";
 
 // type PropsHeader = {
 //     // recentChatList: RequestNewChatDto[];
@@ -17,22 +19,39 @@ import {chatSocket} from "./Utils/ClientSocket.tsx"
 
 // const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) => {
 const NewChat = () => {
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [show, setShow] = useState(false);
 
     ////////////////////////////////////////////////////////////////////// CREATE SOCKET CHAT ROOM
     const [chatName, setChatName] = useState('');
     const [chatType, setChatType] = useState<ChatType>(ChatType.PUBLIC);
-    const [chatPassword, setChatPassword] = useState<string | null>(null);
-
-    const [show, setShow] = useState(false);
+    const [chatPassword, setChatPassword] = useState<string>("");
 
     const createGroupChat = () => {
-        const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword};
+        const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword == "" ? null : chatPassword};
         console.log("[DisplayOneUser] createChat AQUIIIIIIIIII 2");
-        chatSocket.emit("createChat", requestNewChatDto);
         console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 
-        setChatPassword(null);
+        chatSocket.emit("createChat", requestNewChatDto);
+
+        setChatPassword("");
+        setErrorMessage("");
     };
+
+    useEffect(() => {
+        console.log("[NewChat] inside useEffect -> socket connected? ", chatSocket.connected);
+        console.log("[NewChat] inside useEffect -> socket id: ", chatSocket.id);
+        setErrorMessage("");
+
+        chatSocket.on("exception", (error: string) => {
+            console.log(" USEEFFECT chatSocket.on(\"exception\"..............: " + error);
+            setErrorMessage(error);
+        });
+
+        return () => {
+            console.log("[NewChat] Inside useEffect return function (NewChat Component was removed from DOM)");
+        };
+    }, []);
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
@@ -46,7 +65,7 @@ const NewChat = () => {
                     >
                         New Group
                     </Button>
-                    <Modal show={show} onHide={ () => {setShow(false)}}>
+                    <Modal show={show} onHide={ () => {!errorMessage && setShow(false)}}>
                         <Modal.Header closeButton>
                             <Modal.Title>Create new chat group</Modal.Title>
                         </Modal.Header>
@@ -88,6 +107,7 @@ const NewChat = () => {
                                         {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
                                         <Form.Control
                                             type="password"
+                                            value={chatPassword}
                                             placeholder="Protected chat password"
                                             id="inputPassword5"
                                             aria-describedby="passwordHelpBlock"
@@ -97,6 +117,10 @@ const NewChat = () => {
                                             Your password must be 5-20 characters long, contain letters and numbers,
                                             and must not contain spaces, special characters, or emoji.
                                         </Form.Text>
+                                        {errorMessage && (<Alert variant="danger">{errorMessage}</Alert>)}
+                                        {/*{!errorMessage && !errorMessage && OkMessage && (*/}
+                                        {/*    <Alert variant="success">{OkMessage}</Alert>*/}
+                                        {/*)}*/}
                                     </Form.Group>
                                 }
                             </Form>
@@ -107,7 +131,8 @@ const NewChat = () => {
                             </Button>
                             <Button variant="primary" onClick={ () => {
                                 createGroupChat();
-                                setShow(false);
+                                {errorMessage === "" && setShow(false)}
+                                {errorMessage && setShow(true)}
                                 // setSocketCount(socketCount + 1);
                             }}>
                                 Save Changes
