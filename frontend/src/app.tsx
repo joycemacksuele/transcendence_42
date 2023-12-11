@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route } from "react-router-dom";
 
 import LoginAuth from "./Components/Login_page/Login_auth.tsx";
@@ -12,6 +12,7 @@ import PageNotFound from "./Components/Other/PageNotFound.tsx";
 import LogoutPage from './Components/Login_page/logoutPage.tsx';
 import ForcedLogout from './Components/Other/ForcedLogout.tsx';
 import { CurrentUserContext, CurrUserData } from './Components/Center/Profile_page/contextCurrentUser.tsx';
+import './css/default.css';
 
 // 'Context' provides a way to pass data through the component tree without having to pass 
 // props down manually at every level. This is especially useful for sharing data that can 
@@ -28,6 +29,44 @@ const App: React.FC = () => {
 		profileName: '',
 		profileImage: '',
 	});
+
+	useEffect(() => {
+		// Load CSS file
+		const loadCSS = (cssFile: string) => {
+			const link = document.createElement('link');
+			link.href = `/frontend/css/${cssFile}`; // NOT SURE ???
+			link.type = 'text/css';
+			link.rel = 'stylesheet'
+			link.id = 'theme-style';
+			document.head.appendChild(link);
+			console.log("< < < < < < < < < link", link);
+		};
+
+		// Check if CSS file is already in local storage
+		const storedCSS = localStorage.getItem('css-file');
+		if (storedCSS) {
+			console.log("< < < < < < < < < storedCSS", storedCSS);
+			loadCSS(storedCSS);
+		} else {
+			console.log("< < < < < < < < < else storedCSS", storedCSS);
+			localStorage.setItem('css-file', 'default.css');
+			loadCSS('default.css');
+		}
+	
+		// Listen for changes in storage (in case of deleting the local storage)
+		const handleStorageChange = (event: StorageEvent) => {
+			if (event.key === 'css-file') {
+				loadCSS(event.newValue || 'default.css');
+			}
+		};
+
+		window.addEventListener('storage', handleStorageChange);
+		return () => { // IMPORTANT TO CLEAN UP THE EVENT LISTENER WHEN THE COMPONENT UNMOUNTS!
+			window.removeEventListener('storage', handleStorageChange);
+		}
+	}, []);
+
+
 
 	return (
 		<>

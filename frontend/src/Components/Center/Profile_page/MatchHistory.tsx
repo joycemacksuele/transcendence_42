@@ -3,33 +3,7 @@ import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { Row, Col, ListGroup } from "react-bootstrap";
 
-/*
 
-ERROR TODO""
-
-Warning: Each child in a list should have a unique "key" prop.
-
-Check the render method of `MatchHistory`. See https://reactjs.org/link/warning-keys for more information.
-ListGroupItem<@http://localhost:3000/node_modules/.vite/deps/chunk-UHO2NNDZ.js?v=8f37e258:35:38
-MatchHistory@http://localhost:3000/src/Components/Center/Profile_page/MatchHistory.tsx:89:46
-div
-Col<@http://localhost:3000/node_modules/.vite/deps/chunk-7M7NJN5E.js?v=8f37e258:72:16
-div
-Row<@http://localhost:3000/node_modules/.vite/deps/chunk-F2EDCFON.js?v=8f37e258:19:28
-div
-Container<@http://localhost:3000/node_modules/.vite/deps/chunk-IDFBIA62.js?v=8f37e258:17:34
-UserProfilePage@http://localhost:3000/src/Components/Center/Profile_page/User_profile_page.tsx:29:25
-RenderedRoute@http://localhost:3000/node_modules/.vite/deps/chunk-XMQASKFS.js?v=8f37e258:3327:7
-Outlet@http://localhost:3000/node_modules/.vite/deps/chunk-XMQASKFS.js?v=8f37e258:3717:20
-Center
-MainPage@http://localhost:3000/src/Components/main_page.tsx:23:18
-RenderedRoute@http://localhost:3000/node_modules/.vite/deps/chunk-XMQASKFS.js?v=8f37e258:3327:7
-Routes@http://localhost:3000/node_modules/.vite/deps/chunk-XMQASKFS.js?v=8f37e258:3779:7
-App@http://localhost:3000/src/app.tsx:33:51
-Router@http://localhost:3000/node_modules/.vite/deps/chunk-XMQASKFS.js?v=8f37e258:3730:7
-BrowserRouter@http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8f37e258:304:7
-
-*/
 interface UserProps {
 	loginName: string | null;
 }

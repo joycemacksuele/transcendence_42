@@ -14,8 +14,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { DatabaseModule } from '../database/database.module';
-import { DatabaseController } from '../database/database.controller';
 
 import { UserModule } from '../user/user.module';
 import { UserController } from '../user/user.controller';
@@ -68,11 +66,12 @@ import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
     TypeOrmModule.forRoot({
       // Database configuration
       type: 'postgres',
-      host: 'postgres_db', // Replace with the appropriate hostname if needed
-      port: 5432,
-      username: 'transcendence_user',
-      password: '***REMOVED***',
-      database: 'mydb',
+      port: parseInt(process.env.POSTGRES_PORT, 10),
+      host: process.env.POSTGRES_HOST,
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+
       entities: [UserEntity, Friendship, NewChatEntity, ChatMessageEntity, MatchEntity],
       synchronize: true,// WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
       // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
@@ -82,7 +81,6 @@ import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
     UserModule,
     ChatModule,
     TwoFactorAuthModule,
-    DatabaseModule,
     MailerModule,
     FriendshipModule,
     MatchModule
@@ -93,7 +91,6 @@ import { AuthMiddleware } from 'src/auth/guards/auth.middleware';
     UserController,
     TwoFactorAuthController,
     AuthController,
-    DatabaseController,
     DummyUsersController, // jaka, testing
     UploadImageController,
     // GetUserNameFromIntra, // jaka, testing

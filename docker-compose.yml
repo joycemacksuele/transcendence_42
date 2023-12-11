@@ -7,8 +7,7 @@ services:
         container_name: database
         image: postgres
         ports:
-            - 5432:5432
-            # - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+            - "${POSTGRES_PORT}:${POSTGRES_PORT}"
         volumes:
             - ./backend/_database_volume:/var/lib/postgresql/data
             # TODO: Check if this is the real path from postgres with data we want to save
@@ -16,15 +15,12 @@ services:
             - ./.env
         #        restart: unless-stopped
         environment:
-            #            // TODO Align it with .env
-            - POSTGRES_DB=mydb
-            - POSTGRES_HOST=postgres_db
-            - POSTGRES_USER=transcendence_user
-            - POSTGRES_PASSWORD=***REMOVED***
-            - POSTGRES_PORT=5432
-            # - POSTGRES_DB=${POSTGRES_DB}
-            # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            # - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_HOST=${POSTGRES_HOST}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_PORT=${POSTGRES_PORT}
+
         # healthcheck:
         #   test: pg_isready -U ${POSTGRES_USER}
         #   # test: [ "pg_isready", "-U", "${POSTGRES_USER}" ]
@@ -47,8 +43,7 @@ services:
         #     args:
         #         MYSECRET: ${SECRET}
         ports:
-            - 3001:3001
-            # - "${BACKEND_PORT}:${BACKEND_PORT}"
+            - "${BACKEND_PORT}:${BACKEND_PORT}"
         working_dir: /backend
         volumes: #-> DO WE WANT TO SAVE THINGS FROM THE BACKEND CONTAINER?
             - type: bind
@@ -65,11 +60,11 @@ services:
 #            postgres_db:
 #                condition: service_healthy
         environment:
-            - POSTGRES_DB=mydb
-            - POSTGRES_HOST=postgres_db
-            - POSTGRES_USER=transcendence_user
-            - POSTGRES_PASSWORD=***REMOVED***
-            - POSTGRES_PORT=5432
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_HOST=${POSTGRES_HOST}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_PORT=${POSTGRES_PORT}
             - BACKEND_PORT=${BACKEND_PORT}
             - CLIENT_ID=${CLIENT_ID}
             - SECRET=${SECRET}
@@ -95,8 +90,7 @@ services:
         #     context: ./frontend_tsx
         #     dockerfile: Dockerfile
         ports:
-            - 3000:8000
-            # - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+            - "${FRONTEND_PORT}:8000"
         working_dir: /frontend
         volumes: #-> DO WE WANT TO SAVE THINGS FROM THE FRONTEND CONTAINER?
             - type: bind
@@ -109,6 +103,10 @@ services:
             # - ./_frontend_volume:/myapp:rw,uid=<501>,gid=<20>
             # - ./path/on/host:/myapp/node_modules/.cache
         # restart: on-failure
+        env_file:
+            - ./.env
+        environment:
+            - VITE_BACKEND_URL:${VITE_BACKEND_URL}
         depends_on:
             - nest_app
             - postgres_db
@@ -125,18 +123,17 @@ services:
         logging:
             driver: none
         ports:
-            - 5050:5050
+            - "${PGADMIN_LISTEN_PORT}:${PGADMIN_LISTEN_PORT}"
         volumes:
             - ./backend/_pgadmin_data:/var/lib/pgadmin
         env_file:
             - ./.env
         environment:
-            #            // TODO Align it with .env
-            - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
-            - PGADMIN_DEFAULT_PASSWORD=***REMOVED***
-            - PGADMIN_LISTEN_PORT=5050
-            - PGADMIN_CONFIG_SERVER_MODE=False
-            - GUNICORN_ACCESS_LOGFILE=/dev/null
+            - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+            - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+            - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
+            - PGADMIN_CONFIG_SERVER_MODE=${PGADMIN_CONFIG_SERVER_MODE}
+            - GUNICORN_ACCESS_LOGFILE=${GUNICORN_ACCESS_LOGFILE}
 #            - PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED=False
         depends_on:
             - postgres_db

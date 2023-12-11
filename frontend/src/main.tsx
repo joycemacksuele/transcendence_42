@@ -10,7 +10,7 @@ import App from "./app.tsx";
   single line of code. jQuery is often used in communication with the DOM to make changes to JavaScript elements.
  */
 
-localStorage.setItem('css-file', 'default.css');
+// localStorage.setItem('css-file', 'default.css');
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Router>
