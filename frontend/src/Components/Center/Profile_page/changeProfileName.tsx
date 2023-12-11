@@ -25,7 +25,7 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Handle Submit new profileName for user: ", loginName);
+    //console.log("Handle Submit new profileName for user: ", loginName);
     if (profileName.trim() === "") {
       setErrorMessage("Please write a name.");
       setOkMessage("");

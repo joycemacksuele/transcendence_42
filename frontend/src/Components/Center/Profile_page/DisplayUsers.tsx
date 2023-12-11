@@ -89,7 +89,7 @@ const UsersList: React.FC = () => {
   };
 
   return (
-    <Container fluid className="h-100 w-100">
+    <Container fluid className="h-100 w-100 container-max-width">
       <div className="users-outer">
         {/* <div className="inner-section"> */}
         <Row text="dark">
@@ -122,6 +122,7 @@ const UsersList: React.FC = () => {
                         >
                           <img
                             src={import.meta.env.VITE_BACKEND + "/" + user.profileImage}
+                            // src={"http://localhost:3001" + "/" + user.profileImage}
                             id="profileImage_tiny"
                           />
                           {user.profileName}
