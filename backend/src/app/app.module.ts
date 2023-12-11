@@ -67,12 +67,12 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
     }),
     TypeOrmModule.forRoot({
       // Database configuration
-      type: "postgres",
-      host: "postgres_db", // Replace with the appropriate hostname if needed
-      port: 5432,
-      username: "transcendence_user",
-      password: "novogeslo1",
-      database: "mydb",
+      type: 'postgres',
+      port: parseInt(process.env.POSTGRES_PORT, 10),
+      host: process.env.POSTGRES_HOST,
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
       entities: [
         UserEntity,
         Friendship,
