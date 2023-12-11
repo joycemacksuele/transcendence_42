@@ -54,7 +54,8 @@ const Header: React.FC = () => {
 
 	
 	// THE CORRECT PATH FOR STORED IMAGES, EXAMPLE:
-	const image = import.meta.env.VITE_BACKEND_URL + '/' + localStorage.getItem('profileImage') || undefined;
+	const image = import.meta.env.VITE_BACKEND + '/' + localStorage.getItem('profileImage') || undefined;
+
 	// const image = 'http://localhost:3001' + '/' + localStorage.getItem('profileImage') || undefined;
 	//  IN main.ts NEEDS TO BE ENABLED THE CORRECT FOLDER: app.use(...)
 
