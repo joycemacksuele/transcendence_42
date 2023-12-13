@@ -11,6 +11,11 @@ import Modal from "react-bootstrap/Modal";
 import Image from "react-bootstrap/Image";
 import Form from "react-bootstrap/Form";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
+import { useNavigate } from "react-router-dom";
+import { useSelectedUser } from '../Profile_page/contextSelectedUser.tsx';
+
+
+
 
 // the creator can kick, ban, mute anyone on the channel (even admins)
 // when the group is created, the admin is the owner (creator)
@@ -25,6 +30,15 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
     if (chatClicked) {
         console.log("[MembersGroup] chatClicked: ", chatClicked);
     }
+
+    const navigate = useNavigate();
+    const { setSelectedLoginName } = useSelectedUser();
+    
+    const goToUserProfile = (loginName: string) => {   //
+        setSelectedLoginName(loginName);
+        // navigate(`/main_page/users/${loginName}`);
+        navigate(`/main_page/users`);
+    };
 
     const inputRef = useRef(null);
 
@@ -98,7 +112,8 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                                         </Button>
                                         <Button
                                             className="me-4 mb-3"
-                                            href="http://localhost:3000/main_page/users"
+                                            // href="http://localhost:3000/main_page/users"
+                                            onClick={() => goToUserProfile(member)}
                                             variant="primary"
                                         >
                                             Go to profile
