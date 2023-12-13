@@ -23,22 +23,22 @@ const defaultContextValue: SelectedUserContextType = {
 }
 
 // Create the Context with the above default values
-const ContextSelectedUser = createContext<SelectedUserContextType>(defaultContextValue);
+const ContextSelectedUserName = createContext<SelectedUserContextType>(defaultContextValue);
 
 
 // Hook for easier usage of useContext for selected user
-export const useSelectedUser = () => useContext(ContextSelectedUser);
+export const useSelectedUser = () => useContext(ContextSelectedUserName);
 
 // The Provider Component
 export const SelectedUserProvider: React.FC<props> = ({ children }) => {
 	const [selectedLoginName, setSelectedLoginName] = useState<string | null>(null);
 
 	return (
-		<ContextSelectedUser.Provider value={{ selectedLoginName, setSelectedLoginName }}>
+		<ContextSelectedUserName.Provider value={{ selectedLoginName, setSelectedLoginName }}>
 			{children}
-		</ContextSelectedUser.Provider>
+		</ContextSelectedUserName.Provider>
 	);
 }
 
 
-export default ContextSelectedUser;
+export default ContextSelectedUserName;
