@@ -34,9 +34,10 @@ const getCurrentUsername = async () => {
 
 
 
-const DisplayOneUser: React.FC<UserProps & { showMatchHistory: boolean,
-											 setShowMatchHistory: React.Dispatch<React.SetStateAction<boolean>> }
-							  > 
+const DisplayOneUser: React.FC<{ 	loginName: string,
+									showMatchHistory: boolean,
+									setShowMatchHistory: React.Dispatch<React.SetStateAction<boolean>>
+								}> 
 	= ({ loginName, showMatchHistory, setShowMatchHistory }) => {
 
 	const [userData, setUserData] = useState<UserProps | null>(null);

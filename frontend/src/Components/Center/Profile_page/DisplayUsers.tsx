@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
-
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import DisplayOneUser from "./DisplayOneUser"; // without brackets, because it is exported 'default'
+import { SelectedUserProvider, useSelectedUser } from "./contextSelectedUser";
 
 // Custom CSS
 // import '../../../css/Profile-users-list.css'
@@ -44,6 +44,17 @@ const UsersList: React.FC = () => {
   const [displayList, setDisplayList] = useState(true);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
+
+  
+  // THIS LOGIN NAME COMES FROM CHAT, IF THERE CLICKED 'Go to profile'
+  const { selectedLoginName, setSelectedLoginName } = useSelectedUser();
+
+  useEffect(() => {
+    if (selectedLoginName) {
+      setSelectedUser(selectedLoginName);
+    }
+  }, [setSelectedLoginName]);
+
 
   const fetchUsers = async () => {
     try {
