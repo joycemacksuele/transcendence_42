@@ -47,7 +47,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
     };
 
     const addAdmin = (member: string) => {
-        console.log("[MembersGroup] member [", member, "] will be added to chat [", chatClicked?.chatName, "]");
+        console.log("[MembersGroup] member [", member, "] will be added to chat [", chatClicked?.name, "]");
         chatSocket.emit("addAdmin", {chatId: chatClicked?.id, newAdmin: member});
     };
 
@@ -60,7 +60,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
             <Row className='me-auto'>
                 {/*<Card.Body>*/}
                     <Stack gap={2}>
-                        {chatClicked?.users.map((member: string, mapStaticKey: number) => (
+                        {chatClicked?.users && chatClicked?.users.map((member: string, mapStaticKey: number) => (
                             <ListGroup
                                 key={mapStaticKey}
                                 variant="flush"
@@ -109,7 +109,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                                             className="me-4 mb-3"
                                             variant="primary"
                                             value={member}
-                                            onClick={ (event) => {
+                                            onClick={ () => {
                                                 setShowMemberModal(false);
                                                 addAdmin(member);// todo
                                             }}
@@ -166,7 +166,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                 <Stack gap={2} className='align-self-center'>
 
                     {/* Add users = when we are a member channel + when we are admin */}
-                    {chatClicked?.users.indexOf(intraName) != -1 && chatClicked?.admins.indexOf(intraName) != -1 && <Button
+                    {chatClicked?.users && chatClicked?.users.indexOf(intraName) != -1 && chatClicked?.admins.indexOf(intraName) != -1 && <Button
                         variant="outline-secondary"
                         disabled
                     >
@@ -174,7 +174,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                     </Button>}
 
                     {/* Leave Room = when we are a member channel */}
-                    {chatClicked?.users.indexOf(intraName) != -1 && <Button
+                    {chatClicked?.users && chatClicked?.users.indexOf(intraName) != -1 && <Button
                         variant="warning"
                         onClick={leaveGroupChat}
                     >
@@ -182,7 +182,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                     </Button>}
 
                     {/* Join group = when we are NOT a member channel + chat is NOT PROTECTED */}
-                    {chatClicked?.users.indexOf(intraName) == -1 && chatClicked?.type != ChatType.PROTECTED && <Button
+                    {chatClicked?.users && chatClicked?.users.indexOf(intraName) == -1 && chatClicked?.type != ChatType.PROTECTED && <Button
                         variant="primary"
                         onClick={joinGroupChat}
                     >
@@ -190,7 +190,7 @@ const MembersGroup: React.FC<PropsHeader> = ({chatClicked}) => {
                     </Button>}
 
                     {/* Join group = when we are NOT a member channel + chat is PROTECTED */}
-                    {chatClicked?.users.indexOf(intraName) == -1 && chatClicked?.type == ChatType.PROTECTED && <>
+                    {chatClicked?.users && chatClicked?.users.indexOf(intraName) == -1 && chatClicked?.type == ChatType.PROTECTED && <>
                     <Button
                         variant="primary"
                         onClick={ () => setShowPasswordModal(true)}

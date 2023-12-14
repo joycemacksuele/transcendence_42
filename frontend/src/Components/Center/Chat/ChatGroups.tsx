@@ -49,7 +49,7 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
                     {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
                         <>
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
-                            {chat.users.indexOf(intraName) != -1 && chat.type == ChatType.PRIVATE && <ListGroup
+                            {chat.users && chat.users.indexOf(intraName) != -1 && chat.type == ChatType.PRIVATE && <ListGroup
                                 key={key + 1}
                                 className="hidden"
                             >
@@ -57,7 +57,7 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
 
                             {/* If current user is not a member of the chat (i.e. is not in the members array) */}
                             {/* And char is not private  (i.e. is a public or protected group) */}
-                            {chat.users.indexOf(intraName) == -1 && chat.type != ChatType.PRIVATE && <ListGroup
+                            {chat.users && chat.users.indexOf(intraName) == -1 && chat.type != ChatType.PRIVATE && <ListGroup
                                 key={key + 1}
                                 variant="flush"
                             >

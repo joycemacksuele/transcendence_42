@@ -46,7 +46,9 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				.where('new_chat.id = :id', {id: chat.id})
 				.leftJoin("new_chat.users", "user")
 				.getRawMany();
-			responseDto.users = chatUsers.map((usersList) => {
+			const users = chatUsers.map((usersList) => {
+				console.log("JOYCE usersList.users: ", usersList.users);
+				// console.log("JOYCE usersList.users.size: ", usersList.users.size);
 				return usersList.users;
 			});
 			const chatAdmins = await this
@@ -58,6 +60,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			responseDto.admins = chatAdmins.map((adminsList) => {
 				return adminsList.admins;
 			});
+			this.logger.log('users != null: ', users.toString());
+			if (users.toString()) {
+				responseDto.users = users;
+			}
 			return responseDto;
 		}));
 	}
@@ -67,9 +73,13 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		foundEntityToJoin.users = foundEntityToJoin.users.filter((user: UserEntity) => {
 			return user.id !== userEntity.id;
 		});
-		await this
-			.manager
-			.save(foundEntityToJoin);
+		if (!foundEntityToJoin.users.toString()) {
+			await this.delete(foundEntityToJoin.id);
+		} else {
+			await this
+				.manager
+				.save(foundEntityToJoin);
+		}
 		return true
 	}
 
