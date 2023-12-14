@@ -48,14 +48,14 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                     {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
                         <>
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
-                            {chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
+                            {chat.users && chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
                                 key={key}
                                 className="hidden"
                             >
                             </ListGroup>}
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
-                            {chat.users.indexOf(intraName) != -1 && <ListGroup
+                            {chat.users && chat.users.indexOf(intraName) != -1 && <ListGroup
                                 key={key}
                                 variant="flush"
                             >

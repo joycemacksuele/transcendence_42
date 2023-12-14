@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -6,9 +6,8 @@ import Stack from 'react-bootstrap/Stack';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
 
-import {ChatType, RequestNewChatDto, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
+import {ChatType, RequestNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx"
 import {Alert} from "react-bootstrap";
 
@@ -19,33 +18,44 @@ import {Alert} from "react-bootstrap";
 
 // const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) => {
 const NewChat = () => {
-    const [errorMessage, setErrorMessage] = useState<string>("");
+    // const [errorMessage, setErrorMessage] = useState<string>("");
+    const [errorGroupName, setErrorGroupName] = useState<string|null>(null);
+    const [errorPassword, setErrorPassword] = useState<string|null>(null);
     const [show, setShow] = useState(false);
 
     ////////////////////////////////////////////////////////////////////// CREATE SOCKET CHAT ROOM
     const [chatName, setChatName] = useState('');
     const [chatType, setChatType] = useState<ChatType>(ChatType.PUBLIC);
-    const [chatPassword, setChatPassword] = useState<string>("");
+    const [chatPassword, setChatPassword] = useState<string|null>(null);
 
     const createGroupChat = () => {
-        const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword == "" ? null : chatPassword};
+        const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword};
         console.log("[DisplayOneUser] createChat AQUIIIIIIIIII 2");
         console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 
         chatSocket.emit("createChat", requestNewChatDto);
 
-        setChatPassword("");
-        setErrorMessage("");
+        if (errorGroupName || errorPassword) {
+            setShow(true);
+        } else {
+            setShow(false);
+        }
+        setChatPassword(null);
+        setErrorGroupName(null);
+        setErrorPassword(null);
     };
 
     useEffect(() => {
         console.log("[NewChat] inside useEffect -> socket connected? ", chatSocket.connected);
         console.log("[NewChat] inside useEffect -> socket id: ", chatSocket.id);
-        setErrorMessage("");
+        setErrorGroupName(null);
+        setErrorPassword(null);
 
         chatSocket.on("exception", (error: string) => {
             console.log(" USEEFFECT chatSocket.on(\"exception\"..............: " + error);
-            setErrorMessage(error);
+            setErrorGroupName(error);
+            setErrorPassword(error);
+            // setShow(true);
         });
 
         return () => {
@@ -65,7 +75,7 @@ const NewChat = () => {
                     >
                         New Group
                     </Button>
-                    <Modal show={show} onHide={ () => {!errorMessage && setShow(false)}}>
+                    <Modal show={show} onHide={ () => {setShow(false)}}>
                         <Modal.Header closeButton>
                             <Modal.Title>Create new chat group</Modal.Title>
                         </Modal.Header>
@@ -94,11 +104,13 @@ const NewChat = () => {
                                 <Form.Group className="mb-3">
                                     {/* <Form.Label>Group name</Form.Label> */}
                                     <Form.Control
+                                        className="mb-3"
                                         type="text"
                                         placeholder="Group name"
                                         autoFocus
                                         onChange={event => setChatName(event.target.value)}
                                     />
+                                    {/*{errorGroupName && (<Alert variant="danger">{errorGroupName}</Alert>)}*/}
                                 </Form.Group>
 
                                 {/* Group password - if it's protected */}
@@ -107,17 +119,17 @@ const NewChat = () => {
                                         {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
                                         <Form.Control
                                             type="password"
-                                            value={chatPassword}
+                                            value={chatPassword ? chatPassword : ""}
                                             placeholder="Protected chat password"
                                             id="inputPassword5"
                                             aria-describedby="passwordHelpBlock"
                                             onChange={event=> setChatPassword(event.target.value)}
                                         />
-                                        <Form.Text id="passwordHelpBlock" muted>
+                                        <Form.Text id="passwordHelpBlock" className="mb-3" muted>
                                             Your password must be 5-20 characters long, contain letters and numbers,
                                             and must not contain spaces, special characters, or emoji.
                                         </Form.Text>
-                                        {errorMessage && (<Alert variant="danger">{errorMessage}</Alert>)}
+                                        {/*{errorPassword && (<Alert variant="danger">{errorPassword}</Alert>)}*/}
                                         {/*{!errorMessage && !errorMessage && OkMessage && (*/}
                                         {/*    <Alert variant="success">{OkMessage}</Alert>*/}
                                         {/*)}*/}
@@ -126,14 +138,17 @@ const NewChat = () => {
                             </Form>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="secondary" onClick={ () => setShow(false)}>
+                            {errorPassword && (<Alert variant="danger">{errorPassword}</Alert>)}
+                            <Button variant="secondary" onClick={ () => {
+                                setShow(false);
+                                setErrorGroupName(null);
+                                setErrorPassword(null);
+                            }}>
                                 Close
                             </Button>
                             <Button variant="primary" onClick={ () => {
                                 createGroupChat();
-                                {errorMessage === "" && setShow(false)}
-                                {errorMessage && setShow(true)}
-                                // setSocketCount(socketCount + 1);
+                                {!errorPassword && setShow(false)}
                             }}>
                                 Save Changes
                             </Button>

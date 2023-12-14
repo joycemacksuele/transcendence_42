@@ -187,6 +187,7 @@ export class ChatGateway
     this.logger.log('getChats -> clientSocket.id: ' + clientSocket.id);
 
     this.chatService.getAllChats().then( (allChats) => {
+      this.logger.log('getAllChats -> allChats: ', allChats);
       // If we could get the whole table from the database, emit it to the frontend
       clientSocket.emit("getChats", allChats);
       this.logger.log('getChats -> all chats were emitted to the frontend');
