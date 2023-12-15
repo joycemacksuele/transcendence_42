@@ -64,24 +64,33 @@ const AddDummyMatches = async () => {
 				timeStamp: new Date(),
 			};
 			const dummyMatch2 = {
-				player1Id: 1,
-				player2Id: 3, 
-				player1Score: 55, 
-				player2Score: 44,
-				winnerId: 1,
-				timeStamp: new Date(),
-			};
-			const dummyMatch3 = {
-				player1Id: 1,
+				player1Id: 3,
 				player2Id: 4, 
 				player1Score: 55, 
 				player2Score: 44,
-				winnerId: 1,
+				winnerId: 3,
+				timeStamp: new Date(),
+			};
+			const dummyMatch3 = {
+				player1Id: 2,
+				player2Id: 3, 
+				player1Score: 55, 
+				player2Score: 44,
+				winnerId: 2,
+				timeStamp: new Date(),
+			};
+			const dummyMatch4 = {
+				player1Id: 1,
+				player2Id: 3, 
+				player1Score: 11, 
+				player2Score: 22,
+				winnerId: 3,
 				timeStamp: new Date(),
 			};
 			await axiosInstance.post('/matches/add-match', dummyMatch1);
 			await axiosInstance.post('/matches/add-match', dummyMatch2);
 			await axiosInstance.post('/matches/add-match', dummyMatch3);
+			await axiosInstance.post('/matches/add-match', dummyMatch4);
 			localStorage.setItem('dummyMatchAdded', 'true');
 		}
 	} catch (error) {

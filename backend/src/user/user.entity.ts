@@ -58,6 +58,9 @@ export class UserEntity {
 	@Column({default: 0})
 	gamesLost: number;
 
+	@Column({default: 'Lazy Lamb'})
+	achievements: string;
+
 	@Column()
 	hashedSecret: string;
 
