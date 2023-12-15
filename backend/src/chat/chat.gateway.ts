@@ -172,6 +172,18 @@ export class ChatGateway
     return await this.chatService.leaveChat(chatId, clientSocket.data.user);
   }
 
+  @SubscribeMessage('kickMember')
+  async kickMember(
+    @MessageBody() data: {member: string, chatId: number}
+    ) {
+      const { member, chatId } = data;
+      this.logger.log('Kicking  member ' + member + " from group " + chatId);
+      return await this.chatService.leaveChat(chatId, member);
+    }
+
+
+
+
   // @SubscribeMessage('addAdmin')
   // async addAdmin(
   //     @MessageBody('chatId') chatId: number,
