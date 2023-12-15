@@ -8,6 +8,7 @@ interface UserStats {
 	gamesPlayed: number;
 	gamesLost: number;
 	gamesWon: number;
+	achievements: string;
 }
 
 const MyStatistics: React.FC = () => {
@@ -29,6 +30,7 @@ const MyStatistics: React.FC = () => {
 
 	return (
 		<>
+		{!currUser ? (<p>Loading</p>) : ( 
 		<Col className="column-bckg p-3 rounded inner-section">
 			<Row className="m-2">
 				Rank: {currUser?.rank}
@@ -43,9 +45,10 @@ const MyStatistics: React.FC = () => {
 				Games Played: {currUser?.gamesPlayed}
 			</Row>
 			<Row className="m-2">
-				Achivements: ???
+				Achivements: {currUser?.achievements }
 			</Row>
 		</Col>
+		)}
 
 
 

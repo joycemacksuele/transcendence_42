@@ -19,6 +19,9 @@ interface User {
   profileName: string;
   onlineStatus: boolean;
   rank: number;
+  gamesPlayed: number;
+  gamesWon: number;
+  gamesLost: number;
 }
 
 const handleInsertDataClick = () => {
@@ -109,6 +112,9 @@ const UsersList: React.FC = () => {
                   <span>Rank</span>
                   {/* <span>Intra</span> */}
                   <span>Name</span>
+                  <span>Played</span>
+                  <span>Won</span>
+                  <span>Lost</span>
                   <span>Online</span>
                 </ListGroup.Item>
 
@@ -128,9 +134,7 @@ const UsersList: React.FC = () => {
                         >
                           <img
                             src={
-                              import.meta.env.VITE_BACKEND +
-                              "/" +
-                              user.profileImage
+                              import.meta.env.VITE_BACKEND + "/" + user.profileImage
                             }
                             // src={"http://localhost:3001" + "/" + user.profileImage}
                             id="profileImage_tiny"
@@ -138,6 +142,9 @@ const UsersList: React.FC = () => {
                           {user.profileName}
                         </a>
                       </span>
+                      <span>{user.gamesPlayed}</span>
+                      <span>{user.gamesWon}</span>
+                      <span>{user.gamesLost}</span>
                       <span>{user.onlineStatus ? "Yes" : "No"}</span>
                     </ListGroup.Item>
                   ))}
