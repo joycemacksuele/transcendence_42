@@ -101,7 +101,7 @@ const UsersList: React.FC = () => {
     <Container fluid className="h-100 w-100 container-max-width">
       <div className="users-outer">
         {/* <div className="inner-section"> */}
-        <Row text="dark">
+        <Row text="dark" className="row-center">
           <Col className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded">
             {/* Button to trigger fetching the users */}
 

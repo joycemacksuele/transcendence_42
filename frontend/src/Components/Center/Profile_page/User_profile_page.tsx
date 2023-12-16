@@ -72,7 +72,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
   return (
 	<Container fluid className="container-max-width">
-	  <Row>
+	  <Row className="row-center">
 		<Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
 		  <h5>MY PROFILE PAGE</h5>
 		  <ChangeProfileName updateContext={updateContext} />
