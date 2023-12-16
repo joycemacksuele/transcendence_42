@@ -96,6 +96,7 @@ export class ChatGateway
 
   @SubscribeMessage('createChat')
   async createChat(@MessageBody() requestNewChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
+
     this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
     this.logger.log('createChat -> clientSocket.data.user: ' + clientSocket.data.user);
     this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
