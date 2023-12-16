@@ -74,10 +74,25 @@ button.button_default:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.row-center {
+  /* border: red 2px solid; */
+  height: 90vh;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
 /* Background of outer div (column)  */
 .column-bckg {
 	margin-top: 2%;
+  max-height: 90vh;
+  overflow-y: auto; 
 	/* margin-left: 2%; */
+}
+
+
+.column-list-matches {
+  max-height: 60vh;
+  overflow-y: auto; 
 }
 
 .inner-section {
