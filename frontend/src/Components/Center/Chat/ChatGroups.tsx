@@ -87,7 +87,7 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
                 </Stack>
             </Row>
         </>
-    )
-}
+    );
+};
 
-export default ChatGroups
+export default ChatGroups;

@@ -69,7 +69,7 @@ const Messages = () => {
                 </Form.Group>
             </Row>
         </>
-    )
-}
+    );
+};
 
-export default Messages
+export default Messages;

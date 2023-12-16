@@ -1,8 +1,10 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {DataSource, Repository} from 'typeorm';
+import * as bcryptjs from 'bcryptjs';
 import {NewChatEntity} from './entities/new-chat.entity';
 import {UserEntity} from "src/user/user.entity";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
+import {ChatType} from "./utils/chat-utils";
 
 @Injectable()
 export class ChatRepository extends Repository<NewChatEntity> {
@@ -69,7 +71,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	}
 
 	public async deleteUserFromChat(foundEntityToJoin: NewChatEntity, userEntity: UserEntity) {
-		console.log("foundEntityToJoin.users: ", foundEntityToJoin);
+		console.log("foundEntityToJoin: ", foundEntityToJoin);
 		foundEntityToJoin.users = foundEntityToJoin.users.filter((user: UserEntity) => {
 			return user.id !== userEntity.id;
 		});
@@ -83,7 +85,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		return true
 	}
 
-	public async joinChat(user : UserEntity, chat : NewChatEntity) {
+	public async joinChat(user: UserEntity, chat: NewChatEntity) {
 		let chatUsers = await this
 			.createQueryBuilder("new_chat")
 			.where('new_chat.id = :id', { id: chat.id })
@@ -94,6 +96,28 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.manager
 			.save(chatUsers);
 		return chatUsers
+	}
+
+	public async editPasswordFromChat(foundEntityToJoin: NewChatEntity, chatPassword: string) {
+		console.log("foundEntityToJoin: ", foundEntityToJoin);
+		if (foundEntityToJoin.type == ChatType.PROTECTED) {
+			if (chatPassword != null) {
+				bcryptjs.hash(chatPassword, 10).then((password: string) => {
+					this.logger.log('[editPasswordFromChat] hashed password: ', password);
+					foundEntityToJoin.password = password;
+				}).catch((err: string) => {
+					throw new Error('[editPasswordFromChat] Can not hash password -> err: ' + err);
+				});
+			} else {
+				// If password is deleted we want to set the chat type to PUBLIC
+				foundEntityToJoin.password = null;
+				foundEntityToJoin.type = ChatType.PUBLIC;
+			}
+			await this
+				.manager
+				.save(foundEntityToJoin);
+		}
+		return true
 	}
 
 	public async addAdmin(user : UserEntity, chat : NewChatEntity) {
