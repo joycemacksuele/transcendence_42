@@ -84,6 +84,7 @@ async function main() {
   app.useGlobalPipes(new ValidationPipe());
 
   // To enable backend server to serve static files from the folder where uploaded images are stored
+  // todo: replace with .env
   app.use('/uploads', express.static('uploads'));
   app.use('/resources', express.static('resources'));
   app.use('/uploadsDummies', express.static('uploadsDummies'));

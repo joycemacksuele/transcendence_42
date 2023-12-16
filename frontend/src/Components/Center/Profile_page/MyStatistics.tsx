@@ -1,8 +1,8 @@
-import React, { useState, useContext, useEffect } from "react";
-import {Col, Image, Row, Button} from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import {Col, Row} from 'react-bootstrap';
 import axiosInstance from "../../Other/AxiosInstance";
 
-interface UserProps {
+interface UserStats {
 	// loginName: string;
 	rank: number;
 	gamesPlayed: number;
@@ -10,9 +10,9 @@ interface UserProps {
 	gamesWon: number;
 }
 
-const MyStatistics: React.FC<UserProps> = () => {
+const MyStatistics: React.FC = () => {
 	// new endpoint to get the statistics or just return the userdata
-	const [currUser, setCurrUser] = useState<UserProps>();
+	const [currUser, setCurrUser] = useState<UserStats | null>(null);
 
 	useEffect(() => {
 		const getCurrUser = async () => {
