@@ -19,9 +19,9 @@ services:
             #            // TODO Align it with .env
             - POSTGRES_DB=mydb
             - POSTGRES_HOST=postgres_db
-            - POSTGRES_USER=transcendence_user
-            - POSTGRES_PASSWORD=***REMOVED***
-            - POSTGRES_PORT=5432
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_PORT=${POSTGRES_PORT}
             # - POSTGRES_DB=${POSTGRES_DB}
             # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             # - POSTGRES_USER=${POSTGRES_USER}
