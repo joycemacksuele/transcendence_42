@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany, ManyToOne, Unique } from 'typeorm';
 import { ChatType } from '../utils/chat-utils';
 import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 import { UserEntity } from 'src/user/user.entity';
@@ -7,9 +7,10 @@ import { UserEntity } from 'src/user/user.entity';
 // Entity reflects exactly one table in the database
 
 @Entity()
+@Unique(['name'])
 export class NewChatEntity {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: number;
 
     @Column()

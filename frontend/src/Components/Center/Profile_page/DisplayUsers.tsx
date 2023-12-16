@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
-
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import DisplayOneUser from "./DisplayOneUser"; // without brackets, because it is exported 'default'
+import { useSelectedUser } from "./contextSelectedUserName";
 
 // Custom CSS
 // import '../../../css/Profile-users-list.css'
@@ -39,17 +39,23 @@ const handleClickDeleteDummies = () => {
 };
 
 const UsersList: React.FC = () => {
-
   const [users, setUsers] = useState<User[]>([]);
   const [displayList, setDisplayList] = useState(true);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
 
+  // THIS LOGIN NAME COMES FROM CHAT, IF THERE CLICKED 'Go to profile'
+  const { selectedLoginName, setSelectedLoginName } = useSelectedUser();
+
+  useEffect(() => {
+    if (selectedLoginName) {
+      setSelectedUser(selectedLoginName);
+    }
+  }, [setSelectedLoginName]);
+
   const fetchUsers = async () => {
     try {
-      const response = await axiosInstance.get<User[]>(
-        "/users/all"
-      ); // Assuming the server is running on the same host and port
+      const response = await axiosInstance.get<User[]>("/users/all"); // Assuming the server is running on the same host and port
       setUsers(response.data);
       console.log("Jaka, retreived users", response.data);
     } catch (error) {
@@ -89,7 +95,7 @@ const UsersList: React.FC = () => {
   };
 
   return (
-    <Container fluid className="h-100 w-100">
+    <Container fluid className="h-100 w-100 container-max-width">
       <div className="users-outer">
         {/* <div className="inner-section"> */}
         <Row text="dark">
@@ -111,7 +117,7 @@ const UsersList: React.FC = () => {
                   .map((user) => (
                     <ListGroup.Item key={user.id}>
                       <span>{user.rank}.</span>
-{/* TODO THE CURRENT USER SHOULD NOT BE ADDED TO THIS LIST SINCE THEIR PROFILE IS ALREADY AT THE FIRST TAB AND WE DONT WANT FOR EXAMPLE TO FOLLOW OURSELVES OR SEND A CHAT TO OURSELVES */}
+                      {/* TODO THE CURRENT USER SHOULD NOT BE ADDED TO THIS LIST SINCE THEIR PROFILE IS ALREADY AT THE FIRST TAB AND WE DONT WANT FOR EXAMPLE TO FOLLOW OURSELVES OR SEND A CHAT TO OURSELVES */}
                       <span>
                         <a
                           href=""
@@ -121,7 +127,12 @@ const UsersList: React.FC = () => {
                           onClick={(e) => handleUserClick(e, user.loginName)}
                         >
                           <img
-                            src={import.meta.env.VITE_BACKEND + "/" + user.profileImage}
+                            src={
+                              import.meta.env.VITE_BACKEND +
+                              "/" +
+                              user.profileImage
+                            }
+                            // src={"http://localhost:3001" + "/" + user.profileImage}
                             id="profileImage_tiny"
                           />
                           {user.profileName}
@@ -138,9 +149,10 @@ const UsersList: React.FC = () => {
           <Col className="column-bckg p-3 mx-3 rounded">
             {/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
             {selectedUser ? (
-              <DisplayOneUser loginName={selectedUser}
-                              showMatchHistory={showMatchHistory}
-                              setShowMatchHistory={setShowMatchHistory}
+              <DisplayOneUser
+                loginName={selectedUser}
+                showMatchHistory={showMatchHistory}
+                setShowMatchHistory={setShowMatchHistory}
               />
             ) : (
               <p>
@@ -149,16 +161,16 @@ const UsersList: React.FC = () => {
                 <br /> &larr; Select a user from the list
               </p>
             )}
-            <button 
-              onClick={handleInsertDataClick}
-              className="button-custom"
-            >Create dummies
+            <button onClick={handleInsertDataClick} className="button-custom">
+              Create dummies
             </button>
             &nbsp;&nbsp;
             <button
               onClick={handleClickDeleteDummies}
-              className="button-custom"  
-            >Delete dummies</button>
+              className="button-custom"
+            >
+              Delete dummies
+            </button>
           </Col>
         </Row>
       </div>

@@ -54,10 +54,10 @@ const Header: React.FC = () => {
 
 	
 	// THE CORRECT PATH FOR STORED IMAGES, EXAMPLE:
-	//  src={`http://localhost:3001/uploads/jmurovec-4d1c6f5c-2f78-49fc-9f11-0a3488e2c665.jpg`}
-	//  IN main.ts NEEDS TO BE ENABLED THE CORRECT FOLDER: app.use(...)
 	const image = import.meta.env.VITE_BACKEND + '/' + localStorage.getItem('profileImage') || undefined;
-	//console.log('Local Storage Image: ', image);
+
+	// const image = 'http://localhost:3001' + '/' + localStorage.getItem('profileImage') || undefined;
+	//  IN main.ts NEEDS TO BE ENABLED THE CORRECT FOLDER: app.use(...)
 
 	const connectToChatSocket = () => {
 		console.log("[Header] connectToChatSocket");

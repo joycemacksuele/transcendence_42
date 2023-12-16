@@ -109,7 +109,7 @@ export class ChatGateway
       this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
 
       this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(() => {
-        this.logger.log('getChats -> chat' + requestNewChatDto.name + 'was created');
+        this.logger.log('getChats -> chat' + requestNewChatDto.name + ' was created');
 
         // If we could save a new chat in the database, get the whole table
         this.chatService.getAllChats().then((allChats) => {
@@ -156,7 +156,7 @@ export class ChatGateway
   @SubscribeMessage('joinChat')
   async joinChat(
       @MessageBody('chatId') chatId: number,
-      @MessageBody('chatPassword') chatPassword: string,
+      @MessageBody('chatPassword') chatPassword: string | null,
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('joinChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
@@ -170,7 +170,6 @@ export class ChatGateway
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('leaveChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
     return await this.chatService.leaveChat(chatId, clientSocket.data.user);
-  }
 
   // @SubscribeMessage('addAdmin')
   // async addAdmin(
@@ -181,6 +180,17 @@ export class ChatGateway
   //   this.logger.log('joinChat -> chatId: ' + chatId + " newAdmin: " + newAdmin);
   //   return await this.chatService.addAdmin(chatId, newAdmin);// todo need to return? or throw
   // }
+
+  }
+  @SubscribeMessage('editPassword')
+  async editPassword(
+      @MessageBody('chatId') chatId: number,
+      @MessageBody('chatPassword') chatPassword: string | null,
+      @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
+    this.logger.log('editPassword -> chatId: ' + chatId + " will have its password edited");
+    return await this.chatService.editPassword(chatId, chatPassword);
+  }
 
   @SubscribeMessage('getChats')
   async getChats(@ConnectedSocket() clientSocket: Socket) {

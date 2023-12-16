@@ -86,7 +86,7 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                 </Stack>
             </Row>
         </>
-    )
-}
+    );
+};
 
-export default ChatRecent
+export default ChatRecent;

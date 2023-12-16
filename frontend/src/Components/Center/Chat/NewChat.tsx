@@ -157,7 +157,7 @@ const NewChat = () => {
                 </Stack>
             </Row>
         </>
-    )
-}
+    );
+};
 
-export default NewChat
+export default NewChat;

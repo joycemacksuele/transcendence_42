@@ -185,6 +185,7 @@ const InputTFAcode = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     tfaBackend(e);
     setInputValue("");
   };
@@ -211,28 +212,30 @@ const InputTFAcode = () => {
               tfaAttempts === 0 &&
               "Check your email and enter the code to see if we'll let you in!"}
           </h6>
-          <Row className="align-items-center">
-            <Col>
-              <Form.Group>
-                <Form.Control
-                  className="input-default"
-                  type="text"
-                  placeholder="your code here"
-                  value={inputValue} // reset the field to empty
-                  onChange={(e) => setInputValue(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col xs="auto">
-              <Button
-                className="button_default"
-                type="submit"
-                onClick={handleSubmit}
-              >
-                Verify Code
-              </Button>
-            </Col>
-          </Row>
+          <Form onSubmit={handleSubmit}>
+            <Row className="align-items-center">
+              <Col>
+                <Form.Group>
+                  <Form.Control
+                    className="input-default"
+                    type="text"
+                    placeholder="your code here"
+                    value={inputValue} // reset the field to empty
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs="auto">
+                <Button
+                  className="button_default"
+                  type="submit"
+                  // onClick={handleSubmit}
+                >
+                  Verify Code
+                </Button>
+              </Col>
+            </Row>
+          </Form>
         </div>
       )}
     </Container>
