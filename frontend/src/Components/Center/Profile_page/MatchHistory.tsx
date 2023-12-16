@@ -157,8 +157,8 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 						</ListGroup.Item>
 						{/* <p>Jaka vs Cpopa: 5 : 2</p> */}
 						{ matchHistory.map(match => (
-							<ListGroup.Item>
-								<div key={match.id} className="match-row">
+							<ListGroup.Item key={match.id}>
+								<div className="match-row">
 									<div id='match-timestamp'>
 										{formatDate(match.timeStamp)}
 									</div>

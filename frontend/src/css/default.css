@@ -30,6 +30,10 @@ body {
   min-height: 100vh;
 }
 
+.container-max-width {
+  max-width: 1600px;
+}
+
 
 a {
   font-weight: 500;
@@ -115,13 +119,12 @@ button.button_default:focus-visible {
 }
 
 .score {
-  /* flex-grow: 1; */
-  /* margin-left: 20px; */
 }
+
+
 
 /* ************************************************* */
 /****** CUSTOM COLORS TO CHANGE THE THEME ************/
-
 body {
   background-color: #e6dddd;
 }
@@ -171,6 +174,51 @@ button.button_default:focus-visible {
   background-color: rgb(174, 200, 224);
   cursor: pointer;
 }
+
+
+
+.button-back {
+  background-color: rgb(96, 99, 102);
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 5px;
+  padding: 0 10px 0 10px;
+  border: 1px solid rgb(0, 0, 0);
+  font-size: 13px;
+}
+
+.button-back:hover {
+  background-color: rgb(0, 0, 0);
+  cursor: pointer;
+}
+
+
+
+/* Welcome message */
+.welcome-message-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.welcome-message {
+  background-color: rgb(246, 244, 217);
+  padding: 40px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 35%;
+  max-width: 500px;
+  text-align: center;
+  margin: 0 auto;
+}
+
 
 /* BROWSER'S OWN SETTINGS */
 /* @media (prefers-color-scheme: light) {

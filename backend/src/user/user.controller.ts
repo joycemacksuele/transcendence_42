@@ -34,7 +34,7 @@
 */
 
 // import { UserRepository } from './user.repository' ;
-import {Controller, Req, Post, Get, HttpStatus, HttpException, Body, Logger, Delete, Param, HttpCode} from '@nestjs/common';
+import {Controller, Req, Post, Get, HttpStatus, HttpException, Body, Logger, Delete, Param, InternalServerErrorException, HttpCode} from '@nestjs/common';
 import { Request } from 'express';
 import { UserService } from './user.service';
 import { DuplicateService } from 'src/duplicate/duplicate.service';
@@ -109,6 +109,30 @@ export class UserController {
 			return currUser;
 		} catch (error) {
 			console.error('Error fetching current user:', error);
+		}
+	}
+
+
+	// CHECK IF IT IS FIRST LOGIN (FOR THE WELCOME MESSAGE)
+	// process.nextTick() will run at the next cycle of nodejs event loop, in order to prevent delay, it can already send back the value of current isFirstLogin
+	@Get('get-is-first-login')
+	async getIsFirstLogin(@Req() req: Request) {
+		try {
+			const payload = await this.authService.extractUserdataFromToken(req);
+			const currUser = await this.userService.getUserByLoginName(payload.username);
+
+			const isFirstLogin = currUser.isFirstLogin;
+			console.log("==============>>>>>>> isFirstLogin: ", isFirstLogin);
+			if (isFirstLogin === true) {
+				process.nextTick(async () => { 
+					currUser.isFirstLogin = false;
+					await this.userService.saveUser(currUser);
+				})
+			}
+			return { isFirstLogin: isFirstLogin };
+		} catch (error) {
+			console.error('Error fetching isFirstLogin:', error);
+			throw new InternalServerErrorException('Error processing request.');
 		}
 	}
 

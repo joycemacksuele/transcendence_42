@@ -1,0 +1,7 @@
+.btn-group-vertical {
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
