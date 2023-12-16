@@ -5,17 +5,18 @@ import {
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer
+  WebSocketServer,
+  WsException
 } from '@nestjs/websockets';
 import {Server, Socket} from 'socket.io';
-import {Logger, UnauthorizedException, UsePipes, ValidationPipe} from '@nestjs/common';
+import {Logger, UnauthorizedException, UseFilters, UsePipes, ValidationPipe, ValidationError} from '@nestjs/common';
 import {ChatService} from './chat.service';
 import {RequestNewChatDto} from './dto/request-new-chat.dto';
 import {RequestMessageChatDto} from './dto/request-message-chat.dto';
 import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
 import {ChatType} from "./utils/chat-utils";
-import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
+import {WsExceptionFilter} from "./utils/chat-exception-handler";
 
 /*
     Websockets tips:
@@ -26,7 +27,17 @@ import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
     closed, the data is lost.
  */
 
-@UsePipes(new ValidationPipe())// As the global one does not work for web sockets
+@UseFilters(new WsExceptionFilter())
+// @UsePipes(new ValidationPipe())// As the global one does not work for web sockets
+@UsePipes(new ValidationPipe({
+  exceptionFactory(validationErrors: ValidationError[] = []) {
+    if (this.isDetailedOutputDisabled) {
+      return new WsException('JOYCEs Bad request');
+    }
+    const errors = this.flattenValidationErrors(validationErrors);
+    throw new WsException(errors.toString());
+  }
+}))
 @WebSocketGateway({
   // namespace: '/chat',
   cors: {
@@ -50,10 +61,6 @@ export class ChatGateway
 
   @WebSocketServer()
   ws_server: Server;
-
-  // afterInit() {
-  //   this.logger.log('Initialized');
-  // }
 
   async handleConnection(clientSocket: Socket) {
     try {
@@ -96,32 +103,39 @@ export class ChatGateway
 
   @SubscribeMessage('createChat')
   async createChat(@MessageBody() requestNewChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
+    try {
+      this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
+      this.logger.log('createChat -> clientSocket.data.user: ' + clientSocket.data.user);
+      this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
 
-    this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
-    this.logger.log('createChat -> clientSocket.data.user: ' + clientSocket.data.user);
-    this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
+      this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(() => {
+        this.logger.log('getChats -> chat' + requestNewChatDto.name + 'was created');
 
-    this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(() => {
-      this.logger.log('getChats -> chat' + requestNewChatDto.name + 'was created');
-      // If we could save a new chat in the database, get the whole table
-      this.chatService.getAllChats().then( (allChats) => {
-        // If we could get the whole table from the database, emit it to the frontend
-        clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
-        this.logger.log('getChats -> all chats were emitted to the frontend');
+        // If we could save a new chat in the database, get the whole table
+        this.chatService.getAllChats().then((allChats) => {
+          // If we could get the whole table from the database, emit it to the frontend
+          clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
+          this.logger.log('createChat -> getChats -> all chats were emitted to the frontend');// todo need to return? or throw
+        });
+      }).catch((err) => {
+        this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
+        clientSocket.emit("error", err.message);
       });
 
-    });
-
-    // Join the specific room after chat was created
-    if (requestNewChatDto.type == ChatType.PRIVATE) {
-      // chat name for private chat  = friend's name
-      clientSocket.join(clientSocket.data.user + requestNewChatDto.name);
-      this.logger.log('Socket has joined room ' + clientSocket.data.user + requestNewChatDto.name);
-    } else {
-      clientSocket.join(requestNewChatDto.name);// TODO no repetition for groups names since wit would join the same room
-      this.logger.log('Socket has joined room ' + requestNewChatDto.name);
+      // Join the specific room after chat was created
+      if (requestNewChatDto.type == ChatType.PRIVATE) {
+        // chat name for private chat  = friend's name
+        clientSocket.join(clientSocket.data.user + requestNewChatDto.name);
+        this.logger.log('Socket has joined room ' + clientSocket.data.user + requestNewChatDto.name);
+      } else {
+        clientSocket.join(requestNewChatDto.name);// TODO no repetition for groups names since wit would join the same room
+        this.logger.log('Socket has joined room ' + requestNewChatDto.name);
+      }
+      this.logger.log('Socket rooms for the createChat: ', clientSocket.rooms.size);
+    } catch (err) {
+      this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
+      throw err;
     }
-    this.logger.log('Socket rooms for the createChat: ', clientSocket.rooms.size);
   }
 
   @SubscribeMessage('deleteChat')
@@ -134,7 +148,7 @@ export class ChatGateway
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
         clientSocket.emit("getChats", allChats);
-        this.logger.log('getChats -> all chats were emitted to the frontend');
+        this.logger.log('deleteChat -> getChats -> all chats were emitted to the frontend');// todo need to return? or throw
       });
     });
   }
@@ -157,6 +171,16 @@ export class ChatGateway
     this.logger.log('leaveChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
     return await this.chatService.leaveChat(chatId, clientSocket.data.user);
   }
+
+  // @SubscribeMessage('addAdmin')
+  // async addAdmin(
+  //     @MessageBody('chatId') chatId: number,
+  //     @MessageBody('newAdmin') newAdmin: string,
+  //     @ConnectedSocket() clientSocket: Socket) {
+  //   this.logger.log('clientSocket.id: ' + clientSocket.id);
+  //   this.logger.log('joinChat -> chatId: ' + chatId + " newAdmin: " + newAdmin);
+  //   return await this.chatService.addAdmin(chatId, newAdmin);// todo need to return? or throw
+  // }
 
   @SubscribeMessage('getChats')
   async getChats(@ConnectedSocket() clientSocket: Socket) {
