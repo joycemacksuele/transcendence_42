@@ -64,24 +64,74 @@ const AddDummyMatches = async () => {
 				timeStamp: new Date(),
 			};
 			const dummyMatch2 = {
-				player1Id: 1,
-				player2Id: 3, 
-				player1Score: 55, 
-				player2Score: 44,
-				winnerId: 1,
-				timeStamp: new Date(),
-			};
-			const dummyMatch3 = {
-				player1Id: 1,
+				player1Id: 3,
 				player2Id: 4, 
 				player1Score: 55, 
 				player2Score: 44,
-				winnerId: 1,
+				winnerId: 3,
 				timeStamp: new Date(),
 			};
+			const dummyMatch3 = {
+				player1Id: 2,
+				player2Id: 3, 
+				player1Score: 55, 
+				player2Score: 44,
+				winnerId: 2,
+				timeStamp: new Date(),
+			};
+			const dummyMatch4 = {
+				player1Id: 1,
+				player2Id: 3, 
+				player1Score: 11, 
+				player2Score: 22,
+				winnerId: 3,
+				timeStamp: new Date(),
+			};
+
+
+
+			// ADDING MORE MATCHES TO TEST THE CSS LIST OVERFLOW
+			const dummyMatch5 = {
+				player1Id: 2,
+				player2Id: 3, 
+				player1Score: 11, 
+				player2Score: 22,
+				winnerId: 3,
+				timeStamp: new Date(),
+			};
+			const dummyMatch6 = {
+				player1Id: 2,
+				player2Id: 3, 
+				player1Score: 11, 
+				player2Score: 22,
+				winnerId: 3,
+				timeStamp: new Date(),
+			};
+			const dummyMatch7 = {
+				player1Id: 2,
+				player2Id: 3, 
+				player1Score: 11, 
+				player2Score: 22,
+				winnerId: 3,
+				timeStamp: new Date(),
+			};
+			const dummyMatch8 = {
+				player1Id: 2,
+				player2Id: 3, 
+				player1Score: 11, 
+				player2Score: 22,
+				winnerId: 3,
+				timeStamp: new Date(),
+			};
+
 			await axiosInstance.post('/matches/add-match', dummyMatch1);
 			await axiosInstance.post('/matches/add-match', dummyMatch2);
 			await axiosInstance.post('/matches/add-match', dummyMatch3);
+			await axiosInstance.post('/matches/add-match', dummyMatch4);
+			await axiosInstance.post('/matches/add-match', dummyMatch5);
+			await axiosInstance.post('/matches/add-match', dummyMatch6);
+			await axiosInstance.post('/matches/add-match', dummyMatch7);
+			await axiosInstance.post('/matches/add-match', dummyMatch8);
 			localStorage.setItem('dummyMatchAdded', 'true');
 		}
 	} catch (error) {
@@ -147,7 +197,8 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 		< br/>< br/><h5>MATCH HISTORY OF {loginName}</h5>
 		<div className="users-outer">
 			<Row>
-				<Col className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded">
+				{/* <Col className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded"> */}
+				<Col className="column-list-matches d-flex justify-content-left align-items-left p-3 mx-3 rounded">
 
 					<ListGroup className="list-users">
 						<ListGroup.Item className="column-titles">

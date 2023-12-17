@@ -19,6 +19,7 @@ interface UserProps {
   	gamesPlayed: number;
   	gamesWon: number;
 	rank: number;
+	achievements: string;
 }
 
 const getCurrentUsername = async () => {
@@ -231,6 +232,7 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 					<Row>Games played: {userData.gamesPlayed} </Row>
 					<Row>Games won: {userData.gamesWon} </Row>
 					<Row>Games lost: {userData.gamesLost} </Row>
+					<Row>Achievements: {userData.achievements} </Row>
 				</Col>
 			</Row>
 			<Row className="mb-5 user-buttons" style={buttonsVisible}>
