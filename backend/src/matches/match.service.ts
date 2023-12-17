@@ -76,19 +76,20 @@ export class MatchService {
 		if (player1.id === winnerId) {
 			if (player1.gamesWon >= 1)
 				player1.achievements = 'Happy Day';
-			else if (player1.gamesWon >= 2)
+			if (player1.gamesWon >= 2)
 				player1.achievements = 'Stardoom Devotion';
-			else if (player1.gamesWon >= 3)
+			if (player1.gamesWon >= 3)
 				player1.achievements = 'Zen';
 		}
 		else {
-			if (player1.gamesWon >= 1)
-				player1.achievements = 'Happy Day';
-			else if (player1.gamesWon >= 2)
-				player1.achievements = 'Stardoom Devotion';
-			else if (player1.gamesWon >= 3)
-				player1.achievements = 'Zen';
+			if (player2.gamesWon >= 1)
+				player2.achievements = 'Happy Day';
+			if (player2.gamesWon >= 2)
+				player2.achievements = 'Stardoom Devotion';
+			if (player2.gamesWon >= 3)
+				player2.achievements = 'Zen';
 		}
+		await this.userRepository.save(player1);
 	}
 
 
