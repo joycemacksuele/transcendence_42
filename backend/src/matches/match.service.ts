@@ -63,12 +63,33 @@ export class MatchService {
 			await this.matchRepository.save(match);
 			await this.updatePlayerStats(player1, player2, matchDto.winnerId);
 			await this.recalculateRanks();
+			await this.updateAchievements(player1, player2, matchDto.winnerId);
 			return { match,
 					 message: "Match created succesfully"
 			};
 		} catch (error) {
 			throw new InternalServerErrorException('Error creating Match.', error);
 		}
+	}
+
+	private async updateAchievements(player1: UserEntity, player2: UserEntity, winnerId: number ) : Promise<void> {
+		if (player1.id === winnerId) {
+			if (player1.gamesWon >= 1)
+				player1.achievements = 'Happy Day';
+			if (player1.gamesWon >= 2)
+				player1.achievements = 'Stardoom Devotion';
+			if (player1.gamesWon >= 3)
+				player1.achievements = 'Zen';
+		}
+		else {
+			if (player2.gamesWon >= 1)
+				player2.achievements = 'Happy Day';
+			if (player2.gamesWon >= 2)
+				player2.achievements = 'Stardoom Devotion';
+			if (player2.gamesWon >= 3)
+				player2.achievements = 'Zen';
+		}
+		await this.userRepository.save(player1);
 	}
 
 
