@@ -92,7 +92,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
 		<Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
 		  <div>
-			<h5>MY FRIENDS</h5>
+			<h5>STALKING</h5>
 			{!selectedUser ? (
 			  <FriendsList clickOnUser={handleClickOnUser} />
 			) : (
