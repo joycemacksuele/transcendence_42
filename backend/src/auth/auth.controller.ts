@@ -72,7 +72,6 @@ export class AuthController {
 			let payload = await this.authService.extractUserdataFromToken(req);
 			let user = await this.userService.getUserByLoginName(payload.username);
 			await this.userService.setOnlineStatus(user.loginName, false);
-			// res.clearCookie('Cookie');
 			res.clearCookie('token');
 			await this.userService.updateRefreshToken(user.loginName, 'default'); 
 			this.logger.log("Removed tokens. Logging out!");
