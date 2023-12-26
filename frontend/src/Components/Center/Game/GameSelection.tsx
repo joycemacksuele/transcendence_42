@@ -8,6 +8,10 @@ function GameSelection(props: { socket: Socket | null }) {
     props.socket?.emit('joinGame',type);
   }
 
+  function testMatch(){
+    props.socket?.emit('testMatchDb');
+  }
+
   return (
     <>
     <div style={{"height":"80vh"}} className="  d-flex justify-content-center align-items-center">
@@ -18,6 +22,10 @@ function GameSelection(props: { socket: Socket | null }) {
     </Button>
     <Button variant="dark" onClick={() => joinGame('Default')}>
       Play custom Game
+    </Button>
+    
+    <Button variant="dark" onClick={() => testMatch()}>
+      test match
     </Button>
 <p></p>
         <p>Press W and S for paddle movement</p>
