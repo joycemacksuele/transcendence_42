@@ -12,6 +12,10 @@ import { PonggameService } from "./ponggame.service";
 import { GameState } from "./dto/game-state.dto";
 
 import { AuthService } from "src/auth/auth.service";
+import { UserService } from "src/user/user.service";
+import { UserEntity } from "src/user/user.entity";
+import { MatchService } from "src/matches/match.service";
+import { MatchDto } from "src/matches/match.dto";
 
 @WebSocketGateway({
   cors: {
@@ -36,7 +40,9 @@ export class PonggameGateway
 
   constructor(
     private readonly ponggameService: PonggameService,
-    public readonly authService: AuthService
+    public readonly authService: AuthService,
+    private readonly userService: UserService,
+    private readonly matchService: MatchService
   ) {
     this._gameInterval = setInterval(() => {
       if (this._processingGamestates == false) {
@@ -46,6 +52,7 @@ export class PonggameGateway
         currentGames.forEach((gamestate: GameState) => {
           this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
             if (gamestate.currentState == "End"){
+                this.processMatch(gamestate);
                 this.server.socketsLeave(gamestate.roomName);
             }
         });
@@ -98,9 +105,7 @@ console.log(`pong game client id ${client.id} disconnected`);
     this._socketIdUserId.delete(client.id);
   }
 
-
-
-  @SubscribeMessage('joinGame')
+@SubscribeMessage('joinGame')
   joinGame(
     @ConnectedSocket() client: Socket,
     @MessageBody() type: string
@@ -127,6 +132,24 @@ console.log(`pong game client id ${client.id} disconnected`);
     }
     client.emit('responsePlayerPartOfGame',partOfMatch);
   }
+
+
+@SubscribeMessage('testMatchDb')
+  async testingMatchCreation(){
+    const player1: UserEntity = await this.userService.getUserByLoginName("hman");
+    console.log("playerid is " + player1.id + " |");
+    const player2: UserEntity = await this.userService.getUserByLoginName("dummy2");
+    console.log("dummy playerid is " + player2.id + "|");
+  }
+
+  async processMatch(gamestate : GameState){
+    const player1 : UserEntity = await this.userService.getUserByLoginName(gamestate.player1info);
+    const player2 : UserEntity = await this.userService.getUserByLoginName(gamestate.player2info);
+    const match : MatchDto = new MatchDto();
+    console.log("player ids :" + player1.id + " " + player2.id);
+  }
+
+
 
   //test function
   print_out_socketId() {
