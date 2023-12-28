@@ -166,9 +166,9 @@ export class AuthService {
 		this.logger.log('Set-Cookie token: ' + token);
 		const cookieAttributes = {
 			httpOnly: true,
-			secure: true,
+//			secure: true,
 			path: '/',
-			sameSite: 'none',
+//			sameSite: 'none',
 		};
 
 		// Variant B)
