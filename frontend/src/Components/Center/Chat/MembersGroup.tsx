@@ -111,7 +111,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                 onClick={() => setShowMemberModal(true)}
               >
                 <Image
-                  src={`http://localhost:3001/resources/member.png`}
+                  src={import.meta.env.VITE_BACKEND + "/resources/member.png"}
                   className="me-1"
                   width={30}
                   alt="chat"
@@ -130,7 +130,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                 </Modal.Header>
                 <Modal.Body>
                   <Button
-                    href="http://localhost:3000/main_page/game"
+                    href={import.meta.env.VITE_FRONTEND + "/main_page/game"}
                     className="me-4 mb-3"
                     variant="success"
                   >
