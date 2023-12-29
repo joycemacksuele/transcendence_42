@@ -55,7 +55,7 @@ export class PonggameGateway
         currentGames.forEach((gamestate: GameState) => {
           this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
             if (gamestate.currentState == "End"){
-                //this.processMatch(gamestate);
+                this.processMatch(gamestate);
                 this.server.socketsLeave(gamestate.roomName);
             }
         });
@@ -107,41 +107,10 @@ export class PonggameGateway
       console.log("Disconnecting the client socket");
       client.disconnect();
     }
-
-    // old code. just for reference. Plz remove when done
-    // const token = client.handshake.headers.cookie?.split("=")[1];
-    // if (!token) {
-    //   console.log(">>>>>>>>>>>>>>>>>No Token <<<<<<<<<<<<<<<<");
-    //   client.disconnect();
-    //   return;
-    // }
-    // try {
-    //   const payload = await this.authService.jwtService.verifyAsync(token, {
-    //     secret: process.env.JWT_SECRET,
-    //   });
-    //   const userId = payload.username;
-
-    //   this._socketIdUserId.set(client.id, userId);
-    //   this._userIdSocketId.set(userId, client.id);
-    //   const matchId = this.ponggameService.getMatchId(userId);
-    //   console.log(`Match Id ${matchId}`);
-    //   if (matchId == "") {
-    //     //if not get the selection screen
-    //     client.emit(
-    //       "stateUpdate",
-    //       this.ponggameService.getInitMatch("Default")
-    //     );
-    //   } else {
-    //     //if part of the game then join the match
-    //     client.join(matchId);
-    //   }
-    // } catch {
-    //   console.log("No payload");
-    // }
   }
 
   handleDisconnect(client: Socket) {
-console.log(`pong game client id ${client.id} disconnected`);
+    console.log(`pong game client id ${client.id} disconnected`);
     this.ponggameService.playerDisconnected(
       this._socketIdUserId.get(client.id),
     );
@@ -177,13 +146,25 @@ console.log(`pong game client id ${client.id} disconnected`);
     client.emit('responsePlayerPartOfGame',partOfMatch);
   }
 
-
+//test function
 @SubscribeMessage('testMatchDb')
   async testingMatchCreation(){
     const player1: UserEntity = await this.userService.getUserByLoginName("hman");
     console.log("playerid is " + player1.id + " |");
     const player2: UserEntity = await this.userService.getUserByLoginName("dummy2");
     console.log("dummy playerid is " + player2.id + "|");
+    const match: MatchDto = new MatchDto();
+    match.player1Id = player1.id;
+    match.player2Id = player2.id;
+    match.player1Score= 3;
+    match.player2Score= 1;
+    match.winnerId = player1.id;
+    match.timeStamp = new Date();
+    try{
+      await this.matchService.createMatch(match);
+    } catch (e){
+      console.log("Error: something went wrong with entering match into the database");
+    }
   }
 
   //save the match data to the database
@@ -209,8 +190,6 @@ console.log(`pong game client id ${client.id} disconnected`);
     }
   }
 
-
-
   //test function
   print_out_socketId() {
     console.log('\ncurrent log');
@@ -224,7 +203,8 @@ console.log(`pong game client id ${client.id} disconnected`);
     });
     console.log('\n');
   }
-
+  
+  //test function
   async print_out_matches(userId: number){
     const matchHistory: MatchEntity[] = await this.matchService.getMatchHistoryByUserId(userId);
     matchHistory.forEach((match) =>{
