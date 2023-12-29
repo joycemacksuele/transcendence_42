@@ -166,8 +166,9 @@ export class AuthService {
 		this.logger.log('Set-Cookie token: ' + token);
 		const cookieAttributes = {
 			httpOnly: true,
+//			secure: true,
 			path: '/',
-			sameSite: 'none',
+//			sameSite: 'none',
 		};
 
 		// Variant B)
@@ -342,6 +343,7 @@ export class AuthService {
 
         cookie = request.get('Cookie');
         // this.logger.log('extract Token from Header - full cookie: ' + cookie); // COMMENT
+		// console.log(request.headers);
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');

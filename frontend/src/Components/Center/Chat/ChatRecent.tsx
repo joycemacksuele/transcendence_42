@@ -67,13 +67,13 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                                 >
 
                                     {chat.type == ChatType.PROTECTED && <Image
-                                        src={`http://localhost:3001/resources/protected-chat.png`}
+                                        src={import.meta.env.VITE_BACKEND + "/resources/protected-chat.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
                                     {chat.type != ChatType.PROTECTED && <Image
-                                        src={`http://localhost:3001/resources/chat.png`}
+                                        src={import.meta.env.VITE_BACKEND + "http://localhost:3001/resources/chat.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"

@@ -65,6 +65,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     });
     setChatPassword(null);
   };
+
   const leaveGroupChat = () => {
     console.log(
       "[MembersGroup] Will leave the chat",
@@ -75,12 +76,17 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
   };
 
+  const kickMember = (member: string) => {
+    console.log('Kicking the member ', member, ' from group ', chatClicked?.name);
+    chatSocket.emit("kickMember", {member: member, chatId: chatClicked?.id} );
+  }
+
   const addAdmin = (member: string) => {
     console.log(
       "[MembersGroup] member [",
       member,
       "] will be added to chat [",
-      chatClicked?.chatName,
+      chatClicked?.name,
       "]"
     );
     chatSocket.emit("addAdmin", { chatId: chatClicked?.id, newAdmin: member });
@@ -105,7 +111,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                 onClick={() => setShowMemberModal(true)}
               >
                 <Image
-                  src={`http://localhost:3001/resources/member.png`}
+                  src={import.meta.env.VITE_BACKEND + "/resources/member.png"}
                   className="me-1"
                   width={30}
                   alt="chat"
@@ -124,7 +130,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                 </Modal.Header>
                 <Modal.Body>
                   <Button
-                    href="http://localhost:3000/main_page/game"
+                    href={import.meta.env.VITE_FRONTEND + "/main_page/game"}
                     className="me-4 mb-3"
                     variant="success"
                   >
@@ -156,9 +162,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                     ))}
 
                   {/* Mute = when we are admin OR creator */}
-                  {chatClicked?.admins.indexOf(intraName) != -1 ||
-                    (chatClicked?.creator == intraName && (
-                      <Button
+                  {(chatClicked?.admins.indexOf(intraName) != -1 ||
+                    chatClicked?.creator == intraName) && 
+                      (<Button
                         className="me-4 mb-3"
                         variant="warning"
                         onClick={() => {
@@ -166,28 +172,30 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                           // mute(member);
                         }}
                       >
+                        {/* {chatClicked?.admins.indexOf(intraName) != -1 ? "true": "false"} */}
+                        {/* {intraName} */}
                         Mute
-                      </Button>
-                    ))}
+                      </Button>)
+                    }
 
                   {/* Mute = when we are admin OR creator */}
-                  {chatClicked?.admins.indexOf(intraName) != -1 ||
-                    (chatClicked?.creator == intraName && (
+                  {(chatClicked?.admins.indexOf(intraName) != -1 ||
+                    chatClicked?.creator == intraName) && (
                       <Button
                         className="me-4 mb-3"
                         variant="danger"
                         onClick={() => {
                           setShowMemberModal(false);
-                          // kick(member);
+                          kickMember(member);
                         }}
                       >
                         Kick
                       </Button>
-                    ))}
+                    )}
 
                   {/* Mute = when we are admin OR creator */}
-                  {chatClicked?.admins.indexOf(intraName) != -1 ||
-                    (chatClicked?.creator == intraName && (
+                  {(chatClicked?.admins.indexOf(intraName) != -1 ||
+                    chatClicked?.creator == intraName) && (
                       <Button
                         className="me-4 mb-3"
                         variant="warning"
@@ -198,7 +206,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                       >
                         Ban
                       </Button>
-                    ))}
+                    )}
                 </Modal.Body>
               </Modal>
             </ListGroup>
