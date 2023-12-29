@@ -11,7 +11,11 @@ import {
 import {Server, Socket} from 'socket.io';
 import {Logger, UnauthorizedException, UseFilters, UsePipes, ValidationPipe, ValidationError} from '@nestjs/common';
 import {ChatService} from './chat.service';
+import {ChatMessageEntity} from './entities/chat-message.entity';
+import {NewChatEntity} from './entities/new-chat.entity';
+import {ChatRepository} from './chat.repository';
 import {RequestNewChatDto} from './dto/request-new-chat.dto';
+import {ResponseMessageChatDto} from './dto/response-message-chat.dto';
 import {RequestMessageChatDto} from './dto/request-message-chat.dto';
 import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
@@ -54,6 +58,7 @@ export class ChatGateway
 
   constructor(
       private readonly chatService: ChatService,
+      private readonly chatRepository: ChatRepository,
       public readonly authService : AuthService
   ) {
     this.logger.log('Constructor');
@@ -181,9 +186,6 @@ export class ChatGateway
       return await this.chatService.leaveChat(chatId, member);
     }
 
-
-
-
   // @SubscribeMessage('addAdmin')
   // async addAdmin(
   //     @MessageBody('chatId') chatId: number,
@@ -198,19 +200,26 @@ export class ChatGateway
   async getChats(@ConnectedSocket() clientSocket: Socket) {
     this.logger.log('getChats -> clientSocket.id: ' + clientSocket.id);
 
-    this.chatService.getAllChats().then( (allChats) => {
-      // If we could get the whole table from the database, emit it to the frontend
-      clientSocket.emit("getChats", allChats);
-      this.logger.log('getChats -> all chats were emitted to the frontend');
-    });
+    try {
+      this.chatService.getAllChats().then( (allChats) => {
+        // If we could get the whole table from the database, emit it to the frontend
+        clientSocket.emit("getChats", allChats);
+        this.logger.log('getChats -> all chats were emitted to the frontend');
+      });
+    } catch (err) {
+      this.logger.log(err);
+    }
   }
 
   @SubscribeMessage('messageChat')
-  messageChat(@MessageBody() requestMessageChatDto: RequestMessageChatDto) {
+  async messageChat(
+      @MessageBody() requestMessageChatDto: RequestMessageChatDto,
+      @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('messageChat -> requestMessageChatDto: ', requestMessageChatDto);
-    // const ret = this.chatService.messageChat(requestMessageChatDto);
+    const ret : ResponseMessageChatDto[] = await this.chatService.sendChatMessage(requestMessageChatDto);
     // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
-    // this.ws_server.emit.to(clientSocket.data.user).('message', ret);
+    const theChat : NewChatEntity = await this.chatRepository.getOneChat(requestMessageChatDto.chatId);
+    clientSocket.emit(theChat.name, ret);
   }
 
   @SubscribeMessage('registerChat')

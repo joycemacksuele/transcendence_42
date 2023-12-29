@@ -56,6 +56,7 @@ export class PonggameGateway
   async handleConnection(client: Socket) {
     console.log(`pong game client id ${client.id} connected`);
 
+    console.log(client.handshake.headers.cookie);
     const token = client.handshake.headers.cookie?.split("=")[1];
     if (!token) {
       console.log(">>>>>>>>>>>>>>>>>No Token <<<<<<<<<<<<<<<<");
@@ -63,9 +64,11 @@ export class PonggameGateway
       return;
     }
     try {
+      console.log("AAAH", token);
       const payload = await this.authService.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
+      console.log("BEEH");
       const userId = payload.username;
 
       this._socketIdUserId.set(client.id, userId);

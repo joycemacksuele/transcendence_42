@@ -15,10 +15,19 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
+import ListGroup from 'react-bootstrap/ListGroup';
 import { chatSocket } from './Utils/ClientSocket.tsx';
 import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
 
-const Messages = () => {
+type PropsHeader = {
+  chatClicked: ResponseNewChatDto | null;
+};
+
+const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
+
+    if (chatClicked) {
+        console.log("[Messages] chatClicked: ", chatClicked);
+    }
 
     ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
@@ -38,7 +47,7 @@ const Messages = () => {
             // how to send data? send the message + userId to send the message to (or chatId?)
 
             const loginName = currUserData.loginName;
-            chatSocket.emit("messageChat", {loginName: loginName, message: message});
+            chatSocket.emit("messageChat", {loginName: loginName, message: message, chatId: chatClicked?.id});
             setMessage('');
             setMessageBoxPlaceHolder('Write a message...');
         }
@@ -49,7 +58,16 @@ const Messages = () => {
     return (
         <>
             <Row className='h-75 align-items-center mx-auto'>
-                chat
+                {chatClicked?.messages[0] ? chatClicked?.messages.map((message: ResponseMessageChatDto, mapStaticKey: number) => (
+		<ListGroup horizontal key={mapStaticKey} variant="flush">
+                  <ListGroup.Item>
+                    {message.creator}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    {message.message}
+                  </ListGroup.Item>
+                </ListGroup>
+                )) : <ListGroup><ListGroup.Item>No messages yet!</ListGroup.Item></ListGroup>}
             </Row>
             <Row className='h-25 align-items-center'>
                 <Form.Group>

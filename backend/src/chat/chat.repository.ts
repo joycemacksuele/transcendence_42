@@ -1,14 +1,17 @@
 import {Injectable, Logger} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, Repository} from 'typeorm';
 import {NewChatEntity} from './entities/new-chat.entity';
 import {UserEntity} from "src/user/user.entity";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
+import {ResponseMessageChatDto} from "./dto/response-message-chat.dto";
 
 @Injectable()
 export class ChatRepository extends Repository<NewChatEntity> {
 	private readonly logger = new Logger(ChatRepository.name);
-	constructor(private dataSource: DataSource)
-	{
+	constructor(
+		private dataSource: DataSource
+	) {
 		super(NewChatEntity, dataSource.createEntityManager());
 		this.logger.log('constructor');
 	}
@@ -58,6 +61,30 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			responseDto.admins = chatAdmins.map((adminsList) => {
 				return adminsList.admins;
 			});
+			const chatMessages = await this
+				.createQueryBuilder("new_chat")
+				.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creatorId"')
+				.where('new_chat.id = :id', {id: chat.id})
+				.leftJoin("new_chat.messages", "chat_message")
+				.getRawMany();
+			responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
+				const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
+				responseDto_inner.id = messagesList.id;
+				responseDto_inner.message = messagesList.message;
+				try {
+					const messageCreator = await this
+						.createQueryBuilder("new_chat")
+						.select('user.loginName as "loginName"')
+						.where('user.id = :id', {id: messagesList.creatorId})
+						.leftJoin("new_chat.users", "user")
+						.getRawOne();
+					responseDto_inner.creator = messageCreator.loginName;
+					return responseDto_inner;
+				} catch (err) {
+					// throw new Error("Can't find user");
+                                        this.logger.log("Can't find user");
+				}
+			}));
 			return responseDto;
 		}));
 	}

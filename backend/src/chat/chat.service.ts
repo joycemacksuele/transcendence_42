@@ -1,11 +1,15 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
+import {ChatMessageEntity} from "./entities/chat-message.entity";
 import {NewChatEntity} from "./entities/new-chat.entity";
 import {ChatType} from "./utils/chat-utils";
 import {ChatRepository} from "./chat.repository";
+import {ChatMessageRepository} from "./chat-message.repository";
 import * as bcryptjs from 'bcryptjs';
+import {RequestMessageChatDto} from "./dto/request-message-chat.dto";
 import {RequestNewChatDto} from "./dto/request-new-chat.dto";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
+import {ResponseMessageChatDto} from "./dto/response-message-chat.dto";
 import {MessageBody, WsException} from "@nestjs/websockets";
 import {UserService} from "../user/user.service";
 import {UserEntity} from "src/user/user.entity";
@@ -17,13 +21,42 @@ export class ChatService {
   constructor(
       // @InjectRepository(NewChatEntity)
       public readonly chatRepository: ChatRepository,
+      public readonly chatMessageRepository: ChatMessageRepository,
       public readonly userService: UserService
   ) {
     this.logger.log('constructor');
   }
 
+  async sendChatMessage(requestMessageChatDto: RequestMessageChatDto) : Promise<ResponseMessageChatDto[]> {
+    const chatMessage = new ChatMessageEntity();
+    chatMessage.message = requestMessageChatDto.message;
+    chatMessage.creator = await this.userService.getUserByLoginName(requestMessageChatDto.loginName);
+    chatMessage.chatbox = await this.chatRepository.findOneOrFail({where: {id: requestMessageChatDto.chatId}});
+    const r = await this.chatMessageRepository.save(chatMessage);
+    const allMessages = await this.chatMessageRepository.find({
+        relations: {
+		creator: true,
+		chatbox: true
+	},
+	where: {
+		chatbox: chatMessage.chatbox
+	},
+	order: {
+		id: "ASC"
+	}
+    });
+    const r2 = await Promise.all(allMessages.map(async (message : ChatMessageEntity) : Promise<ResponseMessageChatDto> => {
+	const responseDto : ResponseMessageChatDto = new ResponseMessageChatDto();
+	responseDto.id = message.id;
+	responseDto.message = message.message;
+	responseDto.creator = message.creator.loginName;
+	return responseDto;
+    }));
+    return (r2);
+  }
+
   async createChat(requestNewChatDto: RequestNewChatDto, creator: string)  {
-    const chatEntity= new NewChatEntity();
+    const chatEntity = new NewChatEntity();
     chatEntity.name = requestNewChatDto.name;
     chatEntity.type = requestNewChatDto.type;
     chatEntity.password = null;

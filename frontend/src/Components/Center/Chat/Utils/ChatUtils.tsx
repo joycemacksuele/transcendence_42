@@ -7,6 +7,12 @@ export interface RequestNewChatDto {
     // loginName: string;
 }
 
+export interface ResponseMessageChatDto {
+    id: number;
+    message: string;
+    creator: string;
+}
+
 // This is mapped to response-new-chat.dto.ts on the backend
 export interface ResponseNewChatDto {
     id: number;
@@ -15,6 +21,7 @@ export interface ResponseNewChatDto {
     creator: string;
     admins: string[];
     users: string[];
+    messages: ResponseNewChatDto[];
 }
 
 export enum ChatType {

@@ -9,7 +9,7 @@ import {
     MinLength, MaxLength, IsNotEmpty
 } from 'class-validator';
 import {ChatType} from '../utils/chat-utils'
-import {UserEntity} from "src/user/user.entity";
+import {ResponseMessageChatDto} from "./response-message-chat.dto";
 
 export class ResponseNewChatDto {
 
@@ -43,6 +43,10 @@ export class ResponseNewChatDto {
     @IsArray()
     @ValidateNested({ each: true })
     @ArrayMinSize(2)
-    // users: UserEntity[];
     users: string[];
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    messages: ResponseMessageChatDto[];
+
 }
