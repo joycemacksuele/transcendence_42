@@ -55,7 +55,7 @@ export class PonggameGateway
         currentGames.forEach((gamestate: GameState) => {
           this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
             if (gamestate.currentState == "End"){
-                this.processMatch(gamestate);
+                //this.processMatch(gamestate);
                 this.server.socketsLeave(gamestate.roomName);
             }
         });
@@ -68,18 +68,25 @@ export class PonggameGateway
   async handleConnection(client: Socket) {
     console.log(`pong game client id ${client.id} connected`);
 
-    const token = client.handshake.headers.cookie?.split("=")[1];
-    if (!token) {
-      console.log(">>>>>>>>>>>>>>>>>No Token <<<<<<<<<<<<<<<<");
-      client.disconnect();
-      return;
-    }
-    try {
-      const payload = await this.authService.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
-      });
-      const userId = payload.username;
+    let token = null;
 
+    if(client.handshake.headers.cookie){
+      const token_index_start = client.handshake.headers.cookie.indexOf("token");
+      const token_key_value = client.handshake.headers.cookie.substring(token_index_start);
+
+      if (token_key_value.includes(";")) {
+        const token_index_end = token_key_value.indexOf(";");
+        const token_key_value_2 = token_key_value.substring(0, token_index_end);
+        token = token_key_value_2.split('=')[1];
+      } else {
+        token = token_key_value.split('=')[1];
+      }
+    }
+
+    try {
+      const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+      const userId = payload.username;
+      
       this._socketIdUserId.set(client.id, userId);
       this._userIdSocketId.set(userId, client.id);
       const matchId = this.ponggameService.getMatchId(userId);
@@ -95,8 +102,40 @@ export class PonggameGateway
         client.join(matchId);
       }
     } catch {
-      console.log("No payload");
+      console.log("something went wrong verifying the token");
+      console.log("Disconnecting the client socket");
+      client.disconnect();
     }
+
+    // const token = client.handshake.headers.cookie?.split("=")[1];
+    // if (!token) {
+    //   console.log(">>>>>>>>>>>>>>>>>No Token <<<<<<<<<<<<<<<<");
+    //   client.disconnect();
+    //   return;
+    // }
+    // try {
+    //   const payload = await this.authService.jwtService.verifyAsync(token, {
+    //     secret: process.env.JWT_SECRET,
+    //   });
+    //   const userId = payload.username;
+
+    //   this._socketIdUserId.set(client.id, userId);
+    //   this._userIdSocketId.set(userId, client.id);
+    //   const matchId = this.ponggameService.getMatchId(userId);
+    //   console.log(`Match Id ${matchId}`);
+    //   if (matchId == "") {
+    //     //if not get the selection screen
+    //     client.emit(
+    //       "stateUpdate",
+    //       this.ponggameService.getInitMatch("Default")
+    //     );
+    //   } else {
+    //     //if part of the game then join the match
+    //     client.join(matchId);
+    //   }
+    // } catch {
+    //   console.log("No payload");
+    // }
   }
 
   handleDisconnect(client: Socket) {
