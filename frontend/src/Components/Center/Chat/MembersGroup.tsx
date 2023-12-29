@@ -23,43 +23,48 @@ type PropsHeader = {
 };
 
 const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
-  if (chatClicked) {
-    console.log("[MembersGroup] chatClicked: ", chatClicked);
-  }
+    if (chatClicked) {
+        console.log("[MembersGroup] chatClicked: ", chatClicked);
+    }
 
-  const navigate = useNavigate();
-  const { setSelectedLoginName } = useSelectedUser();
+    const navigate = useNavigate();
+    const { setSelectedLoginName } = useSelectedUser();
 
-  const goToUserProfile = (loginName: string) => {
+    const goToUserProfile = (loginName: string) => {
     setSelectedLoginName(loginName);
     // navigate(`/main_page/users/${loginName}`);
     navigate(`/main_page/users`);
-  };
+    };
 
-  const inputRef = useRef(null);
+    const inputRef = useRef(null);
 
-  const [showMemberModal, setShowMemberModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
-  const [chatPassword, setChatPassword] = useState<string | null>(null);
+    const [showMemberModal, setShowMemberModal] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
+    const [chatPassword, setChatPassword] = useState<string | null>(null);
 
-  // todo get it from database
-  const currUserData = useContext(CurrentUserContext) as CurrUserData;
-  const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
+    // todo get it from database
+    const currUserData = useContext(CurrentUserContext) as CurrUserData;
+    const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
-  const joinGroupChat = () => {
-    console.log("[MembersGroup] Will join the chat", chatClicked?.name, "id", chatClicked?.id);
-    chatSocket.emit("joinChat", { chatId: chatClicked?.id, chatPassword: chatPassword });
-    setChatPassword(null);
-  };
-  const leaveGroupChat = () => {
-    console.log("[MembersGroup] Will leave the chat", chatClicked?.name, "id", chatClicked?.id);
-    chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
-  };
+    const joinGroupChat = () => {
+        console.log("[MembersGroup] Will join the chat", chatClicked?.name, "id", chatClicked?.id);
+        chatSocket.emit("joinChat", { chatId: chatClicked?.id, chatPassword: chatPassword });
+        setChatPassword(null);
+    };
+    const leaveGroupChat = () => {
+        console.log("[MembersGroup] Will leave the chat", chatClicked?.name, "id", chatClicked?.id);
+        chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
+    };
 
     const addAdmin = (member: string) => {
         console.log("[MembersGroup] member [", member, "] will be added to chat [", chatClicked?.name, "]");
         chatSocket.emit("addAdmin", { chatId: chatClicked?.id, newAdmin: member });
+    };
+
+    const ban = (member: string) => {
+        console.log("[MembersGroup] member [", member, "] will be added to chat [", chatClicked?.name, "]");
+        chatSocket.emit("banFromChat", { chatId: chatClicked?.id, newAdmin: member });
     };
 
     const editGroupPassword = () => {
@@ -127,7 +132,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                 value={member}
                                                 onClick={ () => {
                                                     setShowMemberModal(false);
-                                                    addAdmin(member);// todo
+                                                    addAdmin(member);
                                                 }}
                                             >
                                                 Add as admin
@@ -171,7 +176,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                     variant="danger"
                                                     onClick={() => {
                                                         setShowMemberModal(false);
-                                                        // ban(member);
+                                                        ban(member);
                                                     }}
                                                 >
                                                     Ban
