@@ -86,16 +86,29 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	}
 
 	public async joinChat(user: UserEntity, chat: NewChatEntity) {
-		let chatUsers = await this
+		let chatToJoin = await this
 			.createQueryBuilder("new_chat")
 			.where('new_chat.id = :id', { id: chat.id })
 			.leftJoinAndSelect("new_chat.users", "user")
 			.getOne();
-		chatUsers.users.push(user);
+		chatToJoin.users.push(user);
 		await this
 			.manager
-			.save(chatUsers);
-		return chatUsers
+			.save(chatToJoin);
+		return chatToJoin
+	}
+
+	public async banUserFromChat(user: UserEntity, chat: NewChatEntity) {
+		let chatToBan = await this
+			.createQueryBuilder("new_chat")
+			.where('new_chat.id = :id', { id: chat.id })
+			.leftJoinAndSelect("new_chat.users", "user")
+			.getOne();
+		chatToBan.bannedUsers.push(user);
+		await this
+			.manager
+			.save(chatToBan);
+		return chatToBan
 	}
 
 	public async editPasswordFromChat(foundEntityToJoin: NewChatEntity, chatPassword: string) {

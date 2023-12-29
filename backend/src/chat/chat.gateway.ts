@@ -170,18 +170,29 @@ export class ChatGateway
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('leaveChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
     return await this.chatService.leaveChat(chatId, clientSocket.data.user);
-
-  // @SubscribeMessage('addAdmin')
-  // async addAdmin(
-  //     @MessageBody('chatId') chatId: number,
-  //     @MessageBody('newAdmin') newAdmin: string,
-  //     @ConnectedSocket() clientSocket: Socket) {
-  //   this.logger.log('clientSocket.id: ' + clientSocket.id);
-  //   this.logger.log('joinChat -> chatId: ' + chatId + " newAdmin: " + newAdmin);
-  //   return await this.chatService.addAdmin(chatId, newAdmin);// todo need to return? or throw
-  // }
-
   }
+
+  @SubscribeMessage('addAdmin')
+  async addAdmin(
+      @MessageBody('chatId') chatId: number,
+      @MessageBody('newAdmin') newAdmin: string,
+      @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
+    this.logger.log('addAdmin -> chatId: ' + chatId + " newAdmin: " + newAdmin);
+    return await this.chatService.addAdmin(chatId, newAdmin);// todo need to return? or throw
+  }
+
+
+  @SubscribeMessage('banFromChat')
+  async banFromChat(
+      @MessageBody('chatId') chatId: number,
+      @MessageBody('user') user: string,
+      @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
+    this.logger.log('banFromChat -> chatId: ' + chatId + " userToBan: " + user);
+    return await this.chatService.banFromChat(chatId, user);// todo need to return? or throw
+  }
+
   @SubscribeMessage('editPassword')
   async editPassword(
       @MessageBody('chatId') chatId: number,

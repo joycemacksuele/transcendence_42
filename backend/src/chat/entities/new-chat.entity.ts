@@ -36,10 +36,6 @@ export class NewChatEntity {
     // the creator can kick, ban, mute anyone on the channel (even admins)
     @ManyToOne(() => UserEntity, (user) => user.rooms_created)
     creator: UserEntity;
-    // @Column({
-    //     nullable: true,
-    // })
-    // creator: string;
 
     // when the group is created, the admin is the owner (creator)
     // later on in another screen the admin will be able to add more admins to the room
@@ -47,21 +43,15 @@ export class NewChatEntity {
     @ManyToMany(() => UserEntity)
     @JoinTable()
     admins: UserEntity[];
-    // @Column({
-    //     type: "simple-json",
-    //     nullable: true,
-    // })
-    // admins: string[];
 
     // it includes the current user
     @ManyToMany(() => UserEntity)
     @JoinTable()
     users: UserEntity[];
-    // @Column({
-    //     type: "simple-json",
-    //     nullable: true,
-    // })
-    // users: string[];
+
+    @ManyToMany(() => UserEntity)
+    @JoinTable()
+    bannedUsers: UserEntity[];
 
     @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
     messages: ChatMessageEntity[];
