@@ -19,6 +19,9 @@ interface User {
   profileName: string;
   onlineStatus: boolean;
   rank: number;
+  gamesPlayed: number;
+  gamesWon: number;
+  gamesLost: number;
 }
 
 const handleInsertDataClick = () => {
@@ -98,7 +101,7 @@ const UsersList: React.FC = () => {
     <Container fluid className="h-100 w-100 container-max-width">
       <div className="users-outer">
         {/* <div className="inner-section"> */}
-        <Row text="dark">
+        <Row text="dark" className="row-center">
           <Col className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded">
             {/* Button to trigger fetching the users */}
 
@@ -109,6 +112,9 @@ const UsersList: React.FC = () => {
                   <span>Rank</span>
                   {/* <span>Intra</span> */}
                   <span>Name</span>
+                  <span>Played</span>
+                  <span>Won</span>
+                  <span>Lost</span>
                   <span>Online</span>
                 </ListGroup.Item>
 
@@ -128,9 +134,7 @@ const UsersList: React.FC = () => {
                         >
                           <img
                             src={
-                              import.meta.env.VITE_BACKEND +
-                              "/" +
-                              user.profileImage
+                              import.meta.env.VITE_BACKEND + "/" + user.profileImage
                             }
                             // src={"http://localhost:3001" + "/" + user.profileImage}
                             id="profileImage_tiny"
@@ -138,6 +142,9 @@ const UsersList: React.FC = () => {
                           {user.profileName}
                         </a>
                       </span>
+                      <span>{user.gamesPlayed}</span>
+                      <span>{user.gamesWon}</span>
+                      <span>{user.gamesLost}</span>
                       <span>{user.onlineStatus ? "Yes" : "No"}</span>
                     </ListGroup.Item>
                   ))}

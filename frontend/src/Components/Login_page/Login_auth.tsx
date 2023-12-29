@@ -12,7 +12,7 @@ const LoginPage: React.FC = () => {
 	const handleClickAuth = () => {
 
 		console.log('Go from frontend directly to intra ...');
-		window.location.assign('http://localhost:3001/auth/login');
+		window.location.assign(import.meta.env.VITE_BACKEND + "/auth/login");
 
 		// PING-PONG
 		// window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-d56d700e9560937acc2eb4461b7fc08f12e39e060503cc22ea59b952aa77d806&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Flogin&response_type=code';

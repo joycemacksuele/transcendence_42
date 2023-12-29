@@ -72,7 +72,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
   return (
 	<Container fluid className="container-max-width">
-	  <Row>
+	  <Row className="row-center">
 		<Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
 		  <h5>MY PROFILE PAGE</h5>
 		  <ChangeProfileName updateContext={updateContext} />
@@ -92,7 +92,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
 		<Col className="column-bckg justify-content-left align-items-left p-3 mx-2 rounded">
 		  <div>
-			<h5>MY FRIENDS</h5>
+			<h5>STALKING</h5>
 			{!selectedUser ? (
 			  <FriendsList clickOnUser={handleClickOnUser} />
 			) : (

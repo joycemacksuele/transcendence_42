@@ -5,7 +5,7 @@ import { drawScene } from "./CanvasDraw";
 import GameSelection from "./GameSelection";
 
 function Game() {
-  const apiAddress = "http://localhost:3001";
+  const apiAddress = import.meta.env.VITE_BACKEND;
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const width = window.innerWidth;
   const height = window.innerHeight - 70;

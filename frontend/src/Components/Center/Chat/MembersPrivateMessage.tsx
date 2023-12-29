@@ -47,7 +47,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                             onClick={ () => setShow(true)}
                         >
                             <Image
-                                src={`http://localhost:3001/resources/member.png`}
+                                src={import.meta.env.VITE_BACKEND + "/resources/member.png"}
                                 className="me-1"
                                 // id="profileImage_tiny"
                                 // roundedCircle
@@ -66,7 +66,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                             </Modal.Header>
                             <Modal.Body>
                                 <Button
-                                    href="http://localhost:3000/main_page/game"
+                                    href={import.meta.env.VITE_FRONTEND + "/main_page/game"}
                                     // to="/main_page/chat"
                                     className="me-3"
                                     variant="success"
@@ -75,7 +75,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                                 </Button>
                                 <Button
                                     className="me-3"
-                                    href="http://localhost:3000/main_page/users"
+                                    href={import.meta.env.VITE_FRONTEND + "/main_page/users"}
                                     variant="primary"
                                     // onClick={ () => setShow(false)}
                                 >
