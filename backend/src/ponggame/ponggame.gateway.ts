@@ -90,6 +90,7 @@ export class PonggameGateway
       this._socketIdUserId.set(client.id, userId);
       this._userIdSocketId.set(userId, client.id);
       const matchId = this.ponggameService.getMatchId(userId);
+      console.log(`UserId found : ${userId}`);
       console.log(`Match Id ${matchId}`);
       if (matchId == "") {
         //if not get the selection screen
@@ -98,7 +99,7 @@ export class PonggameGateway
           this.ponggameService.getInitMatch("Default")
         );
       } else {
-        //if part of the game then join the match
+        //if part of a game then join the match
         client.join(matchId);
       }
     } catch {
@@ -107,6 +108,7 @@ export class PonggameGateway
       client.disconnect();
     }
 
+    // old code. just for reference. Plz remove when done
     // const token = client.handshake.headers.cookie?.split("=")[1];
     // if (!token) {
     //   console.log(">>>>>>>>>>>>>>>>>No Token <<<<<<<<<<<<<<<<");
