@@ -17,6 +17,9 @@ import { UserEntity } from "src/user/user.entity";
 import { MatchService } from "src/matches/match.service";
 import { MatchDto } from "src/matches/match.dto";
 
+//for testing
+import { MatchEntity } from "src/matches/match.entity";
+
 @WebSocketGateway({
   cors: {
     //    origin: '*', //!DEV allowing any origin
@@ -142,11 +145,27 @@ console.log(`pong game client id ${client.id} disconnected`);
     console.log("dummy playerid is " + player2.id + "|");
   }
 
+  //save the match data to the database
   async processMatch(gamestate : GameState){
     const player1 : UserEntity = await this.userService.getUserByLoginName(gamestate.player1info);
     const player2 : UserEntity = await this.userService.getUserByLoginName(gamestate.player2info);
     const match : MatchDto = new MatchDto();
+    match.player1Id = player1.id;
+    match.player2Id = player2.id;
+    match.player1Score = gamestate.player1score;
+    match.player2Score = gamestate.player2score;
+    if(match.player1Score > match.player2Score)
+        match.winnerId = player1.id;
+    else
+        match.winnerId = player2.id;
+
+    match.timeStamp = new Date();
     console.log("player ids :" + player1.id + " " + player2.id);
+    try {
+        await this.matchService.createMatch(match);
+    } catch(e){
+        console.log("Error: something went wrong with entering match in to the database");
+    }
   }
 
 
@@ -163,5 +182,12 @@ console.log(`pong game client id ${client.id} disconnected`);
       console.log(`user id ${key} client id ${value}`);
     });
     console.log('\n');
+  }
+
+  async print_out_matches(userId: number){
+    const matchHistory: MatchEntity[] = await this.matchService.getMatchHistoryByUserId(userId);
+    matchHistory.forEach((match) =>{
+        console.log(` match id ${match.id}\n player 1 ${match.player1} and player 2 ${match.player2} \n Score ${match.player1Score} - ${match.player2Score} \n WinnerId ${match.winnerId}\n`);
+    });
   }
 }
