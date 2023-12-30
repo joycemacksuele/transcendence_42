@@ -65,48 +65,31 @@ export class ChatService {
     chatEntity.admins.push(chatEntity.creator);
     chatEntity.users = [];
     chatEntity.users.push(chatEntity.creator);
-    // chatEntity.bannedUsers = [];
+    chatEntity.bannedUsers = [];
     if (requestNewChatDto.type == ChatType.PRIVATE) {
+      // chat name for private chat = friend's name + our name (so it is unique)
+      chatEntity.name = requestNewChatDto.name + "+" + chatEntity.creator;
       // If it is a PRIVATE chat we need to add the friend to the users list
-      // chat name for private chat = friend's name
       chatEntity.users.push(await this.userService.getUserByLoginName(requestNewChatDto.name));
     } else if (requestNewChatDto.type == ChatType.PROTECTED) {
       if (requestNewChatDto.password == null) {
-        throw new Error('Password is required for PROTECTED group');
+        throw new Error('[createChat] Password is required for PROTECTED group');
       }
       try {
         chatEntity.password = await bcryptjs.hash(requestNewChatDto.password, 10);
       } catch (err) {
-        throw new Error('Can not hash password');
+        throw new Error('[createChat] Can not hash password');
       }
     }
-    // const new_chat = this.chatRepository.create(requestNewChatDto);// this can create an Entity out of an object if var name matches
     this.chatRepository.save(chatEntity).then(r => {
-      this.logger.log('NewChatEntity chat created: ' + r.name);
+      this.logger.log('[createChat] chat created: ' + r.name);
     });
   }
 
-  // async addAdmin(chatId: number, newAdmin: string)  {
-  //   await this.chatRepository.findOneOrFail({
-  //     where: {
-  //       id: chatId,
-  //     },
-  //   }).then((foundEntityToJoin) => {
-  //     // Now we have the entity to update the member's array
-  //     foundEntityToJoin.admins = foundEntityToJoin.admins.concat(newAdmin);
-  //     this.logger.log('[joinChat] new admins list: ' + foundEntityToJoin.admins);
-  //     this.chatRepository.save(foundEntityToJoin).then(r => {
-  //       this.logger.log('[joinChat] chatId should match: ' + chatId + " = " + r.id);
-  //     });
-  //   }).catch((err) => {
-  //     throw new Error('[joinChat] Could not find chat entity to join -> err: ' + err);
-  //   });
-  // }
-
   async saveNewUserToChat(foundEntityToJoin: NewChatEntity, intraName: string, chatId: number) {
-    // Now we have the entity to update the member's array
+    // Now we have the entity to update the users' array
     const foundUser : UserEntity = await this.userService.getUserByLoginName(intraName);
-    // this.logger.log('[joinChat] new members list: ' + foundEntityToJoin.users);
+    // this.logger.log('[saveNewUserToChat] new users list: ' + foundEntityToJoin.users);
     this.chatRepository.joinChat(foundUser, foundEntityToJoin).then(r => {
       this.logger.log('[saveNewUserToChat] joined chat -> chatId should match: ' + chatId + " = " + r.id);
     });
@@ -123,17 +106,15 @@ export class ChatService {
         throw new Error('Password is required for PROTECTED group');
       } else if (foundEntityToJoin.type == ChatType.PROTECTED) {
         // Join a PROTECTED chat
-        this.logger.log('[joinChat] password: ', password);
-        // TODO HERE EVERYTIME ITS CREATING A NEW HASH SO THE COMPARE IS NOT WORKING
-        bcryptjs.hash(password, 10).then((password) => {
-          this.logger.log('[joinChat] password: ', password);
-          this.logger.log('[joinChat] foundEntityToJoin.password: ', foundEntityToJoin.password);
+        bcryptjs.hash(password, 10).then((password: string) => {
+          this.logger.log('[joinChat] hashed password: ', password);
 
+          // TODO HERE EVERYTIME ITS CREATING A NEW HASH SO THE COMPARE IS NOT WORKING
           if (bcryptjs.compare(password, foundEntityToJoin.password)) {
             this.logger.log('[joinChat] Password if ok, joining the chat');
             return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
           }
-        }).catch((err) => {
+        }).catch((err: string) => {
           throw new Error('[joinChat] Can not hash password -> err: ' + err);
         });
       } else {
@@ -141,7 +122,7 @@ export class ChatService {
         this.logger.log('[joinChat] No password required, joining the chat');
         return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
       }
-    }).catch((err) => {
+    }).catch((err: string) => {
       throw new Error('[joinChat] Could not find chat entity to join -> err: ' + err);
     });
     return false;
@@ -150,24 +131,50 @@ export class ChatService {
   async leaveChat(chatId: number, intraName: string)  {
     await this.chatRepository.getOneChat(chatId).then(async (foundEntityToLeave: NewChatEntity) => {
       const userEntity = await this.userService.getUserByLoginName(intraName);
-      // Now we have the entity to update the member's array
+      // Now we have the entity to update the users' array
       return await this.chatRepository.deleteUserFromChat(foundEntityToLeave, userEntity);
-    }).catch((err) => {
+    }).catch((err: string) => {
       throw new Error('[leaveChat] Could not find chat entity to join -> err: ' + err);
+    });
+    return false;
+  }
+
+
+  async banFromChat(chatId: number, intraName: string)  {
+    await this.chatRepository.getOneChat(chatId).then(async (foundEntity: NewChatEntity) => {
+      const userEntity = await this.userService.getUserByLoginName(intraName);
+      // Now we have the entity to update the users' array and add the user to the bannedUsers array
+      await this.chatRepository.banUserFromChat(userEntity, foundEntity);
+      return await this.chatRepository.deleteUserFromChat(foundEntity, userEntity);
+    }).catch((err: string) => {
+      throw new Error('[leaveChat] Could not find chat entity to join -> err: ' + err);
+    });
+    return false;
+  }
+
+  async editPassword(chatId: number, chatPassword: string)  {
+    await this.chatRepository.getOneChat(chatId).then(async (foundEntityToEdit: NewChatEntity) => {
+      // Now we have the entity to update the password
+      return await this.chatRepository.editPasswordFromChat(foundEntityToEdit, chatPassword);
+    }).catch((err: string) => {
+      throw new Error('[editPassword] Could not find chat entity to edit -> err: ' + err);
+    });
+    return false;
+  }
+
+  async addAdmin(chatId: number, newAdmin: string)  {
+    await this.chatRepository.getOneChat(chatId).then(async (foundEntityToAdd: NewChatEntity) => {
+      const userEntity = await this.userService.getUserByLoginName(newAdmin);
+      // Now we have the entity to update the users' array
+      return await this.chatRepository.addAdmin(userEntity, foundEntityToAdd);
+    }).catch((err: string) => {
+      throw new Error('[addAdmin] Could not find chat entity to add admin -> err: ' + err);
     });
     return false;
   }
 
   async getAllChats(): Promise<ResponseNewChatDto[]> {
     this.logger.log('getAllChats');
-    // const query = this.chatRepository.createQueryBuilder().select("\"chatName\"").orderBy("ctid", "DESC");
-    // this.logger.log("ChatService query.getQuery(): ", query.getQuery());
-    // return this.chatRepository.query(query.getQuery());
-    // return this.chatRepository.find({
-    //   order: {
-    //     id: "DESC",
-    //   },
-    // });
     return await this.chatRepository.getAllChats();
   }
 

@@ -136,7 +136,7 @@ const Chat = () => {
 
             </Row>
         </Container>
-    )
-}
+    );
+};
 
-export default Chat
+export default Chat;
