@@ -48,14 +48,14 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                     {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
                         <>
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
-                            {chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
+                            {chat.users && chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
                                 key={key}
                                 className="hidden"
                             >
                             </ListGroup>}
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
-                            {chat.users.indexOf(intraName) != -1 && <ListGroup
+                            {chat.users && chat.users.indexOf(intraName) != -1 && <ListGroup
                                 key={key}
                                 variant="flush"
                             >
@@ -65,15 +65,20 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                                     variant="light"
                                     onClick={() => setChatClicked(chat)}
                                 >
-
-                                    {chat.type == ChatType.PROTECTED && <Image
-                                        src={import.meta.env.VITE_BACKEND + "/resources/protected-chat.png"}
+                                    {chat.type == ChatType.PRIVATE && <Image
+                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-private.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
-                                    {chat.type != ChatType.PROTECTED && <Image
-                                        src={import.meta.env.VITE_BACKEND + "/resources/chat.png"}
+                                    {chat.type == ChatType.PUBLIC && <Image
+                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-public.png"}
+                                        className="me-1"
+                                        width={30}
+                                        alt="chat"
+                                    />}
+                                    {chat.type == ChatType.PROTECTED && <Image
+                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-protected.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
@@ -86,7 +91,7 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                 </Stack>
             </Row>
         </>
-    )
-}
+    );
+};
 
-export default ChatRecent
+export default ChatRecent;

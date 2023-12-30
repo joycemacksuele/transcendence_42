@@ -104,7 +104,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                 </Stack>
             </Row>
         </>
-    )
-}
+    );
+};
 
-export default MembersPrivateMessage
+export default MembersPrivateMessage;
