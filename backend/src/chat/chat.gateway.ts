@@ -114,7 +114,7 @@ export class ChatGateway
       this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
 
       this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(() => {
-        this.logger.log('getChats -> chat' + requestNewChatDto.name + ' was created');
+        this.logger.log('getChats -> chat ' + requestNewChatDto.name + ' was created');
 
         // If we could save a new chat in the database, get the whole table
         this.chatService.getAllChats().then((allChats) => {
@@ -136,7 +136,7 @@ export class ChatGateway
         clientSocket.join(requestNewChatDto.name);// TODO no repetition for groups names since wit would join the same room
         this.logger.log('Socket has joined room ' + requestNewChatDto.name);
       }
-      this.logger.log('Socket rooms for the createChat: ', clientSocket.rooms.size);
+      this.logger.log('Socket rooms for the createChat: ' + clientSocket.rooms.size);
     } catch (err) {
       this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
       throw err;

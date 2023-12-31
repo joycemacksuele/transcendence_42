@@ -10,8 +10,8 @@ import { UserEntity } from 'src/user/user.entity';
 @Unique(['name'])
 export class NewChatEntity {
 
-    // JOYCE -> I have added uuid to try to fix a database error with the ids
-    @PrimaryGeneratedColumn('uuid')
+    // JOYCE -> I have added 'uuid' to try to fix a database error with the ids
+    @PrimaryGeneratedColumn()
     id: number;
 
     @Column()

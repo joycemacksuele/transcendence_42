@@ -64,10 +64,19 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			responseDto.admins = chatAdmins.map((adminsList) => {
 				return adminsList.admins;
 			});
-            this.logger.log('users != null: ', users.toString());
+            this.logger.log('users != null: ' + users.toString());
             if (users.toString()) {
                 responseDto.users = users;
             }
+			const chatBannedUsers = await this
+				.createQueryBuilder("new_chat")
+				.select('user.loginName as "bannedUsers"')
+				.where('new_chat.id = :id', {id: chat.id})
+				.leftJoin("new_chat.bannedUsers", "user")
+				.getRawMany();
+			responseDto.bannedUsers = chatBannedUsers.map((bannedUsersList) => {
+				return bannedUsersList.bannedUsers;
+			});
 			const chatMessages = await this
 				.createQueryBuilder("new_chat")
 				.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creatorId"')
@@ -83,7 +92,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 						.createQueryBuilder("new_chat")
 						.select('user.loginName as "loginName"')
 						.where('user.id = :id', {id: messagesList.creatorId})
-						.leftJoin("new_chat.users", "user")
+						.leftJoin("new_chat.loginName", "user")
 						.getRawOne();
 					responseDto_inner.creator = messageCreator.loginName;
 					return responseDto_inner;

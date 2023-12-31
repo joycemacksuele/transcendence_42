@@ -68,7 +68,7 @@ export class ChatService {
     chatEntity.bannedUsers = [];
     if (requestNewChatDto.type == ChatType.PRIVATE) {
       // chat name for private chat = friend's name + our name (so it is unique)
-      chatEntity.name = requestNewChatDto.name + "+" + chatEntity.creator;
+      chatEntity.name = requestNewChatDto.name + "+" + creator;
       // If it is a PRIVATE chat we need to add the friend to the users list
       chatEntity.users.push(await this.userService.getUserByLoginName(requestNewChatDto.name));
     } else if (requestNewChatDto.type == ChatType.PROTECTED) {
