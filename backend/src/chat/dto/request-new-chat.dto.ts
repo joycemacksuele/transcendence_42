@@ -20,10 +20,6 @@ export class RequestNewChatDto {
     @IsNotEmpty({ message: 'Required' })
     name: string;
 
-    // if chatType == PROTECTED
-    // it has to be hashed before saved to the database
-    // @IsNotEmpty({ message: 'Required' })
-
     // PRIVATE   | is a DM - can't be joined  | only members can see it
     // PUBLIC    | everyone can join it       | everyone can see it
     // PROTECTED | password to join           | everyone can see it

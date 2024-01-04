@@ -137,7 +137,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		let chatToBan = await this
 			.createQueryBuilder("new_chat")
 			.where('new_chat.id = :id', { id: chat.id })
-			.leftJoinAndSelect("new_chat.users", "user")
+			.leftJoinAndSelect("new_chat.bannedUsers", "bannedUser")
 			.getOne();
 		chatToBan.bannedUsers.push(user);
 		await this

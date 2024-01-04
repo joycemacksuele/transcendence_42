@@ -55,6 +55,11 @@ export class ChatService {
     return (r2);
   }
 
+  async getAllChats(): Promise<ResponseNewChatDto[]> {
+    this.logger.log('getAllChats');
+    return await this.chatRepository.getAllChats();
+  }
+
   async createChat(requestNewChatDto: RequestNewChatDto, creator: string)  {
     const chatEntity = new NewChatEntity();
     chatEntity.name = requestNewChatDto.name;
@@ -67,8 +72,9 @@ export class ChatService {
     chatEntity.users.push(chatEntity.creator);
     chatEntity.bannedUsers = [];
     if (requestNewChatDto.type == ChatType.PRIVATE) {
-      // chat name for private chat = friend's name + our name (so it is unique)
-      chatEntity.name = requestNewChatDto.name + "+" + creator;
+      // chat name for private chat = friend's name + our name (so it is unique) -> JOYCE January: I think it's ok to be only the name of the friend
+      // chatEntity.name = requestNewChatDto.name + "+" + creator;
+      chatEntity.name = requestNewChatDto.name;
       // If it is a PRIVATE chat we need to add the friend to the users list
       chatEntity.users.push(await this.userService.getUserByLoginName(requestNewChatDto.name));
     } else if (requestNewChatDto.type == ChatType.PROTECTED) {
@@ -81,8 +87,9 @@ export class ChatService {
         throw new Error('[createChat] Can not hash password');
       }
     }
-    this.chatRepository.save(chatEntity).then(r => {
+    return this.chatRepository.save(chatEntity).then(r => {
       this.logger.log('[createChat] chat created: ' + r.name);
+      return chatEntity;
     });
   }
 
@@ -128,11 +135,16 @@ export class ChatService {
     return false;
   }
 
+  async muteFromChat(chatId: number, intraName: string)  {
+    //todo
+  }
+
   async leaveChat(chatId: number, intraName: string)  {
     await this.chatRepository.getOneChat(chatId).then(async (foundEntityToLeave: NewChatEntity) => {
       const userEntity = await this.userService.getUserByLoginName(intraName);
       // Now we have the entity to update the users' array
       return await this.chatRepository.deleteUserFromChat(foundEntityToLeave, userEntity);
+      // TODO DELETE FROM ADMIN LEAST
     }).catch((err: string) => {
       throw new Error('[leaveChat] Could not find chat entity to join -> err: ' + err);
     });
@@ -142,10 +154,14 @@ export class ChatService {
 
   async banFromChat(chatId: number, intraName: string)  {
     await this.chatRepository.getOneChat(chatId).then(async (foundEntity: NewChatEntity) => {
+      this.logger.log('JOYCE 1');
       const userEntity = await this.userService.getUserByLoginName(intraName);
-      // Now we have the entity to update the users' array and add the user to the bannedUsers array
+      this.logger.log('JOYCE 2');
+      // Now we have the entity to update the users' array (delete banned user) and add the user to the bannedUsers array
       await this.chatRepository.banUserFromChat(userEntity, foundEntity);
+      this.logger.log('JOYCE 3');
       return await this.chatRepository.deleteUserFromChat(foundEntity, userEntity);
+      // TODO DELETE FROM ADMIN LEAST
     }).catch((err: string) => {
       throw new Error('[leaveChat] Could not find chat entity to join -> err: ' + err);
     });
@@ -171,11 +187,6 @@ export class ChatService {
       throw new Error('[addAdmin] Could not find chat entity to add admin -> err: ' + err);
     });
     return false;
-  }
-
-  async getAllChats(): Promise<ResponseNewChatDto[]> {
-    this.logger.log('getAllChats');
-    return await this.chatRepository.getAllChats();
   }
 
   deleteChat(chatId: number) {

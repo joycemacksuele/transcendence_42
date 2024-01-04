@@ -24,10 +24,6 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
             chatSocket.emit("deleteChat", chatId);
             console.log("[MembersPrivateMessage] deleteChat called -> chatId ", chatId, " was deleted");
         }
-        // axios.delete(`http://localhost:3001/chat/delete-chat/${chatId}`
-        // ).catch((error) => {
-        //     console.error('Check: Error on the chat controller for the delete-chat endpoint: ', error);
-        // });
     };
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
@@ -56,6 +52,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
                             />
                             {chatClicked?.name}
                         </ListGroup.Item>
+
                         <Modal
                             // size="sm"
                             show={show}

@@ -21,6 +21,7 @@ export interface ResponseNewChatDto {
     creator: string;
     admins: string[];
     users: string[];
+    bannedUsers: string[];
     messages: ResponseNewChatDto[];
 }
 
