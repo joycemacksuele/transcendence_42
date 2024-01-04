@@ -15,7 +15,6 @@ import Image from "react-bootstrap/Image";
 import Form from "react-bootstrap/Form";
 
 // the creator can kick, ban, mute anyone on the group (even admins)
-// when the group is created, the admin is the owner (creator)
 // the admin can kick, ban, mute others on the group (besides the creator)
 
 type PropsHeader = {
@@ -39,6 +38,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     const inputRef = useRef(null);
 
     const [showMemberModal, setShowMemberModal] = useState(false);
+    const [clickedMember, setClickedMember] = useState<string>();
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
     const [chatPassword, setChatPassword] = useState<string | null>(null);
@@ -57,14 +57,24 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
         chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
     };
 
-    const addAdmin = (member: string) => {
-        console.log("[MembersGroup] member [", member, "] will be added to chat [", chatClicked?.name, "]");
-        chatSocket.emit("addAdmin", { chatId: chatClicked?.id, newAdmin: member });
+    const addAdmin = (user: string) => {
+        console.log("[MembersGroup] member [", user, "] will be added to chat [", chatClicked?.name, "]");
+        chatSocket.emit("addAdmin", { chatId: chatClicked?.id, newAdmin: user });
     };
 
-    const ban = (member: string) => {
-        console.log("[MembersGroup] member [", member, "] will be added to chat [", chatClicked?.name, "]");
-        chatSocket.emit("banFromChat", { chatId: chatClicked?.id, newAdmin: member });
+    const mute = (user: string) => {
+        console.log("[MembersGroup] member [", user, "] will be muted from chat [", chatClicked?.name, "]");
+        chatSocket.emit("muteFromChat", { chatId: chatClicked?.id, user: user });
+    };
+
+    const kick = (user: string) => {
+        console.log("[MembersGroup] member [", user, "] will be kicked from chat [", chatClicked?.name, "]");
+        chatSocket.emit("kickFromChat", { chatId: chatClicked?.id, user: user });
+    };
+
+    const ban = (user: string) => {
+        console.log("[MembersGroup] member [", user, "] will be banned from chat [", chatClicked?.name, "]");
+        chatSocket.emit("banFromChat", { chatId: chatClicked?.id, user: user });
     };
 
     const editGroupPassword = () => {
@@ -77,7 +87,6 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
         <>
             {/* Members row */}
             <Row className="me-auto">
-                {/*<Card.Body>*/}
                 <Stack gap={2}>
                     {chatClicked?.users && chatClicked?.users.map((member: string, mapStaticKey: number) => (
                         <ListGroup
@@ -89,7 +98,10 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                 as="li"
                                 className="justify-content-between align-items-start"
                                 variant="light"
-                                onClick={ () => setShowMemberModal(true)}
+                                onClick={ () => {
+                                    setShowMemberModal(true)
+                                    setClickedMember(member)
+                                }}
                             >
                                 <Image
                                     src={import.meta.env.VITE_BACKEND + "/resources/member.png"}
@@ -99,95 +111,100 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                 />
                                 {member}
                             </ListGroup.Item>
-                            <Modal
-                                size="lg"
-                                show={showMemberModal}
-                                onHide={ () => {setShowMemberModal(false)}}
-                            >
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Member settings</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <Button
-                                        href={import.meta.env.VITE_FRONTEND + "/main_page/game"}
-                                        className="me-4 mb-3"
-                                        variant="success"
+
+                            {/* Modal with buttons should not appear to the current user */}
+                            {(intraName !== clickedMember) && (
+                                <>
+                                    <Modal
+                                        size="lg"
+                                        show={showMemberModal}
+                                        onHide={ () => {setShowMemberModal(false)}}
                                     >
-                                        Invite to play pong!
-                                    </Button>
-                                    <Button
-                                        className="me-4 mb-3"
-                                        // href={import.meta.env.VITE_FRONTEND + "/main_page/users"}
-                                        onClick={() => goToUserProfile(member)}
-                                        variant="primary"
-                                    >
-                                        Go to profile
-                                    </Button>
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Member settings</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            <Button
+                                                href={import.meta.env.VITE_FRONTEND + "/main_page/game"}
+                                                className="me-4 mb-3"
+                                                variant="success"
+                                            >
+                                                Invite to play pong!
+                                            </Button>
+                                            <Button
+                                                className="me-4 mb-3"
+                                                // href={import.meta.env.VITE_FRONTEND + "/main_page/users"}
+                                                onClick={() => goToUserProfile(member)}
+                                                variant="primary"
+                                            >
+                                                Go to profile
+                                            </Button>
 
-                                    {/* Add as admin = when we are creator */}
-                                    {(chatClicked?.creator == intraName) && (
-                                        <Button
-                                            className="me-4 mb-3"
-                                            variant="primary"
-                                            value={member}
-                                            onClick={ () => {
-                                                setShowMemberModal(false);
-                                                addAdmin(member);
-                                            }}
-                                        >
-                                            Add as admin
-                                        </Button>
-                                    )}
+                                            {/* Add as admin = when we are creator */}
+                                            {(chatClicked?.creator == intraName) && (
+                                                <Button
+                                                    className="me-4 mb-3"
+                                                    variant="primary"
+                                                    value={member}
+                                                    onClick={ () => {
+                                                        setShowMemberModal(false);
+                                                        addAdmin(member);
+                                                    }}
+                                                >
+                                                    Add as admin
+                                                </Button>
+                                            )}
 
-                                    {/* Mute = when we are admin OR creator */}
-                                    {(chatClicked?.admins.indexOf(intraName) != -1 ||
-                                        chatClicked?.creator == intraName) && (
-                                        <Button
-                                            className="me-4 mb-3"
-                                            variant="warning"
-                                            onClick={ () => {
-                                                setShowMemberModal(false);
-                                                // mute(member);
-                                            }}
-                                        >
-                                            Mute
-                                        </Button>
-                                    )}
+                                            {/* Mute = when we are admin OR creator */}
+                                            {(chatClicked?.admins.indexOf(intraName) != -1 ||
+                                                chatClicked?.creator == intraName) && (
+                                                <Button
+                                                    className="me-4 mb-3"
+                                                    variant="warning"
+                                                    onClick={ () => {
+                                                        setShowMemberModal(false);
+                                                        mute(member);
+                                                    }}
+                                                >
+                                                    Mute
+                                                </Button>
+                                            )}
 
-                                    {/* Mute = when we are admin OR creator */}
-                                    {(chatClicked?.admins.indexOf(intraName) != -1 ||
-                                        chatClicked?.creator == intraName) && (
-                                        <Button
-                                            className="me-4 mb-3"
-                                            variant="warning"
-                                            onClick={ () => {
-                                                setShowMemberModal(false);
-                                                // kick(member);
-                                            }}
-                                        >
-                                            Kick
-                                        </Button>
-                                    )}
-                                    {/* Mute = when we are admin OR creator */}
-                                    {(chatClicked?.admins.indexOf(intraName) != -1 ||
-                                        chatClicked?.creator == intraName) && (
-                                        <Button
-                                            className="me-4 mb-3"
-                                            variant="danger"
-                                            onClick={() => {
-                                                setShowMemberModal(false);
-                                                ban(member);
-                                            }}
-                                        >
-                                            Ban
-                                        </Button>
-                                    )}
-                                </Modal.Body>
-                            </Modal>
+                                            {/* Mute = when we are admin OR creator */}
+                                            {(chatClicked?.admins.indexOf(intraName) != -1 ||
+                                                chatClicked?.creator == intraName) && (
+                                                <Button
+                                                    className="me-4 mb-3"
+                                                    variant="warning"
+                                                    onClick={ () => {
+                                                        setShowMemberModal(false);
+                                                        kick(member);
+                                                    }}
+                                                >
+                                                    Kick
+                                                </Button>
+                                            )}
+                                            {/* Mute = when we are admin OR creator */}
+                                            {(chatClicked?.admins.indexOf(intraName) != -1 ||
+                                                chatClicked?.creator == intraName) && (
+                                                <Button
+                                                    className="me-4 mb-3"
+                                                    variant="danger"
+                                                    onClick={() => {
+                                                        setShowMemberModal(false);
+                                                        ban(member);
+                                                    }}
+                                                >
+                                                    Ban
+                                                </Button>
+                                            )}
+                                        </Modal.Body>
+                                    </Modal>
+                                </>
+                            )}
                         </ListGroup>
                     ))}
                 </Stack>
-                {/*</Card.Body>*/}
             </Row>
 
             {/* Group Buttons row */}
@@ -286,9 +303,10 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             </Button>
                         )}
 
-                        {/* Join group = when we are NOT a member + chat is NOT PROTECTED */}
+                        {/* Join group = when we are NOT a member + chat is NOT PROTECTED + we are NOT banned */}
                         {(chatClicked?.users.indexOf(intraName) == -1 &&
-                            chatClicked?.type != ChatType.PROTECTED) && (
+                            chatClicked?.type != ChatType.PROTECTED &&
+                            chatClicked?.bannedUsers.indexOf(intraName) == -1) && (
                             <Button
                                 variant="primary"
                                 onClick={joinGroupChat}
@@ -297,9 +315,10 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             </Button>
                         )}
 
-                        {/* Join group = when we are NOT a member + chat is PROTECTED */}
+                        {/* Join group = when we are NOT a member + chat is PROTECTED + we are NOT banned */}
                         {(chatClicked?.users.indexOf(intraName) == -1 &&
-                            chatClicked?.type == ChatType.PROTECTED) && (
+                            chatClicked?.type == ChatType.PROTECTED &&
+                            chatClicked?.bannedUsers.indexOf(intraName) == -1) && (
                             <>
                                 <Button
                                     variant="primary"
