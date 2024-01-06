@@ -5,7 +5,7 @@ import NewChat from "./NewChat";
 import Messages from "./Messages";
 import MembersPrivateMessage from "./MembersPrivateMessage";
 import MembersGroup from "./MembersGroup";
-import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
+import {ChatType, ResponseNewChatDto, ResponseMessageChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
@@ -108,7 +108,7 @@ const Chat = () => {
 
                 {/* Chat column */}
                 <Col className='bg-light col-md-6'>
-                    <Messages />
+                    <Messages chatClicked={chatClicked} />
                 </Col>
 
                 {/* Members column */}
@@ -136,7 +136,7 @@ const Chat = () => {
 
             </Row>
         </Container>
-    )
-}
+    );
+};
 
-export default Chat
+export default Chat;

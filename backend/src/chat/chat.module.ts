@@ -3,6 +3,7 @@ import { ChatController } from "./chat.controller";
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChatMessageRepository } from "./chat-message.repository";
 import { ChatRepository } from "./chat.repository";
 import { NewChatEntity } from './entities/new-chat.entity';
 import { ChatMessageEntity } from "./entities/chat-message.entity";
@@ -14,8 +15,8 @@ import { JwtService } from "@nestjs/jwt";
 import { TwoFactorAuthService } from "src/auth/2fa/2fa.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NewChatEntity, ChatMessageEntity, UserEntity, ChatRepository]), UserModule],
-  providers: [ChatService, ChatGateway, UserService, ChatRepository, AuthService, JwtService, TwoFactorAuthService],
+  imports: [TypeOrmModule.forFeature([NewChatEntity, ChatMessageEntity, UserEntity, ChatMessageRepository, ChatRepository]), UserModule],
+  providers: [ChatService, ChatGateway, UserService, ChatMessageRepository, ChatRepository, AuthService, JwtService, TwoFactorAuthService],
   controllers: [ChatController],
   // Providers can include services or repositories (and as we won't have a controller for the chat,
   // we can add the chat gateway (for websockets) here too

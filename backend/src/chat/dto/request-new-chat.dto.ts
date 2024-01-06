@@ -15,14 +15,10 @@ export class RequestNewChatDto {
     type: ChatType;
     
     @IsString()
-    @MinLength(6)
+    @MinLength(3)
     @MaxLength(15)
     @IsNotEmpty({ message: 'Required' })
     name: string;
-
-    // if chatType == PROTECTED
-    // it has to be hashed before saved to the database
-    // @IsNotEmpty({ message: 'Required' })
 
     // PRIVATE   | is a DM - can't be joined  | only members can see it
     // PUBLIC    | everyone can join it       | everyone can see it

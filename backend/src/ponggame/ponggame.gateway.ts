@@ -68,6 +68,7 @@ export class PonggameGateway
   async handleConnection(client: Socket) {
     console.log(`pong game client id ${client.id} connected`);
 
+
     let token = null;
 
     if(client.handshake.headers.cookie){

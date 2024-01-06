@@ -1,4 +1,4 @@
-import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength} from 'class-validator';
+import {IsNotEmpty, IsOptional, IsString, IsNumber, MinLength, MaxLength} from 'class-validator';
 
 export class RequestMessageChatDto {
 
@@ -8,12 +8,6 @@ export class RequestMessageChatDto {
     @IsNotEmpty({ message: 'Required' })
     name: string;
 */
-    @IsString()
-    @MinLength(5)
-    @MaxLength(15)
-    @IsOptional()
-    chatPassword: string | undefined;
-
     @IsString()
     @MinLength(3)
     @MaxLength(10)
@@ -25,4 +19,7 @@ export class RequestMessageChatDto {
     @MaxLength(1000)
     @IsNotEmpty({ message: 'Required' })
     message: string;
+
+    @IsNumber()
+    chatId: number;
 }
