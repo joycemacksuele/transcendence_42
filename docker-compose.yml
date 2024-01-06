@@ -118,27 +118,27 @@ services:
 
 
 
-    # --------------------------------------------- Extra: PgAdmin
-    # pgadmin:
-    #     container_name: pgadmin
-    #     image: dpage/pgadmin4:7
-    #     logging:
-    #         driver: none
-    #     ports:
-    #         - "${PGADMIN_LISTEN_PORT}:${PGADMIN_LISTEN_PORT}"
-    #     volumes:
-    #         - ./backend/_pgadmin_data:/var/lib/pgadmin
-    #     env_file:
-    #         - ./.env
-    #     environment:
-    #        - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-    #        - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-    #        - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
-    #        - PGADMIN_CONFIG_SERVER_MODE=${PGADMIN_CONFIG_SERVER_MODE}
-    #        - GUNICORN_ACCESS_LOGFILE=${GUNICORN_ACCESS_LOGFILE}
-    #        - PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED=False
-    #     depends_on:
-    #         - postgres_db
+# --------------------------------------------- Extra: PgAdmin
+#    pgadmin:
+#        container_name: pgadmin
+#        image: dpage/pgadmin4:7
+#        logging:
+#            driver: none
+#        ports:
+#            - "${PGADMIN_LISTEN_PORT}:${PGADMIN_LISTEN_PORT}"
+#        volumes:
+#            - ./backend/_pgadmin_data:/var/lib/pgadmin
+#        env_file:
+#            - ./.env
+#        environment:
+#           - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+#           - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+#           - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
+#           - PGADMIN_CONFIG_SERVER_MODE=${PGADMIN_CONFIG_SERVER_MODE}
+#           - GUNICORN_ACCESS_LOGFILE=${GUNICORN_ACCESS_LOGFILE}
+#           - PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED=False
+#        depends_on:
+#            - postgres_db
 
 # volumes:
 #      - ./<host_machine_dir_path>:/<container_data_dir_path>

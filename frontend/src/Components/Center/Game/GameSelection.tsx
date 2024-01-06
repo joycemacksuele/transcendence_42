@@ -20,7 +20,7 @@ function GameSelection(props: { socket: Socket | null }) {
     <Button variant="dark" onClick={() => joinGame('Default')}>
       Play classic Game
     </Button>
-    <Button variant="dark" onClick={() => joinGame('Default')}>
+    <Button variant="dark" onClick={() => joinGame('Custom')}>
       Play custom Game
     </Button>
     

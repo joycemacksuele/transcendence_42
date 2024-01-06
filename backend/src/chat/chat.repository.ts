@@ -1,14 +1,19 @@
 import {Injectable, Logger} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, Repository} from 'typeorm';
+import * as bcryptjs from 'bcryptjs';
 import {NewChatEntity} from './entities/new-chat.entity';
 import {UserEntity} from "src/user/user.entity";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
+import {ResponseMessageChatDto} from "./dto/response-message-chat.dto";
+import {ChatType} from "./utils/chat-utils";
 
 @Injectable()
 export class ChatRepository extends Repository<NewChatEntity> {
 	private readonly logger = new Logger(ChatRepository.name);
-	constructor(private dataSource: DataSource)
-	{
+	constructor(
+		private dataSource: DataSource
+	) {
 		super(NewChatEntity, dataSource.createEntityManager());
 		this.logger.log('constructor');
 	}
@@ -46,7 +51,8 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				.where('new_chat.id = :id', {id: chat.id})
 				.leftJoin("new_chat.users", "user")
 				.getRawMany();
-			responseDto.users = chatUsers.map((usersList) => {
+			const users = chatUsers.map((usersList) => {
+				console.log("usersList.users: ", usersList.users);
 				return usersList.users;
 			});
 			const chatAdmins = await this
@@ -58,32 +64,108 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			responseDto.admins = chatAdmins.map((adminsList) => {
 				return adminsList.admins;
 			});
+            this.logger.log('users != null: ' + users.toString());
+            if (users.toString()) {
+                responseDto.users = users;
+            }
+			const chatBannedUsers = await this
+				.createQueryBuilder("new_chat")
+				.select('user.loginName as "bannedUsers"')
+				.where('new_chat.id = :id', {id: chat.id})
+				.leftJoin("new_chat.bannedUsers", "user")
+				.getRawMany();
+			responseDto.bannedUsers = chatBannedUsers.map((bannedUsersList) => {
+				return bannedUsersList.bannedUsers;
+			});
+			const chatMessages = await this
+				.createQueryBuilder("new_chat")
+				.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creatorId"')
+				.where('new_chat.id = :id', {id: chat.id})
+				.leftJoin("new_chat.messages", "chat_message")
+				.getRawMany();
+			responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
+				const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
+				responseDto_inner.id = messagesList.id;
+				responseDto_inner.message = messagesList.message;
+				try {
+					const messageCreator = await this
+						.createQueryBuilder("new_chat")
+						.select('user.loginName as "loginName"')
+						.where('user.id = :id', {id: messagesList.creatorId})
+						.leftJoin("new_chat.loginName", "user")
+						.getRawOne();
+					responseDto_inner.creator = messageCreator.loginName;
+					return responseDto_inner;
+				} catch (err) {
+					// throw new Error("Can't find user");
+                                        this.logger.log("Can't find user");
+				}
+			}));
 			return responseDto;
 		}));
 	}
 
 	public async deleteUserFromChat(foundEntityToJoin: NewChatEntity, userEntity: UserEntity) {
-		console.log("foundEntityToJoin.users: ", foundEntityToJoin);
+		console.log("foundEntityToJoin: ", foundEntityToJoin);
 		foundEntityToJoin.users = foundEntityToJoin.users.filter((user: UserEntity) => {
 			return user.id !== userEntity.id;
 		});
-		await this
-			.manager
-			.save(foundEntityToJoin);
+		if (!foundEntityToJoin.users.toString()) {
+			await this.delete(foundEntityToJoin.id);
+		} else {
+			await this
+				.manager
+				.save(foundEntityToJoin);
+		}
 		return true
 	}
 
-	public async joinChat(user : UserEntity, chat : NewChatEntity) {
-		let chatUsers = await this
+	public async joinChat(user: UserEntity, chat: NewChatEntity) {
+		let chatToJoin = await this
 			.createQueryBuilder("new_chat")
 			.where('new_chat.id = :id', { id: chat.id })
 			.leftJoinAndSelect("new_chat.users", "user")
 			.getOne();
-		chatUsers.users.push(user);
+		chatToJoin.users.push(user);
 		await this
 			.manager
-			.save(chatUsers);
-		return chatUsers
+			.save(chatToJoin);
+		return chatToJoin
+	}
+
+	public async banUserFromChat(user: UserEntity, chat: NewChatEntity) {
+		let chatToBan = await this
+			.createQueryBuilder("new_chat")
+			.where('new_chat.id = :id', { id: chat.id })
+			.leftJoinAndSelect("new_chat.bannedUsers", "bannedUser")
+			.getOne();
+		chatToBan.bannedUsers.push(user);
+		await this
+			.manager
+			.save(chatToBan);
+		return chatToBan
+	}
+
+	public async editPasswordFromChat(foundEntityToJoin: NewChatEntity, chatPassword: string) {
+		console.log("foundEntityToJoin: ", foundEntityToJoin);
+		if (foundEntityToJoin.type == ChatType.PROTECTED) {
+			if (chatPassword != null) {
+				bcryptjs.hash(chatPassword, 10).then((password: string) => {
+					this.logger.log('[editPasswordFromChat] hashed password: ', password);
+					foundEntityToJoin.password = password;
+				}).catch((err: string) => {
+					throw new Error('[editPasswordFromChat] Can not hash password -> err: ' + err);
+				});
+			} else {
+				// If password is deleted we want to set the chat type to PUBLIC
+				foundEntityToJoin.password = null;
+				foundEntityToJoin.type = ChatType.PUBLIC;
+			}
+			await this
+				.manager
+				.save(foundEntityToJoin);
+		}
+		return true
 	}
 
 	public async addAdmin(user : UserEntity, chat : NewChatEntity) {

@@ -61,7 +61,7 @@ export class UserService {
 
 
   async getUserByLoginName(loginName: string): Promise<UserEntity> {
-    this.logger.log("getUserByLoginName function " + loginName);
+    this.logger.log("getUserByLoginName function, loginName: " + loginName);
     const options: FindOneOptions<UserEntity> = { where: { loginName } };
     // this.logger.log("getUserByLoginName function options: " + options);
 
