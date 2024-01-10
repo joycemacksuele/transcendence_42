@@ -52,6 +52,10 @@ export class NewChatEntity {
 
     @ManyToMany(() => UserEntity)
     @JoinTable()
+    mutedUsers: UserEntity[];
+
+    @ManyToMany(() => UserEntity)
+    @JoinTable()
     bannedUsers: UserEntity[];
 
     @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)

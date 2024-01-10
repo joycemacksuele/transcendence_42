@@ -38,10 +38,14 @@ export class ResponseNewChatDto {
     @IsArray()
     @ValidateNested({ each: true })
     @ArrayMinSize(2)
+    mutedUsers: string[];
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @ArrayMinSize(2)
     bannedUsers: string[];
 
     @IsArray()
     @ValidateNested({ each: true })
     messages: ResponseMessageChatDto[];
-
 }

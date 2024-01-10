@@ -70,6 +70,7 @@ export class ChatService {
     chatEntity.admins.push(chatEntity.creator);
     chatEntity.users = [];
     chatEntity.users.push(chatEntity.creator);
+    chatEntity.mutedUsers = [];
     chatEntity.bannedUsers = [];
     if (requestNewChatDto.type == ChatType.PRIVATE) {
       // chat name for private chat = friend's name + our name (so it is unique) -> JOYCE January: I think it's ok to be only the name of the friend
@@ -130,13 +131,33 @@ export class ChatService {
         return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
       }
     }).catch((err: string) => {
-      throw new Error('[joinChat] Could not find chat entity to join -> err: ' + err);
+      throw new Error('[joinChat] Could not join chat -> err: ' + err);
     });
     return false;
   }
 
   async muteFromChat(chatId: number, intraName: string)  {
-    //todo
+    await this.chatRepository.getOneChat(chatId).then(async (foundEntity: NewChatEntity) => {
+      const userEntity = await this.userService.getUserByLoginName(intraName);
+      // Now we have the entity to add the user to the mutedUsers array
+      return await this.chatRepository.muteUserFromChat(userEntity, foundEntity);
+    }).catch((err: string) => {
+      throw new Error('[muteFromChat] Could not mute user from chat -> err: ' + err);
+    });
+    return false;
+  }
+
+  async banFromChat(chatId: number, intraName: string)  {
+    await this.chatRepository.getOneChat(chatId).then(async (foundEntity: NewChatEntity) => {
+      const userEntity = await this.userService.getUserByLoginName(intraName);
+      // Now we have the entity to update the users' array (delete banned user) and add the user to the bannedUsers array
+      await this.chatRepository.banUserFromChat(userEntity, foundEntity);
+      return await this.chatRepository.deleteUserFromChat(foundEntity, userEntity);
+      // TODO DELETE FROM ADMIN LIST
+    }).catch((err: string) => {
+      throw new Error('[banFromChat] Could not ban user from chat -> err: ' + err);
+    });
+    return false;
   }
 
   async leaveChat(chatId: number, intraName: string)  {
@@ -144,26 +165,9 @@ export class ChatService {
       const userEntity = await this.userService.getUserByLoginName(intraName);
       // Now we have the entity to update the users' array
       return await this.chatRepository.deleteUserFromChat(foundEntityToLeave, userEntity);
-      // TODO DELETE FROM ADMIN LEAST
+      // TODO DELETE FROM ADMIN LIST
     }).catch((err: string) => {
-      throw new Error('[leaveChat] Could not find chat entity to join -> err: ' + err);
-    });
-    return false;
-  }
-
-
-  async banFromChat(chatId: number, intraName: string)  {
-    await this.chatRepository.getOneChat(chatId).then(async (foundEntity: NewChatEntity) => {
-      this.logger.log('JOYCE 1');
-      const userEntity = await this.userService.getUserByLoginName(intraName);
-      this.logger.log('JOYCE 2');
-      // Now we have the entity to update the users' array (delete banned user) and add the user to the bannedUsers array
-      await this.chatRepository.banUserFromChat(userEntity, foundEntity);
-      this.logger.log('JOYCE 3');
-      return await this.chatRepository.deleteUserFromChat(foundEntity, userEntity);
-      // TODO DELETE FROM ADMIN LEAST
-    }).catch((err: string) => {
-      throw new Error('[leaveChat] Could not find chat entity to join -> err: ' + err);
+      throw new Error('[leaveChat] Could not delete user from chat -> err: ' + err);
     });
     return false;
   }
@@ -173,7 +177,7 @@ export class ChatService {
       // Now we have the entity to update the password
       return await this.chatRepository.editPasswordFromChat(foundEntityToEdit, chatPassword);
     }).catch((err: string) => {
-      throw new Error('[editPassword] Could not find chat entity to edit -> err: ' + err);
+      throw new Error('[editPassword] Could not edit password -> err: ' + err);
     });
     return false;
   }
@@ -184,7 +188,7 @@ export class ChatService {
       // Now we have the entity to update the users' array
       return await this.chatRepository.addAdmin(userEntity, foundEntityToAdd);
     }).catch((err: string) => {
-      throw new Error('[addAdmin] Could not find chat entity to add admin -> err: ' + err);
+      throw new Error('[addAdmin] Could not add admin to chat -> err: ' + err);
     });
     return false;
   }

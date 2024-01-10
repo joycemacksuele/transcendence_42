@@ -243,8 +243,9 @@ export class ChatGateway
     this.logger.log('muteFromChat -> Muting member ' + user + " from chat " + chatId);
     // Mute will NOT delete the user from the chat BUT will add them to a mutedUsers list
     await this.chatService.muteFromChat(chatId, user).then( () => {
-      // Muted user won't be removed from socket room since they can still see the messages from the chat
-      // but other members can't see their messages
+      // Muted user won't be removed from socket room since they can still see the messages from the chat,
+      // but other members can't see their messages, so if they send a message and are muted from the specific
+      // chat room, this message should not be emitted to the room
 
       // If we could mute user from the chat, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
