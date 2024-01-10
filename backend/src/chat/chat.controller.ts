@@ -12,6 +12,8 @@ export class ChatController {
 		this.logger.log('constructor');
 	}
 
+	// TODO -> CAN PROBABLY BE DELETED !!!!!!!!!!!!!!!!!!!!
+
 	// @Get('all-chats')//not being used
 	// async getAllChats() {
 	// 	this.logger.log('getAllChats');

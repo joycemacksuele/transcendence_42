@@ -55,6 +55,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				console.log("usersList.users: ", usersList.users);
 				return usersList.users;
 			});
+			this.logger.log('users != null: ' + users.toString());
+			if (users.toString()) {
+				responseDto.users = users;
+			}
 			const chatAdmins = await this
 				.createQueryBuilder("new_chat")
 				.select('user.loginName as "admins"')
@@ -64,10 +68,15 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			responseDto.admins = chatAdmins.map((adminsList) => {
 				return adminsList.admins;
 			});
-            this.logger.log('users != null: ' + users.toString());
-            if (users.toString()) {
-                responseDto.users = users;
-            }
+			const chatMutedUsers = await this
+				.createQueryBuilder("new_chat")
+				.select('user.loginName as "mutedUsers"')
+				.where('new_chat.id = :id', {id: chat.id})
+				.leftJoin("new_chat.mutedUsers", "user")
+				.getRawMany();
+			responseDto.mutedUsers = chatMutedUsers.map((mutedUsersList) => {
+				return mutedUsersList.mutedUsers;
+			});
 			const chatBannedUsers = await this
 				.createQueryBuilder("new_chat")
 				.select('user.loginName as "bannedUsers"')
@@ -131,6 +140,19 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.manager
 			.save(chatToJoin);
 		return chatToJoin
+	}
+
+	public async muteUserFromChat(user: UserEntity, chat: NewChatEntity) {
+		let chatToMute = await this
+			.createQueryBuilder("new_chat")
+			.where('new_chat.id = :id', { id: chat.id })
+			.leftJoinAndSelect("new_chat.mutedUsers", "mutedUser")
+			.getOne();
+		chatToMute.mutedUsers.push(user);
+		await this
+			.manager
+			.save(chatToMute);
+		return chatToMute
 	}
 
 	public async banUserFromChat(user: UserEntity, chat: NewChatEntity) {

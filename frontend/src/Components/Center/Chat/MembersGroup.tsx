@@ -43,7 +43,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
     const [chatPassword, setChatPassword] = useState<string | null>(null);
 
-    // todo get it from database
+    // TODO get it from database
     const currUserData = useContext(CurrentUserContext) as CurrUserData;
     const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
 
@@ -103,12 +103,38 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     setClickedMember(member)
                                 }}
                             >
-                                <Image
-                                    src={import.meta.env.VITE_BACKEND + "/resources/member.png"}
-                                    className="me-1"
-                                    width={30}
-                                    alt="chat"
-                                />
+                                {
+                                    (chatClicked?.mutedUsers.indexOf(member) == -1 &&
+                                    chatClicked?.bannedUsers.indexOf(member) == -1) ? (
+                                    <Image
+                                        src={import.meta.env.VITE_BACKEND + "/resources/member.png"}
+                                        className="me-1"
+                                        // id="profileImage_tiny"
+                                        // roundedCircle
+                                        width={30}
+                                        alt="chat"
+                                    />
+                                    ) : (
+                                    <>
+                                        {(chatClicked?.mutedUsers.indexOf(member) != -1) && <Image
+                                            src={import.meta.env.VITE_BACKEND + "/resources/member-muted.png"}
+                                            className="me-1"
+                                            // id="profileImage_tiny"
+                                            // roundedCircle
+                                            width={30}
+                                            alt="chat"
+                                        />}
+                                        {(chatClicked?.bannedUsers.indexOf(member) != -1) && <Image
+                                            src={import.meta.env.VITE_BACKEND + "/resources/member-banned.png"}
+                                            className="me-1"
+                                            // id="profileImage_tiny"
+                                            // roundedCircle
+                                            width={30}
+                                            alt="chat"
+                                        />}
+                                    </>
+                                    )
+                                }
                                 {member}
                             </ListGroup.Item>
 
