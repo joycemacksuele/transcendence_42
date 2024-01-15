@@ -129,10 +129,12 @@ export class AuthService {
 				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
 
 				// todo: replace ./uploads/ with .env var everywhere
-            	const imagePath = `./uploads/${player.loginName}.jpg`;
+            	const imagePath = `./${process.env.UPLOADS}${player.loginName}.jpg`;
+
 				try {
 					await this.userService.downloadAndSaveImage(imageUrl, imagePath);
-					await this.userService.updateProfileImage(player.loginName,	"uploads/" + player.loginName + ".jpg");
+					await this.userService.updateProfileImage(player.loginName,	process.env.UPLOADS + "/" + player.loginName + ".jpg");
+
 					this.logger.log("Create new player: User image saved.");
 				} catch(err) {
 					this.logger.error('Error updating profile image for player: ' + err);					
@@ -332,9 +334,16 @@ export class AuthService {
         try {
             const payload = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
             return payload;
-        } catch {
-            throw new UnauthorizedException('Invalid token');
-        }
+        } catch (error) {
+            // throw new UnauthorizedException('Invalid token');
+			// if (error instanceof TokenExpiredError) // this would need installing the package 'jsonwebtoken'
+			if (error.message === "jwt expired")
+				throw new UnauthorizedException('Token expired');
+			else {
+				this.logger.error(`Invalid token: ${error.message}`, error.stack);
+				throw new UnauthorizedException('Invalid token');
+			}
+		}
     }
 
     extractTokenFromHeader(request: Request): string | undefined{
