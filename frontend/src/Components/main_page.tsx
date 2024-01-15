@@ -3,6 +3,8 @@ import Header from "./Header/Header.tsx";
 import Center from "./Center/Center.tsx";
 import { CurrentUserContext, CurrUserData } from './Center/Profile_page/contextCurrentUser.tsx';
 import { checkIfUserExistsInDB } from './Center/Profile_page/checkIfUserExistsInDB.tsx';
+import { Button, Container } from 'react-bootstrap';
+
 
 interface ContextProps {
 	updateContext: (updateUserData: CurrUserData ) => void;
@@ -44,19 +46,29 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 	}, [updateContext]);
 
 	if (!userData) {
-		return <div>Waiting to fetch user data from DB ...</div>
+		// return <div>Waiting to fetch user data from DB ...</div>
+		return (
+			<Container 	className='d-flex justify-content-center align-items-center'
+						style={{ minHeight: "100vh" }}
+			>
+				<div className='d-flex flex-column align-items-center'>
+					{/* <h1>Unfriendly Ping Pong</h1> */}
+						{/* <Button */}
+							{/* className='button_default' */}
+							{/* onClick={handleClickAuth} */}
+						{/* > */}
+							{/* <h4>some text</h4> */}
+						{/* </Button> */}
+						<h3>This is none of your business now!</h3>
+				</div>
+			</Container>
+		)
 	}
-
-	// todo: delete sending  cookies on the backend
-	// const cookies = document.cookie;
-	// console.log('MAIN_PAGE COOKIES: ', cookies);
 
 	return (
 		<>
-			{/* <Header functionToCall={handleSetActiveContent}/> */}
 			<Header />
 			<Center />
-			{/* <Footer /> */}
 		</>
 	);
 };
