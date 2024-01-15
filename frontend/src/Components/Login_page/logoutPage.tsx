@@ -30,25 +30,16 @@ const LogoutPage = () => {
     handleLogout();
   }, [navigate]);
 
-  // TODO: MAYBE NO NEED TO RETURN, BECAUSE IT ALREADY NAVIGATES TO THE LOGIN PAGE ??
-  // return (
-  //   <Container style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-	// 		<Col style={{ textAlign: "center"}}>
-	// 			<p>Some text ...</p>
-	// 			{/* <p><a href="/"> LOGIN PAGE </a></p> */}
-	// 			<Button className="button_default" >
-	// 				<Link to="/" style={{color: "white"}}> LOGIN PAGE </Link>
-	// 			</Button>
-	// 		</Col>
-	// 	</Container>
-  // )
-
-
-  // return (
-  //   <div id="logout-page">
-  //     <p>GO AWAY!</p>
-  //   </div>
-  // );
+  return (
+    <Container style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+			<Col style={{ textAlign: "center"}}>
+				<h3>You are logged out</h3>
+				<Button className="button_default" >
+					<Link to="/" style={{color: "white"}}> LOGIN PAGE </Link>
+				</Button>
+			</Col>
+		</Container>
+  )
 };
 
 export default LogoutPage;

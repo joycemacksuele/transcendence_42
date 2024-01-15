@@ -72,53 +72,42 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 
   return (
 	<Container fluid className="container-max-width">
-	  <Row className="row-center justify-content-center">
-		<Col md={4} xs={10} className="">
-			<Row className="justify-content-center">
-				<Col md={11} className="column-bckg justify-content-center align-items-left p-2 mx-0 rounded">
-					<h5>MY PROFILE PAGE</h5>
-					<ChangeProfileName updateContext={updateContext} />
-					<ImageUpload updateContext={updateContext} />
-					<ButtonTfa />
-					<ChangeTheme />
-				</Col>
-			</Row>
-		</Col>
-		<Col md={4} xs={10}>
-			<Row className="justify-content-center">
-				<Col md={11} className="column-bckg justify-content-center align-items-left p-2 mx-0 rounded">
-					{/* <Row className='h-75'> */}
-					<h5>MY STATISTICS</h5>
-					<MyStatistics />
-					{/* <br /><h5>MY MATCH HISTORY</h5> */}
-					{/* <MatchHistory /> */}
-					<MatchHistory loginName={selectedUser}/>
-				</Col>
-			</Row>
+	  <Row className="row-center">
+		<Col xs={11} md={4} className="column-bckg justify-content-left align-items-left p-2 mx-0 rounded">
+		  <h5>MY PROFILE PAGE</h5>
+		  <ChangeProfileName updateContext={updateContext} />
+		  <ImageUpload updateContext={updateContext} />
+		  <ButtonTfa />
+		  <ChangeTheme />
 		</Col>
 
-		<Col md={4} xs={10}>
-			<Row className="justify-content-center">
-				<Col md={11} className="column-bckg justify-content-center align-items-left p-2 mx-0 rounded">
-					<div>
-						<h5>STALKING</h5>
-						{!selectedUser ? (
-						<FriendsList clickOnUser={handleClickOnUser} />
-						) : (
-						<>
-							<button className="button-back"
-									onClick={handleClickBack}>
-								&larr; back to list
-							</button>
-							<DisplayOneUser loginName={selectedUser} 
-											showMatchHistory={showMatchHistory}
-											setShowMatchHistory={setShowMatchHistory}
-							/>
-						</>
-						)}
-					</div>
-				</Col>
-			</Row>
+		<Col  xs={11} md={4} className="column-bckg justify-content-left align-items-left p-2 mx-0 rounded">
+		  {/* <Row className='h-75'> */}
+		  <h5>MY STATISTICS</h5>
+		  <MyStatistics />
+		  {/* <br /><h5>MY MATCH HISTORY</h5> */}
+		  {/* <MatchHistory /> */}
+		  <MatchHistory loginName={selectedUser}/>
+		</Col>
+
+		<Col  xs={11} md={4} className="column-bckg justify-content-left align-items-left p-2 mx-0 rounded">
+		  <div>
+			<h5>STALKING</h5>
+			{!selectedUser ? (
+			  <FriendsList clickOnUser={handleClickOnUser} />
+			) : (
+			  <>
+				<button className="button-back"
+						onClick={handleClickBack}>
+					&larr; back to list
+				</button>
+				<DisplayOneUser loginName={selectedUser} 
+								showMatchHistory={showMatchHistory}
+								setShowMatchHistory={setShowMatchHistory}
+				/>
+			  </>
+			)}
+		  </div>
 		</Col>
 	  </Row>
 

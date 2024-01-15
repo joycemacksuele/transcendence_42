@@ -76,17 +76,18 @@ button.button_default:focus-visible {
 
 .row-center {
   /* border: red 2px solid; */
-  height: 90vh;
-  max-height: 90vh;
-  overflow: hidden;
+  /* height: 90vh; */
+  /* max-height: 90vh; */
+  overflow: auto;
 }
 
 /* Background of outer div (column)  */
 .column-bckg {
 	margin-top: 2%;
-  max-height: 90vh;
+  /* max-height: 90vh; */
   overflow-y: auto; 
 	/* margin-left: 2%; */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 
@@ -101,6 +102,7 @@ button.button_default:focus-visible {
   padding: 4%;
   width: 100%;
   color: black;
+  
 }
 
 
@@ -118,7 +120,7 @@ button.button_default:focus-visible {
 }
 
 #match-timestamp {
-  font-size:smaller;
+  font-size: x-small;
 }
 
 #match-timestamp,
@@ -126,6 +128,7 @@ button.button_default:focus-visible {
 .score {
   flex: 1;
   text-align: center;
+  font-size: x-small;
 }
 
 .players {
@@ -235,6 +238,11 @@ button.button_default:focus-visible {
   margin: 0 auto;
 }
 
+
+.column-bckg {
+  overflow: auto; /* Change to 'auto' to allow scrolling if content is too large */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
 
 /* BROWSER'S OWN SETTINGS */
 /* @media (prefers-color-scheme: light) {

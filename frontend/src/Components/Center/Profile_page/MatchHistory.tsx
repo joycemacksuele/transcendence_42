@@ -22,7 +22,8 @@ interface Match {
 
 
 function formatDate(dateString: Date) {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    // const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const months = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
     const date = new Date(dateString);
     const day = date.getDate();
     const month = months[date.getMonth()];
@@ -31,7 +32,7 @@ function formatDate(dateString: Date) {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
 
-    return `${day}. ${month}${year}, ${hours}:${minutes} `;
+    return `${day}.${month}.${year}, ${hours}:${minutes} `;
 }
 
 
@@ -51,7 +52,7 @@ const fetchCurrentUserName = async () => {
 
 const AddDummyMatches = async () => {
 
-	// console.log('==================== START AddDummyMatches()');
+	console.log('==================== START AddDummyMatches()');
 	try {
 		if (!localStorage.getItem('dummyMatchAdded')) {
 			// console.log('==================== NO DUMMY MATCH STORAGE');
