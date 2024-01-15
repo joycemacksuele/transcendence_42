@@ -99,10 +99,10 @@ const UsersList: React.FC = () => {
 
   return (
     <Container fluid className="h-100 w-100 container-max-width">
-      <div className="users-outer">
+      {/* <div className="users-outerXXX"> */}
         {/* <div className="inner-section"> */}
-        <Row text="dark" className="row-center">
-          <Col className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded">
+        <Row text="dark" className="row-center d-flex justify-content-center users-outer">
+          <Col xs={11} md={5} className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded">
             {/* Button to trigger fetching the users */}
 
             {displayList && ( // Only render the list if dislpayList is true
@@ -153,7 +153,7 @@ const UsersList: React.FC = () => {
             )}
           </Col>
 
-          <Col className="column-bckg p-3 mx-3 rounded">
+          <Col xs={11} md={5} className="column-bckg p-3 mx-3 rounded">
             {/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
             {selectedUser ? (
               <DisplayOneUser
@@ -180,7 +180,7 @@ const UsersList: React.FC = () => {
             </button>
           </Col>
         </Row>
-      </div>
+      {/* </div> */}
     </Container>
   );
 };

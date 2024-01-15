@@ -204,6 +204,7 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 	};
 
 	return (
+		<Row>
 		<Col className="column-bckg p-3 rounded inner-section">
 
 		{!showMatchHistory ? (
@@ -280,6 +281,7 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 			</>
 		)}
 		</Col>
+		</Row>
 	);
 };
 
