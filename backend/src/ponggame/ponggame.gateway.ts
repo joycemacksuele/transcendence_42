@@ -55,7 +55,10 @@ export class PonggameGateway
         currentGames.forEach((gamestate: GameState) => {
           this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
             if (gamestate.currentState == "End"){
-                this.processMatch(gamestate);
+                this.processMatch(gamestate); //send the match data to the database
+                this.server.socketsLeave(gamestate.roomName);
+            }
+            else if( gamestate.currentState == "Disconnection"){
                 this.server.socketsLeave(gamestate.roomName);
             }
         });
@@ -177,9 +180,9 @@ export class PonggameGateway
     match.player2Id = player2.id;
     match.player1Score = gamestate.player1score;
     match.player2Score = gamestate.player2score;
-    if(match.player1Score > match.player2Score)
+    if(gamestate.winner == 1)
         match.winnerId = player1.id;
-    else
+    else if (gamestate.winner == 2)
         match.winnerId = player2.id;
 
     match.timeStamp = new Date();
