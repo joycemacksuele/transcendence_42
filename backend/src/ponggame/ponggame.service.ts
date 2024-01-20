@@ -23,7 +23,7 @@ export class PonggameService {
       match.currentState = "End";
       match.stateMessage = "Opponent disconnected. You win be default";
     } else if (match != undefined && match.currentState == "Queue") {
-      match.currentState = "End";
+      match.currentState = "Disconnection";
       match.stateMessage = "Opponent left before the game started";
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
       else if (match.gameType == "Custom") this._queueCustomMatchId = "";
@@ -33,7 +33,7 @@ export class PonggameService {
 
   cleanUpMatches() {
     this._currentMatches.forEach((gameState: GameState, matchId: string) => {
-      if (gameState.currentState == "End") this._currentMatches.delete(matchId);
+      if (gameState.currentState == "End" || gameState.currentState == "Disconnection") this._currentMatches.delete(matchId);
     });
   }
   updateCurrentMatches() {
@@ -122,6 +122,7 @@ export class PonggameService {
       currentState: "Selection",
       stateMessage: "Waiting for opponent...",
       timer: 100,
+      winner: 0,
       ball_speed: ball_speed,
       ball_x_speed: 0,
       ball_y_speed: 0,
