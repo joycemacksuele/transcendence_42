@@ -32,6 +32,7 @@ export class GameLogic {
       currentState: 'Message',
       stateMessage: 'Waiting for opponent...',
       timer: 100,
+      winner: 0,
       ball_speed: ball_speed,
       ball_x_speed: 0,
       ball_y_speed: 0,
@@ -295,6 +296,7 @@ export class GameLogic {
         gameState.player2score++;
         if (gameState.player2score >= MAX_GAME_SCORE) {
           gameState.currentState = 'End';
+          gameState.winner = 2;
           gameState.stateMessage = `${(gameState.player1info).toUpperCase()}, YOU LOST!!!`;
           return gameState;
         }
@@ -302,6 +304,7 @@ export class GameLogic {
         gameState.player1score++;
         if (gameState.player1score >= MAX_GAME_SCORE) {
           gameState.currentState = 'End';
+          gameState.winner = 1;
           gameState.stateMessage = `${(gameState.player2info).toUpperCase()}, YOU LOST!!!`;
           return gameState;
         }
