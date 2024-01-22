@@ -212,4 +212,17 @@ export class PonggameGateway
         console.log(` match id ${match.id}\n player 1 ${match.player1} and player 2 ${match.player2} \n Score ${match.player1Score} - ${match.player2Score} \n WinnerId ${match.winnerId}\n`);
     });
   }
+  
+  
+  
+  // ADDED JAKA /////////////////////////////////////
+  //  If possible, here I would like to check all currently played matches and check if this
+  //  username/userId is in any of current matches 
+  @SubscribeMessage('requestPlayingStatus')
+  handleRequestPlayingStatus(
+    @MessageBody() loginName: string,
+    @ConnectedSocket() client: Socket) {
+      const isPlaying = this.ponggameService.isUserPlaying(loginName);
+      client.emit('responsePlayingStatus', { loginName, isPlaying })
+    }
 }

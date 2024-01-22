@@ -8,6 +8,7 @@ import {NavLink} from "react-router-dom";
 import {ChatType, RequestNewChatDto} from "../Chat/Utils/ChatUtils.tsx";
 import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
 import MatchHistory from "./MatchHistory.tsx";
+import GetPlayingStatus from "./GetPlayingStatus.tsx";
 
 interface UserProps {
 	id: number;
@@ -222,8 +223,10 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 			<Row className="mb-3">
 				<Col>
 					<h4>{userData.profileName}</h4>
-					<p>online: {userData.onlineStatus ? "Yes" : "No"}
-					< br/>playing: No (hardcoded)</p>
+					<p>online: {userData.onlineStatus ? "Yes" : "No"}</p>
+					<p>playing: No (hardcoded)</p>
+					<p>playing: <GetPlayingStatus loginName={ userData.loginName} /></p>
+
 				</Col>
 			</Row>
 			<Row className="mb-3">
