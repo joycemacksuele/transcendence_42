@@ -39,7 +39,10 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 					console.log('   Updating context: \n      login and profile name: ', currUserData);
 				}
 			} catch (error) {
-				console.error("      Error fetching user data", error);
+				if (process.env.NODE_ENV === 'development') {
+					console.error('Detailed error:', error);
+				  }
+				console.error("Error checking if user exists in DB. Please try again later.");
 			}
 		};
 		fetchUserData();

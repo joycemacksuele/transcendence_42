@@ -39,7 +39,7 @@ const App: React.FC = () => {
     // Load CSS file
     const loadCSS = (cssFile: string) => {
       const link = document.createElement("link");
-      link.href = `/frontend/css/${cssFile}`; // NOT SURE ???
+      link.href = `/frontend/src/css/${cssFile}`; // NOT SURE ???
       link.type = "text/css";
       link.rel = "stylesheet";
       link.id = "theme-style";
