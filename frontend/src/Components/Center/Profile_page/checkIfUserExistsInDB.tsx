@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 
 axios.defaults.withCredentials = true;
@@ -29,7 +29,15 @@ export const checkIfUserExistsInDB = async (): Promise<CheckResponse> => {
     );
     return response.data;
   } catch (error) {
-    console.error("Check: Error checking if user exists in DB", error);
-    throw error;
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Detailed error:', error);
+    }
+    const axiosError = error as AxiosError;
+    const statusCode = axiosError.response ? axiosError.response.status : 500;
+    if (statusCode === 401) {
+      throw new Error("User is not authentiaced.");
+    } else {
+      throw new Error("Error checking if user exists in DB. Please try again later.");
+    }
   }
 };
