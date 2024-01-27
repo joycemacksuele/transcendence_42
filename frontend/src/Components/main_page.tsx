@@ -41,7 +41,7 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 			} catch (error) {
 				if (process.env.NODE_ENV === 'development') {
 					console.error('Detailed error:', error);
-				  }
+				}
 				console.error("Error checking if user exists in DB. Please try again later.");
 			}
 		};

@@ -17,14 +17,14 @@ interface CheckResponse {
 }
 
 export const checkIfUserExistsInDB = async (): Promise<CheckResponse> => {
-  console.log("Start checkifUserExistsinDB():");
+  console.log("   Start checkifUserExistsinDB():");
   try {
     const response: AxiosResponse<CheckResponse> =
       await axiosInstance.get<CheckResponse>(
         "/users/check_if_user_in_db"
       );
     console.log(
-      "................ CheckifUserExistsinDB: response.data: ",
+      "        Response.data: ",
       response.data
     );
     return response.data;
@@ -35,9 +35,10 @@ export const checkIfUserExistsInDB = async (): Promise<CheckResponse> => {
     const axiosError = error as AxiosError;
     const statusCode = axiosError.response ? axiosError.response.status : 500;
     if (statusCode === 401) {
-      throw new Error("User is not authentiaced.");
+      throw new Error("User is not authenticated.");
     } else {
-      throw new Error("Error checking if user exists in DB. Please try again later.");
+      console.error('Status code:', statusCode);
+      throw new Error("A) Error checking if user exists in DB. Please try again later.");
     }
   }
 };
