@@ -44,16 +44,16 @@ const App: React.FC = () => {
       link.rel = "stylesheet";
       link.id = "theme-style";
       document.head.appendChild(link);
-      console.log("< < < < < < < < < link", link);
+      // console.log("< < < < < < < < < link", link);
     };
 
     // Check if CSS file is already in local storage
     const storedCSS = localStorage.getItem("css-file");
     if (storedCSS) {
-      console.log("< < < < < < < < < storedCSS", storedCSS);
+      // console.log("< < < < < < < < < storedCSS", storedCSS);
       loadCSS(storedCSS);
     } else {
-      console.log("< < < < < < < < < else storedCSS", storedCSS);
+      // console.log("< < < < < < < < < else storedCSS", storedCSS);
       localStorage.setItem("css-file", "default.css");
       loadCSS("default.css");
     }

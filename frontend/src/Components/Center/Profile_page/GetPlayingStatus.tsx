@@ -8,10 +8,12 @@ interface GetPlayingStatusProps {
 	loginName: string;
 }
 
+// ingame or empty string
+// online or empty string
 
 function GetPlayingStatus({ loginName }: GetPlayingStatusProps) {
 	const [socket, setSocket] = useState<Socket | null>(null);
-	const [isUserPlayin, setIsUserPlaying] = useState(false);
+	const [isUserPlaying, setIsUserPlaying] = useState("ingame");
 	useEffect(() => {
 
 	if (!socket) {
@@ -24,20 +26,27 @@ function GetPlayingStatus({ loginName }: GetPlayingStatusProps) {
 		
 		// Listen for status updates
 		socket?.on('responsePlayingStatus', (response) => {
-			if (response.loginName === loginName) {
+			if (response.loginName === loginName) {	// this maybe is not necessary, since we already know that this is the user.
 				setIsUserPlaying(response.isPlaying);
 			}
 		});
-		
+		socket?.on('sendPlayingStatusToAll', (response, status: string) => {
+			if (response.loginName === loginName) {
+				if (status === "") {
+					console.log("User has stopped playing -- > change status to empty string (not in game)");
+					setIsUserPlaying(status);
+				}
+			}
+		})
 		return () => {
 			socket?.off('responsePlayingStatus');
 		};
-	}, [loginName, socket] );
+	}, [socket] );	// Can it be without socket here Because it wont change
 
 
 	return (
 		<div>
-			{isUserPlayin ? "Currently playing" : "Not playing"}
+			{isUserPlaying ? "Currently playing" : "Not playing"}
 		</div>
 	);
 }
