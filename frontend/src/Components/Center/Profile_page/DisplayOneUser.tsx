@@ -218,14 +218,15 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 						// src={"http://localhost:3001" + "/" + userData.profileImage}
 						alt="no_image_found"
 					/>
-				</Col>{" "}
+					</Col>{" "}
+					<Col className="d-flex align-items-end">
+						<h4>{userData.profileName}</h4>
+					</Col>
 			</Row>
 			<Row className="mb-3">
-				<Col>
-					<h4>{userData.profileName}</h4>
-					<p>online: {userData.onlineStatus ? "Yes" : "No"}</p>
-					<p>playing: No (hardcoded)</p>
-					<p>playing: <GetPlayingStatus loginName={ userData.loginName} /></p>
+				<Col className="mx-3">
+					<Row>Online: {userData.onlineStatus ? "Yes" : "No"}</Row>
+					<Row>Playing: <GetPlayingStatus loginName={ userData.loginName} /></Row>
 
 				</Col>
 			</Row>

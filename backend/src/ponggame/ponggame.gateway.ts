@@ -224,6 +224,7 @@ export class PonggameGateway
     @ConnectedSocket() client: Socket) {
       // const isPlaying = this.ponggameService.isUserPlaying(loginName);
       const isPlaying = this.ponggameService.getMatchId(loginName);
+      console.log("Status of playing: ", isPlaying);
       // client.emit('responsePlayingStatus', { loginName, isPlaying })
       client.emit('responsePlayingStatus', { isPlaying })
     }
