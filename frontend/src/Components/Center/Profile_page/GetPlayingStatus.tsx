@@ -13,7 +13,7 @@ interface GetPlayingStatusProps {
 
 function GetPlayingStatus({ loginName }: GetPlayingStatusProps) {
 	const [socket, setSocket] = useState<Socket | null>(null);
-	const [isUserPlaying, setIsUserPlaying] = useState("ingame");
+	const [isUserPlaying, setIsUserPlaying] = useState("");
 	useEffect(() => {
 
 	if (!socket) {
@@ -26,6 +26,7 @@ function GetPlayingStatus({ loginName }: GetPlayingStatusProps) {
 		
 		// Listen for status updates
 		socket?.on('responsePlayingStatus', (response) => {
+			console.log("Status isPlaying: ", response.isPlaying);
 			if (response.loginName === loginName) {	// this maybe is not necessary, since we already know that this is the user.
 				setIsUserPlaying(response.isPlaying);
 			}
@@ -45,9 +46,9 @@ function GetPlayingStatus({ loginName }: GetPlayingStatusProps) {
 
 
 	return (
-		<div>
-			{isUserPlaying ? "Currently playing" : "Not playing"}
-		</div>
+		<>
+			{isUserPlaying ? "Yes" : "No"}
+		</>
 	);
 }
 
