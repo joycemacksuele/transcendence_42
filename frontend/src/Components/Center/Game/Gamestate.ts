@@ -1,9 +1,10 @@
 export interface GameState {
   roomName: string;
   gameType: string;
-  currentState: string; //current states ("waiting","roundstart","playing","done",)
+  currentState: string; //current states ("Selection, Message, Queue, End, Disconnection")
   stateMessage: string;
   timer: number;
+  winner: number;
   //ball info
   //for now assume the ball goes 45 degrees always
   ball_speed: number;
