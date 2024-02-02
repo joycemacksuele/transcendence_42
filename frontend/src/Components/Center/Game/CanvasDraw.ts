@@ -174,7 +174,7 @@ export function drawScene(
     drawField(context, width, height);
 
     drawCurrentGameState(context, width, height, gameState);
-  } else if (currentState == "End") {
+  } else if (currentState == "End" || currentState == "Disconnection") {
     drawMessage(context, width, height, gameState.stateMessage);
     drawField(context, width, height);
     drawCurrentGameState(context, width, height, gameState);
