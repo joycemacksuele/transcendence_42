@@ -114,6 +114,7 @@ button.button_default:focus-visible {
   align-items: center;
   margin-bottom: 10px;
   border-bottom: 1px grey solid;
+  /* border-bottom: 1px rgb(232, 16, 16) solid; */
   padding-bottom: 10px;
   justify-content: space-around;
   width: 100%;
@@ -140,7 +141,33 @@ button.button_default:focus-visible {
 .score {
 }
 
+.circle {
+  /* display: inline-flex; */
+  display: block;
+  /* align-items: center; */
+  margin: 0 0 0 0px;
+  font-size: 0.9em;
+  /* border: 1px solid black; */
+}
 
+#circleRed {
+  align-self: center;
+  color: red;
+  padding: 0 15px 0 3px;
+  border: none;
+} 
+
+#circleGreen {
+  align-self: center;
+  color: rgb(22, 213, 54);
+  padding: 0 15px 0 3px;
+  border: none;
+} 
+
+
+#otherUserImage:hover {
+  cursor: pointer;
+}
 
 /* ************************************************* */
 /****** CUSTOM COLORS TO CHANGE THE THEME ************/

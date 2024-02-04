@@ -49,6 +49,7 @@ export class AuthMiddleware implements NestMiddleware {
                 let refreshToken = player.refreshToken;
                 const payloadRefreshToken = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_SECRET});
                 let expiryRefreshToken = await this.tokenExpired(payloadRefreshToken.exp);
+                // this.logger.log("expiry refreshtoken: ", expiryRefreshToken);
                 if (expiryRefreshToken === true)
                 {
                     this.logger.log('No refresh token! Go away!');
@@ -92,7 +93,6 @@ export class AuthMiddleware implements NestMiddleware {
         }
     }catch(err){
         this.logger.log('General error AuthMiddleware: ' + err);
-        
     }
     next()
   }
