@@ -110,7 +110,10 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
                     </a>
                   </span>
 
-                  <span>{friend.onlineStatus ? "Yes" : "No"}</span>
+                  <span>
+                    <span style={{ border: 'none' }}>{friend.onlineStatus ? "yes" : "no"}</span>
+						        <span id={`circle${friend.onlineStatus ? 'Green' : 'Red'}`}>&#9679;</span>
+                  </span>
                 </ListGroup.Item>
               ))}
           </ListGroup>

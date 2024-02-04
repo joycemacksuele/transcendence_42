@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
-import { Col, Image, Row, Button, Modal } from 'react-bootstrap';
+import {Col, Image, Row, Button} from 'react-bootstrap';
 
 import '../../../css/Profile-users-list.css'
-import { NavLink } from "react-router-dom";
-import { ChatType, RequestNewChatDto } from "../Chat/Utils/ChatUtils.tsx";
-import { chatSocket } from "../Chat/Utils/ClientSocket.tsx";
+import {NavLink} from "react-router-dom";
+import {ChatType, RequestNewChatDto} from "../Chat/Utils/ChatUtils.tsx";
+import {chatSocket} from "../Chat/Utils/ClientSocket.tsx";
 import MatchHistory from "./MatchHistory.tsx";
 import GetPlayingStatus from "./GetPlayingStatus.tsx";
 
@@ -46,10 +46,6 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 	const [IamFollowing, setIamFollowing] = useState(false);
 	const [myId, setMyId] = useState<number>();
 	const [showButtons, setShowButtons] = useState(true);
-	const isUserPlaying = GetPlayingStatus(loginName);
-	const [showModal, setShowModal] = useState(false);
-	const toggleModal = () => setShowModal(!showModal);
-
 
 
 	// if the current user is displayed, do not show the buttons
@@ -63,6 +59,7 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 				setShowButtons(true);
 			}
 		};
+
 		compareUserNames();
 	}, [loginName]);
 	const buttonsVisible = showButtons ? {} : { display: 'none'};
@@ -170,8 +167,6 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 		return <div>Loading ...</div>;
 	}
 
-
-
 	const handleButtonClick = async () => {
 		if (!userData) { 
 			console.error("Error, userData is not available");
@@ -209,10 +204,6 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 		}
 	};
 
-	const handleClickBlockUser = () => {
-		console.log("Clicked Block User");
-	}
-
 	return (
 		<Row>
 		<Col className="column-bckg p-3 rounded inner-section">
@@ -225,36 +216,26 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 						id="otherUserImage"
 						src={import.meta.env.VITE_BACKEND + "/" + userData.profileImage}
 						// src={"http://localhost:3001" + "/" + userData.profileImage}
-						alt="profile-image"
-						onClick={toggleModal}
+						alt="no_image_found"
 					/>
-				</Col>{" "}
-				<Col className="d-flex flex-column justifiy-content-end align-items-end">
-					<Row>
+					</Col>{" "}
+					<Col className="d-flex align-items-end">
 						<h4>{userData.profileName}</h4>
-						<div className="d-inline-flex align-items-center">
-							<div className='circle'>
-								online
-								<span id={`circle${userData.onlineStatus ? 'Green' : 'Red'}`}>&#9679;</span>
-								
-								{/* <span>{userData.onlineStatus ? "Yes" : "No"}</span> */}
-								playing
-								{/* <GetPlayingStatus loginName={ userData.loginName} /> */}
-								<span id={`circle${isUserPlaying ? 'Green' : 'Red'}`} >&#9679;</span>
-
-							</div>
-						</div>
-						<div className='circle'>
-						</div>
-					</Row>
-					<Row>
-						
-					</Row>
-				</Col>
+					</Col>
 			</Row>
 			<Row className="mb-4">
 				<Col className="mx-3">
-					
+					<div className="d-inline-flex align-items-center">
+						Online:
+						<div className='circle'  >
+							<span id={`circle${userData.onlineStatus ? 'Green' : 'Red'}`}>&#9679;</span>
+							{/* <span>{userData.onlineStatus ? "Yes" : "No"}</span> */}
+						</div>
+					</div>
+					{/* <span id='circleGreen'>&#9679;</span></Row> */}
+					<div className='circle'>Playing: 
+						<GetPlayingStatus loginName={ userData.loginName} />
+					</div>
 
 				</Col>
 			</Row>
@@ -267,8 +248,6 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 					<Row>Achievements: {userData.achievements} </Row>
 				</Col>
 			</Row>
-
-
 			<Row className="mb-5 user-buttons" style={buttonsVisible}>
 				<Col>
 					<NavLink
@@ -278,9 +257,7 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 						// className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
 						onClick={handleClickPrivateChat}
 					>
-						<Button className='button_default'>
-							Private Chat
-						</Button>
+						<Button className='button_default'>Private Chat</Button>
 					</NavLink>
 				</Col>
 				<Col>
@@ -295,29 +272,14 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 				<Col>
 						<Button
 							className='button_default'
+							// onClick={() => handleClickOnUser()}
+							// onClick={handleClickOnUser}
 							onClick={ () => setShowMatchHistory(true)}
 						>
 							Match History
 						</Button>
 				</Col>
-				<Col>
-						<Button
-							className='button_default'
-							onClick={ () => handleClickBlockUser()}
-						>
-							Block user
-						</Button>
-				</Col>
 			</Row>
-				<Modal show={showModal} onHide={toggleModal} centered size='lg'>
-					<Modal.Body>
-						<Image 	src={import.meta.env.VITE_BACKEND + "/" + userData.profileImage}
-								alt='profile-image'
-								className="img-fluid"
-						/>
-					</Modal.Body>
-				</Modal>
-
 			</>
 
 		) : (	// ELSE: DISPLAY MATCH HISTORY 
