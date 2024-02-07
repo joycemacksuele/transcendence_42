@@ -129,7 +129,7 @@ export class AuthService {
 				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
 
 				// todo: replace ./uploads/ with .env var everywhere
-            	const imagePath = `./${process.env.UPLOADS}${player.loginName}.jpg`;
+            	const imagePath = `./${process.env.UPLOADS}/${player.loginName}.jpg`;
 
 				try {
 					await this.userService.downloadAndSaveImage(imageUrl, imagePath);
