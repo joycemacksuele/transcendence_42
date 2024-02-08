@@ -129,40 +129,36 @@ const UsersList: React.FC = () => {
                 .sort((a, b) => a.rank - b.rank)
                 .map((user) => (
                   <ListGroup.Item key={user.id}>
-                    <span>{user.rank}.</span>
-                    {/* TODO THE CURRENT USER SHOULD NOT BE ADDED TO THIS LIST SINCE THEIR PROFILE IS ALREADY AT THE FIRST TAB AND WE DONT WANT FOR EXAMPLE TO FOLLOW OURSELVES OR SEND A CHAT TO OURSELVES */}
-                    <span>
                       <a
-                        href=""
-                        className={`list-user-link ${
-                          user.loginName === selectedUser ? "selected" : ""
-                        } `}
-                        onClick={(e) => handleUserClick(e, user.loginName)}
-                      >
-                        <img
-                          src={
-                            import.meta.env.VITE_BACKEND +
-                            "/" +
-                            user.profileImage
-                          }
-                          // src={"http://localhost:3001" + "/" + user.profileImage}
-                          id="profileImage_tiny"
-                        />
-                        {user.profileName}
-                      </a>
+                          href=""
+                          className={`list-user-link ${
+                            user.loginName === selectedUser ? "selected" : ""
+                          } `}
+                          onClick={(e) => handleUserClick(e, user.loginName)}
+                        >
+                      <span>{user.rank}.</span>
+                      <span>
+                        
+                          <img
+                            src={
+                              import.meta.env.VITE_BACKEND +
+                              "/" +
+                              user.profileImage
+                            }
+                            id="profileImage_tiny"
+                          />
+                          {user.profileName}
+                      </span>
+                      <span>{user.gamesPlayed}</span>
+                      <span>{user.gamesWon}</span>
+                      <span>{user.gamesLost}</span>
+
+
+                      <span>
+                      <span  style={{ border: 'none' }}>{user.onlineStatus ? "yes" : "no"}</span>
+                      <span id={`circle${user.onlineStatus ? 'Green' : 'Red'}`}>&#9679;</span>
                     </span>
-                    <span>{user.gamesPlayed}</span>
-                    <span>{user.gamesWon}</span>
-                    <span>{user.gamesLost}</span>
-
-
-                    <span>
-                    <span  style={{ border: 'none' }}>{user.onlineStatus ? "yes" : "no"}</span>
-						        <span id={`circle${user.onlineStatus ? 'Green' : 'Red'}`}>&#9679;</span>
-                  </span>
-
-
-
+                    </a>
                   </ListGroup.Item>
                 ))}
               {/* <button onClick={handleClickDeleteUsers}>Delete dummies</button> */}
