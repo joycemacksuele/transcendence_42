@@ -39,21 +39,21 @@ const App: React.FC = () => {
     // Load CSS file
     const loadCSS = (cssFile: string) => {
       const link = document.createElement("link");
-      link.href = `/frontend/css/${cssFile}`; // NOT SURE ???
+      link.href = `/frontend/src/css/${cssFile}`; // NOT SURE ???
       link.type = "text/css";
       link.rel = "stylesheet";
       link.id = "theme-style";
       document.head.appendChild(link);
-      console.log("< < < < < < < < < link", link);
+      // console.log("< < < < < < < < < link", link);
     };
 
     // Check if CSS file is already in local storage
     const storedCSS = localStorage.getItem("css-file");
     if (storedCSS) {
-      console.log("< < < < < < < < < storedCSS", storedCSS);
+      // console.log("< < < < < < < < < storedCSS", storedCSS);
       loadCSS(storedCSS);
     } else {
-      console.log("< < < < < < < < < else storedCSS", storedCSS);
+      // console.log("< < < < < < < < < else storedCSS", storedCSS);
       localStorage.setItem("css-file", "default.css");
       loadCSS("default.css");
     }
