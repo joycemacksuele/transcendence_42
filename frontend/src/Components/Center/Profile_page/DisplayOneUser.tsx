@@ -215,7 +215,7 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 
 	return (
 		<Row>
-		<Col className="column-bckg p-3 rounded inner-section">
+		<Col className="column-bckg p-3 m-2 rounded inner-section">
 
 		{!showMatchHistory ? (
 			<>
@@ -244,20 +244,19 @@ const DisplayOneUser: React.FC<{ 	loginName: string,
 
 							</div>
 						</div>
-						<div className='circle'>
-						</div>
+						{/* <div className='circle'>
+						</div> */}
 					</Row>
-					<Row>
-						
-					</Row>
-				</Col>
-			</Row>
-			<Row className="mb-4">
-				<Col className="mx-3">
-					
 
 				</Col>
 			</Row>
+
+			{/* not used */}
+			<Row className="mb-4">
+				<Col className="mx-3">
+				</Col>
+			</Row>
+
 			<Row className="mb-3">
 				<Col className="mx-4">
 					<Row>Rank: {userData.rank} </Row>

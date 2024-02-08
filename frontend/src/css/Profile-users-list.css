@@ -56,10 +56,15 @@
     height: 100%;
     text-decoration: none; /* remove default link underline */
     color: inherit; /* ensure text color remains the same */
+    border-top: 1px grey solid;
+
 }
 
 .list-user-link:hover {
-    /* background-color: #c6b7b7;  choose any color you prefer */
+    /* background-color: #fef738; */
+    background-color:rgb(236, 236, 187);
+    
+    cursor: pointer;
 }
 
  
@@ -77,7 +82,8 @@
 }
 
 .selected {
-    background: rgb(246, 227, 88);
+    /* background: rgb(246, 227, 88); */
+    background-color:rgb(244, 244, 172);
 }
 
 
@@ -100,7 +106,7 @@
     flex: 1; /* Each span takes equal width */
     text-align: center; /* Center text within each span */
     /* background-color: rgb(234, 234, 220); */
-    border-top: 1px grey solid;
+    /* border-top: 1px grey solid; */
     padding: 7px;
 
 }
@@ -117,6 +123,6 @@
 }
 
 .list-group-item:hover { 
-    background-color: rgb(230, 230, 91) !important;
-    cursor:pointer;
+    /* background-color: rgb(230, 230, 91) !important;
+    cursor:pointer; */
 }
