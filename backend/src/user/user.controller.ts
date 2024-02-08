@@ -34,7 +34,7 @@
 */
 
 // import { UserRepository } from './user.repository' ;
-import {Controller, Req, Post, Get, HttpStatus, HttpException, Body, Logger, Delete, Param, InternalServerErrorException, HttpCode} from '@nestjs/common';
+import {Controller, Req, Post, Get, HttpStatus, HttpException, Body, Logger, Delete, Param, InternalServerErrorException, ForbiddenException,  HttpCode, UnauthorizedException} from '@nestjs/common';
 import { Request } from 'express';
 import { UserService } from './user.service';
 import { DuplicateService } from 'src/duplicate/duplicate.service';
@@ -42,6 +42,8 @@ import { ChangeProfileNameDTO } from 'src/user/change_profile_image_or_name/chan
 import { AuthService } from 'src/auth/auth.service';
 import { CreateUserDto } from './create-user.dto';
 import { UserEntity } from './user.entity';
+
+
 
 interface CheckResponse {
 	exists: boolean;
@@ -185,8 +187,23 @@ export class UserController {
       return { exists: false }; 
       // return { message: 'CHECK User does not exist in the database.' };
     } catch (error) {
-      console.error('Error...', error);
-      throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+		this.logger.error('Error in checkIfCurrUserIsInDB', error);
+		if (error instanceof ForbiddenException) {
+			throw new HttpException('Forbidden Access', HttpStatus.FORBIDDEN);
+		}
+		if (error instanceof UnauthorizedException) {
+			// todo: ask Corina: if I just throw existing error (throw error) and dont change the exception to 403 Forbidden, it shows message 401 'Ran out of cookies' when user is not logged in, but it should show 'None of your business'
+			//			
+			throw new HttpException('Forbidden Access', HttpStatus.FORBIDDEN);
+			throw error;
+		}
+		// TODO: Is this error 503 allowd in case of not being logged in and trying to access the app?
+		//		 The correct error should be 500, but we are not allowed to use it
+		throw new HttpException('Service Unavailable', HttpStatus.SERVICE_UNAVAILABLE);
+    //   console.error('Error: user is not logged in (Forbidden)', error);
+    //	throw new Http÷Exception('Unauthorized', HttpStatus.FORBIDDEN);
+    //   throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    //   throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
