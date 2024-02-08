@@ -63,7 +63,7 @@ export class PonggameService {
     if (this._userMatch.has(userId)) {
       return this._userMatch.get(userId);
     }
-    return "";
+    return "xxx";
   }
 
   joinGame(userId: string, matchType: string): string {
@@ -156,4 +156,15 @@ export class PonggameService {
     });
     console.log("\n");
   }
+
+  // ADDED JAKA //////////////////////////////////////////////
+  // I'm not sure exactly which match can be fetched like this ?? 
+  isUserPlaying(loginName: string): boolean {
+    const matchId = this._userMatch.get(loginName); // ???
+    if (matchId)
+      return true;
+    return false;
+  }
+
+
 }

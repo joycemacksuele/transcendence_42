@@ -100,7 +100,7 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
 		<Col md={4} xs={10}>
 			<Row className="justify-content-center">
 				<Col md={11} className="column-bckg justify-content-center align-items-left p-2 mx-0 rounded">
-					<div>
+					<div className='overflow-hidden'>
 						<h5>STALKING</h5>
 						{!selectedUser ? (
 						<FriendsList clickOnUser={handleClickOnUser} />

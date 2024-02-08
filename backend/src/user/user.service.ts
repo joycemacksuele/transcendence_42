@@ -60,12 +60,24 @@ export class UserService {
   }
 
 
-  async getUserByLoginName(loginName: string): Promise<UserEntity> {
+  async getUserByLoginName(loginName: string): Promise<UserEntity | null> {
     this.logger.log("getUserByLoginName function, loginName: " + loginName);
     const options: FindOneOptions<UserEntity> = { where: { loginName } };
     // this.logger.log("getUserByLoginName function options: " + options);
 
-	  return this.userRepository.findOne( options );
+    try {
+      const user = await this.userRepository.findOne(options);
+      if (!user) {
+        return null;
+      }
+      return user;
+    } catch (error) {
+      this.logger.error('Error accessing the database', error);
+      error.message = 'Error accessing the database' + error.message;
+      throw error;
+      // throw new Error('Error accessing the database');
+    }
+
   }
 
   async getUserByProfileName(profileName: string): Promise<UserEntity> {
