@@ -146,7 +146,7 @@ button.button_default:focus-visible {
   display: block;
   /* align-items: center; */
   margin: 0 0 0 0px;
-  font-size: 0.9em;
+  font-size: 1em;
   /* border: 1px solid black; */
 }
 
@@ -155,6 +155,8 @@ button.button_default:focus-visible {
   color: red;
   padding: 0 15px 0 3px;
   border: none;
+  font-size: 0.7em;
+
 } 
 
 #circleGreen {
@@ -162,6 +164,7 @@ button.button_default:focus-visible {
   color: rgb(22, 213, 54);
   padding: 0 15px 0 3px;
   border: none;
+  font-size: 0.7em;
 } 
 
 
