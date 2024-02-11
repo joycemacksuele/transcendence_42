@@ -19,6 +19,7 @@ import { MatchDto } from "src/matches/match.dto";
 
 //for testing
 import { MatchEntity } from "src/matches/match.entity";
+import {Logger} from "@nestjs/common";
 
 @WebSocketGateway({
   cors: {
@@ -32,6 +33,8 @@ import { MatchEntity } from "src/matches/match.entity";
 export class PonggameGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
+  private readonly logger = new Logger(PonggameGateway.name);
+
   @WebSocketServer()
   private server: Server;
 
@@ -69,7 +72,7 @@ export class PonggameGateway
   }
 
   async handleConnection(client: Socket) {
-    console.log(`pong game client id ${client.id} connected`);
+    this.logger.log(`pong game client id ${client.id} connected`);
 
 
     let token = null;
@@ -94,8 +97,8 @@ export class PonggameGateway
       this._socketIdUserId.set(client.id, userId);
       this._userIdSocketId.set(userId, client.id);
       const matchId = this.ponggameService.getMatchId(userId);
-      console.log(`UserId found : ${userId}`);
-      console.log(`Match Id ${matchId}`);
+      this.logger.log(`UserId found : ${userId}`);
+      this.logger.log(`Match Id ${matchId}`);
       if (matchId == "") {
         //if not get the selection screen
         client.emit(
@@ -107,14 +110,14 @@ export class PonggameGateway
         client.join(matchId);
       }
     } catch {
-      console.log("something went wrong verifying the token");
-      console.log("Disconnecting the client socket");
+      this.logger.log("something went wrong verifying the token");
+      this.logger.log("Disconnecting the client socket");
       client.disconnect();
     }
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`pong game client id ${client.id} disconnected`);
+    this.logger.log(`pong game client id ${client.id} disconnected`);
     this.ponggameService.playerDisconnected(
       this._socketIdUserId.get(client.id),
     );
@@ -154,9 +157,9 @@ export class PonggameGateway
 @SubscribeMessage('testMatchDb')
   async testingMatchCreation(){
     const player1: UserEntity = await this.userService.getUserByLoginName("hman");
-    console.log("playerid is " + player1.id + " |");
+    this.logger.log("playerid is " + player1.id + " |");
     const player2: UserEntity = await this.userService.getUserByLoginName("dummy2");
-    console.log("dummy playerid is " + player2.id + "|");
+    this.logger.log("dummy playerid is " + player2.id + "|");
     const match: MatchDto = new MatchDto();
     match.player1Id = player1.id;
     match.player2Id = player2.id;
@@ -167,7 +170,7 @@ export class PonggameGateway
     try{
       await this.matchService.createMatch(match);
     } catch (e){
-      console.log("Error: something went wrong with entering match into the database");
+      this.logger.log("Error: something went wrong with entering match into the database");
     }
   }
 
@@ -186,33 +189,33 @@ export class PonggameGateway
         match.winnerId = player2.id;
 
     match.timeStamp = new Date();
-    console.log("player ids :" + player1.id + " " + player2.id);
+    this.logger.log("player ids :" + player1.id + " " + player2.id);
     try {
         await this.matchService.createMatch(match);
     } catch(e){
-        console.log("Error: something went wrong with entering match in to the database");
+        this.logger.log("Error: something went wrong with entering match in to the database");
     }
   }
 
   //test function
   print_out_socketId() {
-    console.log('\ncurrent log');
+    this.logger.log('\ncurrent log');
     this._socketIdUserId.forEach((value, key) => {
-      console.log(`Socket id ${key} userID ${value}`);
+      this.logger.log(`Socket id ${key} userID ${value}`);
     });
-    console.log('\n');
+    this.logger.log('\n');
 
     this._userIdSocketId.forEach((value, key) => {
-      console.log(`user id ${key} client id ${value}`);
+      this.logger.log(`user id ${key} client id ${value}`);
     });
-    console.log('\n');
+    this.logger.log('\n');
   }
   
   //test function
   async print_out_matches(userId: number){
     const matchHistory: MatchEntity[] = await this.matchService.getMatchHistoryByUserId(userId);
     matchHistory.forEach((match) =>{
-        console.log(` match id ${match.id}\n player 1 ${match.player1} and player 2 ${match.player2} \n Score ${match.player1Score} - ${match.player2Score} \n WinnerId ${match.winnerId}\n`);
+        this.logger.log(` match id ${match.id}\n player 1 ${match.player1} and player 2 ${match.player2} \n Score ${match.player1Score} - ${match.player2Score} \n WinnerId ${match.winnerId}\n`);
     });
   }
   
