@@ -25,6 +25,7 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
         console.log("[ChatRecent] inside useEffect -> socket id: ", chatSocket.id);
 
         chatSocket.emit("getChats");
+        // TODO MOVE THIS .on FROM HERE TO A userEffect with socket dependency?? so it is not subscribing all the time??
         chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
             const oldData = JSON.stringify(chatInfo);
             const newData = JSON.stringify(allChats);
