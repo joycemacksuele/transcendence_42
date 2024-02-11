@@ -11,7 +11,7 @@ import { useSelectedUser } from "./contextSelectedUserName";
 
 axios.defaults.withCredentials = true;
 
-interface User {
+export interface User {
   id: number;
   name: string;
   profileImage: string;

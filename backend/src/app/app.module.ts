@@ -27,11 +27,12 @@ import { DataSource } from "typeorm";
 import { DuplicateService } from '../duplicate/duplicate.service';
 
 import { ChatModule } from "../chat/chat.module";
-// import {ChatController} from "../chat/chat.controller";
 // import { ChatGateway } from "../chat/chat.gateway";
 // import { ChatService } from '../chat/chat.service';
+import { ChatMutedRepository } from "../chat/chat.repository";
 import { ChatRepository } from "../chat/chat.repository";
 import { ChatMessageEntity } from "src/chat/entities/chat-message.entity";
+import { MutedEntity } from "../chat/entities/muted.entity";
 import { NewChatEntity } from "src/chat/entities/new-chat.entity";
 
 import { AuthController } from "src/auth/auth.controller";
@@ -51,9 +52,9 @@ import { NestModule, MiddlewareConsumer, RequestMethod } from "@nestjs/common"; 
 import { AuthMiddleware } from "src/auth/guards/auth.middleware";
 
 import { PonggameModule } from "src/ponggame/ponggame.module";
+
 // To read: https://docs.nestjs.com/techniques/database
 /*
-  TypeOrm
   TypeOrm is an Object Relational Mapper (ORM) typescript package that allows you to use both SQL
   such as PostgreSQL, MySQL and NoSQL databases. More about typeorm is in its documentation.
 */
@@ -76,6 +77,7 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
       entities: [
         UserEntity,
         Friendship,
+        MutedEntity,
         NewChatEntity,
         ChatMessageEntity,
         MatchEntity,
@@ -108,8 +110,7 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
     AppService,
     UserService,
     UserRepository, //https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
-    // ChatGateway,// already on chat module
-    // ChatService,// already on chat module
+    ChatMutedRepository,
     ChatRepository,
     TwoFactorAuthService,
     AuthService,
