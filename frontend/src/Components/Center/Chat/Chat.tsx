@@ -74,7 +74,7 @@ const Chat = () => {
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
-        <Container fluid>
+        <Container className='h-75' fluid>
             {/* I still don't understand why we need this Row here, but it is not working without it*/}
             <Row className='chat-page'>
 

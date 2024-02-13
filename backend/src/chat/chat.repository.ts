@@ -27,6 +27,92 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.getOne();
 	}
 
+	public async getOneChatDto(chatId: number) {
+		const chat: NewChatEntity = await this
+			.createQueryBuilder("new_chat")
+			.orderBy('new_chat.id', 'DESC')
+			.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
+			.where('new_chat.id = :id', {id: chatId})
+			.getRawOne();
+		const responseDto: ResponseNewChatDto = new ResponseNewChatDto();
+		responseDto.id = chat.id;
+		responseDto.name = chat.name;
+		responseDto.type = chat.type;
+		const chatCreator = await this
+			.createQueryBuilder("new_chat")
+			.select('user.loginName as "creator"')
+			.where('new_chat.id = :id', {id: chat.id})
+			.leftJoin("new_chat.creator","user")
+			.getRawOne();
+		responseDto.creator = chatCreator.creator;
+		const chatUsers = await this
+			.createQueryBuilder("new_chat")
+			.select('user.loginName as "users"')
+			.where('new_chat.id = :id', {id: chat.id})
+			.leftJoin("new_chat.users", "user")
+			.getRawMany();
+		const users = chatUsers.map((usersList) => {
+			console.log("usersList.users: ", usersList.users);
+			return usersList.users;
+		});
+		this.logger.log('users != null: ' + users.toString());
+		if (users.toString()) {
+			responseDto.users = users;
+		}
+		const chatAdmins = await this
+			.createQueryBuilder("new_chat")
+			.select('user.loginName as "admins"')
+			.where('new_chat.id = :id', {id: chat.id})
+			.leftJoin("new_chat.admins", "user")
+			.getRawMany();
+		responseDto.admins = chatAdmins.map((adminsList) => {
+			return adminsList.admins;
+		});
+		const chatMutedUsers = await this
+			.createQueryBuilder("new_chat")
+			.select('user.loginName as "mutedUsers"')
+			.where('new_chat.id = :id', {id: chat.id})
+			.leftJoin("new_chat.mutedUsers", "user")
+			.getRawMany();
+		responseDto.mutedUsers = chatMutedUsers.map((mutedUsersList) => {
+			return mutedUsersList.mutedUsers;
+		});
+		const chatBannedUsers = await this
+			.createQueryBuilder("new_chat")
+			.select('user.loginName as "bannedUsers"')
+			.where('new_chat.id = :id', {id: chat.id})
+			.leftJoin("new_chat.bannedUsers", "user")
+			.getRawMany();
+		responseDto.bannedUsers = chatBannedUsers.map((bannedUsersList) => {
+			return bannedUsersList.bannedUsers;
+		});
+		const chatMessages = await this
+			.createQueryBuilder("new_chat")
+			.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creatorId"')
+			.where('new_chat.id = :id', {id: chat.id})
+			.leftJoin("new_chat.messages", "chat_message")
+			.getRawMany();
+		responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
+			const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
+			responseDto_inner.id = messagesList.id;
+			responseDto_inner.message = messagesList.message;
+			try {
+				const messageCreator = await this
+					.createQueryBuilder("new_chat")
+					.select('user.profileName as "loginName"')
+					.where('user.id = :id', {id: messagesList.creatorId})
+					.leftJoin("new_chat.users", "user")
+					.getRawOne();
+				responseDto_inner.creator = messageCreator.loginName;
+				return responseDto_inner;
+			} catch (err) {
+				// throw new Error("Can't find user");
+                                       this.logger.log("Can't find user");
+			}
+		}));
+		return responseDto;
+	}
+
 	public async getAllChats() {
 		const newChatTable: NewChatEntity[] = await this
 			.createQueryBuilder("new_chat")
@@ -99,9 +185,9 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				try {
 					const messageCreator = await this
 						.createQueryBuilder("new_chat")
-						.select('user.loginName as "loginName"')
+						.select('user.profileName as "loginName"')
 						.where('user.id = :id', {id: messagesList.creatorId})
-						.leftJoin("new_chat.loginName", "user")
+						.leftJoin("new_chat.users", "user")
 						.getRawOne();
 					responseDto_inner.creator = messageCreator.loginName;
 					return responseDto_inner;
