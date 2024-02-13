@@ -23,7 +23,7 @@ interface UserProps {
 	achievements: string;
 }
 
-const getCurrentUsername = async () => {
+export const getCurrentUsername = async () => {
 	try {
 		const response = await axiosInstance.get('/users/get-current-username');
 		// console.log('=================== username: ', response.data.username);

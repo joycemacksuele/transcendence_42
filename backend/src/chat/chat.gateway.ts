@@ -22,6 +22,7 @@ import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
 import {ChatType} from "./utils/chat-utils";
 import {WsExceptionFilter} from "./utils/chat-exception-handler";
+import {UserService} from "../user/user.service";
 
 /*
     Websockets tips:
@@ -60,6 +61,7 @@ export class ChatGateway
   constructor(
       private readonly chatService: ChatService,
       private readonly chatRepository: ChatRepository,
+      public readonly userService: UserService,
       public readonly authService : AuthService
   ) {
     this.logger.log('Constructor');
@@ -124,12 +126,26 @@ export class ChatGateway
 
   @SubscribeMessage('createChat')
   async createChat(@MessageBody() requestNewChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
-    try {
+    // try {
       this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
       this.logger.log('createChat -> clientSocket.data.user: ' + clientSocket.data.user);
       this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
 
-      this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then((newChatEntity) => {
+      this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(async (newChatEntity) => {
+
+        // After we have saved the new chat to database, we can save the muted entity
+        if (newChatEntity.type == ChatType.PRIVATE) {
+          const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
+          // Add friend to the muted entity:
+          this.chatService.addNewUserToMutedEntity(newChatEntity, friend).then(r => {
+            this.logger.log('[createChat][addNewUserToMutedEntity] MutedEntity ' + r.id + ' created for the ' + friend.loginName);
+          });
+        } else {
+          // Add creator to the muted entity:
+          this.chatService.addNewUserToMutedEntity(newChatEntity, newChatEntity.creator).then(r => {
+            this.logger.log('[createChat][addNewUserToMutedEntity] MutedEntity ' + r.id + ' created for the ' + newChatEntity.creator.loginName);
+          });
+        }
 
         // Join the specific room after chat was created
         // room name can be the chat id since they are unique
@@ -148,10 +164,10 @@ export class ChatGateway
         this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
         clientSocket.emit("error", err.message);
       });
-    } catch (err) {
-      this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
-      throw err;
-    }
+    // } catch (err) {
+    //   this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
+    //   throw err;
+    // }
   }
 
   @SubscribeMessage('deleteChat')
@@ -199,14 +215,16 @@ export class ChatGateway
       @MessageBody('chatId') chatId: number,
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
-    this.logger.log('leaveChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
-    await this.chatService.leaveChat(chatId, clientSocket.data.user).then( () => {
-      this.logger.log('leaveChat -> user ' + clientSocket.data.user + ' left chat ' + chatId);
+    this.logger.log('leaveChat -> chatId: ' + chatId + " and clientSocket.data.user: " + clientSocket.data.user);
+    await this.chatService.leaveChat(chatId, clientSocket.data.user).then( (ret) => {
+      if (ret === true) {
+        this.logger.log('leaveChat -> user ' + clientSocket.data.user + ' left chat ' + chatId);
 
-      // Since the user left the chat, we can remove them from the specific socket room
-      clientSocket.removeListener(chatId.toString(), () => {
-        this.logger.log('leaveChat -> user ' + clientSocket.data.user + 'was removed from room ' + chatId.toString());
-      });
+        // Since the user left the chat, we can remove them from the specific socket room
+        clientSocket.removeListener(chatId.toString(), () => {
+          this.logger.log('leaveChat -> user ' + clientSocket.data.user + 'was removed from room ' + chatId.toString());
+        });
+      } // else?
 
       // If we could delete the chat from the database, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
@@ -230,7 +248,7 @@ export class ChatGateway
       // If we could join the chat, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
-        clientSocket.emit("addAdmin", allChats);
+        clientSocket.emit("getChats", allChats);
         this.logger.log('addAdmin -> getChats -> all chats were emitted to the frontend');
       });
     });
@@ -242,7 +260,7 @@ export class ChatGateway
       @MessageBody('user') user: string,
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('muteFromChat -> Muting member ' + user + " from chat " + chatId);
-    // Mute will NOT delete the user from the chat BUT will add them to a mutedUsers list
+    // Mute will NOT delete the user from the chat BUT will add them to a usersCanChat list
     await this.chatService.muteFromChat(chatId, user).then( () => {
       // Muted user won't be removed from socket room since they can still see the messages from the chat,
       // but other members can't see their messages, so if they send a message and are muted from the specific
@@ -264,11 +282,13 @@ export class ChatGateway
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('kickFromChat -> Kicking member ' + user + " from chat " + chatId);
     // kick will only delete the user from the chat (no further consequences)
-    await this.chatService.leaveChat(chatId, user).then( () => {
-      // Since the user was kicked from the chat, we can remove them from the specific socket room
-      clientSocket.removeListener(chatId.toString(), () => {
-        this.logger.log('kickFromChat -> user ' + user + 'was removed from room ' + chatId.toString());
-      });
+    await this.chatService.leaveChat(chatId, user).then( (ret) => {
+      if (ret === true) {
+        // Since the user was kicked from the chat, we can remove them from the specific socket room
+        clientSocket.removeListener(chatId.toString(), () => {
+          this.logger.log('kickFromChat -> user ' + user + 'was removed from room ' + chatId.toString());
+        });
+      } // else?
 
       // If we could kick user from the chat, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
@@ -287,17 +307,38 @@ export class ChatGateway
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('banFromChat -> chatId: ' + chatId + " userToBan: " + user);
     // ban will delete the user from the chat + add to the banned list + deleted from socket room
-    await this.chatService.banFromChat(chatId, user).then( () => {
-      // Since the user was banned from the chat, we can remove them from the specific socket room
-      clientSocket.removeListener(chatId.toString(), () => {
-        this.logger.log('banFromChat -> user ' + user + 'was removed from room ' + chatId.toString());
-      });
+    await this.chatService.banFromChat(chatId, user).then( (ret) => {
+      if (ret === true) {
+        // Since the user was banned from the chat, we can remove them from the specific socket room
+        clientSocket.removeListener(chatId.toString(), () => {
+          this.logger.log('banFromChat -> user ' + user + 'was removed from room ' + chatId.toString());
+        });
+      }
 
       // If we could kick user from the chat, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
         clientSocket.emit("getChats", allChats);
         this.logger.log('banFromChat -> getChats -> all chats were emitted to the frontend');
+      });
+    });
+  }
+
+  @SubscribeMessage('addUsers')
+  async addUsers(
+      @MessageBody('chatId') chatId: number,
+      @MessageBody('newUsers') newUsers: string[],
+      @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
+    this.logger.log('addUsers -> chatId: ' + chatId + " newUsers: " + newUsers);
+    await this.chatService.addUsers(chatId, newUsers).then( () => {
+      // No need to join the specific room since an admin has once joined it already as a member of the chat
+
+      // If we could join the chat, get the whole table
+      this.chatService.getAllChats().then( (allChats) => {
+        // If we could get the whole table from the database, emit it to the frontend
+        clientSocket.emit("getChats", allChats);
+        this.logger.log('addUsers -> getChats -> all chats were emitted to the frontend');
       });
     });
   }
@@ -325,7 +366,7 @@ export class ChatGateway
       @MessageBody() requestMessageChatDto: RequestMessageChatDto,
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('messageChat -> requestMessageChatDto: ', requestMessageChatDto);
-    // TODO: only send (and emit) message if user is not muted from the chat
+    // TODO: only send (emit) message to the specific chat room if the users' time stamp for muting is over
     const ret : ResponseNewChatDto = await this.chatService.sendChatMessage(requestMessageChatDto);
     // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
     const theChat : NewChatEntity = await this.chatRepository.getOneChat(requestMessageChatDto.chatId);

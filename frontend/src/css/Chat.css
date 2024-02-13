@@ -17,3 +17,7 @@ ul.dropdown-menu {
 .hidden {
     display: none;
 }
+
+.add_users_to_chat {
+    overflow-y: auto;
+}
