@@ -27,32 +27,13 @@ export class ChatService {
     this.logger.log('constructor');
   }
 
-  async sendChatMessage(requestMessageChatDto: RequestMessageChatDto) : Promise<ResponseMessageChatDto[]> {
+  async sendChatMessage(requestMessageChatDto: RequestMessageChatDto) : Promise<ResponseNewChatDto> {
     const chatMessage = new ChatMessageEntity();
     chatMessage.message = requestMessageChatDto.message;
     chatMessage.creator = await this.userService.getUserByLoginName(requestMessageChatDto.loginName);
     chatMessage.chatbox = await this.chatRepository.findOneOrFail({where: {id: requestMessageChatDto.chatId}});
-    const r = await this.chatMessageRepository.save(chatMessage);
-    const allMessages = await this.chatMessageRepository.find({
-        relations: {
-		creator: true,
-		chatbox: true
-	},
-	where: {
-		chatbox: chatMessage.chatbox
-	},
-	order: {
-		id: "ASC"
-	}
-    });
-    const r2 = await Promise.all(allMessages.map(async (message : ChatMessageEntity) : Promise<ResponseMessageChatDto> => {
-	const responseDto : ResponseMessageChatDto = new ResponseMessageChatDto();
-	responseDto.id = message.id;
-	responseDto.message = message.message;
-	responseDto.creator = message.creator.loginName;
-	return responseDto;
-    }));
-    return (r2);
+    await this.chatMessageRepository.save(chatMessage);
+    return await this.chatRepository.getOneChatDto(requestMessageChatDto.chatId);
   }
 
   async getAllChats(): Promise<ResponseNewChatDto[]> {

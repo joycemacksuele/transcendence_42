@@ -1,10 +1,10 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
-// Put any other imports below so that CSS from your
+// Put a	ny other imports below so that CSS from your
 // components takes precedence over default styles.
 
 import '../../../css/Chat.css'
@@ -27,13 +27,24 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
 
     if (chatClicked) {
         console.log("[Messages] chatClicked: ", chatClicked);
+    } else {
+        console.log("[Messages] no chatClicked");
     }
 
     ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
+    const [messages, setMessages] = useState<ResponseNewChatDto>(chatClicked);
     const [message, setMessage] = useState('');
     const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
     const currUserData = useContext(CurrentUserContext) as CurrUserData;
+
+    useEffect(() => {
+      if (chatClicked) {
+        setMessages(chatClicked);
+        console.log("[REEEE]: ", chatClicked.name);
+        chatSocket.on(chatClicked.name, (newdata : ResponseNewChatDto) => setMessages(newdata));
+      }
+    }, [chatClicked]);
 
     const sendMessage = ()=> {
         if (message.trim() == '') {
@@ -57,32 +68,30 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
 
     return (
         <>
-            <Row className='h-75 align-items-center mx-auto'>
-                {chatClicked?.messages[0] ? chatClicked?.messages.map((message: ResponseMessageChatDto, mapStaticKey: number) => (
-		<ListGroup horizontal key={mapStaticKey} variant="flush">
+            <Row style={{maxHeight: '80vh'}, {height: '80vh'}} className='overflow-scroll'>
+	      <ListGroup>
+                {messages ? messages.messages.map((message_: ResponseMessageChatDto, mapStaticKey: number) => (
                   <ListGroup.Item>
-                    {message.creator}
+                    <div className="fw-bold">{message_.creator}</div>
+                    {message_.message}
                   </ListGroup.Item>
-                  <ListGroup.Item>
-                    {message.message}
-                  </ListGroup.Item>
-                </ListGroup>
-                )) : <ListGroup><ListGroup.Item>No messages yet!</ListGroup.Item></ListGroup>}
+                )) : <ListGroup.Item>No messages yet!</ListGroup.Item>}
+              </ListGroup>
             </Row>
-            <Row className='h-25 align-items-center'>
-                <Form.Group>
+            <Row style={{maxHeight: '10vh'}}>
+                <Form.Group className="h-25">
                     {/* what is controlId ?????*/}
                     {/* value={message} */}
-                    <Stack direction="horizontal">
+                    <Stack className="h-100" direction="horizontal">
                         <Form.Control
                             as="textarea"
-                            className="me-2"
+                            className="me-2 h-100"
                             type="text"
                             placeholder={messageBoxPlaceHolder}
                             onChange={(event) => setMessage(event.target.value)}
                         />
                         {/* TODO onClick erase the message from the form box*/}
-                        <Button variant="primary" type="submit" onClick={sendMessage}>Send</Button>
+                        <Button className="h-100" variant="primary" type="submit" onClick={sendMessage}>Send</Button>
                     </Stack>
                 </Form.Group>
             </Row>
