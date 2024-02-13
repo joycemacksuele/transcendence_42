@@ -13,7 +13,7 @@ export class ChatMessageEntity {
     @Column()
     message: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.chatmessages)
+    @ManyToOne(() => UserEntity, (user) => user.chatMessages)
     creator: UserEntity;
 
     @ManyToOne(() => NewChatEntity, (newchat) => newchat.messages)
