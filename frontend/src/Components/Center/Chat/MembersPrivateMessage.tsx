@@ -1,6 +1,7 @@
 import {ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
+import {getCurrentUsername} from "../Profile_page/DisplayOneUser";
 import {chatSocket} from "./Utils/ClientSocket.tsx"
-import React, {useContext, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -9,7 +10,6 @@ import Button from 'react-bootstrap/Button';
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import Modal from "react-bootstrap/Modal";
-import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
 
 type PropsHeader = {
     chatClicked: ResponseNewChatDto | null;
@@ -17,14 +17,22 @@ type PropsHeader = {
 
 const MembersPrivateMessage: React.FC<PropsHeader> = ({chatClicked}) => {
 
-    // TODO get it from database
-    const currUserData = useContext(CurrentUserContext) as CurrUserData;
-    const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
-
     const inputRef = useRef(null);
 
+    const [intraName, setIntraName] = useState<string|null>();
     const [showMemberModal, setShowMemberModal] = useState(false);
     const [clickedMember, setClickedMember] = useState<string>();
+
+    useEffect(() => {
+        const init = async () => {
+            if (!intraName) {
+                const currUserIntraName = await getCurrentUsername();
+                setIntraName(currUserIntraName);
+                console.log('[MembersGroup] JOYCE intraName: ', intraName);
+            }
+        }
+        init();
+    }, [intraName]);
 
     const deleteChat = (chatId: number) => {
         if (chatId != -1) {
