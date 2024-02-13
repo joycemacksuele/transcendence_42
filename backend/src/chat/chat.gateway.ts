@@ -14,6 +14,7 @@ import {ChatService} from './chat.service';
 import {ChatMessageEntity} from './entities/chat-message.entity';
 import {NewChatEntity} from './entities/new-chat.entity';
 import {ChatRepository} from './chat.repository';
+import {ResponseNewChatDto} from './dto/response-new-chat.dto';
 import {RequestNewChatDto} from './dto/request-new-chat.dto';
 import {ResponseMessageChatDto} from './dto/response-message-chat.dto';
 import {RequestMessageChatDto} from './dto/request-message-chat.dto';
@@ -325,9 +326,10 @@ export class ChatGateway
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('messageChat -> requestMessageChatDto: ', requestMessageChatDto);
     // TODO: only send (and emit) message if user is not muted from the chat
-    const ret : ResponseMessageChatDto[] = await this.chatService.sendChatMessage(requestMessageChatDto);
+    const ret : ResponseNewChatDto = await this.chatService.sendChatMessage(requestMessageChatDto);
     // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
     const theChat : NewChatEntity = await this.chatRepository.getOneChat(requestMessageChatDto.chatId);
+    this.logger.log("Derp", theChat.name);
     clientSocket.emit(theChat.name, ret);
   }
 
