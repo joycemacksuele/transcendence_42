@@ -74,36 +74,36 @@ export class AuthService {
 
 		})  // save the token owner info 
 		.catch(() => {
-		this.logger.error('\x1b[31mAn Error in 42 API: get token owner data\x1b[0m');
-		throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
+			this.logger.error('\x1b[31mAn Error in 42 API: get token owner data\x1b[0m');
+			throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 		});
 
-	const hash = await this.hashSecret(secret, id);  // CORINA - TO DO - is this actually necesary? 
+		const hash = await this.hashSecret(secret, id);  // CORINA - TO DO - is this actually necesary? 
 
-	const dto: CreateUserDto = {
-		loginName: login,
-		profileName: login,
-		intraId: +id,
-		email: email,
-		onlineStatus: false,		// at logout change to 'false'
-		hashedSecret: hash,         // might not be necessary and might need to be removed 
-		refreshToken: 'default',
-		tfaEnabled: true,
-		tfaCode: 'default',
-		profileImage: avatar,
-	};
+		const dto: CreateUserDto = {
+			loginName: login,
+			profileName: login,
+			intraId: +id,
+			email: email,
+			onlineStatus: false,		// at logout change to 'false'
+			hashedSecret: hash,         // might not be necessary and might need to be removed 
+			refreshToken: 'default',
+			tfaEnabled: true,
+			tfaCode: 'default',
+			profileImage: avatar,
+		};
 
-	this.logger.log('dto:  intraLogin: ' + dto.loginName + ' intraId: ' + dto.intraId); // testing purpose - TO BE REMOVED!
-	return await this.getOrCreateUser(dto, res);
-}
+		this.logger.log('dto:  intraLogin: ' + dto.loginName + ' intraId: ' + dto.intraId + ' refreshToken: '+ dto.refreshToken); // testing purpose - TO BE REMOVED!
+		return await this.getOrCreateUser(dto, res);
+	}
 
-  // generate hash 
-  //Hashing alone is not sufficient to mitigate more involved attacks such as rainbow tables. 
-  //A better way to store passwords is to add a salt to the hashing process: adding additional random data 
-  //to the input of a hashing function that makes each password hash unique. 
-  //The ideal authentication platform would integrate these two processes, hashing and salting, seamlessly.
-  //At Auth0, the integrity and security of our data are one of our highest priorities. 
-  //We use the industry-grade and battle-tested bcrypt algorithm to securely hash and salt passwords. 
+	// generate hash 
+	//Hashing alone is not sufficient to mitigate more involved attacks such as rainbow tables. 
+	//A better way to store passwords is to add a salt to the hashing process: adding additional random data 
+	//to the input of a hashing function that makes each password hash unique. 
+	//The ideal authentication platform would integrate these two processes, hashing and salting, seamlessly.
+	//At Auth0, the integrity and security of our data are one of our highest priorities. 
+	//We use the industry-grade and battle-tested bcrypt algorithm to securely hash and salt passwords. 
 
 	async hashSecret(secret: string, id: string) {
 		const saltOrRounds = 10; 
@@ -116,7 +116,7 @@ export class AuthService {
 		}
 	}
 
-	async getOrCreateUser(data: any, response: Response) {
+	async getOrCreateUser(data: CreateUserDto, response: Response) {
     	let token: string; 
 		let player = await this.userService.getUserByLoginName(data.loginName);
 
@@ -154,6 +154,7 @@ export class AuthService {
 		this.logger.log('                          player.email:' + player.email);
 		this.logger.log('                          player.2fa:' + player.tfaEnabled);
 		this.logger.log('                          player.tfaCode:' + player.tfaCode);
+		this.logger.log('                          player.refreshToken:' + player.refreshToken);
 
 		token = await this.signToken(player);
 		if (!token) {
@@ -168,9 +169,9 @@ export class AuthService {
 		this.logger.log('Set-Cookie token: ' + token);
 		const cookieAttributes = {
 			httpOnly: true,
-//			secure: true,
+			//	secure: true,
 			path: '/',
-//			sameSite: 'none',
+			//	sameSite: 'none',
 		};
 
 		// Variant B)
@@ -217,11 +218,11 @@ export class AuthService {
 	// The signature is used to verify the message wasn't changed along the way, and, 
 	// in the case of tokens signed with a private key, it can also verify that the sender of the JWT is who it says it is.
 
-  async signToken(player: CreateUserDto) {
+  	async signToken(player: CreateUserDto) {
 		let token: string;
 
 		let expiryDate = new Date();
-		expiryDate.setMinutes(expiryDate.getMinutes() + 1);
+		expiryDate.setMinutes(expiryDate.getMinutes() + 5);
 		this.logger.log("expiry date: " + expiryDate);
 
 		let time = expiryDate.valueOf();
@@ -260,69 +261,69 @@ export class AuthService {
 		return refreshToken;
 	}
 
-// async removeAuthToken(request: Request, response: Response): Promise<any> {
-// 	try{
-// 		this.logger.log("start removeAuthToken");
-// 		let cookies = request.get('Cookie');
-// 		this.logger.log("     verify cookie: " + cookies);
-// 		let existingToken = this.extractTokenFromHeader(request);
-// 		this.logger.log("     existingToken: " + existingToken);
+	// async removeAuthToken(request: Request, response: Response): Promise<any> {
+	// 	try{
+	// 		this.logger.log("start removeAuthToken");
+	// 		let cookies = request.get('Cookie');
+	// 		this.logger.log("     verify cookie: " + cookies);
+	// 		let existingToken = this.extractTokenFromHeader(request);
+	// 		this.logger.log("     existingToken: " + existingToken);
 
-// 		let replaceToken = "";
-// 		const cookieAttributes = {
-// 			httpOnly: true,
-// 			path: '/',
-// 			sameSite: 'none',
-// 		};
-// 		let cookieToken = `token=${replaceToken};`;
-// 		for (let attribute in cookieAttributes) {
-// 			if (cookieAttributes[attribute] === true) {
-// 				cookieToken += ` ${attribute};`;
-// 			} else
-// 				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
-// 		}
-// 		response.setHeader('Set-Cookie', cookieToken);
-// 		this.logger.log('Made token to expire');
-// 	}
-// 	catch(err){
-// 		this.logger.error('\x1b[31mError removing the token from cookies: \x1b[0m' + err);
-// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
-// 	}
-// 	return response.sendStatus(200);
-//   }
+	// 		let replaceToken = "";
+	// 		const cookieAttributes = {
+	// 			httpOnly: true,
+	// 			path: '/',
+	// 			sameSite: 'none',
+	// 		};
+	// 		let cookieToken = `token=${replaceToken};`;
+	// 		for (let attribute in cookieAttributes) {
+	// 			if (cookieAttributes[attribute] === true) {
+	// 				cookieToken += ` ${attribute};`;
+	// 			} else
+	// 				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
+	// 		}
+	// 		response.setHeader('Set-Cookie', cookieToken);
+	// 		this.logger.log('Made token to expire');
+	// 	}
+	// 	catch(err){
+	// 		this.logger.error('\x1b[31mError removing the token from cookies: \x1b[0m' + err);
+	// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
+	// 	}
+	// 	return response.sendStatus(200);
+	//   }
 
-  async replaceToken(request: Request, response: Response, newToken: any): Promise<any> {
-	try{
-		this.logger.log("start replaceToken");
-		let cookies = request.get('Cookie'); // not needed
-		this.logger.log("     verify cookie: " + cookies); // not needed
-		let existingToken = this.extractTokenFromHeader(request); // not needed
-		this.logger.log("     existingToken: " + existingToken); // not needed
+  	async replaceToken(request: Request, response: Response, newToken: any): Promise<any> {
+		try {
+			this.logger.log("start replaceToken");
+			let cookies = request.get('Cookie'); // not needed
+			this.logger.log("     verify cookie: " + cookies); // not needed
+			let existingToken = this.extractTokenFromHeader(request); // not needed
+			this.logger.log("     existingToken: " + existingToken); // not needed
 
-		let replaceToken = newToken;
-		const cookieAttributes = {
-			httpOnly: true,
-			path: '/',
-			sameSite: 'none',
-		};
-		let cookieToken = `token=${replaceToken};`;
-		for (let attribute in cookieAttributes) {
-			if (cookieAttributes[attribute] === true) {
-				cookieToken += ` ${attribute};`;
-			} else
-				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
-		}
-		request.cookies('Set-Cookie', cookieToken)
-		this.logger.log('Replaced token in header');
-		return true;
+			let replaceToken = newToken;
+			const cookieAttributes = {
+				httpOnly: true,
+				path: '/',
+				sameSite: 'none',
+			};
+			let cookieToken = `token=${replaceToken};`;
+			for (let attribute in cookieAttributes) {
+				if (cookieAttributes[attribute] === true) {
+					cookieToken += ` ${attribute};`;
+				} else
+					cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
+			}
+			request.cookies('Set-Cookie', cookieToken)
+			this.logger.log('Replaced token in header');
+			return true;
 
-	}catch(err){
+		} catch (err) {
 			this.logger.error('\x1b[31mError unable to replace header : \x1b[0m' + err);
 			throw new HttpException('Failed to replace header', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
 		}
-  }
+  	}
 
-// ADDED JAKA:
+	// ADDED JAKA:
     // THE FUNCTION extractUserFromToken() DOES NOT WORK IN OTHER FILES OUTSIDE auth.guards
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
