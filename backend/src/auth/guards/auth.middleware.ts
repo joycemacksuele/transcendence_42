@@ -43,8 +43,7 @@ export class AuthMiddleware implements NestMiddleware {
         let expiry = await this.tokenExpired(payload.exp);
         let player : UserEntity;
         if (expiry === true){
-            try{
-                this.logger.log("A)");
+            try {
                 this.logger.log("Token has expired. Starting the process to get a new one!")
                 player = await this.userService.getUserByLoginName(payload.username);
                 let refreshToken = player.refreshToken;
@@ -89,8 +88,8 @@ export class AuthMiddleware implements NestMiddleware {
                 response.clearCookie('Cookie');
                 response.append('Set-Cookie', cookieToken);
                 this.logger.log('Replaced token in header');
-            }catch(err){
-                this.logger.log('Error in refreshing tokens ' + err);
+            } catch(err) {
+                this.logger.error('Error in refreshing tokens ' + err);
             }
         }
         else{
