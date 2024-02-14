@@ -34,7 +34,9 @@ export const checkIfUserExistsInDB = async (): Promise<CheckResponse> => {
     }
     const axiosError = error as AxiosError;
     const statusCode = axiosError.response ? axiosError.response.status : 500;
+
     if (statusCode === 401) {
+      // throw new Error("User is not authenticated.");
       throw new Error("User is not authenticated.");
     } else {
       console.error('Status code:', statusCode);

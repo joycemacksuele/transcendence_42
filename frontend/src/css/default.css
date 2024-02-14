@@ -64,7 +64,15 @@ button.button_default {
   background-color: #a19c94;
   cursor: pointer;
   transition: border-color 0.25s;
+
+  /* Fixed size: */
+  width: 120px;
+  height: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  /* text-overflow: ellipsis; */
 }
+
 button.button_default:hover {
   border-color: #dcfb92;
   background-color: #c08f8f;
@@ -102,7 +110,6 @@ button.button_default:focus-visible {
   padding: 4%;
   width: 100%;
   color: black;
-  
 }
 
 
