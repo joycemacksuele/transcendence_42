@@ -10,11 +10,17 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
 	response => response,
 	error => {
-		if (error.response && error.response.status === 401) {
-			window.location.href = '/forced-logout';
-			// window.location.href = '/Login_2fa';
+		if (error.response) {
+			if (error.response.status === 401) {
+				window.location.href = '/forced-logout';
+				// window.location.href = '/Login_2fa';
+			} else if (error.response.status === 403) {
+				// handle Forbidden
+			} else {
+				// Handle errors that don't get an HTTP response (network errors, etc.)
+			}
+			return Promise.reject(error);
 		}
-		return Promise.reject(error);
 	}
 );
 

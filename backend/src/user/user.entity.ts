@@ -13,8 +13,9 @@
 	Each entity has its own repository.
 */
 
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Friendship } from 'src/friendships/friendship.entity';
+import { Blockship } from 'src/blockShips/blockship.entity';
 import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 import { NewChatEntity } from 'src/chat/entities/new-chat.entity';
 
@@ -105,4 +106,23 @@ export class UserEntity {
 
 	@OneToMany(() => NewChatEntity, (newchat) => newchat.creator)
 	rooms_created: NewChatEntity[];
+
+	////////////////////////////////////////////////////
+	// Variant A)
+	// @ManyToMany(() => UserEntity)
+    // @JoinTable()
+    // blockedUsers: UserEntity[];
+	
+	// Variant B)
+	// This 2nd argument:
+	//		(blockship) => blockship.blocker)
+	// 		This links the 'blockedUsers' array in UserEntity to the 'blocker' field in Blockship entities.
+	// 		It means that the 'blocker' in Blockship refers to this UserEntity, so fetching all 
+	//		Blockships where this user has blocked someone.
+	@OneToMany(() => Blockship, (blockship) => blockship.blocker)
+	blockedUsers: Blockship [];
+
+	// Array of users that blocked this user
+	// @OneToMany(() => Blockship, (blockship) => blockship.blocked)
+	// meBlockedByOthers: Blockship [];
 }

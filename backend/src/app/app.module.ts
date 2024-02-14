@@ -19,8 +19,10 @@ import { UserController } from "../user/user.controller";
 import { UserService } from "../user/user.service";
 import { UserRepository } from "../user/user.repository";
 import { UserEntity } from "../user/user.entity";
-import { FriendshipModule } from "../friendships/friendship.module";
 import { Friendship } from "../friendships/friendship.entity";
+import { FriendshipModule } from "../friendships/friendship.module";
+import { Blockship } from "src/blockShips/blockship.entity";
+import { BlockshipModule } from "src/blockShips/blockship.module";
 
 import { DataSource } from "typeorm";
 
@@ -76,20 +78,22 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
       entities: [
         UserEntity,
         Friendship,
+        Blockship,
         NewChatEntity,
         ChatMessageEntity,
         MatchEntity,
       ],
       synchronize: true, // WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
-      // logging: ["query", "error", "schema", "warn", "info", "log", "migration"] // added jaka: trying to debug issue with the table 'Friendship'
       logging: ["query"],
     }),
+
     TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
     UserModule,
     ChatModule,
     TwoFactorAuthModule,
     MailerModule,
     FriendshipModule,
+    BlockshipModule,
     MatchModule,
     PonggameModule,
   ],
@@ -117,6 +121,7 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
     DuplicateService,
   ],
 })
+
 export class AppModule implements NestModule {
   private readonly logger = new Logger(AppModule.name);
   constructor() {
