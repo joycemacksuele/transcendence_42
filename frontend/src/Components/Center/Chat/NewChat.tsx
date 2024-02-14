@@ -30,7 +30,6 @@ const NewChat = () => {
 
     const createGroupChat = () => {
         const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword};
-        console.log("[DisplayOneUser] createChat AQUIIIIIIIIII 2");
         console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 
         chatSocket.emit("createChat", requestNewChatDto);
