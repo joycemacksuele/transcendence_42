@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import axiosInstance from "../../../Other/AxiosInstance.tsx";
+import axiosInstance from "../../Other/AxiosInstance.tsx";
 import { Col, Image, Row, Button, Modal } from "react-bootstrap";
-import handleClickBlocking from "./blockUser.ts";
-import handleClickFollowing from "./followUser.ts";
-import getBlockedIds from "./getBlockedIds.ts";
+
+import "../../../css/Profile-users-list.css";
 import { NavLink } from "react-router-dom";
-import { ChatType, RequestNewChatDto } from "../../Chat/Utils/ChatUtils.tsx";
-import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
-import MatchHistory from "../MatchHistory.tsx";
-import GetPlayingStatus from "../GetPlayingStatus.tsx";
-import "../../../../css/Profile-users-list.css";
+import { ChatType, RequestNewChatDto } from "../Chat/Utils/ChatUtils.tsx";
+import { chatSocket } from "../Chat/Utils/ClientSocket.tsx";
+import MatchHistory from "./MatchHistory.tsx";
+import GetPlayingStatus from "./GetPlayingStatus.tsx";
 
 interface UserProps {
   id: number;
@@ -36,7 +34,6 @@ export const getCurrentUsername = async () => {
   }
 };
 
-
 const DisplayOneUser: React.FC<{
   loginName: string;
   showMatchHistory: boolean;
@@ -44,8 +41,7 @@ const DisplayOneUser: React.FC<{
 }> = ({ loginName, showMatchHistory, setShowMatchHistory }) => {
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [IamFollowing, setIamFollowing] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(true);
-  const [myId, setMyId] = useState<number | undefined>();
+  const [myId, setMyId] = useState<number>();
   const [showButtons, setShowButtons] = useState(true);
   const isUserPlaying = GetPlayingStatus(loginName);
   const [showModal, setShowModal] = useState(false);
@@ -96,30 +92,14 @@ const DisplayOneUser: React.FC<{
         //console.log("   responseAmIFollowing: ", responseAmIFollowing);
         if (responseAmIFollowing.data) {
           // setIamFollowing(!!responseAmIFollowing.data); // DOUBLE !! CONVERT TO BOOL
+          console.log("    YES");
           setIamFollowing(true);
         } else {
+          console.log("    NO ");
           setIamFollowing(false);
         }
       } catch (error) {
         console.error("Error fetching if friendship/following exists", error);
-      }
-
-      // Check if a user is blocked
-      try {
-        const blockedStatus = await axiosInstance.post(
-          "/blockship/check-blocked-status",
-          {
-            "id-to-check": response.data.id,
-          }
-        );
-        console.log("Returned blocked status: ", blockedStatus);
-        if (blockedStatus.data) {
-          setIsBlocked(true);
-        } else {
-          setIsBlocked(false);
-        }
-      } catch (err: any) {
-        console.error("Error checking the blocked status", err);
       }
     };
     fetchUserData();
@@ -138,11 +118,71 @@ const DisplayOneUser: React.FC<{
     fetchMyData();
   }, []);
 
+  async function startFollowing() {
+    const friendId = userData?.id; // todo: fetch the id (the to-be friend)
+    try {
+      await axiosInstance.post(`/friendship/${myId}/addFriend/${friendId}`);
+      //console.log("Success: Friendship added: ", response.data);
+    } catch (error: any) {
+      console.error("Error adding a friend: " /*, error*/);
+      if (axios.isAxiosError(error)) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          console.error(error.response.data.message);
+        } else {
+          console.error("An axiosError occured while adding a friend.");
+        }
+      } else {
+        console.error(
+          "Another (non axios) error occured while adding a friend."
+        );
+      }
+    }
+  }
+
+  async function stopFollowing() {
+    try {
+      await axiosInstance.post(
+        `/friendship/${myId}/removeFriend/${userData?.id}`
+      );
+      // console.log("Success remnoving a friend: ", response);
+    } catch (error: any) {
+      console.error("Error removing a friend");
+      if (axios.isAxiosError(error)) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          console.error(error.response.data.message);
+        } else {
+          console.error("An axiosError while removing a friend");
+        }
+      } else {
+        console.error("Another error while removing a friend");
+      }
+    }
+  }
 
   if (!userData) {
     return <div>Loading ...</div>;
   }
 
+  const handleButtonClick = async () => {
+    if (!userData) {
+      console.error("Error, userData is not available");
+      return;
+    }
+    if (IamFollowing) {
+      await stopFollowing();
+    } else {
+      await startFollowing();
+    }
+    setIamFollowing(!IamFollowing); // Toggle to the opposite state
+  };
 
   const handleClickPrivateChat = () => {
     // console.log("[DisplayOneUser] handleClickPrivateChat");
@@ -182,13 +222,17 @@ const DisplayOneUser: React.FC<{
     }
   };
 
+  const handleClickBlockUser = () => {
+    console.log("Clicked Block User");
+  };
+
   return (
     <Row>
       <Col className="column-bckg p-3 m-2 rounded inner-section">
         {!showMatchHistory ? (
           <>
-            <Row className="mb-3 mx-0">
-              <Col className="col-auto">
+            <Row className="mb-2 mx-3">
+              <Col>
                 <Image
                   id="otherUserImage"
                   src={
@@ -199,7 +243,7 @@ const DisplayOneUser: React.FC<{
                   onClick={toggleModal}
                 />
               </Col>{" "}
-              <Col className="d-flex flex-column justify-content-end align-items-start pt-sm-3">
+              <Col className="d-flex flex-column justifiy-content-end align-items-end">
                 <Row>
                   <h4>{userData.profileName}</h4>
                   <div className="d-inline-flex align-items-center">
@@ -254,13 +298,7 @@ const DisplayOneUser: React.FC<{
               <Col>
                 {/* onclick EXPECTS A FUNCTION WITH AN ARGUMENT OF TYPE MouseEvent<HTMLButtonElement */}
                 <Button
-                  onClick={() => {
-                    if (myId !== undefined) {
-                      handleClickFollowing(myId, userData.id, IamFollowing, setIamFollowing);
-                    } else {
-                      console.log("myId is undefined, cannot proceed with following/unfollowing.");                      
-                    }
-                  }}
+                  onClick={() => handleButtonClick()}
                   className="button_default"
                 >
                   {IamFollowing ? "Stop Following" : "Start Following"}
@@ -277,20 +315,11 @@ const DisplayOneUser: React.FC<{
               <Col>
                 <Button
                   className="button_default"
-                  onClick={() =>
-                    handleClickBlocking(userData?.id, isBlocked, setIsBlocked)
-                  }
+                  onClick={() => handleClickBlockUser()}
                 >
-                  {isBlocked ? "Unblock User" : "Block User"}
+                  Block user
                 </Button>
               </Col>
-
-              {/* Temporary button, to be removed */}
-              <Button onClick={() => getBlockedIds()} variant='' size='sm'>
-                  Test: Get blocked ids
-              </Button>
-
-
             </Row>
             <Modal show={showModal} onHide={toggleModal} centered size="lg">
               <Modal.Body>

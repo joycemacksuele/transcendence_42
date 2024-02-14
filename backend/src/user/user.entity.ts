@@ -13,11 +13,12 @@
 	Each entity has its own repository.
 */
 
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinTable} from 'typeorm';
 import { Friendship } from 'src/friendships/friendship.entity';
 import { Blockship } from 'src/blockShips/blockship.entity';
 import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 import { NewChatEntity } from 'src/chat/entities/new-chat.entity';
+import { MutedEntity } from "../chat/entities/muted.entity";
 
 
 @Entity()
@@ -101,19 +102,9 @@ export class UserEntity {
 	// @OneToMany(() => Friendship, (friendship) => friendship.friend)
 	// friendOf: Friendship[];
 
-	@OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.creator)
-	chatmessages: ChatMessageEntity[] | null;
+	@OneToMany(() => ChatMessageEntity, (chatMessage) => chatMessage.creator)
+	chatMessages: ChatMessageEntity[] | null;
 
-	@OneToMany(() => NewChatEntity, (newchat) => newchat.creator)
-	rooms_created: NewChatEntity[];
-
-	////////////////////////////////////////////////////
-	// Variant A)
-	// @ManyToMany(() => UserEntity)
-    // @JoinTable()
-    // blockedUsers: UserEntity[];
-	
-	// Variant B)
 	// This 2nd argument:
 	//		(blockship) => blockship.blocker)
 	// 		This links the 'blockedUsers' array in UserEntity to the 'blocker' field in Blockship entities.
@@ -125,4 +116,10 @@ export class UserEntity {
 	// Array of users that blocked this user
 	// @OneToMany(() => Blockship, (blockship) => blockship.blocked)
 	// meBlockedByOthers: Blockship [];
+	@OneToMany(() => NewChatEntity, (newChat) => newChat.creator)
+	roomsCreated: NewChatEntity[];
+
+	@OneToMany(() => MutedEntity, (muted) => muted.user)
+	@JoinTable()
+	canChat: MutedEntity[];
 }
