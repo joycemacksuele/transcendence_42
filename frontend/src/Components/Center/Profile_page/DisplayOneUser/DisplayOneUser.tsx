@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 import { Col, Image, Row, Button, Modal } from "react-bootstrap";
 import handleClickBlocking from "./blockUser.ts";
+import handleClickFollowing from "./followUser.ts";
 import getBlockedIds from "./getBlockedIds.ts";
 import { NavLink } from "react-router-dom";
 import { ChatType, RequestNewChatDto } from "../../Chat/Utils/ChatUtils.tsx";
@@ -35,11 +36,6 @@ const getCurrentUsername = async () => {
   }
 };
 
-// async function getBlockedIds() {
-//   try {
-//     await axiosInstance.get("/blockship/get-blocked-ids");
-//   } catch (err) {}
-// }
 
 const DisplayOneUser: React.FC<{
   loginName: string;
@@ -49,7 +45,7 @@ const DisplayOneUser: React.FC<{
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [IamFollowing, setIamFollowing] = useState(false);
   const [isBlocked, setIsBlocked] = useState(true);
-  const [myId, setMyId] = useState<number>();
+  const [myId, setMyId] = useState<number | undefined>();
   const [showButtons, setShowButtons] = useState(true);
   const isUserPlaying = GetPlayingStatus(loginName);
   const [showModal, setShowModal] = useState(false);
@@ -142,71 +138,11 @@ const DisplayOneUser: React.FC<{
     fetchMyData();
   }, []);
 
-  async function startFollowing() {
-    const friendId = userData?.id; // todo: fetch the id (the to-be friend)
-    try {
-      await axiosInstance.post(`/friendship/${myId}/addFriend/${friendId}`);
-      //console.log("Success: Friendship added: ", response.data);
-    } catch (error: any) {
-      console.error("Error adding a friend: " /*, error*/);
-      if (axios.isAxiosError(error)) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          console.error(error.response.data.message);
-        } else {
-          console.error("An axiosError occured while adding a friend.");
-        }
-      } else {
-        console.error(
-          "Another (non axios) error occured while adding a friend."
-        );
-      }
-    }
-  }
-
-  async function stopFollowing() {
-    try {
-      await axiosInstance.post(
-        `/friendship/${myId}/removeFriend/${userData?.id}`
-      );
-      // console.log("Success remnoving a friend: ", response);
-    } catch (error: any) {
-      console.error("Error removing a friend");
-      if (axios.isAxiosError(error)) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          console.error(error.response.data.message);
-        } else {
-          console.error("An axiosError while removing a friend");
-        }
-      } else {
-        console.error("Another error while removing a friend");
-      }
-    }
-  }
 
   if (!userData) {
     return <div>Loading ...</div>;
   }
 
-  const handleClickFollowing = async () => {
-    if (!userData) {
-      console.error("Error, userData is not available");
-      return;
-    }
-    if (IamFollowing) {
-      await stopFollowing();
-    } else {
-      await startFollowing();
-    }
-    setIamFollowing(!IamFollowing); // Toggle to the opposite state
-  };
 
   const handleClickPrivateChat = () => {
     // console.log("[DisplayOneUser] handleClickPrivateChat");
@@ -318,7 +254,13 @@ const DisplayOneUser: React.FC<{
               <Col>
                 {/* onclick EXPECTS A FUNCTION WITH AN ARGUMENT OF TYPE MouseEvent<HTMLButtonElement */}
                 <Button
-                  onClick={() => handleClickFollowing()}
+                  onClick={() => {
+                    if (myId !== undefined) {
+                      handleClickFollowing(myId, userData.id, IamFollowing, setIamFollowing);
+                    } else {
+                      console.log("myId is undefined, cannot proceed with following/unfollowing.");                      
+                    }
+                  }}
                   className="button_default"
                 >
                   {IamFollowing ? "Stop Following" : "Start Following"}
