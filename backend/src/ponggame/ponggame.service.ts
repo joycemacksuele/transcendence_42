@@ -65,7 +65,7 @@ export class PonggameService {
     if (this._userMatch.has(userId)) {
       return this._userMatch.get(userId);
     }
-    return "xxx";
+    return "";
   }
 
   joinGame(userId: string, matchType: string): string {
