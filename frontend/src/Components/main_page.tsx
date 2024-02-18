@@ -62,7 +62,7 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 						{/* > */}
 							{/* <h4>some text</h4> */}
 						{/* </Button> */}
-						<h3>This is none of your business now!</h3>
+						<h3>Loading...</h3>
 				</div>
 			</Container>
 		)

@@ -50,7 +50,7 @@ export class AuthMiddleware implements NestMiddleware {
                 player = await this.userService.getUserByLoginName(payload.username);
                 let refreshToken = player.refreshToken;
                 this.logger.log("Refresh token: " + refreshToken);
-                this.logger.error(" ??? After this, the token becomes 'default', if the app is stopped without logging out, throwing error: jwt malformed (from jwtService.verifyAsync) ... ");
+                // this.logger.error(" ??? After this, the token becomes 'default', if the app is stopped without logging out, throwing error: jwt malformed (from jwtService.verifyAsync) ... ");
 
                 const payloadRefreshToken = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_SECRET});
                 let expiryRefreshToken = await this.tokenExpired(payloadRefreshToken.exp);
@@ -64,6 +64,7 @@ export class AuthMiddleware implements NestMiddleware {
                 }
 
                 // make a new refresh token 
+                this.logger.log("Refresh token again: " + refreshToken);
                 let newRefreshToken = await this.authService.signRefreshToken(player);
 			    this.logger.log("New refreshToken: " + newRefreshToken);
 			    await this.userService.updateRefreshToken(player.loginName, newRefreshToken);
