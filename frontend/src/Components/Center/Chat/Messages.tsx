@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
+import {ResponseMessageChatDto, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -33,7 +34,7 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
 
     ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
-    const [messages, setMessages] = useState<ResponseNewChatDto>(chatClicked);
+    const [messages, setMessages] = useState<ResponseNewChatDto | null>(null);
     const [message, setMessage] = useState('');
     const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
     const currUserData = useContext(CurrentUserContext) as CurrUserData;
@@ -66,16 +67,18 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
 
+    let i = 0;
     return (
         <>
-            <Row style={{maxHeight: '80vh'}, {height: '80vh'}} className='overflow-scroll'>
-	      <ListGroup>
-                {messages ? messages.messages.map((message_: ResponseMessageChatDto, mapStaticKey: number) => (
-                  <ListGroup.Item>
-                    <div className="fw-bold">{message_.creator}</div>
-                    {message_.message}
-                  </ListGroup.Item>
-                )) : <ListGroup.Item>No messages yet!</ListGroup.Item>}
+            <Row style={{maxHeight: '80vh', height: '80vh'}} className='overflow-scroll'>
+                <ListGroup
+                    key={i++}>
+                    {(messages && messages.messages && messages.messages[0] != null) ? messages.messages.map((message_: ResponseMessageChatDto) => (
+                        <ListGroup.Item>
+                            <div className="fw-bold">{message_.creator}</div>
+                            {message_.message}
+                        </ListGroup.Item>
+                    )) : <ListGroup.Item>No messages yet!</ListGroup.Item>}
               </ListGroup>
             </Row>
             <Row style={{maxHeight: '10vh'}}>
