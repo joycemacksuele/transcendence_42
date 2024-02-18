@@ -30,6 +30,8 @@ import { UserEntity } from 'src/user/user.entity';
   UserService, 
   TwoFactorAuthService,
   ],
+
+  exports: [AuthService]  // added jaka, to be able to use it in the Blockship controller
 })
 
 export class AuthModule {

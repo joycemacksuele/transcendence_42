@@ -38,7 +38,7 @@ export class MatchService {
 
 
 	async createMatch(matchDto: MatchDto): Promise<{ match: MatchEntity, message: string }> {
-		// console.log('START CREATE MATCH');
+		console.log('START CREATE MATCH');
 		try {
 			// console.log(' --------------------------- Create Match()');
 			// console.log(' --------------------------- player1Id: ', matchDto.player1Id);
@@ -64,6 +64,7 @@ export class MatchService {
 			await this.updatePlayerStats(player1, player2, matchDto.winnerId);
 			await this.recalculateRanks();
 			await this.updateAchievements(player1, player2, matchDto.winnerId);
+			console.log('   --- Match created succesfully');
 			return { match,
 					 message: "Match created succesfully"
 			};

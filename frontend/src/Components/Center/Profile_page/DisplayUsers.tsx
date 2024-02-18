@@ -3,7 +3,7 @@ import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
-import DisplayOneUser from "./DisplayOneUser"; // without brackets, because it is exported 'default'
+import DisplayOneUser from "./DisplayOneUser/DisplayOneUser"; // without brackets, because it is exported 'default'
 import { useSelectedUser } from "./contextSelectedUserName";
 
 // Custom CSS
@@ -11,7 +11,7 @@ import { useSelectedUser } from "./contextSelectedUserName";
 
 axios.defaults.withCredentials = true;
 
-interface User {
+export interface User {
   id: number;
   name: string;
   profileImage: string;
@@ -58,7 +58,7 @@ const UsersList: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axiosInstance.get<User[]>("/users/all"); // Assuming the server is running on the same host and port
+      const response = await axiosInstance.get<User[]>("/users/all");
       setUsers(response.data);
       console.log("Jaka, retreived users", response.data);
     } catch (error) {
@@ -129,35 +129,39 @@ const UsersList: React.FC = () => {
                 .sort((a, b) => a.rank - b.rank)
                 .map((user) => (
                   <ListGroup.Item key={user.id}>
-                      <a
-                          href=""
-                          className={`list-user-link ${
-                            user.loginName === selectedUser ? "selected" : ""
-                          } `}
-                          onClick={(e) => handleUserClick(e, user.loginName)}
-                        >
+                    <a
+                      href=""
+                      className={`list-user-link ${
+                        user.loginName === selectedUser ? "selected" : ""
+                      } `}
+                      onClick={(e) => handleUserClick(e, user.loginName)}
+                    >
                       <span>{user.rank}.</span>
                       <span>
-                        
-                          <img
-                            src={
-                              import.meta.env.VITE_BACKEND +
-                              "/" +
-                              user.profileImage
-                            }
-                            id="profileImage_tiny"
-                          />
-                          {user.profileName}
+                        <img
+                          src={
+                            import.meta.env.VITE_BACKEND +
+                            "/" +
+                            user.profileImage
+                          }
+                          id="profileImage_tiny"
+                        />
+                        {user.profileName}
                       </span>
                       <span>{user.gamesPlayed}</span>
                       <span>{user.gamesWon}</span>
                       <span>{user.gamesLost}</span>
 
-
                       <span>
-                      <span  style={{ border: 'none' }}>{user.onlineStatus ? "yes" : "no"}</span>
-                      <span id={`circle${user.onlineStatus ? 'Green' : 'Red'}`}>&#9679;</span>
-                    </span>
+                        <span style={{ border: "none" }}>
+                          {user.onlineStatus ? "yes" : "no"}
+                        </span>
+                        <span
+                          id={`circle${user.onlineStatus ? "Green" : "Red"}`}
+                        >
+                          &#9679;
+                        </span>
+                      </span>
                     </a>
                   </ListGroup.Item>
                 ))}
@@ -165,7 +169,6 @@ const UsersList: React.FC = () => {
             </ListGroup>
           )}
         </Col>
-
 
         <Col xs={11} md={5} className="column-bckg p-3 mx-3 rounded">
           {/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}

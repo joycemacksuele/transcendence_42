@@ -23,7 +23,7 @@ export class AuthMiddleware implements NestMiddleware {
     try{
         token = this.authService.extractTokenFromHeader(request);
         // if (request.path === "/users/all")
-        //     token = ""; // TEST
+            // token = ""; // TEST
         this.logger.log("ExistingToken: " + token);
     }catch(err){
         throw new UnauthorizedException('Player not authorized! Exiting Ping Pong!' + err);
@@ -45,11 +45,12 @@ export class AuthMiddleware implements NestMiddleware {
         let player : UserEntity;
 
         if (expiry === true){
-            try{
+            try {
                 this.logger.log("Token has expired. Starting the process to get a new one!")
                 player = await this.userService.getUserByLoginName(payload.username);
                 let refreshToken = player.refreshToken;
                 this.logger.log("Refresh token: " + refreshToken);
+                this.logger.error(" ??? After this, the token becomes 'default', if the app is stopped without logging out, throwing error: jwt malformed (from jwtService.verifyAsync) ... ");
 
                 const payloadRefreshToken = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_SECRET});
                 let expiryRefreshToken = await this.tokenExpired(payloadRefreshToken.exp);
