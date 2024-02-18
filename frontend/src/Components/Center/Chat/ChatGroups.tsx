@@ -68,13 +68,19 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
                                     onClick={() => setChatClicked(chat)}
                                 >
                                     { chat.type == ChatType.PROTECTED && <Image
-                                        src={import.meta.env.VITE_BACKEND + "/resources/protected-chat.png"}
+                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-private.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
-                                    { chat.type != ChatType.PROTECTED && <Image
-                                        src={import.meta.env.VITE_BACKEND + "/resources/chat.png"}
+                                    { chat.type == ChatType.PUBLIC && <Image
+                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-public.png"}
+                                        className="me-1"
+                                        width={30}
+                                        alt="chat"
+                                    />}
+                                    { chat.type == ChatType.PROTECTED && <Image
+                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-protected.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
