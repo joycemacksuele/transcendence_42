@@ -194,8 +194,9 @@ export class UserController {
 		if (error instanceof UnauthorizedException) {
 			// todo: ask Corina: if I just throw existing error (throw error) and dont change the exception to 403 Forbidden, it shows message 401 'Ran out of cookies' when user is not logged in, but it should show 'None of your business'
 			//			
-			throw new HttpException('Forbidden Access', HttpStatus.FORBIDDEN);
-			throw error;
+			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+			// throw new HttpException('Forbidden Access', HttpStatus.FORBIDDEN);
+			// throw error;
 		}
 		// TODO: Is this error 503 allowd in case of not being logged in and trying to access the app?
 		//		 The correct error should be 500, but we are not allowed to use it

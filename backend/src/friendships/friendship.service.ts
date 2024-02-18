@@ -21,7 +21,7 @@ export class FriendshipService {
 			where: {userId, friendId }
 		});
 		if (existingFriendship) {
-			throw new BadRequestException("wrong message: This should never shop up, because if the displayed profile is already a friend, it should on click just un-follow this user, and maybe? return to the list of friends");
+			throw new BadRequestException("wrong message: This should never show up, because if the displayed profile is already a friend, it should on click just un-follow this user, and maybe? return to the list of friends");
 		}
 
 		const friendship = new Friendship();
@@ -110,6 +110,4 @@ export class FriendshipService {
 		// The .map will extract from each item in the friendships[] array only the 'friend' entity, which is in fact the UserEntity 
 		return (await friendships).map(friendship => friendship.friend);
 	}
-
-
 }
