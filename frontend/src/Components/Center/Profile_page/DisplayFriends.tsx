@@ -90,27 +90,32 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
               <span>Online</span>
             </ListGroup.Item>
             {friends
-              .sort((a, b) => a.rank - b.rank)
-              .map((friend) => (
-                <ListGroup.Item key={friend.id}>
-                  <span> {friend.rank}. </span>
-
-                  <span>
-                    <a
-                      className={"list-user-link"}
-                      //className={`list-user-link ${user.loginName === selectedUser ? 'selected' : ''} `}
-                      onClick={(e) => handleUserClick(e, friend.loginName)}
-                    >
+              .sort((a, b) => a.rank - b.rank).map((friend) => (
+                <ListGroup.Item key={friend.id} className="list-group-item">
+                  <a
+                    className={"list-user-link"}
+                    onClick={(e) => handleUserClick(e, friend.loginName)}
+                  >
+                    <span className="rank">
+                      {friend.rank}.
+                    </span>
+                    <div className="profile-image">
                       <img
                         src={import.meta.env.VITE_BACKEND + "/" + friend.profileImage}
-                        // src={"http://localhost:3001" + "/" + friend.profileImage}
                         id="profileImage_tiny"
+                        alt="x"
                       />
-                      {friend.profileName}
-                    </a>
-                  </span>
+                    </div>
 
-                  <span>{friend.onlineStatus ? "Yes" : "No"}</span>
+                    <span className="profile-name">
+                      {friend.profileName}
+                    </span>
+                    
+                    <span className="online-status">
+                      <span style={{ border: 'none' }}>{friend.onlineStatus ? "yes" : "no"}</span>
+                      <span id={`circle${friend.onlineStatus ? 'Green' : 'Red'}`}>&#9679;</span>
+                    </span>
+                  </a>
                 </ListGroup.Item>
               ))}
           </ListGroup>

@@ -3,7 +3,7 @@ import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
-import DisplayOneUser from "./DisplayOneUser"; // without brackets, because it is exported 'default'
+import DisplayOneUser from "./DisplayOneUser/DisplayOneUser"; // without brackets, because it is exported 'default'
 import { useSelectedUser } from "./contextSelectedUserName";
 
 // Custom CSS
@@ -11,7 +11,7 @@ import { useSelectedUser } from "./contextSelectedUserName";
 
 axios.defaults.withCredentials = true;
 
-interface User {
+export interface User {
   id: number;
   name: string;
   profileImage: string;
@@ -58,7 +58,7 @@ const UsersList: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axiosInstance.get<User[]>("/users/all"); // Assuming the server is running on the same host and port
+      const response = await axiosInstance.get<User[]>("/users/all");
       setUsers(response.data);
       console.log("Jaka, retreived users", response.data);
     } catch (error) {
@@ -100,86 +100,106 @@ const UsersList: React.FC = () => {
   return (
     <Container fluid className="h-100 w-100 container-max-width">
       {/* <div className="users-outerXXX"> */}
-        {/* <div className="inner-section"> */}
-        <Row text="dark" className="row-center d-flex justify-content-center users-outer">
-          <Col xs={11} md={5} className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded">
-            {/* Button to trigger fetching the users */}
+      {/* <div className="inner-section"> */}
+      <Row
+        text="dark"
+        className="row-center d-flex justify-content-center users-outer"
+      >
+        <Col
+          xs={11}
+          md={5}
+          className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded"
+        >
+          {/* Button to trigger fetching the users */}
 
-            {displayList && ( // Only render the list if dislpayList is true
-              <ListGroup className="list-users">
-                <h4>USERS IN DATABASE:</h4>
-                <ListGroup.Item className="column-titles">
-                  <span>Rank</span>
-                  {/* <span>Intra</span> */}
-                  <span>Name</span>
-                  <span>Played</span>
-                  <span>Won</span>
-                  <span>Lost</span>
-                  <span>Online</span>
-                </ListGroup.Item>
+          {displayList && ( // Only render the list if dislpayList is true
+            <ListGroup className="list-users">
+              <h4>USERS IN DATABASE:</h4>
+              <ListGroup.Item className="column-titles">
+                <span>Rank</span>
+                {/* <span>Intra</span> */}
+                <span>Name</span>
+                <span>Played</span>
+                <span>Won</span>
+                <span>Lost</span>
+                <span>Online</span>
+              </ListGroup.Item>
 
-                {users
-                  .sort((a, b) => a.rank - b.rank)
-                  .map((user) => (
-                    <ListGroup.Item key={user.id}>
+              {users
+                .sort((a, b) => a.rank - b.rank)
+                .map((user) => (
+                  <ListGroup.Item key={user.id}>
+                    <a
+                      href=""
+                      className={`list-user-link ${
+                        user.loginName === selectedUser ? "selected" : ""
+                      } `}
+                      onClick={(e) => handleUserClick(e, user.loginName)}
+                    >
                       <span>{user.rank}.</span>
-                      {/* TODO THE CURRENT USER SHOULD NOT BE ADDED TO THIS LIST SINCE THEIR PROFILE IS ALREADY AT THE FIRST TAB AND WE DONT WANT FOR EXAMPLE TO FOLLOW OURSELVES OR SEND A CHAT TO OURSELVES */}
                       <span>
-                        <a
-                          href=""
-                          className={`list-user-link ${
-                            user.loginName === selectedUser ? "selected" : ""
-                          } `}
-                          onClick={(e) => handleUserClick(e, user.loginName)}
-                        >
-                          <img
-                            src={
-                              import.meta.env.VITE_BACKEND + "/" + user.profileImage
-                            }
-                            // src={"http://localhost:3001" + "/" + user.profileImage}
-                            id="profileImage_tiny"
-                          />
-                          {user.profileName}
-                        </a>
+                        <img
+                          src={
+                            import.meta.env.VITE_BACKEND +
+                            "/" +
+                            user.profileImage
+                          }
+                          id="profileImage_tiny"
+                        />
+                        {user.profileName}
                       </span>
                       <span>{user.gamesPlayed}</span>
                       <span>{user.gamesWon}</span>
                       <span>{user.gamesLost}</span>
-                      <span>{user.onlineStatus ? "Yes" : "No"}</span>
-                    </ListGroup.Item>
-                  ))}
-                {/* <button onClick={handleClickDeleteUsers}>Delete dummies</button> */}
-              </ListGroup>
-            )}
-          </Col>
 
-          <Col xs={11} md={5} className="column-bckg p-3 mx-3 rounded">
-            {/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
-            {selectedUser ? (
-              <DisplayOneUser
-                loginName={selectedUser}
-                showMatchHistory={showMatchHistory}
-                setShowMatchHistory={setShowMatchHistory}
-              />
-            ) : (
-              <p>
-                <br />
-                <br />
-                <br /> &larr; Select a user from the list
-              </p>
-            )}
-            <button onClick={handleInsertDataClick} className="button-custom">
-              Create dummies
-            </button>
-            &nbsp;&nbsp;
-            <button
-              onClick={handleClickDeleteDummies}
-              className="button-custom"
-            >
-              Delete dummies
-            </button>
-          </Col>
-        </Row>
+                      <span>
+                        <span style={{ border: "none" }}>
+                          {user.onlineStatus ? "yes" : "no"}
+                        </span>
+                        <span
+                          id={`circle${user.onlineStatus ? "Green" : "Red"}`}
+                        >
+                          &#9679;
+                        </span>
+                      </span>
+                    </a>
+                  </ListGroup.Item>
+                ))}
+              {/* <button onClick={handleClickDeleteUsers}>Delete dummies</button> */}
+            </ListGroup>
+          )}
+        </Col>
+
+        <Col xs={11} md={5} className="column-bckg p-3 mx-3 rounded">
+          {/* { displayList && <DisplayOneUser loginName={"jmurovec"}/>} */}
+          {selectedUser ? (
+            <DisplayOneUser
+              loginName={selectedUser}
+              showMatchHistory={showMatchHistory}
+              setShowMatchHistory={setShowMatchHistory}
+            />
+          ) : (
+            <p>
+              <br />
+              <br />
+              <br />
+              <span style={{ fontSize: "2em", paddingRight: "0.3em" }}>
+                &larr;
+              </span>
+              <span style={{ fontSize: "1.5em" }}>
+                Select a user from the list
+              </span>
+            </p>
+          )}
+          <button onClick={handleInsertDataClick} className="button-custom">
+            Create dummies
+          </button>
+          &nbsp;&nbsp;
+          <button onClick={handleClickDeleteDummies} className="button-custom">
+            Delete dummies
+          </button>
+        </Col>
+      </Row>
       {/* </div> */}
     </Container>
   );

@@ -1,10 +1,6 @@
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
-import React, { useContext } from 'react';
-
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'bootstrap/dist/js/bootstrap.min.js';
-
-import { Navbar, Container, Nav, Col, Image, Button } from 'react-bootstrap';
+import { Modal, Navbar, Container, Nav, Col, Image, Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { CurrentUserContext } from '../Center/Profile_page/contextCurrentUser';
 import '../../css/Header.css'
@@ -39,6 +35,9 @@ const Header: React.FC = () => {
 		console.log('LOGOUT: click navigate("/logout")');
 		navigate('/logout');
 	}
+
+	const [showModal, setShowModal] = useState(false);
+	const toggleModal = () => setShowModal(!showModal);
 
 	// Get Current User Info from CONTEXT
 	const currUserData = useContext(CurrentUserContext);
@@ -85,13 +84,16 @@ const Header: React.FC = () => {
 
 				{/* Profile Image */}
 				<Col className='col-md-1 position-relative'>
-					<Navbar.Brand href="#profile" className="position-absolute top-50 start-50 translate-middle">
+					<Navbar.Brand 	href="#profile"
+									className="position-absolute top-50 start-50 translate-middle"
+									onClick={toggleModal}
+					>
 						<Image
 							src={image}
 							className="me-auto"
 							width={50}
 							height={50}
-							alt="MyImage"
+							alt="profile-icon"
 							roundedCircle
 						/>
 					</Navbar.Brand>
@@ -160,6 +162,14 @@ const Header: React.FC = () => {
 						</Button>
 					</Nav>
 				</Col>
+
+				<Modal show={showModal} onHide={toggleModal} centered size='lg'>
+					<Modal.Body>
+						<Image src={image} alt='profile-image' className="img-fluid" />
+					</Modal.Body>
+				</Modal>
+
+
 			</Container>
 		</Navbar>
 	);

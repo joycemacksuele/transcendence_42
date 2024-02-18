@@ -30,7 +30,6 @@ const NewChat = () => {
 
     const createGroupChat = () => {
         const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword};
-        console.log("[DisplayOneUser] createChat AQUIIIIIIIIII 2");
         console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 
         chatSocket.emit("createChat", requestNewChatDto);
@@ -66,8 +65,8 @@ const NewChat = () => {
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
         <>
-            <Row className='h-20 align-items-bottom'>
-                <Stack gap={2} className='align-self-center'>
+            <Row className='h-20 justifiy-content-end'>
+                <Stack gap={2} className='align-self-center flex-column justifiy-content-end'>
                     <Button
                         variant="primary"
                         type="submit"

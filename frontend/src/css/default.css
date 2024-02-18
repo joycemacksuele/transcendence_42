@@ -64,7 +64,15 @@ button.button_default {
   background-color: #a19c94;
   cursor: pointer;
   transition: border-color 0.25s;
+
+  /* Fixed size: */
+  width: 120px;
+  height: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  /* text-overflow: ellipsis; */
 }
+
 button.button_default:hover {
   border-color: #dcfb92;
   background-color: #c08f8f;
@@ -102,7 +110,6 @@ button.button_default:focus-visible {
   padding: 4%;
   width: 100%;
   color: black;
-  
 }
 
 
@@ -114,6 +121,7 @@ button.button_default:focus-visible {
   align-items: center;
   margin-bottom: 10px;
   border-bottom: 1px grey solid;
+  /* border-bottom: 1px rgb(232, 16, 16) solid; */
   padding-bottom: 10px;
   justify-content: space-around;
   width: 100%;
@@ -140,11 +148,41 @@ button.button_default:focus-visible {
 .score {
 }
 
+.circle {
+  /* display: inline-flex; */
+  display: block;
+  /* align-items: center; */
+  margin: 0 0 0 0px;
+  font-size: 1em;
+  /* border: 1px solid black; */
+}
 
+#circleRed {
+  align-self: center;
+  color: red;
+  padding: 0 15px 0 3px;
+  border: none;
+  font-size: 0.7em;
+
+} 
+
+#circleGreen {
+  align-self: center;
+  color: rgb(22, 213, 54);
+  padding: 0 15px 0 3px;
+  border: none;
+  font-size: 0.7em;
+} 
+
+
+#otherUserImage:hover {
+  cursor: pointer;
+}
 
 /* ************************************************* */
 /****** CUSTOM COLORS TO CHANGE THE THEME ************/
 body {
+  /* background-color: #3d0f0f; */
   background-color: #e6dddd;
 }
 
