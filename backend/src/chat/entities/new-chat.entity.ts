@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany, ManyToOne, Unique } from 'typeorm';
 import { ChatType } from '../utils/chat-utils';
-import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 import { UserEntity } from 'src/user/user.entity';
+import { ChatMessageEntity } from "./chat-message.entity";
+import { MutedEntity } from "./muted.entity";
 
 // Read: https://orkhan.gitbook.io/typeorm/docs/entities#column-types-for-postgres
 // Entity reflects exactly one table in the database
@@ -10,7 +11,6 @@ import { UserEntity } from 'src/user/user.entity';
 @Unique(['name'])
 export class NewChatEntity {
 
-    // JOYCE -> I have added 'uuid' to try to fix a database error with the ids
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -35,7 +35,7 @@ export class NewChatEntity {
     password: string;
 
     // the creator can kick, ban, mute anyone on the channel (even admins)
-    @ManyToOne(() => UserEntity, (user) => user.rooms_created)
+    @ManyToOne(() => UserEntity, (user) => user.roomsCreated)
     creator: UserEntity;
 
     // when the group is created, the admin is the owner (creator)
@@ -50,14 +50,15 @@ export class NewChatEntity {
     @JoinTable()
     users: UserEntity[];
 
-    @ManyToMany(() => UserEntity)
+    @OneToMany(() => MutedEntity, (muted) => muted.chat)
     @JoinTable()
-    mutedUsers: UserEntity[];
+    usersCanChat: MutedEntity[];
 
     @ManyToMany(() => UserEntity)
     @JoinTable()
     bannedUsers: UserEntity[];
 
-    @OneToMany(() => ChatMessageEntity, (chatmessage) => chatmessage.chatbox)
+    @OneToMany(() => ChatMessageEntity, (chatMessage) => chatMessage.chatbox)
+    @JoinTable()
     messages: ChatMessageEntity[];
 }

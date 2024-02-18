@@ -9,12 +9,14 @@ import { JwtService } from '@nestjs/jwt';
 import { TwoFactorAuthService } from 'src/auth/2fa/2fa.service';
 
 import { Friendship } from '../friendships/friendship.entity';
+import { Blockship } from 'src/blockShips/blockship.entity';
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([UserEntity, Friendship])],
+    imports: [TypeOrmModule.forFeature([UserEntity, Friendship, Blockship])],
     providers: [UserService, DuplicateService, AuthService, JwtService, TwoFactorAuthService],
     controllers: [UserController],
+    exports: [UserService]      // added Jaka, to be able to use it in the Blockhip controller
 })
 export class UserModule {
     private readonly logger = new Logger(UserModule.name);

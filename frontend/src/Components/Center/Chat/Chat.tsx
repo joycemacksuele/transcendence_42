@@ -21,6 +21,16 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
+import axiosInstance from "../../Other/AxiosInstance.tsx";
+
+const getIntraName = async () => {
+    return axiosInstance.get('/users/get-current-username').then((response): string => {
+        return response.data.username;
+    }).catch((error): null => {
+        console.error('[MembersGroup] Error getting current username: ', error);
+        return null;
+    });
+}
 
 const Chat = () => {
 
@@ -74,7 +84,7 @@ const Chat = () => {
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
-        <Container fluid>
+        <Container className='h-75' fluid>
             {/* I still don't understand why we need this Row here, but it is not working without it*/}
             <Row className='chat-page'>
 
@@ -99,10 +109,14 @@ const Chat = () => {
                     </Row>
                     {/* Recent or Group body */}
                     <Row className='h-100'>
-                        {activeContentLeft === 'recent' && <ChatRecent setChatClicked={setChatClicked} /> }
-                        {activeContentLeft === 'groups' && <ChatGroups setChatClicked={setChatClicked} /> }
-                        {/* NewChat Button */}
-                        <NewChat/>
+                        {activeContentLeft === 'recent' &&
+                            <ChatRecent setChatClicked={setChatClicked} />
+                        }
+                        {activeContentLeft === 'groups' &&
+                            <ChatGroups setChatClicked={setChatClicked} /> &&
+                            /* NewChat Button */
+                            <NewChat/>
+                        }
                     </Row>
                 </Col>
 
@@ -123,7 +137,7 @@ const Chat = () => {
                             // onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                <Nav.Link href="members" disabled>Members</Nav.Link>
+                                <Nav.Link href="members" disabled>{chatClicked?.name} members</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Row>

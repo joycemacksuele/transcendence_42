@@ -1,9 +1,9 @@
-import React, { useContext, useState, useRef } from "react";
+import React, {useState, useRef, useEffect} from "react";
 import { ChatType, ResponseNewChatDto } from "./Utils/ChatUtils.tsx";
-import { CurrentUserContext, CurrUserData } from "../Profile_page/contextCurrentUser.tsx";
 import { chatSocket } from "./Utils/ClientSocket.tsx";
 import { useNavigate } from "react-router-dom";
 import { useSelectedUser } from "../Profile_page/contextSelectedUserName";
+import { User } from "../Profile_page/DisplayUsers.tsx";
 
 // Importing bootstrap and other modules
 import Row from "react-bootstrap/Row";
@@ -13,6 +13,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Modal from "react-bootstrap/Modal";
 import Image from "react-bootstrap/Image";
 import Form from "react-bootstrap/Form";
+import axiosInstance from "../../Other/AxiosInstance.tsx";
 
 // the creator can kick, ban, mute anyone on the group (even admins)
 // the admin can kick, ban, mute others on the group (besides the creator)
@@ -26,6 +27,19 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
         console.log("[MembersGroup] chatClicked: ", chatClicked);
     }
 
+    const inputRef = useRef(null);
+
+    const [intraName, setIntraName] = useState<string | null>(null);
+    const [showMemberModal, setShowMemberModal] = useState(false);
+    const [clickedMember, setClickedMember] = useState<string>();
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
+    const [showAddUsersModal, setShowAddUsersModal] = useState(false);
+    const [chatPassword, setChatPassword] = useState<string | null>(null);
+    const [usersToBeAddedToChat, setUsersToBeAddedToChat] = useState<string[]>([]);
+    const [currentChatUsers, setCurrentChatUsers] = useState<User[]>([]);
+    const [goFetchUsers, setGoFetchUsers] = useState(false);
+
     const navigate = useNavigate();
     const { setSelectedLoginName } = useSelectedUser();
 
@@ -35,25 +49,50 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
         navigate(`/main_page/users`);
     };
 
-    const inputRef = useRef(null);
+    const getIntraName = async () => {
+        return await axiosInstance.get('/users/get-current-username').then((response): string => {
+            console.log('[MembersGroup] Current user intraName: ', response.data.username);
+            return response.data.username as string;
+        }).catch((error): null => {
+            console.error('[MembersGroup] Error getting current username: ', error);
+            return null;
+        });
+    }
 
-    const [showMemberModal, setShowMemberModal] = useState(false);
-    const [clickedMember, setClickedMember] = useState<string>();
-    const [showPasswordModal, setShowPasswordModal] = useState(false);
-    const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
-    const [chatPassword, setChatPassword] = useState<string | null>(null);
+    // We want to get the current user intra name when the component is reloaded only (intraName will be declared again)
+    useEffect(() => {
+        const init = async () => {
+            if (!intraName) {
+                const currUserIntraName = await getIntraName();
+                setIntraName(currUserIntraName);
+            }
+        }
+        init();
+    }, [intraName]);
 
-    // TODO get it from database
-    const currUserData = useContext(CurrentUserContext) as CurrUserData;
-    const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
+    const getAllUsers = async () => {
+        return await axiosInstance.get<User[]>('/users/all').then((response) => {
+            setCurrentChatUsers(response.data);
+            console.log("[MembersGroup] All users were fetched from the database");
+        }).catch((error): undefined => {
+            console.error('[MembersGroup] Error retrieving all users: ', error);
+        });
+    };
+
+    // We want to fetch all users every time we change goFetchUsers, that is why this useEffect depends on it
+    useEffect(() => {
+        console.log("[MembersGroup] inside useEffect -> will fetch all users in the database");
+        getAllUsers();
+    }, [goFetchUsers]);
 
     const joinGroupChat = () => {
-        console.log("[MembersGroup] Will join the chat", chatClicked?.name, "id", chatClicked?.id);
+        console.log("[MembersGroup] Current user will join the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
         chatSocket.emit("joinChat", { chatId: chatClicked?.id, chatPassword: chatPassword });
         setChatPassword(null);
     };
+
     const leaveGroupChat = () => {
-        console.log("[MembersGroup] Will leave the chat", chatClicked?.name, "id", chatClicked?.id);
+        console.log("[MembersGroup] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
         chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
     };
 
@@ -77,8 +116,14 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
         chatSocket.emit("banFromChat", { chatId: chatClicked?.id, user: user });
     };
 
+    const addUsers = () => {
+        console.log("[MembersGroup] users [", usersToBeAddedToChat, "] will be added to chat [", chatClicked?.name, "]");
+        chatSocket.emit("addUsers", { chatId: chatClicked?.id, newUsers: usersToBeAddedToChat });
+        setUsersToBeAddedToChat([]);
+    };
+
     const editGroupPassword = () => {
-        console.log("[MembersGroup]", chatClicked?.name, "will have its password changed or deleted");
+        console.log("[MembersGroup] [", chatClicked?.name, "] will have its password changed or deleted");
         chatSocket.emit("editPassword", { chatId: chatClicked?.id, chatPassword: chatPassword });
     };
 
@@ -101,10 +146,11 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                 onClick={ () => {
                                     setShowMemberModal(true)
                                     setClickedMember(member)
+
                                 }}
                             >
-                                {
-                                    (chatClicked?.mutedUsers.indexOf(member) == -1 &&
+                                {/* Users' list (with pictos) = when we are NOT muted + when we are NOT banned */}
+                                {(chatClicked?.mutedUsers.indexOf(member) == -1 &&
                                     chatClicked?.bannedUsers.indexOf(member) == -1) ? (
                                     <Image
                                         src={import.meta.env.VITE_BACKEND + "/resources/member.png"}
@@ -116,6 +162,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     />
                                     ) : (
                                     <>
+                                        {/* Users' list (with pictos) = when we ARE muted */}
                                         {(chatClicked?.mutedUsers.indexOf(member) != -1) && <Image
                                             src={import.meta.env.VITE_BACKEND + "/resources/member-muted.png"}
                                             className="me-1"
@@ -124,6 +171,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                             width={30}
                                             alt="chat"
                                         />}
+                                        {/* Users' list (with pictos) = when we ARE banned */}
                                         {(chatClicked?.bannedUsers.indexOf(member) != -1) && <Image
                                             src={import.meta.env.VITE_BACKEND + "/resources/member-banned.png"}
                                             className="me-1"
@@ -139,7 +187,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             </ListGroup.Item>
 
                             {/* Modal with buttons should not appear to the current user */}
-                            {(intraName !== clickedMember) && (
+                            {(intraName && clickedMember && (intraName !== clickedMember)) && (
                                 <>
                                     <Modal
                                         size="lg"
@@ -159,8 +207,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                             </Button>
                                             <Button
                                                 className="me-4 mb-3"
+                                                value={clickedMember}
                                                 // href={import.meta.env.VITE_FRONTEND + "/main_page/users"}
-                                                onClick={() => goToUserProfile(member)}
+                                                onClick={() => goToUserProfile(clickedMember)}
                                                 variant="primary"
                                             >
                                                 Go to profile
@@ -171,10 +220,10 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                 <Button
                                                     className="me-4 mb-3"
                                                     variant="primary"
-                                                    value={member}
+                                                    value={clickedMember}
                                                     onClick={ () => {
                                                         setShowMemberModal(false);
-                                                        addAdmin(member);
+                                                        addAdmin(clickedMember);
                                                     }}
                                                 >
                                                     Add as admin
@@ -187,38 +236,41 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                 <Button
                                                     className="me-4 mb-3"
                                                     variant="warning"
+                                                    value={clickedMember}
                                                     onClick={ () => {
                                                         setShowMemberModal(false);
-                                                        mute(member);
+                                                        mute(clickedMember);
                                                     }}
                                                 >
                                                     Mute
                                                 </Button>
                                             )}
 
-                                            {/* Mute = when we are admin OR creator */}
+                                            {/* Mute = when we ARE admin OR creator */}
                                             {(chatClicked?.admins.indexOf(intraName) != -1 ||
                                                 chatClicked?.creator == intraName) && (
                                                 <Button
                                                     className="me-4 mb-3"
                                                     variant="warning"
+                                                    value={clickedMember}
                                                     onClick={ () => {
                                                         setShowMemberModal(false);
-                                                        kick(member);
+                                                        kick(clickedMember);
                                                     }}
                                                 >
                                                     Kick
                                                 </Button>
                                             )}
-                                            {/* Mute = when we are admin OR creator */}
+                                            {/* Mute = when we ARE admin OR creator */}
                                             {(chatClicked?.admins.indexOf(intraName) != -1 ||
                                                 chatClicked?.creator == intraName) && (
                                                 <Button
                                                     className="me-4 mb-3"
                                                     variant="danger"
+                                                    value={clickedMember}
                                                     onClick={() => {
                                                         setShowMemberModal(false);
-                                                        ban(member);
+                                                        ban(clickedMember);
                                                     }}
                                                 >
                                                     Ban
@@ -234,22 +286,80 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
             </Row>
 
             {/* Group Buttons row */}
-            {chatClicked?.users &&
+            {(chatClicked?.users && intraName) &&
                 <Row className="h-20 align-items-bottom">
                     <Stack gap={2} className="align-self-center">
 
-                        {/* Add users = when we are admin */}
+                        {/* Add users = when we ARE members of the chat + when we ARE admin */}
                         {(chatClicked?.users.indexOf(intraName) != -1 &&
                             chatClicked?.admins.indexOf(intraName) != -1) && (
-                            <Button
-                                variant="primary"
-                                disabled
-                            >
-                                Add user(s) to group
-                            </Button>
+                            <>
+                                <Button
+                                    variant="primary"
+                                    onClick={() => {
+                                        setGoFetchUsers(true);
+                                        setShowAddUsersModal(true);
+                                    }}
+                                >
+                                    Add user(s) to group
+                                </Button>
+                                <Modal
+                                    size="sm"
+                                    show={showAddUsersModal}
+                                    onHide={() => {
+                                        setShowAddUsersModal(false);
+                                    }}
+                                >
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>Add user(s)</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body className="column-list-matches overflow-y">
+                                        <Form>
+                                            {currentChatUsers && currentChatUsers.map((currentChatUser, mapStaticKey: number) => (
+                                                <div key={mapStaticKey} className="mb-3">
+                                                    <Form.Check
+                                                        inline
+                                                        value={currentChatUser.loginName}
+                                                        label={currentChatUser.loginName}
+                                                        // name="group1" -> not needed it seems
+                                                        type="checkbox"
+                                                        id={"inline-checkbox-" + mapStaticKey}
+                                                        onClick={() => {
+                                                            {/* Add users to chat = when user is NOT banned */}
+                                                            if (chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1) {
+                                                                setUsersToBeAddedToChat([...usersToBeAddedToChat, currentChatUser.loginName]);
+                                                            }
+                                                        }}
+
+                                                    />
+                                                </div>
+                                            ))}
+                                        </Form>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={ () =>
+                                                setShowAddUsersModal(false)
+                                            }
+                                        >
+                                            Close
+                                        </Button>
+                                        <Button
+                                            variant="primary"
+                                            onClick={ () => {
+                                                addUsers();
+                                                setShowAddUsersModal(false);
+                                            }}
+                                        >
+                                            Save Changes
+                                        </Button>
+                                    </Modal.Footer>
+                                </Modal>
+                            </>
                         )}
 
-                        {/* Change password = when we are admin and chat type is PROTECTED */}
+                        {/* Change password = when we ARE admin and chat type is PROTECTED */}
                         {(chatClicked?.admins.indexOf(intraName) != -1 &&
                             chatClicked?.type == ChatType.PROTECTED) && (
                             <>
@@ -305,7 +415,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             </>
                         )}
 
-                        {/* Delete password = when we are admin and chat type is PROTECTED */}
+                        {/* Delete password = when we ARE admin and chat type is PROTECTED */}
                         {(chatClicked?.admins.indexOf(intraName) != -1 &&
                             chatClicked?.type == ChatType.PROTECTED) && (
                             <Button
@@ -319,7 +429,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             </Button>
                         )}
 
-                        {/* Leave Group = when we are a member */}
+                        {/* Leave Group = when we ARE a member */}
                         {chatClicked?.users.indexOf(intraName) != -1 && (
                             <Button
                                 variant="warning"
