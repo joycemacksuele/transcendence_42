@@ -65,8 +65,8 @@ const NewChat = () => {
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
         <>
-            <Row className='h-20 align-items-bottom'>
-                <Stack gap={2} className='align-self-center'>
+            <Row className='h-20 justifiy-content-end'>
+                <Stack gap={2} className='align-self-center flex-column justifiy-content-end'>
                     <Button
                         variant="primary"
                         type="submit"

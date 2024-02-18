@@ -313,7 +313,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     <Modal.Header closeButton>
                                         <Modal.Title>Add user(s)</Modal.Title>
                                     </Modal.Header>
-                                    <Modal.Body className="column-list-matches">
+                                    <Modal.Body className="column-list-matches overflow-y">
                                         <Form>
                                             {currentChatUsers && currentChatUsers.map((currentChatUser, mapStaticKey: number) => (
                                                 <div key={mapStaticKey} className="mb-3">
