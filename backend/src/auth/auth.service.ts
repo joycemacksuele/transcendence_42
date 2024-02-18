@@ -223,7 +223,7 @@ export class AuthService {
 
 		let expiryDate = new Date();
 		expiryDate.setMinutes(expiryDate.getMinutes() + 5);
-		this.logger.log("expiry date: " + expiryDate);
+		this.logger.log("expiry date auth token: " + expiryDate);
 
 		let time = expiryDate.valueOf();
 		this.logger.log("time: " + time);
@@ -243,8 +243,9 @@ export class AuthService {
 	async signRefreshToken(player: CreateUserDto) {
 		let refreshToken: string;
 		let expiryDate = new Date();
-		expiryDate.setMinutes(expiryDate.getDay() + 90);
-		this.logger.log("expiry date: " + expiryDate);
+
+		expiryDate.setDate(expiryDate.getDate() + 30);
+		this.logger.log("expiry date refresh token: " + expiryDate);
 
 		let time = expiryDate.valueOf();
 		this.logger.log("time: " + time);
