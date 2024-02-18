@@ -109,10 +109,14 @@ const Chat = () => {
                     </Row>
                     {/* Recent or Group body */}
                     <Row className='h-100'>
-                        {activeContentLeft === 'recent' && <ChatRecent setChatClicked={setChatClicked} /> }
-                        {activeContentLeft === 'groups' && <ChatGroups setChatClicked={setChatClicked} /> }
-                        {/* NewChat Button */}
-                        <NewChat/>
+                        {activeContentLeft === 'recent' &&
+                            <ChatRecent setChatClicked={setChatClicked} />
+                        }
+                        {activeContentLeft === 'groups' &&
+                            <ChatGroups setChatClicked={setChatClicked} /> &&
+                            /* NewChat Button */
+                            <NewChat/>
+                        }
                     </Row>
                 </Col>
 
