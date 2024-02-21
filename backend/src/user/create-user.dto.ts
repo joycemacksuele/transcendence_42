@@ -28,18 +28,20 @@ export class CreateUserDto {
   email: string;
 
   onlineStatus: boolean;
+  
+  @IsNotEmpty({ message: 'Required' })
+  @IsString()
+  hashedSecret: string;
+  
+  @IsString()
+  refreshToken: string;
 
   tfaEnabled: boolean;
 
   @IsString()
   tfaCode: string;
 
-  @IsNotEmpty({ message: 'Required' })
-  @IsString()
-  hashedSecret: string;
-
-  @IsString()
-  refreshToken: string;
+  tfaVerified: boolean;
 
   @IsString()
   profileImage?: string;

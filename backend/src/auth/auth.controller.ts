@@ -1,14 +1,13 @@
 import { Controller, Get, Post, Logger, Request, Req, Res, Body, Response, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { OpenAccess } from './guards/auth.openaccess';
+// import { OpenAccess } from './guards/auth.openaccess';
 import { UserService } from 'src/user/user.service';
-// import { AuthGuard } from './guards/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 
 //.env 
 // Dotenv is a library used to inject environment variables from a file into your program 
 
-@OpenAccess()  // this allows it to work without being logged in 
+// @OpenAccess()  // this allows it to work without being logged in 
 @Controller('auth')
 export class AuthController {
 	logger: Logger = new Logger('Auth Controllers');
@@ -41,7 +40,7 @@ export class AuthController {
 
 	//		STEP 2 - GET request with temporary "code"
 	//--------------------------------------------------------------------------------
-	@OpenAccess()
+	// @OpenAccess()
 	@Get('token')
 	async getAuthorizationToken(@Request() request: any, @Response() response: any) {
 		const reqUrl = request['url'];
@@ -65,7 +64,6 @@ export class AuthController {
 	}
 
 	@Get('logout')
-	// async logOut(@Request() req:any, @Response() res:any){
 		async logOut(@Request() req:any, @Response() res:any){
 		try{
 			this.logger.log("Start logout");
@@ -74,7 +72,8 @@ export class AuthController {
 			await this.userService.setOnlineStatus(user.loginName, false);
 			res.clearCookie('token');
 			await this.userService.updateRefreshToken(user.loginName, 'default'); 
-			this.logger.log("Removed tokens. Logging out!");
+			await this.userService.verifyTFA(user.loginName, false);
+			this.logger.log("Removed cookies, tokens and tfa. Logging out!");
 			res.status(200).send({ message: 'Logout succesful'});
 		}
 		catch(err){
