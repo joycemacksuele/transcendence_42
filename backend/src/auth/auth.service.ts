@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { TwoFactorAuthService } from './2fa/2fa.service';
 
-
 interface JwtPayload {
 	sub: number;
 	username: string;
@@ -15,14 +14,12 @@ interface JwtPayload {
 	iat: number;
   }  
 
-
 @Injectable()
 export class AuthService {
 	constructor(
 		private readonly userService: UserService,
 		public readonly jwtService: JwtService,
-		private readonly tfaService: TwoFactorAuthService,
-		// private readonly userRepository: UserRepository
+		private readonly tfaService: TwoFactorAuthService
 		) {}
 	logger: Logger = new Logger('Auth Services');
 
@@ -90,6 +87,7 @@ export class AuthService {
 			refreshToken: 'default',
 			tfaEnabled: true,
 			tfaCode: 'default',
+			tfaVerified: false,
 			profileImage: avatar,
 		};
 
@@ -154,7 +152,10 @@ export class AuthService {
 		this.logger.log('                          player.email:' + player.email);
 		this.logger.log('                          player.2fa:' + player.tfaEnabled);
 		this.logger.log('                          player.tfaCode:' + player.tfaCode);
+		this.logger.log('                          player.tfaCode:' + player.tfaCode);
+		this.logger.log('                          player.tfaVerified:' + player.tfaVerified);
 		this.logger.log('                          player.refreshToken:' + player.refreshToken);
+
 
 		token = await this.signToken(player);
 		if (!token) {
@@ -189,7 +190,6 @@ export class AuthService {
 		// Set status Online true
 		await this.userService.setOnlineStatus(player.loginName, true);
 
-		// if 2fa true display profile else redirect to 2fa 
 		let path: string;
 		if (player.tfaEnabled === true)
 		{
@@ -198,7 +198,6 @@ export class AuthService {
 			path = `${process.env.FRONTEND}/Login_2fa`;
 		}
 		else{
-			// path = `${process.env.FRONTEND}`; // changed jaka, it was redirectong to login page, if tfa-enabled was deleted from local storage
 			path = `${process.env.FRONTEND}/main_page/profile`;
 			this.logger.log("Redirecting to: ", path);
 		}
@@ -223,7 +222,7 @@ export class AuthService {
 
 		let expiryDate = new Date();
 		expiryDate.setMinutes(expiryDate.getMinutes() + 5);
-		this.logger.log("expiry date: " + expiryDate);
+		this.logger.log("expiry date auth token: " + expiryDate);
 
 		let time = expiryDate.valueOf();
 		this.logger.log("time: " + time);
@@ -243,8 +242,9 @@ export class AuthService {
 	async signRefreshToken(player: CreateUserDto) {
 		let refreshToken: string;
 		let expiryDate = new Date();
-		expiryDate.setMinutes(expiryDate.getDay() + 90);
-		this.logger.log("expiry date: " + expiryDate);
+
+		expiryDate.setDate(expiryDate.getDate() + 30);
+		this.logger.log("expiry date refresh token: " + expiryDate);
 
 		let time = expiryDate.valueOf();
 		this.logger.log("time: " + time);
@@ -260,37 +260,6 @@ export class AuthService {
 		}
 		return refreshToken;
 	}
-
-	// async removeAuthToken(request: Request, response: Response): Promise<any> {
-	// 	try{
-	// 		this.logger.log("start removeAuthToken");
-	// 		let cookies = request.get('Cookie');
-	// 		this.logger.log("     verify cookie: " + cookies);
-	// 		let existingToken = this.extractTokenFromHeader(request);
-	// 		this.logger.log("     existingToken: " + existingToken);
-
-	// 		let replaceToken = "";
-	// 		const cookieAttributes = {
-	// 			httpOnly: true,
-	// 			path: '/',
-	// 			sameSite: 'none',
-	// 		};
-	// 		let cookieToken = `token=${replaceToken};`;
-	// 		for (let attribute in cookieAttributes) {
-	// 			if (cookieAttributes[attribute] === true) {
-	// 				cookieToken += ` ${attribute};`;
-	// 			} else
-	// 				cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
-	// 		}
-	// 		response.setHeader('Set-Cookie', cookieToken);
-	// 		this.logger.log('Made token to expire');
-	// 	}
-	// 	catch(err){
-	// 		this.logger.error('\x1b[31mError removing the token from cookies: \x1b[0m' + err);
-	// 		throw new HttpException('Failed to logout', HttpStatus.SERVICE_UNAVAILABLE); // check if other status is better suited 
-	// 	}
-	// 	return response.sendStatus(200);
-	//   }
 
   	async replaceToken(request: Request, response: Response, newToken: any): Promise<any> {
 		try {
@@ -355,8 +324,6 @@ export class AuthService {
 		console.log('extract token from header()');
 
         cookie = request.get('Cookie');
-        // this.logger.log('extract Token from Header - full cookie: ' + cookie); // COMMENT
-		// console.log(request.headers);
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');

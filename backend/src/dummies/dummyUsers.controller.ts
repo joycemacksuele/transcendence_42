@@ -3,7 +3,7 @@ import { Controller, Post, HttpStatus, HttpException } from '@nestjs/common';
 // import { DummyUserService } from './dummyUsers.service';
 import { UserService } from '../user/user.service';
 import { UserEntity } from '../user/user.entity';
-import { OpenAccess } from 'src/auth/guards/auth.openaccess';
+// import { OpenAccess } from 'src/auth/guards/auth.openaccess';
 
 // export class DummyUserDto {
 //   intraName: string;
@@ -12,7 +12,7 @@ import { OpenAccess } from 'src/auth/guards/auth.openaccess';
 // }
 
 
-@OpenAccess()
+// @OpenAccess()
 @Controller('insert-dummy-users')
 export class DummyUsersController {
 	// InsertUserDto class defined inside the TestController file
@@ -21,7 +21,7 @@ export class DummyUsersController {
   	}
 
 
-  @OpenAccess()
+  // @OpenAccess()
   @Post()
   async insertDummyUsers(): Promise<{ message: string }> {
     try {
@@ -38,15 +38,15 @@ export class DummyUsersController {
 
       // Dummy user data (for testing)
       const dummyUsers: UserEntity[] = [
-        { loginName: 'dummy1', profileName: 'dummy1', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
+        { loginName: 'dummy1', profileName: 'dummy1', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', tfaVerified: true, friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
 
-        { loginName: 'dummy2', profileName: 'dummy2', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
+        { loginName: 'dummy2', profileName: 'dummy2', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 2, hashedSecret: 'hashedSecret2', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', tfaVerified: true, friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
 
-        { loginName: 'dummy3', profileName: 'dummy3', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
+        { loginName: 'dummy3', profileName: 'dummy3', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 3, hashedSecret: 'hashedSecret3', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', tfaVerified: true, friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
 
-        { loginName: 'dummy4', profileName: 'dummy4', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
+        { loginName: 'dummy4', profileName: 'dummy4', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 4, hashedSecret: 'hashedSecret4', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', tfaVerified: true, friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
         
-        { loginName: 'dummy5', profileName: 'dummy5', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
+        { loginName: 'dummy5', profileName: 'dummy5', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 5, hashedSecret: 'hashedSecret5', email: 'email@email.com', onlineStatus: false, rank: 0, gamesPlayed: 0, gamesWon: 0, gamesLost: 0, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', tfaVerified: true, friendships: [], chatMessages: null, roomsCreated: [], canChat: [], blockedUsers: []},
 
 
         // { loginName: 'dummy1', profileName: 'dummy1', profileImage: 'uploadsDummies/dummy_image.jpg', intraId: 1, hashedSecret: 'hashedSecret1', email: 'email@email.com', onlineStatus: false, rank: 7, gamesPlayed: 20, gamesWon: 11, gamesLost: 9, achievements: 'Lazy Lamb', tfaEnabled: true, tfaCode: 'default', isFirstLogin: true, refreshToken: 'default', friendships: [], chatMessages: null, roomsCreated: [], canChat: []},
