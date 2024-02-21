@@ -23,7 +23,7 @@ export class AuthMiddleware implements NestMiddleware {
     try{
         token = this.authService.extractTokenFromHeader(request);
         // if (request.path === "/users/all")
-            // token = ""; // TEST
+        // token = ""; // TEST
         this.logger.log("ExistingToken: " + token);
     }catch(err){
         throw new UnauthorizedException('Player not authorized! Exiting Ping Pong!' + err);
@@ -31,10 +31,9 @@ export class AuthMiddleware implements NestMiddleware {
     if (token === ""){
         this.logger.log("Empty token"); 
         response.clearCookie('Cookie');
-        this.logger.log("Empty string token: " + token);
         throw new UnauthorizedException('Player not authorized! Exiting Ping Pong!');
     }
-
+     
     try{
         // decode the token 
         const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
@@ -43,15 +42,24 @@ export class AuthMiddleware implements NestMiddleware {
         // verify expiry date of the token         
         let expiry = await this.tokenExpired(payload.exp);
         let player : UserEntity;
+        player = await this.userService.getUserByLoginName(payload.username);
+
+        // this.logger.log(" middleware path: " + request.path);
+        // this.logger.log(" tfaEnabled: " + player.tfaEnabled + " tfaVerified: " + player.tfaVerified);
+
+        if (request.path != `/2fa/verify_code` && player.tfaEnabled === true && player.tfaVerified === false) 
+        {
+            response.clearCookie('Cookie');
+            await this.userService.updateRefreshToken(player.loginName, "default");
+            throw new UnauthorizedException('Player not authorized with tfa verification! Exiting Ping Pong!');
+        }
 
         if (expiry === true){
             try {
                 this.logger.log("Token has expired. Starting the process to get a new one!")
-                player = await this.userService.getUserByLoginName(payload.username);
                 let refreshToken = player.refreshToken;
                 this.logger.log("Refresh token: " + refreshToken);
-                // this.logger.error(" ??? After this, the token becomes 'default', if the app is stopped without logging out, throwing error: jwt malformed (from jwtService.verifyAsync) ... ");
-
+               
                 const payloadRefreshToken = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_SECRET});
                 let expiryRefreshToken = await this.tokenExpired(payloadRefreshToken.exp);
                 this.logger.log("expiry refreshtoken: ", expiryRefreshToken);
@@ -60,11 +68,11 @@ export class AuthMiddleware implements NestMiddleware {
                     this.logger.log('No refresh token! Go away!');
                     response.clearCookie('Cookie');
     			    await this.userService.updateRefreshToken(player.loginName, "default");
+                    await this.userService.verifyTFA(player.loginName, false);  // not always needed
                     throw new UnauthorizedException('Player not authorized! Exiting Ping Pong! - Expired refresh token');
                 }
 
                 // make a new refresh token 
-                this.logger.log("Refresh token again: " + refreshToken);
                 let newRefreshToken = await this.authService.signRefreshToken(player);
 			    this.logger.log("New refreshToken: " + newRefreshToken);
 			    await this.userService.updateRefreshToken(player.loginName, newRefreshToken);
@@ -107,7 +115,7 @@ export class AuthMiddleware implements NestMiddleware {
 
   async tokenExpired(expiryDate: number): Promise<boolean> {
       let timeNow = new Date();
-      if (timeNow.valueOf() > expiryDate) // token is expired 
+      if (timeNow.valueOf() > expiryDate) 
           return true;
       return false;
   }
