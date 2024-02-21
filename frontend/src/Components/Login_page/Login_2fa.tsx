@@ -121,7 +121,7 @@ import MainPage from "../main_page";
 import axiosInstance from "../Other/AxiosInstance";
 import LoginPage from "./Login_auth";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 const re_sendVerificationEmail = async () => {
   console.log("Re-send Verification email:");
@@ -140,6 +140,45 @@ const InputTFAcode = () => {
   const [tfa, settfa] = useState(false);
   const [tfaAttempts, setAttempts] = useState<number>(0);
   const navigate = useNavigate();
+
+
+
+
+
+	// Checking if user is already logged-in and in this case redirect
+	// const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+	// const [isLoggedIn, setIsLoggedIn] = useState(false);
+	// useEffect(() => {
+	// 	const checkAuthStatus = async () => {
+	// 		try {
+	// 			const response = await axiosInstance.get("/users/get-current-user");
+	// 			// const response = await axiosInstance.get("/users/get-login-status");
+	// 			console.log('       Check auth status response: ', response);
+	// 			if (response.data == "")
+	// 				console.log('       Response.data is empty!!! No AUTH	', response.data);
+	// 			else {
+	// 				setIsLoggedIn(true);
+	// 			}
+
+	// 			// SETISLOGGEDIN(.... TRUE ....)
+	// 		} catch (error) {
+	// 			console.error('Auth status check failed', error);
+	// 		} finally {
+	// 			setIsCheckingAuth(false);
+	// 		}
+	// 	}
+	// 	checkAuthStatus();
+	// }, []);
+
+	// if (isCheckingAuth) {
+	// 	console.log("              Checking if logged in ...");
+	// 	return <div> Checking if you are logged in ...</div>
+	// }
+
+
+
+
+
 
   let axiosConfig = {
     headers: {
@@ -191,6 +230,8 @@ const InputTFAcode = () => {
   };
 
   return (
+    // !isLoggedIn ? <Navigate to="/" />
+			  //  :
     <Container
       className="d-flex justify-content-center align-items-center"
       style={{ minHeight: "100vh" }}

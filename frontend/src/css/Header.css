@@ -15,9 +15,10 @@
   background-color: #caf1d4;
 }
 
-.nav-link.active {
+.nav-underline .nav-link.active {
 	background-color: #a7d6b3;
-  }
+	font-weight: 550;
+}
 
 /* Custom hover styling for Nav.Link */
 .nav-link:hover {

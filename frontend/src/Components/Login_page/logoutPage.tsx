@@ -34,9 +34,11 @@ const LogoutPage = () => {
     <Container style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
 			<Col style={{ textAlign: "center"}}>
 				<h3>You are logged out</h3>
-				<Button className="button_default" >
-					<Link to="/" style={{color: "white"}}> LOGIN PAGE </Link>
-				</Button>
+				<Link to="/">
+          <Button className="button_default"  style={{color: "white"}} >
+					  LOGIN PAGE 
+				  </Button>
+        </Link>
 			</Col>
 		</Container>
   )

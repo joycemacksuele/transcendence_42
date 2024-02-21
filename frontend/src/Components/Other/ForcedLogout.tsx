@@ -7,9 +7,11 @@ function ForcedLogout () {
 			<Col style={{ textAlign: "center"}}>
 				<p>You ran out of cookies!<br />Go get more cookies ...</p>
 				{/* <p><a href="/"> LOGIN PAGE </a></p> */}
-				<Button className="button_default" >
-					<Link to="/" style={{color: "white"}}> LOGIN PAGE </Link>
-				</Button>
+				<Link to="/" > 
+					<Button className="button_default" style={{color: "white"}}>
+					LOGIN PAGE 
+					</Button>
+				</Link>
 			</Col>
 		</Container>
 	)
