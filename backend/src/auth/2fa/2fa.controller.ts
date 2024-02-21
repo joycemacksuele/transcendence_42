@@ -12,7 +12,7 @@ export class TwoFactorAuthController {
         private readonly tfaService: TwoFactorAuthService,
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
-        private readonly authService: AuthService   // added jaka, to enable extractUserdataFromToken()
+        private readonly authService: AuthService
         ) {}
     logger: Logger = new Logger('2FA mail controller');
 
@@ -50,6 +50,7 @@ export class TwoFactorAuthController {
             {
     			await this.userService.setOnlineStatus(user.loginName, true);
                 await this.userService.updateStoredTFACode(user.loginName, "default");
+                await this.userService.verifyTFA(user.loginName, true);
                 this.logger.log('2fa verification successfull! Codes match!');
                 return true;
             }
@@ -107,36 +108,14 @@ export class TwoFactorAuthController {
             if (!user) {
                 throw new Error('toggle_button_tfa: User not found');
             }
-            // this.logger.log("verify user: user.email- ", user.email);
 
             // Toggle TFA status
             const updatedTfaStatus = !user.tfaEnabled;
-
             await this.userService.enableTFA (user.loginName, updatedTfaStatus); // update database
-
             res.status(HttpStatus.OK).send({ message: 'Button toggled tfa OK.' , tfaEnabled: updatedTfaStatus });
         } catch (error) {
             this.logger.log('Error toggled tfa button: ', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Unable to update toggle tfa button' });
         }
     }
-
-    // @Post('send_tfa_code')
-    // async sendCode(@Req() req, @Res() res: Response) {
-    //     try {
-    //         this.logger.log('Start send_tfa_code');
-
-    //         let payload = await this.authService.extractUserFromRequest(req); // extract user from header
-    //         this.logger.log('Extracted user from header: ', payload.username); // returns the token payload, NOT THE USER ENTITY
-            
-    //         let user = await this.userService.getUserByLoginName(payload.username); // retrieve user
-    //         this.logger.log('User data retrieved: email: ' + user.email);
-
-    //         await this.tfaService.sendVerificationMail(user);
-    //         res.status(HttpStatus.OK).send({ message: 'Verification email has been sent.' });
-    //     } catch (error) {
-    //         this.logger.log('Error rsending the code email: ', error);
-    //         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'To Factor Authentication semail sending failed' });
-    //     }
-    // }
 }

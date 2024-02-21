@@ -16,14 +16,14 @@ export interface ResponseMessageChatDto {
 // This is mapped to response-new-chat.dto.ts on the backend
 export interface ResponseNewChatDto {
     id: number;
-    name: string;// Can also be a login name
+    name: string;// Can also be a login name for the PRIVATE messages
     type: ChatType;
     creator: string;
     admins: string[];
     users: string[];
     mutedUsers: string[];
     bannedUsers: string[];
-    messages: ResponseNewChatDto[];
+    messages: ResponseMessageChatDto[] | null;
 }
 
 export enum ChatType {
