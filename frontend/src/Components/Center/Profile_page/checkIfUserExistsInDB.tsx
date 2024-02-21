@@ -1,7 +1,7 @@
-import axios, { AxiosResponse, AxiosError } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 interface User {
   id: number;

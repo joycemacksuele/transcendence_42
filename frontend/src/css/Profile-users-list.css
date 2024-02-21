@@ -41,7 +41,7 @@
 }
 
 .column-titles > span {
-    font-weight: bold;
+    font-weight: 600;
     background-color: rgb(212, 212, 186);
     padding-left: 4%;
 }
