@@ -92,6 +92,11 @@ export class UserService {
   async updateProfileImage(loginName: string, profileImage: string) {
     await this.userRepository.update({ loginName} , { profileImage });
   }
+  
+  async updateRefreshToken(loginName: string, refreshToken: string) {
+    const response = await this.userRepository.update({ loginName} , { refreshToken });
+    this.logger.log('updaterefreshtoken function after: ' + refreshToken);
+  }
 
   async updateStoredTFACode(loginName: string, tfaCode: string) {
     // this.logger.log('updateStoredTFACode function before: ' + this.userRepository.findOne("tfaCode"));
@@ -99,14 +104,13 @@ export class UserService {
     const response = await this.userRepository.update({ loginName} , { tfaCode });
     this.logger.log('updateStoredTFACode function after: ' + tfaCode);
   }
-
-  async updateRefreshToken(loginName: string, refreshToken: string) {
-     const response = await this.userRepository.update({ loginName} , { refreshToken });
-    this.logger.log('updaterefreshtoken function after: ' + refreshToken);
-  }
-
+  
   async enableTFA(loginName: string, tfaEnabled: boolean) {
     await this.userRepository.update({ loginName} , { tfaEnabled });
+  }
+  
+  async verifyTFA(loginName: string, tfaVerified: boolean) {
+    await this.userRepository.update({ loginName} , { tfaVerified });
   }
 
   // added jaka:
