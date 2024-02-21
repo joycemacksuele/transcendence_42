@@ -1,13 +1,51 @@
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Navigate } from 'react-router-dom';
+import axiosInstance from '../Other/AxiosInstance';
+// import axios from 'axios';
 
-axios.defaults.withCredentials = true; // jaka, is it needed here?
+// axios.defaults.withCredentials = true;
 
 const LoginPage: React.FC = () => {
-	const [response, setResponse] = useState<string>('');
+	console.log("------------------- LOGIN PAGE -----------------");
+	
+	//const [response, setResponse] = useState<string>('');
 	// const [response00, setResponse00] = useState<string>('');
+	
+	// Checking if user is already logged-in and in this case redirect
+	// If fetching a user returns error 404 Not Found, it shoud stay on login page,
+	// instead of redirecting to profile page. The same if the returned data is empty ""
+	const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	useEffect(() => {
+		const checkAuthStatus = async () => {
+			try {
+				const response = await axiosInstance.get("/users/get-current-user");
+				// const response = await axiosInstance.get("/users/get-login-status");
+				//console.log('       Check auth status response: ', response);
+				if (response.data == "")
+					console.log('       Response.data is empty!!! No AUTH	', response.data);
+				else {
+					setIsLoggedIn(true);
+				}
+
+				// SETISLOGGEDIN(.... TRUE ....)
+			} catch (error) {
+				console.error('The user is logged out (Auth status check failed)');
+				// console.error('Auth status check failed', error);
+			} finally {
+				setIsCheckingAuth(false);
+			}
+		}
+		checkAuthStatus();
+	}, []);
+
+	if (isCheckingAuth) {
+		console.log("              Checking if logged in ...");
+		return <div> Checking if you are logged in ...</div>
+	} 
+
 
 	const handleClickAuth = () => {
 
@@ -69,6 +107,8 @@ const LoginPage: React.FC = () => {
 
   
 	return (
+		isLoggedIn ? <Navigate to="/main_page/profile" />
+			   :
 		<Container 	className='d-flex justify-content-center align-items-center'
 					style={{ minHeight: "100vh" }}
 		>
@@ -78,9 +118,9 @@ const LoginPage: React.FC = () => {
 					<Button
 						className='button_default'
 						onClick={handleClickAuth}>
-						Login with Auth
+						Login
 					</Button>
-					{response && <div>{response}</div>}
+					{/* {response && <div>{response}</div>} */}
 			</div>
 		</Container>
 	);
