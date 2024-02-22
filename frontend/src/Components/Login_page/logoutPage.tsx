@@ -22,6 +22,7 @@ const LogoutPage = () => {
           "HandleLogout(): Trying to log out ...",
           response.data.message
         );
+        localStorage.removeItem('profileName');
         navigate("/"); // Redirect to the root of your application
       } catch (error) {
         console.error("LogoutPage: Logout failed:", error);

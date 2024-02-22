@@ -1,75 +1,30 @@
 import { useState, useEffect } from "react";
-import { Socket, io } from "socket.io-client";
-
-/*
-	TODO JAKA:
-		- Block button on other user profile
-		- test arrows back and forth
-		- type orm error on startup ???
-*/
+import { io } from "socket.io-client";
 
 const apiAddress = import.meta.env.VITE_BACKEND;
 
-// interface GetPlayingStatusProps {
-// 	loginName: string;
-// }
-
-// From socket it can come:
-// 		- 'ingame' or empty string ''
-// 		- 'online' or empty string ''
-
 function GetPlayingStatus(loginName: string) {
-	const [socket, setSocket] = useState<Socket | null>(null);
-	const [isUserPlaying, setIsUserPlaying] = useState("");
-
+	const [isUserPlaying, setIsUserPlaying] = useState<boolean | null>(false);
+	
 	useEffect(() => {
-
-		if (!socket) {
-			const newSocket = io(apiAddress, { transports: ["websocket"] });
-			setSocket(newSocket);
-		}
+		const socket = io(apiAddress, { transports: ["websocket"] });
+		// const socket = new WebSocket('ws://localhost:3000'); // --> low level approach, without addition features
 
 		// Request user playing status
 		socket?.emit('requestPlayingStatus', loginName);
 		
-		// Listen for status updates
+		// Event listener for status updates
 		socket?.on('responsePlayingStatus', (response) => {
 			console.log("Status isPlaying: ", response.isPlaying);
-			if (response.loginName === loginName) {	// this maybe is not necessary, since we already know that this is the user.
-				setIsUserPlaying(response.isPlaying);
-			}
+			setIsUserPlaying(response.isPlaying);
 		});
-		socket?.on('sendPlayingStatusToAll', (response, status: string) => {
-			if (response.loginName === loginName) {
-				if (status === "") {
-					console.log("User has stopped playing -- > change status to empty string (not in game)");
-					setIsUserPlaying(status);
-				}
-			}
-		})
 		return () => {
 			socket?.off('responsePlayingStatus');
-			// socket?.disconnect(); ??? maybe not needed
+			socket?.disconnect();
 		};
-	}, [socket] );	// Can it be without socket here Because it wont change
-
+	}, [] ); // No need to have socket as dependancy
 
 	return isUserPlaying;
-	// (	
-		// <>
-		// 	{isUserPlaying ? (
-		// 		<>
-		// 			<span id={`circle${isUserPlaying ? 'Green' : 'Red'}`}> &#9679;</span>
-		// 			{/* <span id='circleGreen'>&#9679;</span> Yes */}
-		// 		</>
-		// 	) : ( 
-		// 		<>
-		// 			<span id={`circle${isUserPlaying ? 'Green' : 'Red'}`}> &#9679;</span>
-		// 			{ /*<span id='circleRed'>&#9679;</span> No */}
-		// 		</>	
-		// 	)}
-		// </>
-	 // );
 }
 
 export default GetPlayingStatus;

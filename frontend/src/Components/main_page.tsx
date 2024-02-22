@@ -3,7 +3,7 @@ import Header from "./Header/Header.tsx";
 import Center from "./Center/Center.tsx";
 import { CurrentUserContext, CurrUserData } from './Center/Profile_page/contextCurrentUser.tsx';
 import { checkIfUserExistsInDB } from './Center/Profile_page/checkIfUserExistsInDB.tsx';
-import { Button, Container } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 
 
 interface ContextProps {

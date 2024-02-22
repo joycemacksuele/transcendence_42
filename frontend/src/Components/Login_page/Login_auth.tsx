@@ -3,35 +3,48 @@ import React, { useState, useEffect } from 'react';
 import { Button, Container, Row, Col } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import axiosInstance from '../Other/AxiosInstance';
-// import axios from 'axios';
-
-// axios.defaults.withCredentials = true;
+import GetOnlineStatus from '../Center/Profile_page/GetOnlineStatus';
 
 const LoginPage: React.FC = () => {
 	console.log("------------------- LOGIN PAGE -----------------");
-	
-	//const [response, setResponse] = useState<string>('');
-	// const [response00, setResponse00] = useState<string>('');
-	
+
 	// Checking if user is already logged-in and in this case redirect
 	// If fetching a user returns error 404 Not Found, it shoud stay on login page,
 	// instead of redirecting to profile page. The same if the returned data is empty ""
+
+	// THIS CANNOT BE USED ANYMORE TO CHECK IF USER IS LOGGED IN, BECAUSE IF HE IS NOT LOGIN,
+	// THE BACKEND WILL IMMEDIATELY SEND 401 AND REDIRECT TO THE 'Ran out of cookies',
+	// WHICH MAKES IT A LOOP AND IMPOSSIBLE TO LOGIN.
+	// THEREFORE, I FIRST CHECK IF THE STORAGE-PROFILNAME EXISTS, ONLY THEN SEND THE REQUEST.
+	// THE STORAGE profileName IS REMOVED AT LOGOUT.
+	// IF SOMEONE DELETES THE STORAGE WHILE LOGGED IN, HE WILL HAVE TO LOGIN AGAIN
+	
 	const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 	useEffect(() => {
+
+		// Trying to use a websocket here to test if it is reachable before logging in:
+		// const testWebSockets = GetOnlineStatus("jmurovec");
+		// console.log('Test web sockets - online status of dummy2 ', testWebSockets);
+
+
 		const checkAuthStatus = async () => {
 			try {
-				const response = await axiosInstance.get("/users/get-current-user");
-				// const response = await axiosInstance.get("/users/get-login-status");
-				//console.log('       Check auth status response: ', response);
-				if (response.data == "")
-					console.log('       Response.data is empty!!! No AUTH	', response.data);
-				else {
-					setIsLoggedIn(true);
+				const storageProfileName = localStorage.getItem('profileName');
+				if (storageProfileName) {
+					const response = await axiosInstance.get("/users/get-current-user");
+					if (response.data == "")
+						console.log('       Response.data is empty!!! No AUTH	', response.data);
+					else {
+						console.log('       Response.data:', response.data);	
+						if (response.data.profileName === storageProfileName) 
+							setIsLoggedIn(true);
+					}
 				}
-
 				// SETISLOGGEDIN(.... TRUE ....)
 			} catch (error) {
+				// do nothing:
 				console.error('The user is logged out (Auth status check failed)');
 				// console.error('Auth status check failed', error);
 			} finally {
@@ -42,14 +55,16 @@ const LoginPage: React.FC = () => {
 	}, []);
 
 	if (isCheckingAuth) {
-		console.log("              Checking if logged in ...");
+		console.log("              Login_auth: Checking if logged in ...");
 		return <div> Checking if you are logged in ...</div>
 	} 
+
+	
 
 
 	const handleClickAuth = () => {
 
-		console.log('Go from frontend directly to intra ...');
+		console.log('Go from login page to intra42 login ...');
 		window.location.assign(import.meta.env.VITE_BACKEND + "/auth/login");
 
 		// PING-PONG
@@ -57,10 +72,6 @@ const LoginPage: React.FC = () => {
 		
 		// TRANS_JMB
 		// window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-cbdaf4baea7a8de06d665cfd19ad5ba56e1e4079d72114b284a2adf05f4f63b5&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth/login&response_type=code';
-		
-
-
-		// console.log('Jaka, A) ...');	
 	};
 	
 	// useEffect(() => {
@@ -110,8 +121,7 @@ const LoginPage: React.FC = () => {
 		isLoggedIn ? <Navigate to="/main_page/profile" />
 			   :
 		<Container 	className='d-flex justify-content-center align-items-center'
-					style={{ minHeight: "100vh" }}
-		>
+					style={{ minHeight: "100vh" }} >
 			<div className='d-flex flex-column align-items-center'>
 				{/* <h1>This is Login Page for Auth</h1> */}
 				<h1>Unfriendly Ping Pong</h1>
