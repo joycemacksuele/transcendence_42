@@ -115,9 +115,6 @@
 // ---------------------------------------------------------------------------------------------------------
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { data } from "jquery";
-import MainPage from "../main_page";
 import axiosInstance from "../Other/AxiosInstance";
 import LoginPage from "./Login_auth";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
@@ -142,27 +139,29 @@ const InputTFAcode = () => {
   const navigate = useNavigate();
 
 
-
-
-
-	// Checking if user is already logged-in and in this case redirect
 	// const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 	// const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 	// useEffect(() => {
+  //   // Checking if already logged in, in case a user types the url / or /login_2ta, if yes, it redirects to the profile page
 	// 	const checkAuthStatus = async () => {
 	// 		try {
-	// 			const response = await axiosInstance.get("/users/get-current-user");
-	// 			// const response = await axiosInstance.get("/users/get-login-status");
-	// 			console.log('       Check auth status response: ', response);
-	// 			if (response.data == "")
-	// 				console.log('       Response.data is empty!!! No AUTH	', response.data);
-	// 			else {
-	// 				setIsLoggedIn(true);
+	// 			const storageProfileName = localStorage.getItem('profileName');
+	// 			if (storageProfileName) {
+	// 				const response = await axiosInstance.get("/users/get-current-user");
+	// 				if (response.data == "")
+	// 					console.log('       Response.data is empty!!! No AUTH	', response.data);
+	// 				else {
+	// 					console.log('       Response.data:', response.data);	
+	// 					if (response.data.profileName === storageProfileName) 
+	// 						setIsLoggedIn(true);
+	// 				}
 	// 			}
-
 	// 			// SETISLOGGEDIN(.... TRUE ....)
 	// 		} catch (error) {
-	// 			console.error('Auth status check failed', error);
+	// 			// do nothing:
+	// 			console.error('Login_2fa: The user is logged out (Auth status check failed)');
+	// 			// console.error('Auth status check failed', error);
 	// 		} finally {
 	// 			setIsCheckingAuth(false);
 	// 		}
@@ -170,14 +169,10 @@ const InputTFAcode = () => {
 	// 	checkAuthStatus();
 	// }, []);
 
-	// if (isCheckingAuth) {
-	// 	console.log("              Checking if logged in ...");
-	// 	return <div> Checking if you are logged in ...</div>
-	// }
-
-
-
-
+  //   if (isCheckingAuth) {
+  //     console.log("              Login_2a: Checking if logged in ...");
+  //     return <div> Checking if you are logged in ...</div>
+  //   } 
 
 
   let axiosConfig = {
@@ -231,7 +226,7 @@ const InputTFAcode = () => {
 
   return (
     // !isLoggedIn ? <Navigate to="/" />
-			  //  :
+		// 	   :
     <Container
       className="d-flex justify-content-center align-items-center"
       style={{ minHeight: "100vh" }}

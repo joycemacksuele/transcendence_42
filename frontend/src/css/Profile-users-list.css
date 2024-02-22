@@ -63,6 +63,7 @@
 .list-user-link:hover {
     /* background-color: #fef738; */
     background-color:rgb(236, 236, 187);
+    color: rgb(0, 0, 0);
     
     cursor: pointer;
 }
