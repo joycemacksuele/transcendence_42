@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 import { Col, Image, Row, Button, Modal } from "react-bootstrap";
 import handleClickBlocking from "./blockUser.ts";
@@ -10,6 +9,7 @@ import { ChatType, RequestNewChatDto } from "../../Chat/Utils/ChatUtils.tsx";
 import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
 import MatchHistory from "../MatchHistory.tsx";
 import GetPlayingStatus from "../GetPlayingStatus.tsx";
+import GetOnlineStatus from "../GetOnlineStatus.tsx";
 import "../../../../css/Profile-users-list.css";
 
 interface UserProps {
@@ -48,8 +48,10 @@ const DisplayOneUser: React.FC<{
   const [myId, setMyId] = useState<number | undefined>();
   const [showButtons, setShowButtons] = useState(true);
   const isUserPlaying = GetPlayingStatus(loginName);
+  const isUserOnline = GetOnlineStatus(loginName);
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
+
 
   // if the current user is displayed, do not show the buttons
   useEffect(() => {
@@ -207,6 +209,12 @@ const DisplayOneUser: React.FC<{
                       online
                       <span
                         id={`circle${userData.onlineStatus ? "Green" : "Red"}`}
+                      >
+                        &#9679;
+                      </span>
+                      onlineWS
+                      <span
+                        id={`circle${isUserOnline ? "Green" : "Red"}`}
                       >
                         &#9679;
                       </span>
