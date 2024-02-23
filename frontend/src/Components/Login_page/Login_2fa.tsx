@@ -119,6 +119,7 @@ import axiosInstance from "../Other/AxiosInstance";
 import LoginPage from "./Login_auth";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate, Navigate } from "react-router-dom";
+import { checkIfLoggedIn } from "./checkIfLoggedIn";
 
 const re_sendVerificationEmail = async () => {
   console.log("Re-send Verification email:");
@@ -139,8 +140,15 @@ const InputTFAcode = () => {
   const navigate = useNavigate();
 
 
-	// const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-	// const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+	checkIfLoggedIn(setIsLoggedIn, setIsCheckingAuth);
+
+  if (isCheckingAuth) {
+    console.log("              Login_2fa: Checking if logged in ...");
+    return <div> Checking if you are logged in ...</div>
+  } 
 
 	// useEffect(() => {
   //   // Checking if already logged in, in case a user types the url / or /login_2ta, if yes, it redirects to the profile page
@@ -157,11 +165,9 @@ const InputTFAcode = () => {
 	// 						setIsLoggedIn(true);
 	// 				}
 	// 			}
-	// 			// SETISLOGGEDIN(.... TRUE ....)
 	// 		} catch (error) {
 	// 			// do nothing:
 	// 			console.error('Login_2fa: The user is logged out (Auth status check failed)');
-	// 			// console.error('Auth status check failed', error);
 	// 		} finally {
 	// 			setIsCheckingAuth(false);
 	// 		}
@@ -169,10 +175,10 @@ const InputTFAcode = () => {
 	// 	checkAuthStatus();
 	// }, []);
 
-  //   if (isCheckingAuth) {
-  //     console.log("              Login_2a: Checking if logged in ...");
-  //     return <div> Checking if you are logged in ...</div>
-  //   } 
+    if (isCheckingAuth) {
+      console.log("              Login_2fa: Checking if logged in ...");
+      return <div> Checking if you are logged in ...</div>
+    } 
 
 
   let axiosConfig = {
@@ -225,8 +231,8 @@ const InputTFAcode = () => {
   };
 
   return (
-    // !isLoggedIn ? <Navigate to="/" />
-		// 	   :
+    isLoggedIn ? <Navigate to="/main_page/profile" />
+			   :
     <Container
       className="d-flex justify-content-center align-items-center"
       style={{ minHeight: "100vh" }}

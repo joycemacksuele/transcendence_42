@@ -4,6 +4,7 @@ import { Button, Container, Row, Col } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import axiosInstance from '../Other/AxiosInstance';
 import GetOnlineStatus from '../Center/Profile_page/GetOnlineStatus';
+import { checkIfLoggedIn } from './checkIfLoggedIn';
 
 const LoginPage: React.FC = () => {
 	console.log("------------------- LOGIN PAGE -----------------");
@@ -22,56 +23,17 @@ const LoginPage: React.FC = () => {
 	const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-	useEffect(() => {
-
-		// Trying to use a websocket here to test if it is reachable before logging in:
-		// const testWebSockets = GetOnlineStatus("jmurovec");
-		// console.log('Test web sockets - online status of dummy2 ', testWebSockets);
-
-
-		const checkAuthStatus = async () => {
-			try {
-				const storageProfileName = localStorage.getItem('profileName');
-				if (storageProfileName) {
-					const response = await axiosInstance.get("/users/get-current-user");
-					if (response.data == "")
-						console.log('       Response.data is empty!!! No AUTH	', response.data);
-					else {
-						console.log('       Response.data:', response.data);	
-						if (response.data.profileName === storageProfileName) 
-							setIsLoggedIn(true);
-					}
-				}
-				// SETISLOGGEDIN(.... TRUE ....)
-			} catch (error) {
-				// do nothing:
-				console.error('The user is logged out (Auth status check failed)');
-				// console.error('Auth status check failed', error);
-			} finally {
-				setIsCheckingAuth(false);
-			}
-		}
-		checkAuthStatus();
-	}, []);
+	checkIfLoggedIn(setIsLoggedIn, setIsCheckingAuth);
 
 	if (isCheckingAuth) {
 		console.log("              Login_auth: Checking if logged in ...");
 		return <div> Checking if you are logged in ...</div>
-	} 
-
-	
-
+	}
 
 	const handleClickAuth = () => {
 
 		console.log('Go from login page to intra42 login ...');
 		window.location.assign(import.meta.env.VITE_BACKEND + "/auth/login");
-
-		// PING-PONG
-		// window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-d56d700e9560937acc2eb4461b7fc08f12e39e060503cc22ea59b952aa77d806&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Flogin&response_type=code';
-		
-		// TRANS_JMB
-		// window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-cbdaf4baea7a8de06d665cfd19ad5ba56e1e4079d72114b284a2adf05f4f63b5&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth/login&response_type=code';
 	};
 	
 	// useEffect(() => {
@@ -123,7 +85,6 @@ const LoginPage: React.FC = () => {
 		<Container 	className='d-flex justify-content-center align-items-center'
 					style={{ minHeight: "100vh" }} >
 			<div className='d-flex flex-column align-items-center'>
-				{/* <h1>This is Login Page for Auth</h1> */}
 				<h1>Unfriendly Ping Pong</h1>
 					<Button
 						className='button_default'
