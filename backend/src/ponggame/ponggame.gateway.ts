@@ -57,13 +57,17 @@ export class PonggameGateway
         const currentGames = ponggameService.getCurrentMatches();
         currentGames.forEach((gamestate: GameState) => {
           this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
-            if (gamestate.currentState == "End"){
-                this.processMatch(gamestate); //send the match data to the database
-                this.server.socketsLeave(gamestate.roomName);
-            }
-            else if( gamestate.currentState == "Disconnection"){
-                this.server.socketsLeave(gamestate.roomName);
-            }
+          if (gamestate.currentState == "End"){
+              this.processMatch(gamestate); //send the match data to the database
+              this.server.socketsLeave(gamestate.roomName);
+              this.ponggameService.removeUserIdMatch(gamestate.player1info);
+              this.ponggameService.removeUserIdMatch(gamestate.player2info);
+          }
+          else if( gamestate.currentState == "Disconnection"){
+              this.server.socketsLeave(gamestate.roomName);
+              this.ponggameService.removeUserIdMatch(gamestate.player1info);
+              this.ponggameService.removeUserIdMatch(gamestate.player2info);
+          }
         });
         ponggameService.cleanUpMatches();
         this._processingGamestates = false;
@@ -73,7 +77,7 @@ export class PonggameGateway
 
   async handleConnection(client: Socket) {
     this.logger.log(`pong game client id ${client.id} connected`);
-
+    client.data.gamepage = false;
 
     let token = null;
 
@@ -118,13 +122,17 @@ export class PonggameGateway
 
   handleDisconnect(client: Socket) {
     this.logger.log(`pong game client id ${client.id} disconnected`);
-    this.ponggameService.playerDisconnected(
-      this._socketIdUserId.get(client.id),
-    );
+    if(client.data.gamepage){
+      this.ponggameService.playerDisconnected(this._socketIdUserId.get(client.id));
+    }
     this._userIdSocketId.delete(this._socketIdUserId.get(client.id));
     this._socketIdUserId.delete(client.id);
   }
 
+  @SubscribeMessage('gamepage')
+  gamepage(@ConnectedSocket() client: Socket){
+    client.data.gamepage = true;
+  }
 @SubscribeMessage('joinGame')
   joinGame(
     @ConnectedSocket() client: Socket,
@@ -143,6 +151,15 @@ export class PonggameGateway
       this.ponggameService.updateUserInput(matchId, userId, input);
     }
   }
+  @SubscribeMessage('requestUserStatus')
+  requestUserStatus(@MessageBody() userId: string): string {
+    if (!this._userIdSocketId.has(userId))
+        return 'offline';
+    const match = this.ponggameService.getMatchId(userId);
+    if (match != "")
+        return "ingame"
+    return "online";
+  }
 
 @SubscribeMessage('requestPlayerPartOfGame')
   requestPlayerPartOfGame(@MessageBody() userId: string, @ConnectedSocket() client: Socket){
@@ -152,6 +169,28 @@ export class PonggameGateway
     }
     client.emit('responsePlayerPartOfGame',partOfMatch);
   }
+
+  @SubscribeMessage('createPrivateMatch')
+  createPrivateMatch(@MessageBody() data: {player1: string, player2: string, matchType: string}, @ConnectedSocket() client: Socket) : boolean{
+    this.ponggameService.createPrivateMatch(data.player1, data.player2, data.matchType);
+    return true;
+  }
+
+  @SubscribeMessage('invitePlayerToGame')
+  invitePlayer(@MessageBody() userId: string, @ConnectedSocket() client: Socket): boolean{
+    console.log(`invite for ${userId} received`);
+    const invitedSocketId = this._userIdSocketId.get(userId);
+    this.server.to(invitedSocketId).emit("inviteMessage","testmessage");
+    return true;
+  }
+
+  @SubscribeMessage('declineInvite')
+  declineInvite(@ConnectedSocket() client: Socket){
+    const userId = this._socketIdUserId.get(client.id);
+    this.ponggameService.declineInvite(userId);
+    console.log("decline recieved");
+  }
+
 
 //test function
 @SubscribeMessage('testMatchDb')

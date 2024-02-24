@@ -165,7 +165,7 @@ export function drawScene(
   if (gameState == undefined) return;
 
   const currentState = gameState.currentState;
-  if (currentState == "Message" || currentState == "Queue") {
+  if (currentState == "Queue" || currentState =='Disconnection') {
     drawMessage(context, width, height, gameState.stateMessage);
   } else if (currentState == "Playing") {
     if (gameState.timer > 0) {
@@ -174,9 +174,12 @@ export function drawScene(
     drawField(context, width, height);
 
     drawCurrentGameState(context, width, height, gameState);
-  } else if (currentState == "End" || currentState == "Disconnection") {
+  } else if (currentState == "End" || currentState == "PrivateQueue" || currentState =="WaitingForInvited") {
     drawMessage(context, width, height, gameState.stateMessage);
     drawField(context, width, height);
     drawCurrentGameState(context, width, height, gameState);
+  }
+  else {
+    console.log("test" + currentState);
   }
 }
