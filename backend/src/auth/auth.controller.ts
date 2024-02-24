@@ -81,4 +81,17 @@ export class AuthController {
 			res.status(500).send({ message: "Logout failed" });
 		}
 	}
+
+	// @Get('status')
+	// 	async getAuthStatus(@Request() req:any){
+	// 		try{
+	// 			this.logger.log("Verify authorization status");
+	// 			let payload = await this.authService.extractUserdataFromToken(req);
+	// 		}
+	// 		catch(err){
+	// 			this.logger.log("Player not authorized to be here " + err);
+	// 			return (false);
+	// 		}
+	// 		return (true);
+	// 	}
 }
