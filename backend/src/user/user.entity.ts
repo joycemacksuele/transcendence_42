@@ -75,6 +75,9 @@ export class UserEntity {
 	@Column({default: 'default'})
 	tfaCode: string;
 
+	@Column({default: false})
+	tfaVerified: boolean;
+
 	@Column({default: true})
 	isFirstLogin: boolean;
 
