@@ -56,7 +56,7 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 
 	
 	useEffect(() => {
-		
+		// console.log('Adding ')
 		addDummyMatches();
 
 		const fetchMatchHistory = async () => {

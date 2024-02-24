@@ -6,7 +6,7 @@ export const addDummyMatches = async () => {
 	console.log('==================== START AddDummyMatches()');
 	try {
 		if (!localStorage.getItem('dummyMatchAdded')) {
-			// console.log('==================== NO DUMMY MATCH STORAGE');
+			console.log('==================== NO DUMMY MATCH STORAGE');
 			const dummyMatch1 = {
 				player1Id: 1,
 				player2Id: 2, 
