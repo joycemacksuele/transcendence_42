@@ -44,15 +44,19 @@ export class AuthMiddleware implements NestMiddleware {
         let player : UserEntity;
         player = await this.userService.getUserByLoginName(payload.username);
 
-        // this.logger.log(" middleware path: " + request.path);
-        // this.logger.log(" tfaEnabled: " + player.tfaEnabled + " tfaVerified: " + player.tfaVerified);
+        this.logger.log(" middleware path: " + request.path);
+        this.logger.log(" tfaEnabled: " + player.tfaEnabled + " tfaVerified: " + player.tfaVerified);
 
-        if (request.path != `/2fa/verify_code` && player.tfaEnabled === true && player.tfaVerified === false) 
+        let freePath = await this.notFreePath(request.path);
+        if (freePath === false)
         {
-            response.clearCookie('Cookie');
-            await this.userService.updateRefreshToken(player.loginName, "default");
-            throw new UnauthorizedException('Player not authorized with tfa verification! Exiting Ping Pong!');
-        }
+            if (player.tfaEnabled === true && player.tfaVerified === false)
+            {
+                response.clearCookie('Cookie');
+                await this.userService.updateRefreshToken(player.loginName, "default");
+                throw new UnauthorizedException('Player not authorized with tfa verification! Exiting Ping Pong!');
+            }
+        }   
 
         if (expiry === true){
             try {
@@ -118,6 +122,17 @@ export class AuthMiddleware implements NestMiddleware {
       if (timeNow.valueOf() > expiryDate) 
           return true;
       return false;
+  }
+
+  async notFreePath(path: string): Promise<boolean>{
+
+    const freePaths = [`/2fa/verify_code`, `/2fa/resend_email_code`, `/auth/logout`];
+    for (let i = 0; i < 3; i++)
+    {
+        if (freePaths[i] === path)
+            return true;
+    }
+    return false;
   }
 }
 

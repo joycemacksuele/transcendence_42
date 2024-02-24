@@ -114,7 +114,7 @@ export class TwoFactorAuthController {
             await this.userService.enableTFA (user.loginName, updatedTfaStatus); // update database
             res.status(HttpStatus.OK).send({ message: 'Button toggled tfa OK.' , tfaEnabled: updatedTfaStatus });
         } catch (error) {
-            this.logger.log('Error toggled tfa button: ', error);
+            this.logger.log('Error toggled : ', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'Unable to update toggle tfa button' });
         }
     }
