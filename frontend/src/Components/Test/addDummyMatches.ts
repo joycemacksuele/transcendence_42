@@ -5,8 +5,17 @@ export const addDummyMatches = async () => {
 
 	console.log('==================== START AddDummyMatches()');
 	try {
+		// todo (jaka): to be removed. It's just to prevend adding more dummy matches at each login
+		const response = await axiosInstance.get('/matches/check-if-dummy-matches-exist');
+			if (response.data.matchExists) {
+				console.log('     Matches exist - do not create more');
+			return;
+			} else {
+				console.log('     Matches dont exist - can create dummy matches');
+			}
+	
 		if (!localStorage.getItem('dummyMatchAdded')) {
-			console.log('==================== NO DUMMY MATCH STORAGE');
+			console.log('     No dummy matches in the storage');
 			const dummyMatch1 = {
 				player1Id: 1,
 				player2Id: 2, 
@@ -39,8 +48,6 @@ export const addDummyMatches = async () => {
 				winnerId: 3,
 				timeStamp: new Date(),
 			};
-
-
 
 			// ADDING MORE MATCHES TO TEST THE CSS LIST OVERFLOW
 			const dummyMatch5 = {
@@ -85,7 +92,7 @@ export const addDummyMatches = async () => {
 			await axiosInstance.post('/matches/add-match', dummyMatch7);
 			await axiosInstance.post('/matches/add-match', dummyMatch8);
 			localStorage.setItem('dummyMatchAdded', 'true');
-			console.log('==================== CREATED DummyMatches');
+			// console.log('==================== CREATED DummyMatches');
 		}
 	} catch (error) {
 		if (error instanceof Error) {
