@@ -40,8 +40,14 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     const [currentChatUsers, setCurrentChatUsers] = useState<User[]>([]);
     const [goFetchUsers, setGoFetchUsers] = useState(false);
 
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [showOfflineModal, setShowOfflineModal] = useState(false);
+
     const navigate = useNavigate();
     const { setSelectedLoginName } = useSelectedUser();
+
+    const handleErrorClose = () => setShowErrorModal(false);
+    const handleOfflineShow = () => setShowOfflineModal(false);
 
     const goToUserProfile = (loginName: string) => {
         setSelectedLoginName(loginName);
@@ -127,6 +133,42 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
         chatSocket.emit("editPassword", { chatId: chatClicked?.id, chatPassword: chatPassword });
     };
 
+    ///////////////////////////////////////Invite Player
+    //function to invite player
+    function invitePlayer(invitedUser: string)
+    {   
+        console.log("invite button pressed");
+        chatSocket?.emit('requestUserStatus', invitedUser, 
+            (response: string) => 
+            {
+                console.log(`response: ${response}`);
+                if(response === "ingame")
+                {
+                    setShowMemberModal(false);
+                    setShowErrorModal(true);
+                }
+                else if (response == 'offline'){
+                    setShowMemberModal(false);
+                    setShowOfflineModal(true);
+                }
+                else{
+                    console.log("player is online");
+                    chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:'Default'},
+                        () => {
+                            chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
+                                {
+                                    window.location.replace("/main_page/game");
+                                }
+                            );
+                        }
+                    );
+                }
+            }
+        );
+    }
+
+
+
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
         <>
@@ -199,10 +241,11 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                         </Modal.Header>
                                         <Modal.Body>
                                             <Button
-                                                href={import.meta.env.VITE_FRONTEND + "/main_page/game"}
+                                                //href={import.meta.env.VITE_FRONTEND + "/main_page/game"}
                                                 className="me-4 mb-3"
                                                 variant="success"
-                                            >
+                                                onClick={()=>invitePlayer(clickedMember)}
+                                            >   
                                                 Invite to play pong!
                                             </Button>
                                             <Button
@@ -276,6 +319,23 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                     Ban
                                                 </Button>
                                             )}
+                                        </Modal.Body>
+                                    </Modal>
+
+                                    <Modal show={showErrorModal}>
+                                        <Modal.Body>
+                                            Player you want to invite is currently in a game. 
+                                            <Button variant="primary" onClick={handleErrorClose}>
+                                                Close
+                                            </Button>
+                                        </Modal.Body>
+                                    </Modal>
+                                    <Modal show={showOfflineModal}>
+                                        <Modal.Body>
+                                            User you want to invite is offline.
+                                            <Button variant="primary" onClick={handleOfflineShow}>
+                                                Close
+                                            </Button>
                                         </Modal.Body>
                                     </Modal>
                                 </>

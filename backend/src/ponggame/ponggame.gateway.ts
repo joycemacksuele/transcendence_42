@@ -76,43 +76,44 @@ export class PonggameGateway
   }
 
   async handleConnection(client: Socket) {
-    this.logger.log(`pong game client id ${client.id} connected`);
-    client.data.gamepage = false;
-
-    let token = null;
+      client.data.gamepage = false;
+      
+      let token = null;
 
     if(client.handshake.headers.cookie){
       const token_index_start = client.handshake.headers.cookie.indexOf("token");
       const token_key_value = client.handshake.headers.cookie.substring(token_index_start);
 
       if (token_key_value.includes(";")) {
-        const token_index_end = token_key_value.indexOf(";");
+          const token_index_end = token_key_value.indexOf(";");
         const token_key_value_2 = token_key_value.substring(0, token_index_end);
         token = token_key_value_2.split('=')[1];
-      } else {
+    } else {
         token = token_key_value.split('=')[1];
-      }
     }
+}
 
-    try {
-      const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-      const userId = payload.username;
-      
+try {
+    const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+    const userId = payload.username;
+    
+    this.logger.log(`pong game client id ${client.id} connected with the name ${userId}`);
       this._socketIdUserId.set(client.id, userId);
       this._userIdSocketId.set(userId, client.id);
-      const matchId = this.ponggameService.getMatchId(userId);
-      this.logger.log(`UserId found : ${userId}`);
-      this.logger.log(`Match Id ${matchId}`);
-      if (matchId == "") {
-        //if not get the selection screen
-        client.emit(
-          "stateUpdate",
-          this.ponggameService.getInitMatch("Default")
-        );
-      } else {
-        //if part of a game then join the match
-        client.join(matchId);
-      }
+    //   const matchId = this.ponggameService.getMatchId(userId);
+    //   this.logger.log(`UserId found : ${userId}`);
+    //   this.logger.log(`Match Id ${matchId}`);
+    //   if (matchId == "") {
+    //     //if not get the selection screen
+    //     client.emit(
+    //       "stateUpdate",
+    //       this.ponggameService.getInitMatch("Default")
+    //     );
+    //   } else {
+    //     //if part of a game then join the match
+    //     this.logger.log(`Joining game room ${matchId}`);
+    //     client.join(matchId);
+    //   }
     } catch {
       this.logger.log("something went wrong verifying the token");
       this.logger.log("Disconnecting the client socket");
@@ -132,7 +133,23 @@ export class PonggameGateway
   @SubscribeMessage('gamepage')
   gamepage(@ConnectedSocket() client: Socket){
     client.data.gamepage = true;
+    const userId = this._socketIdUserId.get(client.id);
+    const matchId = this.ponggameService.getMatchId(userId);
+      this.logger.log(`UserId found : ${userId}`);
+      this.logger.log(`Match Id ${matchId}`);
+      if (matchId == "") {
+        //if not get the selection screen
+        client.emit(
+          "stateUpdate",
+          this.ponggameService.getInitMatch("Default")
+        );
+      } else {
+        //if part of a game then join the match
+        this.ponggameService.playerConnected(userId);
+        client.join(matchId);
+      }
   }
+
 @SubscribeMessage('joinGame')
   joinGame(
     @ConnectedSocket() client: Socket,

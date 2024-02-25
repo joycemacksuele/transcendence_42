@@ -8,6 +8,9 @@ import MembersGroup from "./MembersGroup";
 import {ChatType, ResponseNewChatDto, ResponseMessageChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
 
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -33,6 +36,28 @@ const getIntraName = async () => {
 }
 
 const Chat = () => {
+    //added for the invite button
+    const [show, setShow] = useState(false);
+
+    let invitee ='';
+
+    //notify backend that the user declined
+    const declineInvite = () => {
+        chatSocket?.emit('declineInvite');
+        setShow(false);
+        console.log("declined");
+    }
+    
+
+    //move user to game page
+    const acceptInvite = () => {
+        //socket?.emit('identify', player);
+        setShow(false);
+        console.log("accepted");
+        window.location.replace("/main_page/game");
+    }
+
+    //invite button
 
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
     if (chatClicked) {
@@ -52,6 +77,19 @@ const Chat = () => {
             chatSocket.on("connect", () => {
                 console.log("[Chat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
             });
+
+//invite button
+            chatSocket.on("inviteMessage",(message:string)=>{
+                console.log(`received string from backend :${message}`);
+                invitee = message;
+                setShow(true);
+            }
+    );
+//end invite button
+
+
+
+
             chatSocket.on("disconnect", (reason) => {
                 if (reason === "io server disconnect") {
                     console.log("[Chat] socket disconnected: ", reason);
@@ -149,7 +187,19 @@ const Chat = () => {
                 </Col>
 
             </Row>
+                <Modal show={show}>
+                    <Modal.Body>
+                        <p>{invitee} wants to invite you for a game</p>
+                        <Button variant="secondary" onClick={acceptInvite}>
+                          Accept invite 
+                        </Button>
+                        <Button variant="primary" onClick={declineInvite}>
+                           Reject invite
+                        </Button>
+                    </Modal.Body>
+                </Modal>
         </Container>
+
     );
 };
 
