@@ -261,7 +261,7 @@ export class GameLogic {
         if (gameState.player2score >= MAX_GAME_SCORE) {
           gameState.currentState = 'End';
           gameState.winner = 2;
-          gameState.stateMessage = `${(gameState.player1info).toUpperCase()}, YOU LOST!!!`;
+          gameState.stateMessage = `${(gameState.player1info).toUpperCase()} LOST!!!`;
           return gameState;
         }
       } else if (gameState.ball_x > 1) {
@@ -269,7 +269,7 @@ export class GameLogic {
         if (gameState.player1score >= MAX_GAME_SCORE) {
           gameState.currentState = 'End';
           gameState.winner = 1;
-          gameState.stateMessage = `${(gameState.player2info).toUpperCase()}, YOU LOST!!!`;
+          gameState.stateMessage = `${(gameState.player2info).toUpperCase()} YOU LOST!!!`;
           return gameState;
         }
       }
