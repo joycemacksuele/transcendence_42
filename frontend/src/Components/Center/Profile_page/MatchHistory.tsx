@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { Row, Col, ListGroup } from "react-bootstrap";
+import { getCurrentUsername } from "./DisplayOneUser/DisplayOneUser";
+import { addDummyMatches } from "../../Test/addDummyMatches";
 
 
 interface UserProps {
@@ -36,131 +38,16 @@ function formatDate(dateString: Date) {
 }
 
 
-// fetch the current user
-const fetchCurrentUserName = async () => {
-	console.log('================= Fetch current user ');
-	try {
-		let response = await axiosInstance.get('/users/get-current-username');
-		console.log('================= fetched: ', response.data.username);
-		return response.data.username;
-	} catch (error) {
-		console.error('Error fetching current users loginName', error);
-		return null;
-	}
-};
-
-
-const AddDummyMatches = async () => {
-
-	console.log('==================== START AddDummyMatches()');
-	try {
-		if (!localStorage.getItem('dummyMatchAdded')) {
-			// console.log('==================== NO DUMMY MATCH STORAGE');
-			const dummyMatch1 = {
-				player1Id: 1,
-				player2Id: 2, 
-				player1Score: 33, 
-				player2Score: 22,
-				winnerId: 1,
-				timeStamp: new Date(),
-			};
-			const dummyMatch2 = {
-				player1Id: 3,
-				player2Id: 4, 
-				player1Score: 55, 
-				player2Score: 44,
-				winnerId: 3,
-				timeStamp: new Date(),
-			};
-			const dummyMatch3 = {
-				player1Id: 2,
-				player2Id: 3, 
-				player1Score: 55, 
-				player2Score: 44,
-				winnerId: 2,
-				timeStamp: new Date(),
-			};
-			const dummyMatch4 = {
-				player1Id: 1,
-				player2Id: 3, 
-				player1Score: 11, 
-				player2Score: 22,
-				winnerId: 3,
-				timeStamp: new Date(),
-			};
-
-
-
-			// ADDING MORE MATCHES TO TEST THE CSS LIST OVERFLOW
-			const dummyMatch5 = {
-				player1Id: 2,
-				player2Id: 3, 
-				player1Score: 1, 
-				player2Score: 2,
-				winnerId: 3,
-				timeStamp: new Date(),
-			};
-			const dummyMatch6 = {
-				player1Id: 2,
-				player2Id: 3, 
-				player1Score: 3, 
-				player2Score: 4,
-				winnerId: 3,
-				timeStamp: new Date(),
-			};
-			const dummyMatch7 = {
-				player1Id: 2,
-				player2Id: 3, 
-				player1Score: 5, 
-				player2Score: 6,
-				winnerId: 3,
-				timeStamp: new Date(),
-			};
-			const dummyMatch8 = {
-				player1Id: 2,
-				player2Id: 3, 
-				player1Score: 7, 
-				player2Score: 8,
-				winnerId: 3,
-				timeStamp: new Date(),
-			};
-
-			await axiosInstance.post('/matches/add-match', dummyMatch1);
-			await axiosInstance.post('/matches/add-match', dummyMatch2);
-			await axiosInstance.post('/matches/add-match', dummyMatch3);
-			await axiosInstance.post('/matches/add-match', dummyMatch4);
-			await axiosInstance.post('/matches/add-match', dummyMatch5);
-			await axiosInstance.post('/matches/add-match', dummyMatch6);
-			await axiosInstance.post('/matches/add-match', dummyMatch7);
-			await axiosInstance.post('/matches/add-match', dummyMatch8);
-			localStorage.setItem('dummyMatchAdded', 'true');
-			console.log('==================== CREATED DummyMatches');
-		}
-	} catch (error) {
-		if (error instanceof Error) {
-			console.error('Error creating dummy matches: ', error.message);
-			if (axios.isAxiosError(error)) {
-				console.error('Response: ', error.response);
-			}
-		} else {
-			console.error('Another error: ', error);
-		}
-	} 
-};
-
-
 const MatchHistory: React.FC<UserProps> = (props) => {
 
 	const [loginName, setLoginName] = useState<string | null>(props.loginName);
 	const [matchHistory, setMatchHistory] = useState<Match[] | null> (null);
 	// console.log("Start MatcHistory(), loginName: ", props.loginName);
-	// console.log("BASE URL: ", `${import.meta.env.VITE_BACKEND}`);
-
 
 	useEffect(() => {
 		const init = async () => {
 			if (!loginName) {
-				const currUserLoginName = await fetchCurrentUserName();
+				const currUserLoginName = await getCurrentUsername();
 				setLoginName(currUserLoginName);
 			}
 		}
@@ -169,8 +56,8 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 
 	
 	useEffect(() => {
-		
-		AddDummyMatches();
+		// console.log('Adding ')
+		addDummyMatches();
 
 		const fetchMatchHistory = async () => {
 			if (loginName) {
@@ -196,7 +83,13 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 
 	return (
 		<>
-		< br/>< br/><h5>MATCH HISTORY OF {loginName}</h5>
+		< br/>< br/>
+		<h5>
+			{/* <i className="fas solid fa-clock-rotate-left"></i> */}
+			{/* <i className="fas solid fa-landmark"></i> */}
+			<i className="fas solid fa-clock"></i>
+			MY MATCH HISTORY
+		</h5>
 		<div className="users-outer">
 			<Row>
 				{/* <Col className="column-bckg d-flex justify-content-left align-items-left p-3 mx-3 rounded"> */}
