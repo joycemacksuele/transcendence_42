@@ -17,14 +17,15 @@ function GetOnlineStatus(loginName: string) {
 	useEffect(() => {
 		const socket = io(apiAddress, { transports: ["websocket"] });
 
-		// Request user playing status
-		socket?.emit('requestOnlineStatus', loginName);
-		
 		// Event listener for status updates
 		socket?.on('responseOnlineStatus', ({ isOnline }) => {
 			console.log("Status isOnline: ", isOnline);
 			setIsUserOnline(isOnline);
 		});
+		
+		// Request user playing status
+		socket?.emit('requestOnlineStatus', loginName);
+		
 		return () => {
 			socket?.off('responseOnlineStatus');
 			socket?.disconnect();
