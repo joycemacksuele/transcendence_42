@@ -1,7 +1,7 @@
 // import axios from "axios";
 import axiosInstance from "../Other/AxiosInstance";
 
-axiosInstance.defaults.withCredentials = true;
+// axiosInstance.defaults.withCredentials = true;
 
 export const insertDummyUsers = async () => {
   try {

@@ -188,7 +188,7 @@ export class AuthService {
 		this.logger.log('print token inside response: ' + response.getHeader("set-cookie"));  // test
 
 		// Set status Online true
-		// await this.userService.setOnlineStatus(player.loginName, true);
+		await this.userService.setOnlineStatus(player.loginName, true);
 
 		let path: string;
 		if (player.tfaEnabled === true)
@@ -297,8 +297,10 @@ export class AuthService {
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
     async extractUserdataFromToken(request: Request): Promise<JwtPayload> { 
+		console.log('extract data from token()');
         const token = this.extractTokenFromHeader(request);
         if (!token) {
+			console.log('     Token not found');
             throw new UnauthorizedException('Token not found');
         }
         try {
@@ -316,18 +318,17 @@ export class AuthService {
 		}
     }
 
-    extractTokenFromHeader(request: Request): string | undefined{
+    extractTokenFromHeader(request: Request): string | undefined {
         let cookie: string;
         let token: string;
+		console.log('extract token from header()');
 
         cookie = request.get('Cookie');
         if (!cookie)
             return undefined;
         var arrays = cookie.split(';');
-        for (let i = 0; arrays[i]; i++)
-        {
-            if (arrays[i].includes("token="))
-            {
+        for (let i = 0; arrays[i]; i++) {
+            if (arrays[i].includes("token=")) {
                 token = arrays[i].split('token=')[1];
                 break ;
             }

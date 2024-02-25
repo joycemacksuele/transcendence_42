@@ -80,7 +80,10 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
               md={11}
               className="column-bckg justify-content-center align-items-left p-2 mx-0 rounded"
             >
-              <h5>MY PROFILE PAGE</h5>
+              <h5>
+          			<i className="fas fa-user"></i>
+                MY PROFILE PAGE
+              </h5>
               <ChangeProfileName updateContext={updateContext} />
               <ImageUpload updateContext={updateContext} />
               <ButtonTfa />
@@ -95,7 +98,9 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
               className="column-bckg justify-content-center align-items-left p-2 mx-0 rounded"
             >
               {/* <Row className='h-75'> */}
-              <h5>MY STATISTICS</h5>
+              <h5>
+                <i className="fas solid fa-chart-line"></i>
+                MY STATISTICS</h5>
               <MyStatistics />
               {/* <br /><h5>MY MATCH HISTORY</h5> */}
               {/* <MatchHistory /> */}
@@ -111,7 +116,10 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
               className="column-bckg justify-content-center align-items-left p-2 mx-0 rounded"
             >
               <div className="overflow-hidden">
-                <h5>STALKING</h5>
+                <h5>
+                  <i className="fas fa-glasses"></i>
+                  STALKING
+                </h5>
                 {!selectedUser ? (
                   <FriendsList clickOnUser={handleClickOnUser} />
                 ) : (
