@@ -228,10 +228,19 @@ export class PonggameGateway
   handleRequestPlayingStatus(
     @MessageBody() loginName: string,
     @ConnectedSocket() client: Socket) {
-      // const isPlaying = this.ponggameService.isUserPlaying(loginName);
-      const isPlaying = this.ponggameService.getMatchId(loginName);
+      const matchId = this.ponggameService.getMatchId(loginName);
+      const isPlaying = matchId ? true : false;
       console.log("Status of playing: ", isPlaying);
-      // client.emit('responsePlayingStatus', { loginName, isPlaying })
       client.emit('responsePlayingStatus', { isPlaying })
     }
+
+    // ADDED JAKA
+    @SubscribeMessage('requestOnlineStatus')
+    handleRequestOnlineStatus(
+      @MessageBody() loginName: string,
+      @ConnectedSocket() client: Socket) {
+        const isOnline = this._userIdSocketId.has(loginName);
+        client.emit('responseOnlineStatus', { isOnline });
+    }
+
 }

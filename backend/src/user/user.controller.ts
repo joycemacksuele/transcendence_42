@@ -64,6 +64,7 @@ export class UserController {
 		this.logger.log('constructor');
 	}
 
+
 	@Post()
 	async createUser(@Body() createUserDto: CreateUserDto) {
 		this.logger.log('createUser');
@@ -106,11 +107,22 @@ export class UserController {
 	@Get('get-current-user')
 	async getCurrentUser(@Req() req: Request) {
 		try {
+			console.log('Get current user ...');
 			const payload = await this.authService.extractUserdataFromToken(req);
+			//console.log('         ... payload: ', payload);
+
+			if (!payload) {
+				throw new HttpException('Invalid token payload', HttpStatus.UNAUTHORIZED);
+			}
 			const currUser = await this.userService.getUserByLoginName(payload.username);
+			if (!currUser) {
+				throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+			}
 			return currUser;
 		} catch (error) {
-			console.error('Error fetching current user:', error);
+			console.error('Cannot fetch current user - he is most likely not logged in, therefore do not redirect to the profile page:', error);
+			throw new HttpException('Error fetching current user', HttpStatus.NOT_FOUND);
+			// throw new HttpException('JAKA Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -124,7 +136,7 @@ export class UserController {
 			const currUser = await this.userService.getUserByLoginName(payload.username);
 
 			const isFirstLogin = currUser.isFirstLogin;
-			console.log("==============>>>>>>> isFirstLogin: ", isFirstLogin);
+			//console.log("==============>>>>>>> isFirstLogin: ", isFirstLogin);
 			if (isFirstLogin === true) {
 				process.nextTick(async () => { 
 					currUser.isFirstLogin = false;

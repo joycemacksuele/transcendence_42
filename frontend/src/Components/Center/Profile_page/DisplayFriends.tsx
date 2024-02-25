@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import { ListGroup } from "react-bootstrap";
+// import axios from "axios";
 
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 interface User {
   id: number;

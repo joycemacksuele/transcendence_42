@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
+import { deleteDummies } from "../../Test/deleteDummyUsers";
 import DisplayOneUser from "./DisplayOneUser/DisplayOneUser"; // without brackets, because it is exported 'default'
 import { useSelectedUser } from "./contextSelectedUserName";
-
-// Custom CSS
+// import axios from "axios";
 // import '../../../css/Profile-users-list.css'
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 export interface User {
   id: number;
@@ -24,22 +23,6 @@ export interface User {
   gamesLost: number;
 }
 
-const handleInsertDataClick = () => {
-  insertDummyUsers();
-};
-
-const deleteDummies = async () => {
-  try {
-    await axiosInstance.delete("/users/");
-    console.log("Dummies deleted successfully");
-  } catch (error) {
-    console.error("Error deleting dummies: ", error);
-  }
-};
-
-const handleClickDeleteDummies = () => {
-  deleteDummies();
-};
 
 const UsersList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -76,20 +59,6 @@ const UsersList: React.FC = () => {
     fetchUsers();
   }, []);
 
-  const deleteUsers = async () => {
-    try {
-      await axiosInstance.delete("/users/");
-      console.log("Dummies deleted successfully");
-    } catch (error) {
-      console.error("Error deleting all users: ", error);
-    }
-  };
-
-  const handleClickDeleteUsers = () => {
-    deleteUsers();
-  };
-
-  const handleClickPlaceholder = () => {};
 
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
     e.preventDefault();
@@ -165,7 +134,6 @@ const UsersList: React.FC = () => {
                     </a>
                   </ListGroup.Item>
                 ))}
-              {/* <button onClick={handleClickDeleteUsers}>Delete dummies</button> */}
             </ListGroup>
           )}
         </Col>
@@ -183,7 +151,7 @@ const UsersList: React.FC = () => {
               <br />
               <br />
               <br />
-              <span style={{ fontSize: "2em", paddingRight: "0.3em" }}>
+              <span style={{ fontSize: "2.5em", paddingRight: "0.3em" }}>
                 &larr;
               </span>
               <span style={{ fontSize: "1.5em" }}>
@@ -191,11 +159,11 @@ const UsersList: React.FC = () => {
               </span>
             </p>
           )}
-          <button onClick={handleInsertDataClick} className="button-custom">
+          <button onClick={insertDummyUsers} className="button-custom">
             Create dummies
           </button>
           &nbsp;&nbsp;
-          <button onClick={handleClickDeleteDummies} className="button-custom">
+          <button onClick={deleteDummies} className="button-custom">
             Delete dummies
           </button>
         </Col>

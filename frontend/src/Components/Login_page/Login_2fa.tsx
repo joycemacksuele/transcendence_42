@@ -115,13 +115,11 @@
 // ---------------------------------------------------------------------------------------------------------
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { data } from "jquery";
-import MainPage from "../main_page";
 import axiosInstance from "../Other/AxiosInstance";
 import LoginPage from "./Login_auth";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
+import { checkIfLoggedIn } from "./checkIfLoggedIn";
 
 const re_sendVerificationEmail = async () => {
   console.log("Re-send Verification email:");
@@ -140,6 +138,48 @@ const InputTFAcode = () => {
   const [tfa, settfa] = useState(false);
   const [tfaAttempts, setAttempts] = useState<number>(0);
   const navigate = useNavigate();
+
+
+	const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+	checkIfLoggedIn(setIsLoggedIn, setIsCheckingAuth);
+
+  if (isCheckingAuth) {
+    console.log("              Login_2fa: Checking if logged in ...");
+    return <div> Checking if you are logged in ...</div>
+  } 
+
+	// useEffect(() => {
+  //   // Checking if already logged in, in case a user types the url / or /login_2ta, if yes, it redirects to the profile page
+	// 	const checkAuthStatus = async () => {
+	// 		try {
+	// 			const storageProfileName = localStorage.getItem('profileName');
+	// 			if (storageProfileName) {
+	// 				const response = await axiosInstance.get("/users/get-current-user");
+	// 				if (response.data == "")
+	// 					console.log('       Response.data is empty!!! No AUTH	', response.data);
+	// 				else {
+	// 					console.log('       Response.data:', response.data);	
+	// 					if (response.data.profileName === storageProfileName) 
+	// 						setIsLoggedIn(true);
+	// 				}
+	// 			}
+	// 		} catch (error) {
+	// 			// do nothing:
+	// 			console.error('Login_2fa: The user is logged out (Auth status check failed)');
+	// 		} finally {
+	// 			setIsCheckingAuth(false);
+	// 		}
+	// 	}
+	// 	checkAuthStatus();
+	// }, []);
+
+    if (isCheckingAuth) {
+      console.log("              Login_2fa: Checking if logged in ...");
+      return <div> Checking if you are logged in ...</div>
+    } 
+
 
   let axiosConfig = {
     headers: {
@@ -191,6 +231,8 @@ const InputTFAcode = () => {
   };
 
   return (
+    isLoggedIn ? <Navigate to="/main_page/profile" />
+			   :
     <Container
       className="d-flex justify-content-center align-items-center"
       style={{ minHeight: "100vh" }}

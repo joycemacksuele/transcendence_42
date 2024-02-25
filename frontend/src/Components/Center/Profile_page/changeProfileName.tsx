@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
-import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { CurrentUserContext, CurrUserData } from "./contextCurrentUser";
 import { Form, Button, FormControl, Alert, InputGroup } from "react-bootstrap";
+// import axios from "axios";
 
-axios.defaults.withCredentials = true; // to enable cross-origin requests, the authorization headers like jwt, and that the server will accept it...
+// axios.defaults.withCredentials = true; // to enable cross-origin requests, the authorization headers like jwt, and that the server will accept it...
 
 type ContextProps = {
   updateContext: (updateUserData: CurrUserData) => void;
