@@ -5,6 +5,7 @@ import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import { deleteDummies } from "../../Test/deleteDummyUsers";
 import DisplayOneUser from "./DisplayOneUser/DisplayOneUser"; // without brackets, because it is exported 'default'
 import { useSelectedUser } from "./contextSelectedUserName";
+import { getOnlineStatuses } from "./getOnlineStatuses";
 // import axios from "axios";
 // import '../../../css/Profile-users-list.css'
 
@@ -21,6 +22,11 @@ export interface User {
   gamesPlayed: number;
   gamesWon: number;
   gamesLost: number;
+}
+
+interface UpdateOnlineStatus {
+  id: number;
+  isOnline: boolean;
 }
 
 
@@ -49,6 +55,7 @@ const UsersList: React.FC = () => {
     }
   };
 
+
   useEffect(() => {
     // Check if dummies have been inserted before using local storage
     if (!localStorage.getItem("dummiesInserted")) {
@@ -56,7 +63,46 @@ const UsersList: React.FC = () => {
       // Set a flag in local storage to indicate dummies have been inserted
       localStorage.setItem("dummiesInserted", "true");
     }
+
+  }, []);
+
+
+  /*
+  Callback function, to be passed to getOnlineStatuses()
+    It will be triggered when a status change is detected, so it sets the 
+    new state in setUsers() --> it updates the variable 'onlineStatus'
+    (but it does not yet update it in the database - it should be done separately)
+      - find() finds if a user ID is in the websockets returned array
+      - map() returns the array of users, but with updated onlineStatus variables
+      - setUsers() updates the array of previously fetched users  
+  */
+  const processStatusUpdates = (updates: UpdateOnlineStatus[]) => {
+
+      const updatedUsers = users.map(user => {
+        // Attempt to find a matching update for the current user:
+        const update = updates.find(update => update.id === user.id);
+        // If an update is found, apply it to the user's online status
+        return update ? { ...user, onlineStatus: update.isOnline } : user;
+      });
+      // Update the state with the new array of updated users
+      setUsers(updatedUsers);
+    
+    
+    // setUsers((currentUsers) => 
+    //   currentUsers.map((user) => {
+    //     const update = updates.find((update) => update.id === user.id);
+    //     return update ? { ...user, onlineStatus: update.isOnline } : user;
+    //   })  
+    // );
+  };
+
+  
+  useEffect(() => {
     fetchUsers();
+    // Get online status for each user, via websocket:
+    const unsubscribe = getOnlineStatuses(processStatusUpdates);
+    // Cleanup function to unsubscribe and disconnect the websocket, when component unmounts:
+    return () => unsubscribe();
   }, []);
 
 
@@ -81,7 +127,7 @@ const UsersList: React.FC = () => {
         >
           {/* Button to trigger fetching the users */}
 
-          {displayList && ( // Only render the list if dislpayList is true
+          {displayList && ( // Only render the list if displayList is true
             <ListGroup className="list-users">
               <h4>USERS IN DATABASE:</h4>
               <ListGroup.Item className="column-titles">

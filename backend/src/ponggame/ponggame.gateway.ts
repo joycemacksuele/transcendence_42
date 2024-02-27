@@ -234,13 +234,26 @@ export class PonggameGateway
       client.emit('responsePlayingStatus', { isPlaying })
     }
 
-    // ADDED JAKA
-    @SubscribeMessage('requestOnlineStatus')
-    handleRequestOnlineStatus(
-      @MessageBody() loginName: string,
-      @ConnectedSocket() client: Socket) {
-        const isOnline = this._userIdSocketId.has(loginName);
-        client.emit('responseOnlineStatus', { isOnline });
+  // ADDED JAKA: single user's status
+  @SubscribeMessage('requestOnlineStatus')
+  handleRequestOnlineStatus(
+    @MessageBody() loginName: string,
+    @ConnectedSocket() client: Socket) {
+      const isOnline = this._userIdSocketId.has(loginName);
+      client.emit('responseOnlineStatus', { isOnline });
+  }
+
+  // ADDED JAKA: multiple users statuses
+  @SubscribeMessage('requestOnlineStatuses')
+  handleRequestOnlineStatuses(
+    @MessageBody() loginNames: string[],
+    @ConnectedSocket() client: Socket) {
+      const statuses = loginNames.map(loginName => ({
+        loginName,
+        isOnline: this._userIdSocketId.has(loginName)
+      }))
+      client.emit('responseOnlineStatuses', statuses);
     }
+
 
 }
