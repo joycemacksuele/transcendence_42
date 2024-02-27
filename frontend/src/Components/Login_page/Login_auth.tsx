@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Row, Col } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
-import axiosInstance from '../Other/AxiosInstance';
-import GetOnlineStatus from '../Center/Profile_page/GetOnlineStatus';
+// import axiosInstance from '../Other/AxiosInstance';
+// import GetOnlineStatus from '../Center/Profile_page/getOnlineStatus';
 import { checkIfLoggedIn } from './checkIfLoggedIn';
 
 const LoginPage: React.FC = () => {

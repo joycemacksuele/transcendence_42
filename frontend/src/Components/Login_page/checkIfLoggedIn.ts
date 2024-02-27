@@ -2,16 +2,25 @@ import { useEffect } from "react";
 import axiosInstance from '../Other/AxiosInstance';
 import { Dispatch, SetStateAction } from 'react';
 
+
+/*	
+	This is for the case when you manualy type the root
+	ULR or the 2fa URL, so it redirects from there to profile page, if already logged in
+*/
+
+
 export const checkIfLoggedIn = (
 	setIsLoggedIn: Dispatch<SetStateAction<boolean>>,
 	setIsCheckingAuth: Dispatch<SetStateAction<boolean>>
 ) => {
 	useEffect(() => {
 
+		////////////
 		// Trying to use a websocket here to test if it is reachable before logging in:
 		// 		const testWebSockets = GetOnlineStatus("jmurovec");
 		// 		console.log('Test web sockets - online status of dummy2 ', testWebSockets);
-
+		////////////
+		
 		const checkAuthStatus = async () => {
 			try {
 				const storageProfileName = localStorage.getItem('profileName');
