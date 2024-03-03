@@ -264,18 +264,11 @@ export class UserController {
 	//   return this.userService.deleteDummies();
 	// }
 
-	//////////////////////////////////////////////////////////////////////////
-	// UserRepository ///////////////////////////////////////////////////////
-	
-	// GET USER BY ID
 	// :id  is a route parameter, matching the request /users/:id
-	// It needs the @Param decorator to be able to pass the arg to the function getUserById( id )'
 	// @Get(':id')
-	// async findById(@Param('id') id: number): Promise<UserEntity | undefined> {
+	// async getUserById(@Param('id') id: number): Promise<UserEntity | undefined> {
 	//   this.logger.log('findById');
 	//   return this.userService.getUserById(id);
 	// }
-
-
 }
 
