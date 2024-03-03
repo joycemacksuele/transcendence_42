@@ -3,53 +3,57 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, Repository} from 'typeorm';
 import * as bcryptjs from 'bcryptjs';
 import {NewChatEntity} from './entities/new-chat.entity';
-import {MutedEntity} from "./entities/muted.entity";
+import {UsersCanChatEntity} from "./entities/users-can-chat.entity";
 import {UserEntity} from "src/user/user.entity";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
 import {ResponseMessageChatDto} from "./dto/response-message-chat.dto";
 import {ChatType} from "./utils/chat-utils";
+import {ChatMessageEntity} from "./entities/chat-message.entity";
+import {UserService} from "../user/user.service";
 
 @Injectable()
-export class ChatMutedRepository extends Repository<MutedEntity> {
-	private readonly logger = new Logger(ChatMutedRepository.name);
-	constructor(private dataSource: DataSource) {
-		super(MutedEntity, dataSource.createEntityManager());
+export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
+	private readonly logger = new Logger(UsersCanChatRepository.name);
+	constructor(
+		private dataSource: DataSource,
+		private readonly userService: UserService
+	) {
+		super(UsersCanChatEntity, dataSource.createEntityManager());
 		this.logger.log('constructor');
 	}
 
-	public async addNewUserToMutedEntity(chatEntity: NewChatEntity, user: UserEntity) {
+	public async addNewUserToUsersCanChatEntity(chatEntity: NewChatEntity, user: UserEntity) {
 		// chatEntity.usersCanChat = [];
-		const muted = new MutedEntity();
-		muted.user = user;
-		muted.chat = chatEntity;
-		muted.timeStamp = new Date().getTime().toString();
-		chatEntity.usersCanChat.push(muted);
+		const usersCanChatEntity = new UsersCanChatEntity();
+		usersCanChatEntity.user = user;
+		usersCanChatEntity.chat = chatEntity;
+		usersCanChatEntity.timeStamp = new Date().getTime().toString();
+		chatEntity.usersCanChat.push(usersCanChatEntity);
 		await this
 			.manager
-			.save(muted);
-		return muted;
+			.save(usersCanChatEntity);
+		return usersCanChatEntity;
 	}
 
 	public async updateMutedTimeStamp(user: UserEntity, chat: NewChatEntity) {
 		try {
-			const mutedRow = await this
-				.createQueryBuilder("muted")
-				.select('muted.timeStamp as "timeStamp"')
-				// .where('new_chat.id = :id AND user.', {id: chat.id})
-				.where('user.id = :id', {id: user.id})
-				.leftJoin("muted.user", "user")
-				.getOne();// or getOne or getRawOne ?
-			mutedRow.chat = chat;
-			mutedRow.timeStamp = (new Date().getTime() + 120000).toString();//2 min to get un-muted
-			this.logger.log('JOYCE timeStamp: ' + (new Date().getTime() + 120000).toString());
-			this.logger.log('JOYCE timeStamp: ' + mutedRow);
-			// await this
-			// 	.manager
-			// 	.save(mutedRow)
-		} catch (err) {
-			this.logger.log("Can't find muted entity user to update its time stamp");
-		}
+			let usersCanChatRow = await this
+				.createQueryBuilder("users_can_chat")
+				.where('new_chat.id = :chatId  AND user.id = :userId', {chatId: chat.id, userId: user.id})
+				.leftJoin("users_can_chat.chat", "new_chat")
+				.leftJoin("users_can_chat.user", "user")
+				.getOne();
 
+			this.logger.log("JOYCE [usersCanChatRow.user]: ", usersCanChatRow);
+
+			usersCanChatRow.timeStamp = (new Date().getTime() + 120000).toString();// 2 min to get un-muted
+			this.logger.log("[updateMutedTimeStamp]: User " + user.loginName + " will be muted for 2 min. New timestamp: " + usersCanChatRow.timeStamp);
+			await this
+				.manager
+				.save(usersCanChatRow)
+		} catch (err) {
+			throw new Error('[updateMutedTimeStamp] Could not get UsersCanChatEntity -> err: ' + err);
+		}
 	}
 }
 
@@ -58,7 +62,8 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	private readonly logger = new Logger(ChatRepository.name);
 	constructor(
 		private dataSource: DataSource,
-		private chatMutedRepository: ChatMutedRepository
+		private readonly usersCanChatRepository: UsersCanChatRepository,
+		private readonly userService: UserService
 	) {
 		super(NewChatEntity, dataSource.createEntityManager());
 		this.logger.log('constructor');
@@ -73,17 +78,16 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.getOne();
 	}
 
-	public async getOneChatDto(chatId: number) {
-		const chat: NewChatEntity = await this
-			.createQueryBuilder("new_chat")
-			.orderBy('new_chat.id', 'DESC')
-			.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
-			.where('new_chat.id = :id', {id: chatId})
-			.getRawOne();
+	private async getOneRowAndSaveAsDTO(chat: NewChatEntity) {
 		const responseDto: ResponseNewChatDto = new ResponseNewChatDto();
 		responseDto.id = chat.id;
+		this.logger.log('[getChat] Chat id: ' + chat.id);
 		responseDto.name = chat.name;
+		this.logger.log('[getChat] Chat name: ' + chat.name);
 		responseDto.type = chat.type;
+		this.logger.log('[getChat] Chat type: ' + chat.type);
+
+		// ----------- get chat creator
 		const chatCreator = await this
 			.createQueryBuilder("new_chat")
 			.select('user.loginName as "creator"')
@@ -91,6 +95,9 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.creator","user")
 			.getRawOne();
 		responseDto.creator = chatCreator.creator;
+		this.logger.log('[getChat] Chat creator: ' + chatCreator.creator);
+
+		// ----------- get chat users list
 		const chatUsers = await this
 			.createQueryBuilder("new_chat")
 			.select('user.loginName as "users"')
@@ -98,13 +105,16 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.users", "user")
 			.getRawMany();
 		const users = chatUsers.map((usersList) => {
-			console.log("usersList.users: ", usersList.users);
 			return usersList.users;
 		});
-		this.logger.log('users != null: ' + users.toString());
 		if (users.toString()) {
+			this.logger.log('[getChat] Users in the chat: ' + users.toString());
 			responseDto.users = users;
+		} else {
+			this.logger.log('[getChat] No users in the chat: ' + chat.name);
 		}
+
+		// ----------- get chat admin list
 		const chatAdmins = await this
 			.createQueryBuilder("new_chat")
 			.select('user.loginName as "admins"')
@@ -112,17 +122,31 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.admins", "user")
 			.getRawMany();
 		responseDto.admins = chatAdmins.map((adminsList) => {
+			this.logger.log('[getChat] Admins in the chat: ' + adminsList.admins);
 			return adminsList.admins;
 		});
-		const chatMutedUsers = await this
+
+		// ----------- get chat muted users list
+		const usersCanChatRows = await this
 			.createQueryBuilder("new_chat")
-			.select('user.loginName as "mutedUsers"')
+			.select('users_can_chat.user as "userId", users_can_chat.chat as "chatId", users_can_chat.timeStamp as "timeStamp"')
 			.where('new_chat.id = :id', {id: chat.id})
-			.leftJoin("new_chat.mutedUsers", "user")
+			.leftJoin("new_chat.usersCanChat", "users_can_chat")
 			.getRawMany();
-		responseDto.mutedUsers = chatMutedUsers.map((mutedUsersList) => {
-			return mutedUsersList.mutedUsers;
-		});
+		responseDto.mutedUsers = await Promise.all(usersCanChatRows.map(async (usersCanChatRow) => {
+			// All users in the UsersCanChatEntity that have a time stamp in the future are muted
+			if (usersCanChatRow.timeStamp > new Date().getTime()) {
+				return this.userService.getUserById(usersCanChatRow.userId).then((user) => {
+					this.logger.log("[getChat] Muted users in the chat: " + user.loginName);
+					return user.loginName;
+				}).catch((error) => {
+					// return [];
+					throw new Error("[getChat] Can't find a muted user for this chat " + chat.name + ". error: " + error);
+				})
+			}
+		}));
+
+		// ----------- get chat banned users list
 		const chatBannedUsers = await this
 			.createQueryBuilder("new_chat")
 			.select('user.loginName as "bannedUsers"')
@@ -130,8 +154,11 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.bannedUsers", "user")
 			.getRawMany();
 		responseDto.bannedUsers = chatBannedUsers.map((bannedUsersList) => {
+			this.logger.log("[getChat] Banned users in the chat: " + bannedUsersList.bannedUsers);
 			return bannedUsersList.bannedUsers;
 		});
+
+		// ----------- get chat messages
 		const chatMessages = await this
 			.createQueryBuilder("new_chat")
 			.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creatorId"')
@@ -142,21 +169,33 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
 			responseDto_inner.id = messagesList.id;
 			responseDto_inner.message = messagesList.message;
+			this.logger.log("[getChat] Chat message(s): " + messagesList.message);
 			try {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
 					.select('user.profileName as "loginName"')
-					.where('user.id = :id', {id: messagesList.creatorId})
+					.where('user.id = :id', {id: messagesList.creatorId})// TODO something is wrong here it seems
 					.leftJoin("new_chat.users", "user")
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;
+				this.logger.log("[getChat] Chat message sender: " + messageCreator.loginName);
 				return responseDto_inner;
 			} catch (err) {
 				// throw new Error("Can't find user");
-                                       this.logger.log("Can't find user");
+				this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
 			}
 		}));
 		return responseDto;
+	}
+
+	public async getOneChatDto(chatId: number) {
+		const chat: NewChatEntity = await this
+			.createQueryBuilder("new_chat")
+			.orderBy('new_chat.id', 'DESC')
+			.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
+			.where('new_chat.id = :id', {id: chatId})
+			.getRawOne();
+		return this.getOneRowAndSaveAsDTO(chat);
 	}
 
 	public async getAllChats() {
@@ -166,130 +205,15 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
 			.getRawMany();
 		return await Promise.all(newChatTable.map(async (chat: NewChatEntity): Promise<ResponseNewChatDto> => {
-			const responseDto: ResponseNewChatDto = new ResponseNewChatDto();
-			responseDto.id = chat.id;
-			responseDto.name = chat.name;
-			responseDto.type = chat.type;
-
-			// ----------- get chat creator
-			const chatCreator = await this
-				.createQueryBuilder("new_chat")
-				.select('user.loginName as "creator"')
-				.where('new_chat.id = :id', {id: chat.id})
-				.leftJoin("new_chat.creator","user")
-				.getRawOne();
-			responseDto.creator = chatCreator.creator;
-
-			// ----------- get chat users list
-			const chatUsers = await this
-				.createQueryBuilder("new_chat")
-				.select('user.loginName as "users"')
-				.where('new_chat.id = :id', {id: chat.id})
-				.leftJoin("new_chat.users", "user")
-				.getRawMany();
-			const users = chatUsers.map((usersList) => {
-				this.logger.log("[getAllChats] Chat users: " + usersList.users);
-				return usersList.users;
-			});
-			if (users.toString()) {
-				this.logger.log('[getAllChats] users != null: ' + users.toString());
-				responseDto.users = users;
-			} else {
-				this.logger.log('[getAllChats] No users in the chat: ' + chat.name);
-			}
-
-			// ----------- get chat admin list
-			const chatAdmins = await this
-				.createQueryBuilder("new_chat")
-				.select('user.loginName as "admins"')
-				.where('new_chat.id = :id', {id: chat.id})
-				.leftJoin("new_chat.admins", "user")
-				.getRawMany();
-			responseDto.admins = chatAdmins.map((adminsList) => {
-				return adminsList.admins;
-			});
-
-			// ----------- get chat muted users list
-			// TODO HERE WE HAVE TO GET ALL MUTED USERS FROM MUTED ENTITY
-			// const chatMutedUsers = await this
-			// 	.createQueryBuilder("new_chat")
-			// 	.select('user.loginName as "mutedUsers"')
-			// 	.where('new_chat.id = :id', {id: chat.id})
-			// 	.leftJoin("new_chat.usersCanChat", "user")
-			// 	.getRawMany();
-			// responseDto.mutedUsers = chatMutedUsers.map((mutedUsersList) => {
-			// 	return mutedUsersList.user.map;
-			// });
-
-			responseDto.mutedUsers = [];
-			// TODO New one i AM TRYING NOW
-			// const mutedRows : MutedEntity[] = await this
-			// 	.createQueryBuilder("new_chat")
-			// 	.select('muted.timeStamp as "timeStamp"')
-			// 	// .where('new_chat.id = :id', {id: chat.id})
-			// 	.leftJoin("new_chat.usersCanChat", "muted")
-			// 	.getRawMany();
-			// responseDto.mutedUsers = await Promise.all(mutedRows.map(async (mutedRow) => {
-			// 	// All users in the MutedEntity that have a time stamp in the future are muted
-			// 	if (mutedRow.timeStamp > new Date().getTime()) {
-			// 		try {
-			// 			const mutedUser = await this
-			// 				.createQueryBuilder("new_chat")
-			// 				.select('user.loginName as "loginName"')
-			// 				.where('user.id = :id', {id: mutedRow.user.id})
-			// 				.leftJoin("muted.user", "user")
-			// 				.getRawOne();
-			// 			return mutedUser.loginName;
-			// 		} catch (err) {
-			// 			// throw new Error("Can't find user");
-			// 			this.logger.log("[getAllChats] Can't find user in the user entity");
-			// 		}
-			// 	}
-			// }));
-
-			// ----------- get chat banned users list
-			const chatBannedUsers = await this
-				.createQueryBuilder("new_chat")
-				.select('user.loginName as "bannedUsers"')
-				.where('new_chat.id = :id', {id: chat.id})
-				.leftJoin("new_chat.bannedUsers", "user")
-				.getRawMany();
-			responseDto.bannedUsers = chatBannedUsers.map((bannedUsersList) => {
-				return bannedUsersList.bannedUsers;
-			});
-
-			// ----------- get chat messages
-			const chatMessages = await this
-				.createQueryBuilder("new_chat")
-				.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creatorId"')
-				.where('new_chat.id = :id', {id: chat.id})
-				.leftJoin("new_chat.messages", "chat_message")
-				.getRawMany();
-			responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
-				const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
-				responseDto_inner.id = messagesList.id;
-				responseDto_inner.message = messagesList.message;
-				try {
-					const messageCreator = await this
-						.createQueryBuilder("new_chat")
-						.select('user.profileName as "loginName"')
-						.where('user.id = :id', {id: messagesList.creatorId})
-						.leftJoin("new_chat.users", "user")
-						.getRawOne();
-					responseDto_inner.creator = messageCreator.loginName;
-					return responseDto_inner;
-				} catch (err) {
-					// throw new Error("Can't find user");
-                    this.logger.log("Can't find user");
-				}
-			}));
-			return responseDto;
+			return this.getOneRowAndSaveAsDTO(chat);
 		}));
 	}
 
 	public async deleteUserFromChat(foundChatEntityToLeave: NewChatEntity, userToDelete: UserEntity) {
 		this.logger.log("[deleteUserFromChat] foundChatEntityToLeave: " + foundChatEntityToLeave);
 		if (!foundChatEntityToLeave.users.toString()) {
+			// TODO DELETE FROM ChatMessageEntity AND USERS_CAN_CHAT??
+			//     seems like cascade is not working to delete the child rows in the joined tables
 			await this.delete(foundChatEntityToLeave.id);
 			this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". I was deleted!");
 			return false;
@@ -302,6 +226,13 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				await this
 					.manager
 					.save(foundChatEntityToLeave);
+
+				// After deleting the correct user, if we don't have any oser left, we can delete the chat
+				if (!foundChatEntityToLeave.users.toString()) {
+					// TODO DELETE FROM ChatMessageEntity AND USERS_CAN_CHAT??
+					//     seems like cascade is not working to delete the child rows in the joined tables
+					await this.delete(foundChatEntityToLeave.id);
+				}
 			} else {
 				this.logger.log("[deleteUserFromChat] User " + userToDelete.loginName + " is not a member of the chat " + foundChatEntityToLeave.name);
 				return false;
@@ -317,10 +248,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoinAndSelect("new_chat.users", "user")
 			.getOne();
 		chatToJoin.users.push(user);
-		// Add user to the muted entity:
+		// Add user to the usersCanChatEntity:
 		chatToJoin.usersCanChat = [];
-		this.chatMutedRepository.addNewUserToMutedEntity(chatToJoin, user).then(r => {
-			this.logger.log('[joinChat][addNewUserToMutedEntity] MutedEntity ' + r.id + ' created for the ' + user);
+		this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatToJoin, user).then(r => {
+			this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + user);
 		});
 		await this
 			.manager
@@ -332,7 +263,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		let chatAdmins = await this
 			.createQueryBuilder("new_chat")
 			.where('new_chat.id = :id', { id: chat.id })
-			.leftJoinAndSelect("new_chat.admins", "admin")
+			.leftJoinAndSelect("new_chat.admins", "admin")// why admin and not user for the alias?
 			.getOne();
 		chatAdmins.admins.push(user);
 		await this

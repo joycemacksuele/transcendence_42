@@ -31,10 +31,10 @@ import { DuplicateService } from '../duplicate/duplicate.service';
 import { ChatModule } from "../chat/chat.module";
 // import { ChatGateway } from "../chat/chat.gateway";
 // import { ChatService } from '../chat/chat.service';
-import { ChatMutedRepository } from "../chat/chat.repository";
+import { UsersCanChatRepository } from "../chat/chat.repository";
 import { ChatRepository } from "../chat/chat.repository";
 import { ChatMessageEntity } from "src/chat/entities/chat-message.entity";
-import { MutedEntity } from "../chat/entities/muted.entity";
+import { UsersCanChatEntity } from "../chat/entities/users-can-chat.entity";
 import { NewChatEntity } from "src/chat/entities/new-chat.entity";
 
 import { AuthController } from "src/auth/auth.controller";
@@ -79,7 +79,7 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
       entities: [
         UserEntity,
         Friendship,
-        MutedEntity,
+        UsersCanChatEntity,
         Blockship,
         NewChatEntity,
         ChatMessageEntity,
@@ -114,7 +114,7 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
     AppService,
     UserService,
     UserRepository, //https://stackoverflow.com/questions/72680359/nestjs-entitymetadatanotfounderror-no-metadata-for-repository-was-found
-    ChatMutedRepository,
+    UsersCanChatRepository,
     ChatRepository,
     TwoFactorAuthService,
     AuthService,
