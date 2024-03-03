@@ -5,8 +5,9 @@ import NewChat from "./NewChat";
 import Messages from "./Messages";
 import MembersPrivateMessage from "./MembersPrivateMessage";
 import MembersGroup from "./MembersGroup";
-import {ChatType, ResponseNewChatDto, ResponseMessageChatDto} from "./Utils/ChatUtils.tsx";
+import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
+import GameSelection from "../Game/GameSelection.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -23,7 +24,7 @@ import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import axiosInstance from "../../Other/AxiosInstance.tsx";
 
-const getIntraName = async () => {
+export const getIntraName = async () => {
     return axiosInstance.get('/users/get-current-username').then((response): string => {
         return response.data.username;
     }).catch((error): null => {
@@ -65,11 +66,10 @@ const Chat = () => {
         }
 
         return () => {
-        //     console.log(`[Chat] socket disconnected AND removeAllListeners`);
-        //     // socket.removeAllListeners();
             if (chatSocket.connected) {
+                chatSocket.removeAllListeners();
                 chatSocket.disconnect();
-                console.log("[Chat] Inside useEffect return function (Chat Component was removed from DOM): Chat socket id: ", chatSocket.id, " was disconnected");
+                console.log("[Chat] Inside useEffect return function (Chat Component was removed from DOM): Chat socket was disconnected and all listeners were removed");
             }
         };
     }, []);
@@ -100,10 +100,10 @@ const Chat = () => {
                             onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                <Nav.Link eventKey="recent">Recent</Nav.Link>
+                                <Nav.Link eventKey="recent">My chats</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="groups">Groups</Nav.Link>
+                                <Nav.Link eventKey="groups">Channels</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Row>
@@ -137,7 +137,11 @@ const Chat = () => {
                             // onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                <Nav.Link href="members" disabled>{chatClicked?.name} members</Nav.Link>
+                                {chatClicked?.type == ChatType.PUBLIC ? (
+                                    <Nav.Link href="members" disabled>{chatClicked?.name}<b> members</b></Nav.Link>
+                                ) : (
+                                    <Nav.Link href="members" disabled> members</Nav.Link>
+                                )}
                             </Nav.Item>
                         </Nav>
                     </Row>

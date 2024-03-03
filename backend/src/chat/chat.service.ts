@@ -3,7 +3,7 @@ import * as bcryptjs from 'bcryptjs';
 import {ChatMessageEntity} from "./entities/chat-message.entity";
 import {ChatType} from "./utils/chat-utils";
 import {NewChatEntity} from "./entities/new-chat.entity";
-import {ChatMutedRepository, ChatRepository} from "./chat.repository";
+import {UsersCanChatRepository, ChatRepository} from "./chat.repository";
 import {ChatMessageRepository} from "./chat-message.repository";
 import {RequestMessageChatDto} from "./dto/request-message-chat.dto";
 import {RequestNewChatDto} from "./dto/request-new-chat.dto";
@@ -11,7 +11,7 @@ import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
 import {ResponseMessageChatDto} from "./dto/response-message-chat.dto";
 import {UserService} from "../user/user.service";
 import {UserEntity} from "src/user/user.entity";
-import {MutedEntity} from "./entities/muted.entity";
+import {UsersCanChatEntity} from "./entities/users-can-chat.entity";
 
 @Injectable()
 export class ChatService {
@@ -19,7 +19,7 @@ export class ChatService {
 
   constructor(
       // @InjectRepository(NewChatEntity)
-      public readonly chatMutedRepository: ChatMutedRepository,
+      public readonly usersCanChatRepository: UsersCanChatRepository,
       public readonly chatRepository: ChatRepository,
       public readonly chatMessageRepository: ChatMessageRepository,
       public readonly userService: UserService
@@ -53,9 +53,9 @@ export class ChatService {
     chatEntity.users.push(chatEntity.creator);
 
     chatEntity.usersCanChat = [];
-    // // Add creator to the muted entity:
-    // this.chatMutedRepository.addNewUserToMutedEntity(chatEntity, chatEntity.creator).then(r => {
-    //   this.logger.log('[createChat][addNewUserToMutedEntity] MutedEntity ' + r.id + ' created for the ' + chatEntity.creator.loginName);
+    // // Add creator to the UsersCanChatEntity:
+    // this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatEntity, chatEntity.creator).then(r => {
+    //   this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + chatEntity.creator.loginName);
     // });
 
     chatEntity.bannedUsers = [];
@@ -66,9 +66,9 @@ export class ChatService {
       const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
       chatEntity.users.push(friend);
 
-      // // Add friend to the muted entity:
-      // this.chatMutedRepository.addNewUserToMutedEntity(chatEntity, friend).then(r => {
-      //   this.logger.log('[createChat][addNewUserToMutedEntity] MutedEntity ' + r.id + ' created for the ' + friend.loginName);
+      // // Add friend to the UsersCanChatEntity:
+      // this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatEntity, friend).then(r => {
+      //   this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + friend.loginName);
       // });
 
     } else if (requestNewChatDto.type == ChatType.PROTECTED) {
@@ -87,8 +87,8 @@ export class ChatService {
     });
   }
 
-  async addNewUserToMutedEntity(chatEntity: NewChatEntity, user: UserEntity) {
-    return await this.chatMutedRepository.addNewUserToMutedEntity(chatEntity, user);
+  async addNewUserToUsersCanChatEntity(chatEntity: NewChatEntity, user: UserEntity) {
+    return await this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatEntity, user);
   }
 
   async saveNewUserToChat(foundEntityToJoin: NewChatEntity, intraName: string, chatId: number) {
@@ -149,11 +149,10 @@ export class ChatService {
   async muteFromChat(chatId: number, intraName: string)  {
     await this.chatRepository.getOneChat(chatId).then(async (foundChatEntity: NewChatEntity) => {
 
-
-      // We have to know if the user to be muted is already in the mutedEntity
+      // We have to know if the user to be muted is already in the UsersCanChatEntity
       const userEntity = await this.userService.getUserByLoginName(intraName);
       // Now we have the entity to add the user and timestamp to the usersCanChat array
-      return await this.chatMutedRepository.updateMutedTimeStamp(userEntity, foundChatEntity);
+      return await this.usersCanChatRepository.updateMutedTimeStamp(userEntity, foundChatEntity);
     }).catch((err: string) => {
       throw new Error('[muteFromChat] Could not mute user from chat -> err: ' + err);
     });
@@ -166,7 +165,7 @@ export class ChatService {
       // Now we have the entity to update the users' array (delete banned user) and add the user to the bannedUsers array
       await this.chatRepository.banUserFromChat(userEntity, foundChatEntity);
       return await this.chatRepository.deleteUserFromChat(foundChatEntity, userEntity);
-      // TODO DELETE FROM ADMIN LIST - and muted entity ????
+      // TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT
     }).catch((err: string) => {
       throw new Error('[banFromChat] Could not ban user from chat -> err: ' + err);
     });
@@ -191,7 +190,7 @@ export class ChatService {
       const userToDelete = await this.userService.getUserByLoginName(intraName);
       // Now we have the entity to update the users' array
       return await this.chatRepository.deleteUserFromChat(foundChatEntityToLeave, userToDelete);
-      // TODO DELETE FROM ADMIN LIST - and muted entity ????
+      // TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT
     }).catch((err: string) => {
       throw new Error('[leaveChat] Could not delete user from chat -> err: ' + err);
     });
@@ -209,8 +208,11 @@ export class ChatService {
   }
 
   deleteChat(chatId: number) {
+    // TODO Also delete it from the other tables as users_can_chat_entity and chat_message_entity?? or cascade works?
+
+    // Then we can delete the chat row form the new_chat_entity
     return this.chatRepository.delete(chatId);
-    // TODO do I need to also delete from the MutedEntity?
+
   }
 
 }

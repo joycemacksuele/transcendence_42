@@ -3,7 +3,7 @@ import { UserEntity } from 'src/user/user.entity';
 import { NewChatEntity } from "./new-chat.entity";
 
 @Entity()
-export class MutedEntity {
+export class UsersCanChatEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
