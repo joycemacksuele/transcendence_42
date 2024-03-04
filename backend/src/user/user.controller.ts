@@ -156,8 +156,9 @@ export class UserController {
 	async getCurrentUserName(@Req() req: Request) {
 		try {
 			const response = await this.authService.extractUserdataFromToken(req);
+			const currUser = await this.userService.getUserByLoginName(response.username);
 			//this.logger.log("======================== username: ", response.username)
-			return { username: response.username };
+			return { username: currUser.profileName };
 		} catch (error) {
 			console.error('Error fetching current username:', error);
 		}
