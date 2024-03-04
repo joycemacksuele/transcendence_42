@@ -90,7 +90,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat creator
 		const chatCreator = await this
 			.createQueryBuilder("new_chat")
-			.select('user.loginName as "creator"')
+			.select('user.profileName as "creator"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.creator","user")
 			.getRawOne();
@@ -100,7 +100,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat users list
 		const chatUsers = await this
 			.createQueryBuilder("new_chat")
-			.select('user.loginName as "users"')
+			.select('user.profileName as "users"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.users", "user")
 			.getRawMany();
@@ -117,7 +117,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat admin list
 		const chatAdmins = await this
 			.createQueryBuilder("new_chat")
-			.select('user.loginName as "admins"')
+			.select('user.profileName as "admins"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.admins", "user")
 			.getRawMany();
@@ -149,7 +149,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat banned users list
 		const chatBannedUsers = await this
 			.createQueryBuilder("new_chat")
-			.select('user.loginName as "bannedUsers"')
+			.select('user.profileName as "bannedUsers"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.bannedUsers", "user")
 			.getRawMany();
@@ -164,6 +164,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creatorId"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.messages", "chat_message")
+			.orderBy("chat_message.id", "ASC")
 			.getRawMany();
 		responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
 			const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
@@ -173,11 +174,12 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			try {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
-					.select('user.profileName as "loginName"')
-					.where('user.id = :id', {id: messagesList.creatorId})// TODO something is wrong here it seems
+					.select('user.profileName as "loginName", user.id as "userId"')
+					.where('user.id = :id', {id: messagesList.creatorId})
 					.leftJoin("new_chat.users", "user")
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;
+				responseDto_inner.creator_id = messageCreator.userId;
 				this.logger.log("[getChat] Chat message sender: " + messageCreator.loginName);
 				return responseDto_inner;
 			} catch (err) {

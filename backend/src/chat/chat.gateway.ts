@@ -151,6 +151,7 @@ export class ChatGateway
       // Join the specific room after chat was created
       // room name can be the chat id since they are unique
       clientSocket.join(newChatEntity.id.toString());
+      this.ws_server.in(clientSocket.id).socketsJoin(newChatEntity.id.toString());
       this.logger.log('Socket has joined room ' + newChatEntity.id.toString());
       this.logger.log('Number of socket rooms: ' + clientSocket.rooms.size);
 
@@ -196,6 +197,7 @@ export class ChatGateway
     await this.chatService.joinChat(chatId, chatPassword, clientSocket.data.user).then( () => {
       // Join the specific room after chat was created
       clientSocket.join(chatId.toString());
+      this.ws_server.in(clientSocket.id).socketsJoin(chatId.toString());
       this.logger.log('Socket has joined room ' + chatId.toString());
 
       // If we could join the chat, get the whole table
@@ -368,7 +370,9 @@ export class ChatGateway
     // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
     const theChat : NewChatEntity = await this.chatRepository.getOneChat(requestMessageChatDto.chatId);
     this.logger.log("Derp", theChat.name);
-    clientSocket.emit(theChat.name, ret);
+//    clientSocket.emit(theChat.name, ret);
+    this.ws_server.in(clientSocket.id).socketsJoin(theChat.name);
+    this.ws_server.to(theChat.name).emit('messageChat', ret);
   }
 
   @SubscribeMessage('registerChat')
