@@ -134,20 +134,6 @@ export class ChatGateway
 
     this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(async (newChatEntity) => {
 
-      // After we have saved the new chat to database, we can save the UsersCanChatEntity
-      if (newChatEntity.type == ChatType.PRIVATE) {
-        const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
-        // Add friend to the UsersCanChatEntity:
-        this.chatService.addNewUserToUsersCanChatEntity(newChatEntity, friend).then(r => {
-          this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + friend.loginName);
-        });
-      } else {
-        // Add creator to the UsersCanChatEntity:
-        this.chatService.addNewUserToUsersCanChatEntity(newChatEntity, newChatEntity.creator).then(r => {
-          this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + newChatEntity.creator.loginName);
-        });
-      }
-
       // Join the specific room after chat was created
       // room name can be the chat id since they are unique
       clientSocket.join(newChatEntity.id.toString());
@@ -369,7 +355,7 @@ export class ChatGateway
     const ret : ResponseNewChatDto = await this.chatService.sendChatMessage(requestMessageChatDto);
     // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
     const theChat : NewChatEntity = await this.chatRepository.getOneChat(requestMessageChatDto.chatId);
-    this.logger.log("Derp", theChat.name);
+//    this.logger.log("Derp", theChat.name);
 //    clientSocket.emit(theChat.name, ret);
     this.ws_server.in(clientSocket.id).socketsJoin(theChat.name);
     this.ws_server.to(theChat.name).emit('messageChat', ret);

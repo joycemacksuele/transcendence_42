@@ -28,12 +28,27 @@ export class ChatService {
   }
 
   async sendChatMessage(requestMessageChatDto: RequestMessageChatDto) : Promise<ResponseNewChatDto> {
-    const chatMessage = new ChatMessageEntity();
-    chatMessage.message = requestMessageChatDto.message;
-    chatMessage.creator = await this.userService.getUserByLoginName(requestMessageChatDto.loginName);
-    chatMessage.chatbox = await this.chatRepository.findOneOrFail({where: {id: requestMessageChatDto.chatId}});
-    await this.chatMessageRepository.save(chatMessage);
-    return await this.chatRepository.getOneChatDto(requestMessageChatDto.chatId);
+	const now : number = new Date().getTime();
+	const user : UserEntity = await this.userService.getUserByLoginName(requestMessageChatDto.loginName);
+	const thenStr = await this.usersCanChatRepository.createQueryBuilder("users_can_chat")
+		.select('users_can_chat.timeStamp as "timeStamp"')
+		.where('new_chat.id = :chatId AND user.id = :userId', {chatId: requestMessageChatDto.chatId, userId: user.id})
+		.leftJoin("users_can_chat.chat", "new_chat")
+		.leftJoin("users_can_chat.user", "user")
+		.getRawOne()
+	const then : number = +(thenStr.timeStamp);
+	this.logger.log("Now: ", now);
+	this.logger.log("Then: ", then);
+	if (then <= now) {
+	    const chatMessage = new ChatMessageEntity();
+		chatMessage.message = requestMessageChatDto.message;
+	    chatMessage.creator = await this.userService.getUserByLoginName(requestMessageChatDto.loginName);
+		chatMessage.chatbox = await this.chatRepository.findOneOrFail({where: {id: requestMessageChatDto.chatId}});
+	    await this.chatMessageRepository.save(chatMessage);
+		return await this.chatRepository.getOneChatDto(requestMessageChatDto.chatId);
+	} else {
+		return await this.chatRepository.getOneChatDto(requestMessageChatDto.chatId);
+    }
   }
 
   async getAllChats(): Promise<ResponseNewChatDto[]> {
@@ -53,10 +68,6 @@ export class ChatService {
     chatEntity.users.push(chatEntity.creator);
 
     chatEntity.usersCanChat = [];
-    // // Add creator to the UsersCanChatEntity:
-    // this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatEntity, chatEntity.creator).then(r => {
-    //   this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + chatEntity.creator.loginName);
-    // });
 
     chatEntity.bannedUsers = [];
     if (requestNewChatDto.type == ChatType.PRIVATE) {
@@ -65,11 +76,6 @@ export class ChatService {
       // If it is a PRIVATE chat we need to add the friend to the users list
       const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
       chatEntity.users.push(friend);
-
-      // // Add friend to the UsersCanChatEntity:
-      // this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatEntity, friend).then(r => {
-      //   this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + friend.loginName);
-      // });
 
     } else if (requestNewChatDto.type == ChatType.PROTECTED) {
       if (requestNewChatDto.password == null) {
@@ -81,8 +87,19 @@ export class ChatService {
         throw new Error('[createChat] Can not hash password');
       }
     }
-    return this.chatRepository.save(chatEntity).then(r => {
+    return this.chatRepository.save(chatEntity).then(async r => {
       this.logger.log('[createChat] chat created: ' + r.name);
+	  // Add creator to the UsersCanChatEntity:
+      this.usersCanChatRepository.addNewUserToUsersCanChatEntity(r, r.creator).then(r2 => {
+	    this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the bzzzt ' + chatEntity.creator.loginName);
+      });
+      if (requestNewChatDto.type == ChatType.PRIVATE) {
+        const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
+        // Add friend to the UsersCanChatEntity:
+        this.usersCanChatRepository.addNewUserToUsersCanChatEntity(r, friend).then(r2 => {
+          this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the friend ' + friend.loginName);
+        });
+      }      
       return chatEntity;
     });
   }
