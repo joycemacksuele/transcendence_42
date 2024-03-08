@@ -8,10 +8,14 @@ export class UsersCanChatEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => UserEntity, (user) => user.canChat)
+    @ManyToOne(() => UserEntity, (user) => user.canChat, {
+		onDelete: 'CASCADE',
+	})
     user: UserEntity;
 
-    @ManyToOne(() => NewChatEntity, (chat) => chat.usersCanChat)
+    @ManyToOne(() => NewChatEntity, (chat) => chat.usersCanChat, {
+		onDelete: 'CASCADE',
+	})
     chat: NewChatEntity;
 
     @Column({type: "bigint"})
