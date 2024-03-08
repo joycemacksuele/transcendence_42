@@ -23,16 +23,24 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 	}
 
 	public async addNewUserToUsersCanChatEntity(chatEntity: NewChatEntity, user: UserEntity) {
-		// chatEntity.usersCanChat = [];
-		const usersCanChatEntity = new UsersCanChatEntity();
-		usersCanChatEntity.user = user;
-		usersCanChatEntity.chat = chatEntity;
-		usersCanChatEntity.timeStamp = new Date().getTime().toString();
-		chatEntity.usersCanChat.push(usersCanChatEntity);
-		await this
-			.manager
-			.save(usersCanChatEntity);
-		return usersCanChatEntity;
+		let usersCanChatRow = await this
+			.createQueryBuilder("users_can_chat")
+			.where('new_chat.id = :chatId  AND user.id = :userId', {chatId: chatEntity.id, userId: user.id})
+			.leftJoin("users_can_chat.chat", "new_chat")
+			.leftJoin("users_can_chat.user", "user")
+			.getOne();
+		if (usersCanChatRow == undefined) {
+			// chatEntity.usersCanChat = [];
+			const usersCanChatEntity = new UsersCanChatEntity();
+			usersCanChatEntity.user = user;
+			usersCanChatEntity.chat = chatEntity;
+			usersCanChatEntity.timeStamp = new Date().getTime().toString();
+			chatEntity.usersCanChat.push(usersCanChatEntity);
+			await this
+				.manager
+				.save(usersCanChatEntity);
+			return usersCanChatEntity;
+		}
 	}
 
 	public async updateMutedTimeStamp(user: UserEntity, chat: NewChatEntity) {
@@ -248,10 +256,11 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.createQueryBuilder("new_chat")
 			.where('new_chat.id = :id', { id: chat.id })
 			.leftJoinAndSelect("new_chat.users", "user")
+			.leftJoinAndSelect("new_chat.usersCanChat", "users_can_chat")
 			.getOne();
 		chatToJoin.users.push(user);
 		// Add user to the usersCanChatEntity:
-		chatToJoin.usersCanChat = [];
+//		chatToJoin.usersCanChat = [];
 		this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatToJoin, user).then(r => {
 			this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + user);
 		});

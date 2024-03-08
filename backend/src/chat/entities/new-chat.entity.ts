@@ -35,7 +35,9 @@ export class NewChatEntity {
     password: string;
 
     // the creator can kick, ban, mute anyone on the channel (even admins)
-    @ManyToOne(() => UserEntity, (user) => user.roomsCreated)
+    @ManyToOne(() => UserEntity, (user) => user.roomsCreated, {
+		onDelete: 'CASCADE',
+	})
     creator: UserEntity;
 
     // when the group is created, the admin is the owner (creator)
