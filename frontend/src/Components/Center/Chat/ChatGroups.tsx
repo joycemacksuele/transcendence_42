@@ -19,7 +19,7 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
     const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
 
     const currUserData = useContext(CurrentUserContext) as CurrUserData;
-    const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
+    const intraName = currUserData.profileName === undefined ? "your friend" : currUserData.profileName;
 
     useEffect(() => {
         console.log("[ChatRecent] inside useEffect -> socket connected? ", chatSocket.connected);

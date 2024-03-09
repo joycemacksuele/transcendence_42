@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import {ResponseMessageChatDto, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
+import axiosInstance from "../../Other/AxiosInstance";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -35,15 +36,24 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
     ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
     const [messages, setMessages] = useState<ResponseNewChatDto | null>(null);
+    const [blockedids, setBlockedIds] = useState(null);
     const [message, setMessage] = useState('');
     const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] = useState('Write a message...');
     const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
     useEffect(() => {
+		async function get_blocked_users() {
+			try {
+				const ret = await axiosInstance.get("/blockship/get-blocked-ids");
+				setBlockedIds(ret);
+				console.log("Blocked ids:", blockedids.data);
+			} catch (e) {}
+		}
+		get_blocked_users();
       if (chatClicked) {
         setMessages(chatClicked);
         console.log("[REEEE]: ", chatClicked.name);
-        chatSocket.on(chatClicked.name, (newdata : ResponseNewChatDto) => setMessages(newdata));
+        chatSocket.on("messageChat", (newdata : ResponseNewChatDto) => setMessages(newdata));
       }
     }, [chatClicked]);
 
@@ -67,19 +77,23 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
 
-    let i = 0;
+    // let i = 0;
     return (
         <>
-            <Row style={{maxHeight: '80vh', height: '80vh'}} className='overflow-scroll'>
-                <ListGroup
-                    key={i++}>
-                    {(messages && messages.messages && messages.messages[0] != null) ? messages.messages.map((message_: ResponseMessageChatDto) => (
-                        <ListGroup.Item>
-                            <div className="fw-bold">{message_.creator}</div>
-                            {message_.message}
-                        </ListGroup.Item>
-                    )) : <ListGroup.Item>No messages yet!</ListGroup.Item>}
-              </ListGroup>
+            <Row style={{maxHeight: '80vh', height: '80vh', overflow: 'scroll', width: '100%'}}>
+                {/*<ListGroup*/}
+                {/*    key={i++}>*/}
+                    {(messages && messages.messages && messages.messages[0] != null) ? messages.messages.map((message_: ResponseMessageChatDto, mapStaticKey: number) => (
+                        <ListGroup
+                            key={mapStaticKey}
+                        >
+                            <ListGroup.Item>
+                                <div className="fw-bold">{message_.creator}</div>
+                                {((!blockedids || blockedids.data.indexOf(message_.creator_id) == -1) ? message_.message : "This message is not displayed because you blocked the sender")}
+                            </ListGroup.Item>
+                        </ListGroup>
+                    )) : <div> No messages yet! </div>}
+              {/*// </ListGroup>*/}
             </Row>
             <Row style={{maxHeight: '10vh'}}>
                 <Form.Group className="h-25">

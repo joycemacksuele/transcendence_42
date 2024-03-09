@@ -30,8 +30,8 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     const inputRef = useRef(null);
 
     const [intraName, setIntraName] = useState<string | null>(null);
-    const [showMemberModal, setShowMemberModal] = useState(false);
     const [clickedMember, setClickedMember] = useState<string>();
+    const [showMemberModal, setShowMemberModal] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
     const [showAddUsersModal, setShowAddUsersModal] = useState(false);

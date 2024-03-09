@@ -30,7 +30,9 @@ export class Friendship {
 	/*
 		The @ManyToOne indicates that multiple Friendship records (many friendships) can 'link back' to a single UserEntity (one user-sender) as the sender of those friend requests. So, a single user can send many friend requests to different users, creating multiple friendship records where they are the userId.
 	*/
-	@ManyToOne(() => UserEntity, user => user.friendships)
+	@ManyToOne(() => UserEntity, user => user.friendships, {
+		onDelete: 'CASCADE',
+	})
 	@JoinColumn({ name: 'userId' }) // link from userID column in Friendship table to ID column in UserEntity table
 	user: UserEntity;				// The user who SENDS the friend request
 
@@ -38,7 +40,9 @@ export class Friendship {
 	/*
 		This indicates that multiple Friendship records (many friendships) can 'link back' to a single UserEntity (one user-receiver) as the receiver of those friend requests.
 	*/
-	@ManyToOne(() => UserEntity)
+	@ManyToOne(() => UserEntity, {
+		onDelete: 'CASCADE',
+	})
 	@JoinColumn({ name: 'friendId' })	// link from friendId column in Friendship table to ID column in UserEntity table
 	friend: UserEntity;					// the user who RECEIVES the friend request
 }
