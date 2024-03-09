@@ -150,4 +150,4 @@ dist
 # Added Jaka (my own folder for temporary stuff):
 _jakaVarious
 _jaka_notes.c
-/Users/jmb/Desktop/transcendence/trans_06aug/backend/.env
+docker_cleanup.sh
