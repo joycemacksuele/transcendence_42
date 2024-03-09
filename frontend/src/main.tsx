@@ -1,8 +1,8 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router } from 'react-router-dom';
+import { StrictMode } from "react";
 
 import App from "./app.tsx";
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
 /*
   jQuery
@@ -10,13 +10,13 @@ import App from "./app.tsx";
   single line of code. jQuery is often used in communication with the DOM to make changes to JavaScript elements.
  */
 
-// localStorage.setItem('css-file', 'default.css');
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Router>
-    {/* StrictMode was re-rendereing the components twice, to find errors as far as I know */}
+    
+    {/* StrictMode re-renders the components twice, to help debug during development. In production mode it is ignored. */}
+    {/* <StrictMode > */}
 
-    <App />
+      <App />
 
     {/* </ StrictMode > */}
   </Router>

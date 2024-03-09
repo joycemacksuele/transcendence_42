@@ -28,6 +28,12 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-family: 'Fredoka', sans-serif;
+  /* font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100; */
 }
 
 .container-max-width {
@@ -280,6 +286,11 @@ button.button_default:focus-visible {
 .column-bckg {
   overflow: auto; /* Change to 'auto' to allow scrolling if content is too large */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+
+i {
+  padding: 0 10px 0 10px;
 }
 
 /* BROWSER'S OWN SETTINGS */

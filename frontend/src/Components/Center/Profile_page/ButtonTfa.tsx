@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { Form, Button } from "react-bootstrap";
-
+// import axios from "axios";
 // import { CurrentUserContext, CurrUserData } from './contextCurrentUser';
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 const ButtonTfa: React.FC = () => {
 
