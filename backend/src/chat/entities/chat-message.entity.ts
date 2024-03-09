@@ -13,9 +13,14 @@ export class ChatMessageEntity {
     @Column()
     message: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.chatMessages)
+    @ManyToOne(() => UserEntity, (user) => user.chatMessages, {
+		onDelete: 'CASCADE',
+	})
     creator: UserEntity;
 
-    @ManyToOne(() => NewChatEntity, (newchat) => newchat.messages)
+    @ManyToOne(() => NewChatEntity, (newchat) => newchat.messages, {
+		onDelete: 'CASCADE',
+	})
+
     chatbox: NewChatEntity;
 }
