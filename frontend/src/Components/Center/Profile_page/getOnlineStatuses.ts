@@ -11,9 +11,10 @@ const backendURL = import.meta.env.VITE_BACKEND;
 
 const applyStatusUpdates = (
 	updates: string[],
-	usersRef: RefObject<User[]>,
+	usersRef: RefObject<User[]>, // todo jaka: usersRef is sometimes empty??? It should be array of user objects
 	setUsers: Dispatch<SetStateAction<User[]>>
 ) => {
+	console.log('       applyStatusUpdates(), ' + 'usersRef.current: ' + usersRef.current);
 	if (usersRef.current) {
 		const updatedUsers = usersRef.current.map(user => {
 			// Attempt to find a matching update for the current user:
@@ -22,10 +23,10 @@ const applyStatusUpdates = (
 						// : 
 						// { ...user, onlineStatus: false};
 			const isOnline = updates.includes(user.loginName);
-			console.log('      user [', user.loginName, '] ', isOnline);
+			console.log('      user [' + user.loginName + '] ' + "online:" + isOnline);
 			return { ...user, onlineStatus: isOnline };
 		});
-		setUsers(updatedUsers);
+		// setUsers(updatedUsers);
 	}
 };
 
@@ -34,6 +35,7 @@ export const getOnlineStatusUpdates = (
 	usersRef: RefObject<User[]>,
 	setUsers: Dispatch<SetStateAction<User[]>>
 ) => {
+	console.log('       getOnlineStatuses(), usersRef ; ' + usersRef);
 	const socket = io(backendURL, { transports: ['websocket'] });
 
 	const wrappedApplyStatusUpdates =
