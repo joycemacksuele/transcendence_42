@@ -35,10 +35,14 @@ const UsersList: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
   
+  console.log('USERS LIST');
 
   // The 'users' need to be used in a Referrence (useRef), in order to re-render each time
   // when any online status change is detected
+  // It has to be sure, that the users are first fetched, and only then 
+  // can the online status be updated - therefore the flag variable 'hasFetchedUsers' is detecting this
   const [users, setUsers] = useState<User[]>([]);
+  const [hasFetchedUsers, setHasFetchedUsers] = useState(false);
   const usersRef = useRef<User[]>(users);
 
   useEffect(() => {
@@ -68,23 +72,36 @@ const UsersList: React.FC = () => {
 
 
   const fetchUsers = async () => {
+    console.log('      fetchUsers');
     try {
       const response = await axiosInstance.get<User[]>("/users/all");
+      console.log("     response.data: " + response.data);
       setUsers(response.data);
-      console.log("Jaka, retreived users", response.data);
+      setHasFetchedUsers(true);
     } catch (error) {
-      console.error("Error retrieving users:", error);
+      console.error("Error fetching users:", error);
     }
   };
   
+  useEffect(() => {
+    fetchUsers();
+  }, [])
 
   // Get online status for each user, via websocket:
   useEffect(() => {
-    fetchUsers();
-    const unsubscribe = getOnlineStatusUpdates(usersRef, setUsers);
-    // Cleanup function, returned from getOnlineStatuses()
-    return () => unsubscribe();
-  }, []);
+    console.log('     useEffects ...');
+    let unsubscribe: (() => void) | undefined;
+    // fetchUsers();
+    if (hasFetchedUsers) {
+      unsubscribe = getOnlineStatusUpdates(usersRef, setUsers);
+      // Cleanup function, returned from getOnlineStatuses()
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      }
+    }
+  }, [hasFetchedUsers]);
 
 
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
