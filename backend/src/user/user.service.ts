@@ -168,9 +168,9 @@ export class UserService {
 
 
 
-  // async getUserById(id: number): Promise<UserEntity> {
-  //   return this.userRepository.findOne({ where: { id} });
-  // }
+  async getUserById(id: number) {
+    return this.userRepository.findOne({ where: { id} });
+  }
 
   // async updateUser(id: number, updateUserDto: CreateUserDto): Promise<UserEntity> {
   //   await this.userRepository.update(id, updateUserDto);
