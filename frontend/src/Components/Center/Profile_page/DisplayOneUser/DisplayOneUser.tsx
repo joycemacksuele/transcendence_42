@@ -126,6 +126,7 @@ const DisplayOneUser: React.FC<{
     fetchUserData();
   }, [loginName, myId]);
 
+  
   useEffect(() => {
     const fetchMyData = async () => {
       try {
