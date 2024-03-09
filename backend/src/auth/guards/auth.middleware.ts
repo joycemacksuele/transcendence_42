@@ -25,7 +25,7 @@ export class AuthMiddleware implements NestMiddleware {
         // if (request.path === "/users/all")
         // token = ""; // TEST
         this.logger.log("ExistingToken: " + token);
-    }catch(err){
+    } catch(err){
         throw new UnauthorizedException('Player not authorized! Exiting Ping Pong!' + err);
     }
     if (token === ""){
@@ -33,6 +33,7 @@ export class AuthMiddleware implements NestMiddleware {
         response.clearCookie('Cookie');
         throw new UnauthorizedException('Player not authorized! Exiting Ping Pong!');
     }
+
      
     try{
         // decode the token 
@@ -57,6 +58,13 @@ export class AuthMiddleware implements NestMiddleware {
                 throw new UnauthorizedException('Player not authorized with tfa verification! Exiting Ping Pong!');
             }
         }   
+
+        // Added Jaka: Check the loginStatus variable - because once a user logs out in one 
+        //             device, it needs to be logged on of all devices/browsers.
+        if (player.onlineStatus === false) {
+            throw new UnauthorizedException('User has been logged out (maybe on another device) Exiting Ping Pong!');
+        }
+
 
         if (expiry === true){
             try {

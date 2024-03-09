@@ -32,7 +32,7 @@ export const getOnlineStatus = (loginName: string) => {
 		try {
 			const socket = io(apiAddress, { transports: ["websocket"] });
 			
-			// Request user playing status
+			// Request user online status upda–tes
 			socket.on('responseOnlineStatus', statusUpdateCallback);
 			socket.emit('requestOnlineStatus', loginName);
 			

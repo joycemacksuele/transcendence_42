@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import { deleteDummies } from "../../Test/deleteDummyUsers";
 import DisplayOneUser from "./DisplayOneUser/DisplayOneUser"; // without brackets, because it is exported 'default'
 import { useSelectedUser } from "./contextSelectedUserName";
-import { getOnlineStatuses } from "./getOnlineStatuses";
+import { getOnlineStatusUpdates } from "./getOnlineStatuses";
 // import axios from "axios";
 // import '../../../css/Profile-users-list.css'
 
@@ -24,17 +24,27 @@ export interface User {
   gamesLost: number;
 }
 
-interface UpdateOnlineStatus {
-  id: number;
-  isOnline: boolean;
-}
+// interface UpdateOnlineStatus {
+//   id: string;
+//   isOnline: boolean;
+// }
 
 
 const UsersList: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
   const [displayList, setDisplayList] = useState(true);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
+  
+
+  // The 'users' need to be used in a Referrence (useRef), in order to re-render each time
+  // when any online status change is detected
+  const [users, setUsers] = useState<User[]>([]);
+  const usersRef = useRef<User[]>(users);
+
+  useEffect(() => {
+    usersRef.current = users;
+  }, [users]);
+
 
   // THIS LOGIN NAME COMES FROM CHAT, IF THERE CLICKED 'Go to profile'
   const { selectedLoginName, setSelectedLoginName } = useSelectedUser();
@@ -45,6 +55,18 @@ const UsersList: React.FC = () => {
     }
   }, [setSelectedLoginName]);
 
+
+  // Check if dummies have been inserted before using local storage
+  useEffect(() => {
+    if (!localStorage.getItem("dummiesInserted")) {
+      insertDummyUsers();
+
+      // Set a flag in local storage to indicate dummies have been inserted
+      localStorage.setItem("dummiesInserted", "true");
+    }
+  }, []);
+
+
   const fetchUsers = async () => {
     try {
       const response = await axiosInstance.get<User[]>("/users/all");
@@ -54,54 +76,13 @@ const UsersList: React.FC = () => {
       console.error("Error retrieving users:", error);
     }
   };
-
-
-  useEffect(() => {
-    // Check if dummies have been inserted before using local storage
-    if (!localStorage.getItem("dummiesInserted")) {
-      insertDummyUsers();
-      // Set a flag in local storage to indicate dummies have been inserted
-      localStorage.setItem("dummiesInserted", "true");
-    }
-
-  }, []);
-
-
-  /*
-  Callback function, to be passed to getOnlineStatuses()
-    It will be triggered when a status change is detected, so it sets the 
-    new state in setUsers() --> it updates the variable 'onlineStatus'
-    (but it does not yet update it in the database - it should be done separately)
-      - find() finds if a user ID is in the websockets returned array
-      - map() returns the array of users, but with updated onlineStatus variables
-      - setUsers() updates the array of previously fetched users  
-  */
-  const processStatusUpdates = (updates: UpdateOnlineStatus[]) => {
-
-      const updatedUsers = users.map(user => {
-        // Attempt to find a matching update for the current user:
-        const update = updates.find(update => update.id === user.id);
-        // If an update is found, apply it to the user's online status
-        return update ? { ...user, onlineStatus: update.isOnline } : user;
-      });
-      // Update the state with the new array of updated users
-      setUsers(updatedUsers);
-    
-    
-    // setUsers((currentUsers) => 
-    //   currentUsers.map((user) => {
-    //     const update = updates.find((update) => update.id === user.id);
-    //     return update ? { ...user, onlineStatus: update.isOnline } : user;
-    //   })  
-    // );
-  };
-
   
+
+  // Get online status for each user, via websocket:
   useEffect(() => {
     fetchUsers();
-    // Get online status for each user, via websocket:
-    const unsubscribe = getOnlineStatuses(processStatusUpdates);
-    // Cleanup function to unsubscribe and disconnect the websocket, when component unmounts:
+    const unsubscribe = getOnlineStatusUpdates(usersRef, setUsers);
+    // Cleanup function, returned from getOnlineStatuses()
     return () => unsubscribe();
   }, []);
 
@@ -111,6 +92,7 @@ const UsersList: React.FC = () => {
     setSelectedUser(loginName);
     setShowMatchHistory(false);
   };
+
 
   return (
     <Container fluid className="h-100 w-100 container-max-width">
