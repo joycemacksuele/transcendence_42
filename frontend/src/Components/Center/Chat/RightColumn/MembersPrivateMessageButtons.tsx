@@ -13,6 +13,9 @@ type PropsHeader = {
 };
 
 const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
+  if (chatClicked) {
+    console.log("[MembersPrivateMessageButtons] chatClicked: ", chatClicked);
+  }
   const [intraName, setIntraName] = useState<string | null>();
 
   const getIntraName = async () => {

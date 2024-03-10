@@ -19,6 +19,9 @@ type PropsHeader = {
 };
 
 const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
+    if (chatClicked) {
+        console.log("[MembersGroupButtons] chatClicked: ", chatClicked);
+    }
 
     const [intraName, setIntraName] = useState<string | null>(null);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -44,6 +47,7 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
         const init = async () => {
             if (!intraName) {
                 const currUserIntraName = await getIntraName();
+                console.log("[MembersGroup] currUserIntraName: ", currUserIntraName);
                 setIntraName(currUserIntraName);
             }
         }
@@ -64,7 +68,9 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
     // We want to fetch all users every time we change goFetchUsers, that is why this useEffect depends on it
     useEffect(() => {
         console.log("[MembersGroup] inside useEffect -> will fetch all users in the database");
-        getAllUsers();
+        getAllUsers().catch((error): undefined => {
+            console.error('[MembersGroup] Error retrieving all users: ', error);
+        });
     }, [goFetchUsers]);
 
     useEffect(() => {
@@ -131,24 +137,22 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                         <Form>
                                             {currentChatUsers && currentChatUsers.map((currentChatUser, mapStaticKey: number) => (
                                                 <div key={mapStaticKey} className="mb-3">
-                                                    <Form.Check
-                                                        inline
-                                                        value={currentChatUser.loginName}
-                                                        label={currentChatUser.loginName}
-                                                        // name="group1" -> not needed it seems
-                                                        type="checkbox"
-                                                        id={"inline-checkbox-" + mapStaticKey}
-                                                        onClick={() => {
-                                                            {/* Add users to chat = when user is NOT banned OR is NOT current user */}
-                                                            console.log("JOYCE currentChatUser.loginName: ", currentChatUser.loginName);
-                                                            console.log("JOYCE intraName: ", intraName);
-
-                                                            if (chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1 && currentChatUser.loginName != intraName) {
+                                                    {/* Add users to chat = when user is NOT current user AND is NOT banned */}
+                                                    {(currentChatUser.loginName != intraName && chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1) &&
+                                                        <Form.Check
+                                                            inline
+                                                            value={currentChatUser.loginName}
+                                                            label={currentChatUser.profileName}
+                                                            // name="group1" -> not needed it seems
+                                                            type="checkbox"
+                                                            id={"inline-checkbox-" + mapStaticKey.toString()}
+                                                            onClick={() => {
+                                                                console.log("JOYCE currentChatUser.loginName: ", currentChatUser.loginName);
+                                                                console.log("JOYCE intraName: ", intraName);
                                                                 setUsersToBeAddedToChat([...usersToBeAddedToChat, currentChatUser.loginName]);
-                                                            }
-                                                        }}
-
-                                                    />
+                                                            }}
+                                                        />
+                                                    }
                                                 </div>
                                             ))}
                                         </Form>
