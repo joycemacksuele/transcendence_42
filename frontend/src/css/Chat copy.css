@@ -2,15 +2,19 @@
 .chat-page {
     /* color = font color */
     color: grey;
-    width: auto;
-    height: 50vw;
+    /* width: auto; */
+    /* height: 100vw; */
     /*display: flex;*/
     /*overflow-y: scroll;*/
 }
 
+.left-column-header {
+    
+}
+
 ul.dropdown-menu {
     /*width: auto;*/
-    height: 50vw;
+    height: 100vw;
     overflow-y: scroll;
 }
 
