@@ -5,7 +5,7 @@ import LoginAuth from "./Components/Login_page/Login_auth.tsx";
 import InputTFAcode from "./Components/Login_page/Login_2fa";
 import MainPage from "./Components/main_page.tsx";
 import UserProfilePage from "./Components/Center/Profile_page/User_profile_page";
-import ChatPage from "./Components/Center/Chat/Chat";
+import ChatPage from "./Components/Center/Chat/MainComponent.tsx";
 import PlayGamePage from "./Components/Center/Game/Game";
 import UsersList from "./Components/Center/Profile_page/DisplayUsers";
 import PageNotFound from "./Components/Other/PageNotFound.tsx";

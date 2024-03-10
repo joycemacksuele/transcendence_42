@@ -107,11 +107,11 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	private async getOneRowAndSaveAsDTO(chat: NewChatEntity) {
 		const responseDto: ResponseNewChatDto = new ResponseNewChatDto();
 		responseDto.id = chat.id;
-		this.logger.log('[getChat] Chat id: ' + chat.id);
+		this.logger.log('[getChat] MainComponent id: ' + chat.id);
 		responseDto.name = chat.name;
-		this.logger.log('[getChat] Chat name: ' + chat.name);
+		this.logger.log('[getChat] MainComponent name: ' + chat.name);
 		responseDto.type = chat.type;
-		this.logger.log('[getChat] Chat type: ' + chat.type);
+		this.logger.log('[getChat] MainComponent type: ' + chat.type);
 
 		// ----------- get chat creator
 		const chatCreator = await this
@@ -121,7 +121,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.creator","user")
 			.getRawOne();
 		responseDto.creator = chatCreator.creator;
-		this.logger.log('[getChat] Chat creator: ' + chatCreator.creator);
+		this.logger.log('[getChat] MainComponent creator: ' + chatCreator.creator);
 
 		// ----------- get chat users list - intra name
 		const chatUsersIntra = await this
@@ -213,7 +213,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
 			responseDto_inner.id = messagesList.id;
 			responseDto_inner.message = messagesList.message;
-			this.logger.log("[getChat] Chat message(s): " + messagesList.message);
+			this.logger.log("[getChat] MainComponent message(s): " + messagesList.message);
 			try {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
@@ -223,7 +223,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;
 				responseDto_inner.creator_id = messageCreator.userId;
-				this.logger.log("[getChat] Chat message sender: " + messageCreator.loginName);
+				this.logger.log("[getChat] MainComponent message sender: " + messageCreator.loginName);
 				return responseDto_inner;
 			} catch (err) {
 				// throw new Error("Can't find user");
@@ -263,7 +263,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". I was deleted!");
 			return false;
 		} else {
-			// Chat has users on it, try to see if the user to be deleted is in the array of users
+			// MainComponent has users on it, try to see if the user to be deleted is in the array of users
 			const index = foundChatEntityToLeave.users.findIndex(user=> user.id === userToDelete.id)
 			if (index !== -1) {
 				// If user to be deleted was found in the array of users, delete s/he from it and save the entity

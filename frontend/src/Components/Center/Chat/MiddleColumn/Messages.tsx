@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
-import {ResponseMessageChatDto, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
-import axiosInstance from "../../Other/AxiosInstance";
+import {ResponseMessageChatDto, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
+import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -9,7 +9,7 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 // Put a	ny other imports below so that CSS from your
 // components takes precedence over default styles.
 
-import '../../../css/Chat.css'
+import '../../../../css/Chat.css'
 // import avatarImage from '../../../images/avatar_default.png'
 
 // Importing bootstrap and other modules
@@ -18,8 +18,8 @@ import Row from 'react-bootstrap/Row';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { chatSocket } from './Utils/ClientSocket.tsx';
-import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
+import { chatSocket } from '../Utils/ClientSocket.tsx';
+import {CurrentUserContext, CurrUserData} from "../../Profile_page/contextCurrentUser.tsx";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
