@@ -23,23 +23,26 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 	}
 
 	public async addNewUserToUsersCanChatEntity(chatEntity: NewChatEntity, user: UserEntity) {
-		let usersCanChatRow = await this
-			.createQueryBuilder("users_can_chat")
-			.where('new_chat.id = :chatId  AND user.id = :userId', {chatId: chatEntity.id, userId: user.id})
-			.leftJoin("users_can_chat.chat", "new_chat")
-			.leftJoin("users_can_chat.user", "user")
-			.getOne();
-		if (usersCanChatRow == undefined) {
-			// chatEntity.usersCanChat = [];
-			const usersCanChatEntity = new UsersCanChatEntity();
-			usersCanChatEntity.user = user;
-			usersCanChatEntity.chat = chatEntity;
-			usersCanChatEntity.timeStamp = new Date().getTime().toString();
-			chatEntity.usersCanChat.push(usersCanChatEntity);
-			await this
-				.manager
-				.save(usersCanChatEntity);
-			return usersCanChatEntity;
+		try {
+			let usersCanChatRow = await this
+				.createQueryBuilder("users_can_chat")
+				.where('new_chat.id = :chatId  AND user.id = :userId', {chatId: chatEntity.id, userId: user.id})
+				.leftJoin("users_can_chat.chat", "new_chat")
+				.leftJoin("users_can_chat.user", "user")
+				.getOne();
+			if (usersCanChatRow == undefined) {
+				const usersCanChatEntity = new UsersCanChatEntity();
+				usersCanChatEntity.user = user;
+				usersCanChatEntity.chat = chatEntity;
+				usersCanChatEntity.timeStamp = new Date().getTime().toString();
+				chatEntity.usersCanChat.push(usersCanChatEntity);
+				await this
+					.manager
+					.save(usersCanChatEntity);
+				return usersCanChatEntity;
+			}
+		} catch (err) {
+			throw new Error('[addNewUserToUsersCanChatEntity] err: ' + err);
 		}
 	}
 
@@ -60,7 +63,22 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.manager
 				.save(usersCanChatRow)
 		} catch (err) {
-			throw new Error('[updateMutedTimeStamp] Could not get UsersCanChatEntity -> err: ' + err);
+			throw new Error('[updateMutedTimeStamp] err: ' + err);
+		}
+	}
+
+	public async deleteUserFromUsersCanChatEntity(chatEntity: NewChatEntity, user: UserEntity) {
+		try {
+			let usersCanChatRow = await this
+				.createQueryBuilder("users_can_chat")
+				.where('new_chat.id = :chatId  AND user.id = :userId', {chatId: chatEntity.id, userId: user.id})
+				.leftJoin("users_can_chat.chat", "new_chat")
+				.leftJoin("users_can_chat.user", "user")
+				.getOne();
+				await this.delete(usersCanChatRow.id);
+				return usersCanChatRow;
+		} catch (err) {
+			throw new Error('[updateMutedTimeStamp] err: ' + err);
 		}
 	}
 }
@@ -105,7 +123,24 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		responseDto.creator = chatCreator.creator;
 		this.logger.log('[getChat] Chat creator: ' + chatCreator.creator);
 
-		// ----------- get chat users list
+		// ----------- get chat users list - intra name
+		const chatUsersIntra = await this
+			.createQueryBuilder("new_chat")
+			.select('user.loginName as "users"')
+			.where('new_chat.id = :id', {id: chat.id})
+			.leftJoin("new_chat.users", "user")
+			.getRawMany();
+		const usersIntraName = chatUsersIntra.map((usersList) => {
+			return usersList.users;
+		});
+		if (usersIntraName.toString()) {
+			this.logger.log('[getChat] Users in the chat (Intra Name): ' + usersIntraName.toString());
+			responseDto.usersIntraName = usersIntraName;
+		} else {
+			this.logger.log('[getChat] No users in the chat: ' + chat.name);
+		}
+
+		// ----------- get chat users list - profile name
 		const chatUsers = await this
 			.createQueryBuilder("new_chat")
 			.select('user.profileName as "users"')
@@ -116,8 +151,8 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			return usersList.users;
 		});
 		if (users.toString()) {
-			this.logger.log('[getChat] Users in the chat: ' + users.toString());
-			responseDto.users = users;
+			this.logger.log('[getChat] Users in the chat (Profile Name): ' + users.toString());
+			responseDto.usersProfileName = users;
 		} else {
 			this.logger.log('[getChat] No users in the chat: ' + chat.name);
 		}

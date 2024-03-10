@@ -11,12 +11,6 @@ import {ChatType, RequestNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx"
 import {Alert} from "react-bootstrap";
 
-// type PropsHeader = {
-//     // recentChatList: RequestNewChatDto[];
-//     // setRecentChatList: (recentChatList: RequestNewChatDto[]) => void;
-// };
-
-// const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) => {
 const NewChat = () => {
     // const [errorMessage, setErrorMessage] = useState<string>("");
     const [errorGroupName, setErrorGroupName] = useState<string|null>(null);
