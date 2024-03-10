@@ -31,11 +31,15 @@ export class Blockship {
 		The 2nd function would only be useful if I also wanted to list the 'blockers', besides the 'blocked':
 			@ManyToOne(() => UserEntity, user => user.blockedUsers)
 	*/
-	@ManyToOne(() => UserEntity)
+	@ManyToOne(() => UserEntity, {
+		onDelete: 'CASCADE',
+	})
 	@JoinColumn({ name: 'blockerId' })
 	blocker: UserEntity;
 
-	@ManyToOne(() => UserEntity)
+	@ManyToOne(() => UserEntity, {
+		onDelete: 'CASCADE',
+	})
 	@JoinColumn({ name: 'blockedId' })	
 	blocked: UserEntity;
 }

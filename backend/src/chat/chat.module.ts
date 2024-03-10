@@ -2,9 +2,9 @@ import { Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
-import { ChatMutedRepository, ChatRepository } from "./chat.repository";
+import { UsersCanChatRepository, ChatRepository } from "./chat.repository";
 import { ChatMessageRepository } from "./chat-message.repository";
-import { MutedEntity } from "./entities/muted.entity";
+import { UsersCanChatEntity } from "./entities/users-can-chat.entity";
 import { NewChatEntity } from './entities/new-chat.entity';
 import { ChatMessageEntity } from "./entities/chat-message.entity";
 import { UserModule } from "src/user/user.module";
@@ -20,7 +20,7 @@ import { TwoFactorAuthService } from "src/auth/2fa/2fa.service";
         NewChatEntity,
         ChatMessageEntity,
         UserEntity,
-        MutedEntity
+        UsersCanChatEntity
       ]),
     UserModule
   ],
@@ -28,7 +28,7 @@ import { TwoFactorAuthService } from "src/auth/2fa/2fa.service";
       ChatGateway,
       ChatService,
       ChatMessageRepository,
-      ChatMutedRepository,
+      UsersCanChatRepository,
       ChatRepository,
       UserService,
       AuthService,

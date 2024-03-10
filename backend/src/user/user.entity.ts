@@ -18,7 +18,7 @@ import { Friendship } from 'src/friendships/friendship.entity';
 import { Blockship } from 'src/blockShips/blockship.entity';
 import { ChatMessageEntity } from 'src/chat/entities/chat-message.entity';
 import { NewChatEntity } from 'src/chat/entities/new-chat.entity';
-import { MutedEntity } from "../chat/entities/muted.entity";
+import { UsersCanChatEntity } from "../chat/entities/users-can-chat.entity";
 
 
 @Entity()
@@ -122,7 +122,7 @@ export class UserEntity {
 	@OneToMany(() => NewChatEntity, (newChat) => newChat.creator)
 	roomsCreated: NewChatEntity[];
 
-	@OneToMany(() => MutedEntity, (muted) => muted.user)
+	@OneToMany(() => UsersCanChatEntity, (usersCanChat) => usersCanChat.user)
 	@JoinTable()
-	canChat: MutedEntity[];
+	canChat: UsersCanChatEntity[];
 }

@@ -136,6 +136,10 @@ try {
     console.log(">>>>>>>>>>user on gamepage identified<<<<<<<<<<<<<<<<<<<<");
     client.data.gamepage = true;
     const userId = this._socketIdUserId.get(client.id);
+      
+      // added Jaka:
+      this.emitOnlineStatuses();
+
     const matchId = this.ponggameService.getMatchId(userId);
       this.logger.log(`UserId found : ${userId}`);
       this.logger.log(`Match Id ${matchId}`);
@@ -150,6 +154,9 @@ try {
         this.ponggameService.playerConnected(userId);
         client.join(matchId);
       }
+
+    // Added Jaka:
+    this.emitOnlineStatuses();
   }
 
 @SubscribeMessage('joinGame')
@@ -278,7 +285,6 @@ try {
   }
   
   
-  
   // ADDED JAKA /////////////////////////////////////
   //  If possible, here I would like to check all currently played matches and check if this
   //  username/userId is in any of current matches 
@@ -286,10 +292,28 @@ try {
   handleRequestPlayingStatus(
     @MessageBody() loginName: string,
     @ConnectedSocket() client: Socket) {
-      // const isPlaying = this.ponggameService.isUserPlaying(loginName);
-      const isPlaying = this.ponggameService.getMatchId(loginName);
+      const matchId = this.ponggameService.getMatchId(loginName);
+      const isPlaying = matchId ? true : false;
       console.log("Status of playing: ", isPlaying);
-      // client.emit('responsePlayingStatus', { loginName, isPlaying })
       client.emit('responsePlayingStatus', { isPlaying })
     }
+
+
+  // ADDED JAKA: single user's status
+  @SubscribeMessage('requestOnlineStatus')
+  handleRequestOnlineStatus(
+    @MessageBody() loginName: string,
+    @ConnectedSocket() client: Socket) {
+      const isOnline = this._userIdSocketId.has(loginName);
+      client.emit('responseOnlineStatus', { isOnline });
+  }
+
+  // Added Jaka:
+  // This is called inside handleConnection() and handleDisconnect(),
+  // after each change of any user login status
+  private emitOnlineStatuses() {
+    const onlineUsersIds = Array.from(this._userIdSocketId.keys());
+    this.server.emit('onlineStatusUpdates', onlineUsersIds);
+  }
+
 }

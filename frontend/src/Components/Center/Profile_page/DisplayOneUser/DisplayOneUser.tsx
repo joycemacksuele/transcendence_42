@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 import { Col, Image, Row, Button, Modal } from "react-bootstrap";
 import handleClickBlocking from "./blockUser.ts";
@@ -10,7 +9,9 @@ import { ChatType, RequestNewChatDto } from "../../Chat/Utils/ChatUtils.tsx";
 import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
 import MatchHistory from "../MatchHistory.tsx";
 import GetPlayingStatus from "../GetPlayingStatus.tsx";
+import { getOnlineStatus } from "../getOnlineStatus.ts";
 import "../../../../css/Profile-users-list.css";
+
 
 interface UserProps {
   id: number;
@@ -50,17 +51,16 @@ const DisplayOneUser: React.FC<{
   const isUserPlaying = GetPlayingStatus(loginName);
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
+    
+
+  const isUserOnline = getOnlineStatus(loginName);
+
 
   // if the current user is displayed, do not show the buttons
   useEffect(() => {
     const compareUserNames = async () => {
       const currUsername = await getCurrentUsername();
-      console.log(
-        "=================== compare: ",
-        currUsername,
-        ", ",
-        loginName
-      );
+      // console.log("=================== compare: ", currUsername, ", ", loginName);
       if (currUsername === loginName) {
         setShowButtons(false); // do not show buttons
       } else {
@@ -70,6 +70,7 @@ const DisplayOneUser: React.FC<{
     compareUserNames();
   }, [loginName]);
   const buttonsVisible = showButtons ? {} : { display: "none" };
+
 
   useEffect(() => {
     if (!myId) return; // GUARD CLAUSE: wait until myID is available
@@ -125,6 +126,7 @@ const DisplayOneUser: React.FC<{
     fetchUserData();
   }, [loginName, myId]);
 
+  
   useEffect(() => {
     const fetchMyData = async () => {
       try {
@@ -207,6 +209,12 @@ const DisplayOneUser: React.FC<{
                       online
                       <span
                         id={`circle${userData.onlineStatus ? "Green" : "Red"}`}
+                      >
+                        &#9679;
+                      </span>
+                      onlineWS
+                      <span
+                        id={`circle${isUserOnline ? "Green" : "Red"}`}
                       >
                         &#9679;
                       </span>

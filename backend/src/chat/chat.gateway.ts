@@ -23,6 +23,7 @@ import {AuthService} from "src/auth/auth.service";
 import {ChatType} from "./utils/chat-utils";
 import {WsExceptionFilter} from "./utils/chat-exception-handler";
 import {UserService} from "../user/user.service";
+import {UsersCanChatEntity} from "./entities/users-can-chat.entity";
 
 /*
     Websockets tips:
@@ -90,17 +91,18 @@ export class ChatGateway
           token = token_key_value.split('=')[1];
         }
         this.logger.log('[handleConnection] token: ' + token);
-      }
-      try {
-        const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-        this.logger.log('[handleConnection] payload.username: ' + payload.username);
-        clientSocket.data.user = payload.username;
-      } catch {
-        throw new UnauthorizedException('Invalid token');
+
+        try {
+          const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+          this.logger.log('[handleConnection] payload.username: ' + payload.username);
+          clientSocket.data.user = payload.username;
+        } catch {
+          throw new UnauthorizedException('Invalid token');
+        }
       }
     } catch (error) {
       this.logger.log('[handleConnection] ' + error);
-      clientSocket.emit('error', new UnauthorizedException());
+      clientSocket.emit('error', new UnauthorizedException(error));
       clientSocket.disconnect();
     }
   }
@@ -126,48 +128,30 @@ export class ChatGateway
 
   @SubscribeMessage('createChat')
   async createChat(@MessageBody() requestNewChatDto: RequestNewChatDto, @ConnectedSocket() clientSocket: Socket) {
-    // try {
-      this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
-      this.logger.log('createChat -> clientSocket.data.user: ' + clientSocket.data.user);
-      this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
+    this.logger.log('createChat -> clientSocket.id: ' + clientSocket.id);
+    this.logger.log('createChat -> clientSocket.data.user: ' + clientSocket.data.user);
+    this.logger.log('createChat -> requestNewChatDto: ', requestNewChatDto);
 
-      this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(async (newChatEntity) => {
+    this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(async (newChatEntity) => {
 
-        // After we have saved the new chat to database, we can save the muted entity
-        if (newChatEntity.type == ChatType.PRIVATE) {
-          const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
-          // Add friend to the muted entity:
-          this.chatService.addNewUserToMutedEntity(newChatEntity, friend).then(r => {
-            this.logger.log('[createChat][addNewUserToMutedEntity] MutedEntity ' + r.id + ' created for the ' + friend.loginName);
-          });
-        } else {
-          // Add creator to the muted entity:
-          this.chatService.addNewUserToMutedEntity(newChatEntity, newChatEntity.creator).then(r => {
-            this.logger.log('[createChat][addNewUserToMutedEntity] MutedEntity ' + r.id + ' created for the ' + newChatEntity.creator.loginName);
-          });
-        }
+      // Join the specific room after chat was created
+      // room name can be the chat id since they are unique
+      clientSocket.join(newChatEntity.id.toString());
+      this.ws_server.in(clientSocket.id).socketsJoin(newChatEntity.id.toString());
+      this.logger.log('Socket has joined room ' + newChatEntity.id.toString());
+      this.logger.log('Number of socket rooms: ' + clientSocket.rooms.size);
 
-        // Join the specific room after chat was created
-        // room name can be the chat id since they are unique
-        clientSocket.join(newChatEntity.id.toString());
-        this.logger.log('Socket has joined room ' + newChatEntity.id.toString());
-        this.logger.log('Number of socket rooms: ' + clientSocket.rooms.size);
-
-        // If we could save a new chat in the database, get the whole table
-        this.logger.log('getChats -> chat ' + requestNewChatDto.name + ' was created');
-        this.chatService.getAllChats().then((allChats) => {
-          // If we could get the whole table from the database, emit it to the frontend
-          clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
-          this.logger.log('createChat -> getChats -> all chats were emitted to the frontend');
-        });
-      }).catch((err) => {
-        this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
-        clientSocket.emit("error", err.message);
+      // If we could save a new chat in the database, get the whole table
+      this.logger.log('getChats -> chat ' + requestNewChatDto.name + ' was created');
+      this.chatService.getAllChats().then((allChats) => {
+        // If we could get the whole table from the database, emit it to the frontend
+        clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
+        this.logger.log('createChat -> getChats -> all chats were emitted to the frontend');
       });
-    // } catch (err) {
-    //   this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
-    //   throw err;
-    // }
+    }).catch((err) => {
+      this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
+      clientSocket.emit("error", err.message);
+    });
   }
 
   @SubscribeMessage('deleteChat')
@@ -199,6 +183,7 @@ export class ChatGateway
     await this.chatService.joinChat(chatId, chatPassword, clientSocket.data.user).then( () => {
       // Join the specific room after chat was created
       clientSocket.join(chatId.toString());
+      this.ws_server.in(clientSocket.id).socketsJoin(chatId.toString());
       this.logger.log('Socket has joined room ' + chatId.toString());
 
       // If we could join the chat, get the whole table
@@ -346,7 +331,7 @@ export class ChatGateway
   @SubscribeMessage('editPassword')
   async editPassword(
       @MessageBody('chatId') chatId: number,
-      @MessageBody('chatPassword') chatPassword: string | null,
+      @MessageBody('chatPassword') chatPassword: string | null,// TODO HAVE A STRINGER PASSWORD HERE
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('editPassword -> chatId: ' + chatId + " will have its password edited");
@@ -370,8 +355,10 @@ export class ChatGateway
     const ret : ResponseNewChatDto = await this.chatService.sendChatMessage(requestMessageChatDto);
     // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
     const theChat : NewChatEntity = await this.chatRepository.getOneChat(requestMessageChatDto.chatId);
-    this.logger.log("Derp", theChat.name);
-    clientSocket.emit(theChat.name, ret);
+//    this.logger.log("Derp", theChat.name);
+//    clientSocket.emit(theChat.name, ret);
+    this.ws_server.in(clientSocket.id).socketsJoin(theChat.name);
+    this.ws_server.to(theChat.name).emit('messageChat', ret);
   }
 
   @SubscribeMessage('registerChat')

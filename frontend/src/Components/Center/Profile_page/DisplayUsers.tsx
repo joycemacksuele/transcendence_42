@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useRef } from "react";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
+import { deleteDummies } from "../../Test/deleteDummyUsers";
 import DisplayOneUser from "./DisplayOneUser/DisplayOneUser"; // without brackets, because it is exported 'default'
 import { useSelectedUser } from "./contextSelectedUserName";
-
-// Custom CSS
+import { getOnlineStatusUpdates } from "./getOnlineStatuses";
+// import axios from "axios";
 // import '../../../css/Profile-users-list.css'
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 export interface User {
   id: number;
@@ -24,28 +24,31 @@ export interface User {
   gamesLost: number;
 }
 
-const handleInsertDataClick = () => {
-  insertDummyUsers();
-};
+// interface UpdateOnlineStatus {
+//   id: string;
+//   isOnline: boolean;
+// }
 
-const deleteDummies = async () => {
-  try {
-    await axiosInstance.delete("/users/");
-    console.log("Dummies deleted successfully");
-  } catch (error) {
-    console.error("Error deleting dummies: ", error);
-  }
-};
-
-const handleClickDeleteDummies = () => {
-  deleteDummies();
-};
 
 const UsersList: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
   const [displayList, setDisplayList] = useState(true);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
+  
+  // console.log('USERS LIST');
+
+  // The 'users' need to be used in a Referrence (useRef), in order to re-render each time
+  // when any online status change is detected
+  // It has to be sure, that the users are first fetched, and only then 
+  // can the online status be updated - therefore the flag variable 'hasFetchedUsers' is detecting this
+  const [users, setUsers] = useState<User[]>([]);
+  const [hasFetchedUsers, setHasFetchedUsers] = useState(false);
+  const usersRef = useRef<User[]>(users);
+
+  useEffect(() => {
+    usersRef.current = users;
+  }, [users]);
+
 
   // THIS LOGIN NAME COMES FROM CHAT, IF THERE CLICKED 'Go to profile'
   const { selectedLoginName, setSelectedLoginName } = useSelectedUser();
@@ -56,46 +59,57 @@ const UsersList: React.FC = () => {
     }
   }, [setSelectedLoginName]);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await axiosInstance.get<User[]>("/users/all");
-      setUsers(response.data);
-      console.log("Jaka, retreived users", response.data);
-    } catch (error) {
-      console.error("Error retrieving users:", error);
-    }
-  };
 
+  // Check if dummies have been inserted before using local storage
   useEffect(() => {
-    // Check if dummies have been inserted before using local storage
     if (!localStorage.getItem("dummiesInserted")) {
       insertDummyUsers();
+
       // Set a flag in local storage to indicate dummies have been inserted
       localStorage.setItem("dummiesInserted", "true");
     }
-    fetchUsers();
   }, []);
 
-  const deleteUsers = async () => {
+
+  const fetchUsers = async () => {
+    // console.log('      fetchUsers');
     try {
-      await axiosInstance.delete("/users/");
-      console.log("Dummies deleted successfully");
+      const response = await axiosInstance.get<User[]>("/users/all");
+      // console.log("     response.data: " + response.data);
+      setUsers(response.data);
+      setHasFetchedUsers(true);
     } catch (error) {
-      console.error("Error deleting all users: ", error);
+      console.error("Error fetching users:", error);
     }
   };
+  
+  useEffect(() => {
+    fetchUsers();
+  }, [])
 
-  const handleClickDeleteUsers = () => {
-    deleteUsers();
-  };
+  // Get online status for each user, via websocket:
+  useEffect(() => {
+    // console.log('     useEffects ...');
+    let unsubscribe: (() => void) | undefined;
+    // fetchUsers();
+    if (hasFetchedUsers) {
+      unsubscribe = getOnlineStatusUpdates(usersRef, setUsers);
+      // Cleanup function, returned from getOnlineStatuses()
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      }
+    }
+  }, [hasFetchedUsers]);
 
-  const handleClickPlaceholder = () => {};
 
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
     e.preventDefault();
     setSelectedUser(loginName);
     setShowMatchHistory(false);
   };
+
 
   return (
     <Container fluid className="h-100 w-100 container-max-width">
@@ -112,7 +126,7 @@ const UsersList: React.FC = () => {
         >
           {/* Button to trigger fetching the users */}
 
-          {displayList && ( // Only render the list if dislpayList is true
+          {displayList && ( // Only render the list if displayList is true
             <ListGroup className="list-users">
               <h4>USERS IN DATABASE:</h4>
               <ListGroup.Item className="column-titles">
@@ -165,7 +179,6 @@ const UsersList: React.FC = () => {
                     </a>
                   </ListGroup.Item>
                 ))}
-              {/* <button onClick={handleClickDeleteUsers}>Delete dummies</button> */}
             </ListGroup>
           )}
         </Col>
@@ -183,7 +196,7 @@ const UsersList: React.FC = () => {
               <br />
               <br />
               <br />
-              <span style={{ fontSize: "2em", paddingRight: "0.3em" }}>
+              <span style={{ fontSize: "2.5em", paddingRight: "0.3em" }}>
                 &larr;
               </span>
               <span style={{ fontSize: "1.5em" }}>
@@ -191,11 +204,11 @@ const UsersList: React.FC = () => {
               </span>
             </p>
           )}
-          <button onClick={handleInsertDataClick} className="button-custom">
+          <button onClick={insertDummyUsers} className="button-custom">
             Create dummies
           </button>
           &nbsp;&nbsp;
-          <button onClick={handleClickDeleteDummies} className="button-custom">
+          <button onClick={deleteDummies} className="button-custom">
             Delete dummies
           </button>
         </Col>

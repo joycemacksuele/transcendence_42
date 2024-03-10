@@ -7,17 +7,11 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-import {ChatType, RequestNewChatDto} from "./Utils/ChatUtils.tsx";
-import {chatSocket} from "./Utils/ClientSocket.tsx"
+import {ChatType, RequestNewChatDto} from "../Utils/ChatUtils.tsx";
+import {chatSocket} from "../Utils/ClientSocket.tsx"
 import {Alert} from "react-bootstrap";
 
-// type PropsHeader = {
-//     // recentChatList: RequestNewChatDto[];
-//     // setRecentChatList: (recentChatList: RequestNewChatDto[]) => void;
-// };
-
-// const NewChat: React.FC<PropsHeader> = ({ recentChatList, setRecentChatList }) => {
-const NewChat = () => {
+const NewGroupButton = () => {
     // const [errorMessage, setErrorMessage] = useState<string>("");
     const [errorGroupName, setErrorGroupName] = useState<string|null>(null);
     const [errorPassword, setErrorPassword] = useState<string|null>(null);
@@ -30,7 +24,7 @@ const NewChat = () => {
 
     const createGroupChat = () => {
         const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword};
-        console.log("[NewChat] createGroupChat called. requestNewChatDto:", requestNewChatDto);
+        console.log("[NewGroupButton] createGroupChat called. requestNewChatDto:", requestNewChatDto);
 
         chatSocket.emit("createChat", requestNewChatDto);
 
@@ -45,8 +39,8 @@ const NewChat = () => {
     };
 
     useEffect(() => {
-        console.log("[NewChat] inside useEffect -> socket connected? ", chatSocket.connected);
-        console.log("[NewChat] inside useEffect -> socket id: ", chatSocket.id);
+        console.log("[NewGroupButton] inside useEffect -> socket connected? ", chatSocket.connected);
+        console.log("[NewGroupButton] inside useEffect -> socket id: ", chatSocket.id);
         setErrorGroupName(null);
         setErrorPassword(null);
 
@@ -58,7 +52,7 @@ const NewChat = () => {
         });
 
         return () => {
-            console.log("[NewChat] Inside useEffect return function (NewChat Component was removed from DOM)");
+            console.log("[NewGroupButton] Inside useEffect return function (NewGroupButton Component was removed from DOM)");
         };
     }, []);
 
@@ -89,7 +83,7 @@ const NewChat = () => {
                                         aria-label="Default select example"
                                         className="mb-3"
                                         onChange={event=> {
-                                            console.log("[NewChat] chatType is set to: ", Number(event.target.value) as ChatType);
+                                            console.log("[NewGroupButton] chatType is set to: ", Number(event.target.value) as ChatType);
                                             setChatType(Number(event.target.value) as ChatType);
                                         }}
                                     >
@@ -159,4 +153,4 @@ const NewChat = () => {
     );
 };
 
-export default NewChat;
+export default NewGroupButton;
