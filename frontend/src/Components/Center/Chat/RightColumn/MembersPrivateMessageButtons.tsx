@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
-import { getCurrentUsername } from "../../Profile_page/DisplayOneUser/DisplayOneUser.tsx";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
 
 // Importing bootstrap and other modules
 import Row from "react-bootstrap/Row";
 import Stack from "react-bootstrap/Stack";
 import Button from "react-bootstrap/Button";
+import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
@@ -15,15 +15,27 @@ type PropsHeader = {
 const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
   const [intraName, setIntraName] = useState<string | null>();
 
+  const getIntraName = async () => {
+    return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
+      console.log('[MembersGroup] Current user intraName: ', response.data.username);
+      return response.data.username as string;
+    }).catch((error): null => {
+      console.error('[MembersGroup] Error getting current username: ', error);
+      return null;
+    });
+  }
+
+  // We want to get the current user intra name when the component is reloaded only (intraName will be declared again)
   useEffect(() => {
     const init = async () => {
       if (!intraName) {
-        const currUserIntraName = await getCurrentUsername();
+        const currUserIntraName = await getIntraName();
         setIntraName(currUserIntraName);
-        console.log("[MembersGroup] JOYCE intraName: ", intraName);
       }
-    };
-    init();
+    }
+    init().catch((error) => {
+      console.log("[MembersGroup] Error getting current user intra name: ", error);
+    });
   }, [intraName]);
 
   useEffect(() => {
