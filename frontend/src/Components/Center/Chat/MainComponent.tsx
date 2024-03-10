@@ -10,6 +10,8 @@ import MembersGroup from "./RightColumn/MembersGroup.tsx";
 import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
 
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -26,9 +28,33 @@ import Nav from 'react-bootstrap/Nav';
 
 const MainComponent = () => {
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
+    const [show, setShow] = useState(false);
     if (chatClicked) {
         console.log("[MainComponent] chatClicked: ", chatClicked);
     }
+
+    //added for the invite button
+
+    let invitee ='';
+
+    //notify backend that the user declined
+    const declineInvite = () => {
+        chatSocket?.emit('declineInvite');
+        setShow(false);
+        console.log("declined");
+    }
+    
+
+    //move user to game page
+    const acceptInvite = () => {
+        //socket?.emit('identify', player);
+        setShow(false);
+        console.log("accepted");
+        window.location.replace("/main_page/game");
+    }
+
+
+
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
     // useEffect without dependencies:
@@ -43,6 +69,14 @@ const MainComponent = () => {
             chatSocket.on("connect", () => {
                 console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
             });
+//invite button
+            chatSocket.on("inviteMessage",(message:string)=>{
+                console.log(`received string from backend :${message}`);
+                invitee = message;
+                setShow(true);
+            }
+    );
+//end invite button
             chatSocket.on("disconnect", (reason) => {
                 if (reason === "io server disconnect") {
                     console.log("[MainComponent] socket disconnected: ", reason);
@@ -149,6 +183,17 @@ const MainComponent = () => {
                 </Col>
 
             </Row>
+             <Modal show={show}>
+                    <Modal.Body>
+                        <p>{invitee} wants to invite you for a game</p>
+                        <Button variant="secondary" onClick={acceptInvite}>
+                          Accept invite 
+                        </Button>
+                        <Button variant="primary" onClick={declineInvite}>
+                           Reject invite
+                        </Button>
+                    </Modal.Body>
+                </Modal>
         </Container>
     );
 };
