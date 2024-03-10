@@ -54,8 +54,8 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
       {/* Members row */}
       <Row className="me-auto">
         <Stack gap={2}>
-          {chatClicked?.users &&
-            chatClicked?.users.map((member: string, mapStaticKey: number) => (
+          {chatClicked?.usersIntraName &&
+            chatClicked?.usersIntraName.map((memberIntraName: string, mapStaticKey: number) => (
               <ListGroup key={mapStaticKey} variant="flush">
                 <ListGroup.Item
                   ref={inputRef}
@@ -64,11 +64,11 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                   variant="light"
                   onClick={() => {
                     setShowMemberModal(true);
-                    setClickedMember(member);
+                    setClickedMember(memberIntraName);
                   }}
                 >
-                  {chatClicked?.mutedUsers.indexOf(member) == -1 &&
-                  chatClicked?.bannedUsers.indexOf(member) == -1 ? (
+                  {chatClicked?.mutedUsers.indexOf(memberIntraName) == -1 &&
+                  chatClicked?.bannedUsers.indexOf(memberIntraName) == -1 ? (
                     <Image
                       src={
                         import.meta.env.VITE_BACKEND + "/resources/member.png"
@@ -81,7 +81,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                     />
                   ) : (
                     <>
-                      {chatClicked?.mutedUsers.indexOf(member) != -1 && (
+                      {chatClicked?.mutedUsers.indexOf(memberIntraName) != -1 && (
                         <Image
                           src={
                             import.meta.env.VITE_BACKEND +
@@ -94,7 +94,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                           alt="chat"
                         />
                       )}
-                      {chatClicked?.bannedUsers.indexOf(member) != -1 && (
+                      {chatClicked?.bannedUsers.indexOf(memberIntraName) != -1 && (
                         <Image
                           src={
                             import.meta.env.VITE_BACKEND +
@@ -109,7 +109,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       )}
                     </>
                   )}
-                  {member}
+                  {chatClicked?.usersProfileName.at(mapStaticKey)}
                 </ListGroup.Item>
 
                 {/* Modal with buttons should not appear to the current user */}
