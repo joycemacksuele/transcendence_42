@@ -38,6 +38,7 @@ const MainComponent = () => {
     // - After every re-render with changed dependencies, React will first run the cleanup function with the old values
     // - Then run your setup function with the new values
     useEffect(() => {
+        setChatClicked(null);
         if (!chatSocket.connected) {
             chatSocket.connect();
             chatSocket.on("connect", () => {
@@ -139,12 +140,10 @@ const MainComponent = () => {
                     </Row>
                     {/* Members body */}
                     <Row className='h-100'>
-                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> &&
-                            <MembersPrivateMessageButtons chatClicked={chatClicked}/>
-                        }
-                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> &&
-                            <MembersGroupButtons chatClicked={chatClicked}/>
-                        }
+                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/>}
+                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessageButtons chatClicked={chatClicked}/>}
+                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/>}
+                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroupButtons chatClicked={chatClicked}/>}
                     </Row>
                 </Col>
 

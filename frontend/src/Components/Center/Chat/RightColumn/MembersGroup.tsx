@@ -21,9 +21,9 @@ type PropsHeader = {
 };
 
 const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
-    // if (chatClicked) {
-    //     console.log("[MembersGroup] chatClicked: ", chatClicked);
-    // }
+    if (chatClicked) {
+        console.log("[MembersGroup] chatClicked: ", chatClicked);
+    }
 
     const inputRef = useRef(null);
 
@@ -58,7 +58,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                 setIntraName(currUserIntraName);
             }
         }
-        init();
+        init().catch((error) => {
+            console.log("[MembersGroup] Error getting current user intra name: ", error);
+        });
     }, [intraName]);
 
     useEffect(() => {
@@ -114,7 +116,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                 {(chatClicked?.mutedUsers.indexOf(member) == -1 &&
                                     chatClicked?.bannedUsers.indexOf(member) == -1) ? (
                                     <Image
-                                        src={import.meta.env.VITE_BACKEND + "/resources/member.png"}
+                                        src={import.meta.env.VITE_BACKEND as string + "/resources/member.png"}
                                         className="me-1"
                                         // id="profileImage_tiny"
                                         // roundedCircle
@@ -125,7 +127,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     <>
                                         {/* Users' list (with pictos) = when we ARE muted */}
                                         {(chatClicked?.mutedUsers.indexOf(member) != -1) && <Image
-                                            src={import.meta.env.VITE_BACKEND + "/resources/member-muted.png"}
+                                            src={import.meta.env.VITE_BACKEND as string + "/resources/member-muted.png"}
                                             className="me-1"
                                             // id="profileImage_tiny"
                                             // roundedCircle
@@ -134,7 +136,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                         />}
                                         {/* Users' list (with pictos) = when we ARE banned */}
                                         {(chatClicked?.bannedUsers.indexOf(member) != -1) && <Image
-                                            src={import.meta.env.VITE_BACKEND + "/resources/member-banned.png"}
+                                            src={import.meta.env.VITE_BACKEND as string + "/resources/member-banned.png"}
                                             className="me-1"
                                             // id="profileImage_tiny"
                                             // roundedCircle

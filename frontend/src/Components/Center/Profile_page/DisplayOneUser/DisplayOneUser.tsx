@@ -11,6 +11,9 @@ import MatchHistory from "../MatchHistory.tsx";
 import GetPlayingStatus from "../GetPlayingStatus.tsx";
 import { getOnlineStatus } from "../getOnlineStatus.ts";
 import "../../../../css/Profile-users-list.css";
+import {AxiosResponse} from "axios";
+import * as string_decoder from "string_decoder";
+import * as querystring from "querystring";
 
 
 interface UserProps {
