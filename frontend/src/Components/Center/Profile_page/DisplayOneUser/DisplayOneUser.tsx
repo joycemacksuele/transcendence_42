@@ -9,8 +9,9 @@ import { ChatType, RequestNewChatDto } from "../../Chat/Utils/ChatUtils.tsx";
 import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
 import MatchHistory from "../MatchHistory.tsx";
 import GetPlayingStatus from "../GetPlayingStatus.tsx";
-import GetOnlineStatus from "../GetOnlineStatus.tsx";
+import { getOnlineStatus } from "../getOnlineStatus.ts";
 import "../../../../css/Profile-users-list.css";
+
 
 interface UserProps {
   id: number;
@@ -48,21 +49,18 @@ const DisplayOneUser: React.FC<{
   const [myId, setMyId] = useState<number | undefined>();
   const [showButtons, setShowButtons] = useState(true);
   const isUserPlaying = GetPlayingStatus(loginName);
-  const isUserOnline = GetOnlineStatus(loginName);
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
+    
+
+  const isUserOnline = getOnlineStatus(loginName);
 
 
   // if the current user is displayed, do not show the buttons
   useEffect(() => {
     const compareUserNames = async () => {
       const currUsername = await getCurrentUsername();
-      console.log(
-        "=================== compare: ",
-        currUsername,
-        ", ",
-        loginName
-      );
+      // console.log("=================== compare: ", currUsername, ", ", loginName);
       if (currUsername === loginName) {
         setShowButtons(false); // do not show buttons
       } else {
@@ -72,6 +70,7 @@ const DisplayOneUser: React.FC<{
     compareUserNames();
   }, [loginName]);
   const buttonsVisible = showButtons ? {} : { display: "none" };
+
 
   useEffect(() => {
     if (!myId) return; // GUARD CLAUSE: wait until myID is available
@@ -127,6 +126,7 @@ const DisplayOneUser: React.FC<{
     fetchUserData();
   }, [loginName, myId]);
 
+  
   useEffect(() => {
     const fetchMyData = async () => {
       try {

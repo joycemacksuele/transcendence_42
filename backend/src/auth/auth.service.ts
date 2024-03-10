@@ -282,7 +282,8 @@ export class AuthService {
 				} else
 					cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
 			}
-			request.cookies('Set-Cookie', cookieToken)
+			// request.cookies('Set-Cookie', cookieToken)
+			response.append('Set-Cookie', cookieToken) // jaka, was it always request here??
 			this.logger.log('Replaced token in header');
 			return true;
 
