@@ -96,6 +96,10 @@ export class PonggameGateway
       
       this._socketIdUserId.set(client.id, userId);
       this._userIdSocketId.set(userId, client.id);
+      
+      // added Jaka:
+      this.emitOnlineStatuses();
+
       const matchId = this.ponggameService.getMatchId(userId);
       this.logger.log(`UserId found : ${userId}`);
       this.logger.log(`Match Id ${matchId}`);
@@ -123,6 +127,9 @@ export class PonggameGateway
     );
     this._userIdSocketId.delete(this._socketIdUserId.get(client.id));
     this._socketIdUserId.delete(client.id);
+
+    // Added Jaka:
+    this.emitOnlineStatuses();
   }
 
 @SubscribeMessage('joinGame')
@@ -220,7 +227,6 @@ export class PonggameGateway
   }
   
   
-  
   // ADDED JAKA /////////////////////////////////////
   //  If possible, here I would like to check all currently played matches and check if this
   //  username/userId is in any of current matches 
@@ -234,13 +240,22 @@ export class PonggameGateway
       client.emit('responsePlayingStatus', { isPlaying })
     }
 
-    // ADDED JAKA
-    @SubscribeMessage('requestOnlineStatus')
-    handleRequestOnlineStatus(
-      @MessageBody() loginName: string,
-      @ConnectedSocket() client: Socket) {
-        const isOnline = this._userIdSocketId.has(loginName);
-        client.emit('responseOnlineStatus', { isOnline });
-    }
+
+  // ADDED JAKA: single user's status
+  @SubscribeMessage('requestOnlineStatus')
+  handleRequestOnlineStatus(
+    @MessageBody() loginName: string,
+    @ConnectedSocket() client: Socket) {
+      const isOnline = this._userIdSocketId.has(loginName);
+      client.emit('responseOnlineStatus', { isOnline });
+  }
+
+  // Added Jaka:
+  // This is called inside handleConnection() and handleDisconnect(),
+  // after each change of any user login status
+  private emitOnlineStatuses() {
+    const onlineUsersIds = Array.from(this._userIdSocketId.keys());
+    this.server.emit('onlineStatusUpdates', onlineUsersIds);
+  }
 
 }

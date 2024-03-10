@@ -30,11 +30,11 @@ const Header: React.FC = () => {
 	// Logging out button: 
 	//      The path '/logout' starts the component <LogoutPage>, there it goes to backend /auth/logout,
 	//      After returning from backend, it navigates to '/' LoginPage        
-	const navigate = useNavigate();
-	const handleLogoutClick = () => {
-		console.log('LOGOUT: click navigate("/logout")');
-		navigate('/logout');
-	}
+	// const navigate = useNavigate();
+	// const handleLogoutClick = () => {
+	// 	console.log('LOGOUT: click navigate("/logout")');
+	// 	navigate('/logout');
+	// }
 
 	const [showModal, setShowModal] = useState(false);
 	const toggleModal = () => setShowModal(!showModal);
@@ -147,19 +147,17 @@ const Header: React.FC = () => {
 								> Game
 							</NavLink>
 						</Nav.Item>
-					</Nav>
-				</Col>
+					
 
 				{/* Logout */}
-				<Col className='col-md-1'>
-					<Nav className="justify-content-end">
-						<Button
-							// onSelect={() => logout()}
-							variant="outline-warning"
-							onClick={ handleLogoutClick }
-						>
-							Logout
-						</Button>
+						<Nav.Item> 
+							<NavLink
+								to="/logout"
+								className={({ isActive }) => isActive ? "nav-link active" : "btn btn-outline-warning"}
+							>
+								Logout
+							</NavLink>
+						</Nav.Item>
 					</Nav>
 				</Col>
 

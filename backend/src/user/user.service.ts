@@ -147,6 +147,20 @@ export class UserService {
   }
 
 
+  // async getOnlineStatus(loginName: string) {
+
+  //   const optionsObject: FindOneOptions<UserEntity> = { where: { loginName }  };
+ 
+  //   const user = await this.userRepository.findOne(optionsObject);
+    
+  //   if (user) {
+  //     return user.onlineStatus;
+  //   } else {
+  //     throw new NotFoundException(`User with login name ${loginName} not found`);
+  //   }
+  // }
+
+
   // async findById(id: number): Promise<UserEntity | undefined> {
   //   this.logger.log('getUserById');
   //   return this.userRepository.findById(id);

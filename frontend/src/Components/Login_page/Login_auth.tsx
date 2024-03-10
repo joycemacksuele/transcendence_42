@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Row, Col } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
-import axiosInstance from '../Other/AxiosInstance';
-import GetOnlineStatus from '../Center/Profile_page/GetOnlineStatus';
+// import axiosInstance from '../Other/AxiosInstance';
+// import GetOnlineStatus from '../Center/Profile_page/getOnlineStatus';
 import { checkIfLoggedIn } from './checkIfLoggedIn';
 
 const LoginPage: React.FC = () => {
@@ -31,53 +31,9 @@ const LoginPage: React.FC = () => {
 	}
 
 	const handleClickAuth = () => {
-
 		console.log('Go from login page to intra42 login ...');
 		window.location.assign(import.meta.env.VITE_BACKEND + "/auth/login");
 	};
-	
-	// useEffect(() => {
-	// 	const urlParams = new URLSearchParams(window.location.search);
-	// 	const code = urlParams.get('code');
-	// 	console.log('Jaka, B) start useEffect() ...', code);	
-		
-	// 	if (code) {
-
-	// 		axios
-	// 			// .get(`http://localhost:3001/auth/token?code=${code}`)
-	// 			.get(`http://localhost:3001/auth/login`)
-	// 			//   .then((response) => setResponse(response.data))
-	// 			// .then(response => response.data())
-	// 			.then(response => {
-	// 				console.log(response);
-	// 				const userData = response.data;
-	// 				console.log(userData);
-	// 				// JAKA, HERE SAVE USER DATA TO LOCAL STORAGE
-	// 				// ...
-	// 				// THIS DOES NOT COME TO BROWSER CONSOLE ...LoginPage.
-	// 				console.log('Jaka, Should redirect to main page ...');
-					
-	// 				window.location.href = 'http://localhost:3000/main_page';
-	// 			})
-				
-	// 			.catch(error => {
-	// 				console.error('An error occured', error);
-	// 				setResponse('An error occured');
-	// 			});
-	// 		}
-			
-	// 		console.log('Jaka, B) ...');
-	// 	}, []);
-		
-	// 	console.log('Jaka, C) ...');
-
-	// const handleClickTest00 = () => {
-	// 	axios
-	// 	  .get('http://localhost:3001/example') // This goes to nest, example controller....
-	// 	  .then((response00) => setResponse00(response00.data))
-	// 	  .catch((err) => console.error(err));
-	//   };
-
   
 	return (
 		isLoggedIn ? <Navigate to="/main_page/profile" />
