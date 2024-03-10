@@ -150,8 +150,6 @@ export class UserController {
 		}
 	}
 
-
-	// GET CURRENT USER NAME
 	@Get('get-current-username')
 	async getCurrentUserName(@Req() req: Request) {
 		try {
@@ -164,8 +162,18 @@ export class UserController {
 		}
 	}
 
+	@Get('get-current-intra-name')
+	async getCurrentUserIntraName(@Req() req: Request) {
+		try {
+			const response = await this.authService.extractUserdataFromToken(req);
+			const currUser = await this.userService.getUserByLoginName(response.username);
+			//this.logger.log("======================== username: ", response.username)
+			return { username: currUser.loginName };
+		} catch (error) {
+			console.error('Error fetching current username:', error);
+		}
+	}
 
-	// DELETE DUMMIES
 	@Delete()
 	async deleteDummies(): Promise<void> {
 		this.logger.log('DELETE All Dummies');
