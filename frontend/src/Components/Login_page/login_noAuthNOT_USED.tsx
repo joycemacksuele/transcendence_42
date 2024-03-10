@@ -1,7 +1,7 @@
 // import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useHistory hook
 
-const LoginPage = () => {
+const LoginPageNoAuth = () => {
   const navigate = useNavigate(); // Initialize the useHistory hook
   
   const handleLogin = () => {
@@ -17,4 +17,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default LoginPageNoAuth;

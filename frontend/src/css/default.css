@@ -6,7 +6,7 @@
 
   color-scheme: dark;
   /* color: rgba(218, 17, 17, 0.87); */
-  /* background-color: #242424; */
+  /* background-color:  */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,12 +22,23 @@
   box-sizing: border-box;
 }
 
-body {
+html, body, #root {
+  height: 100%;
   margin: 0;
+  padding: 0;
+}
+
+body {
   /* display: flex; */
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-family: 'Fredoka', sans-serif;
+  /* font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100; */
 }
 
 .container-max-width {
@@ -280,6 +291,11 @@ button.button_default:focus-visible {
 .column-bckg {
   overflow: auto; /* Change to 'auto' to allow scrolling if content is too large */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+
+i {
+  padding: 0 10px 0 10px;
 }
 
 /* BROWSER'S OWN SETTINGS */

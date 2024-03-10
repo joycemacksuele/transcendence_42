@@ -13,4 +13,7 @@ export class ResponseMessageChatDto {
 
     @IsString()
     creator: string;
+
+    @IsNumber()
+    creator_id: number;
 }

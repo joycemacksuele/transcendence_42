@@ -1,28 +1,50 @@
-import React, {useContext, useEffect, useState} from "react";
-import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
-import {chatSocket} from "./Utils/ClientSocket.tsx"
+import React, {useEffect, useState} from "react";
+import {ChatType, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
+import {chatSocket} from "../Utils/ClientSocket.tsx"
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
 import Stack from 'react-bootstrap/Stack';
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
-import {CurrentUserContext, CurrUserData} from "../Profile_page/contextCurrentUser.tsx";
+import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 type PropsHeader = {
-    setChatClicked: (chatClicked: ResponseNewChatDto) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
 };
 
-const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
+const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
 
     const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
 
-    const currUserData = useContext(CurrentUserContext) as CurrUserData;
-    const intraName = currUserData.loginName === undefined ? "your friend" : currUserData.loginName;
+    // const currUserData = useContext(CurrentUserContext) as CurrUserData;
+    // const intraName = currUserData.profileName === undefined ? "your friend" : currUserData.profileName;
+    const [intraName, setIntraName] = useState<string | null>(null);
+
+    const getIntraName = async () => {
+        return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
+            console.log('[MembersGroup] Current user intraName: ', response.data.username);
+            return response.data.username as string;
+        }).catch((error): null => {
+            console.error('[MembersGroup] Error getting current username: ', error);
+            return null;
+        });
+    }
+
+    // We want to get the current user intra name when the component is reloaded only (intraName will be declared again)
+    useEffect(() => {
+        const init = async () => {
+            if (!intraName) {
+                const currUserIntraName = await getIntraName();
+                setIntraName(currUserIntraName);
+            }
+        }
+        init();
+    }, [intraName]);
 
     useEffect(() => {
-        console.log("[ChatRecent] inside useEffect -> socket connected? ", chatSocket.connected);
-        console.log("[ChatRecent] inside useEffect -> socket id: ", chatSocket.id);
+        console.log("[MyChats] inside useEffect -> socket connected? ", chatSocket.connected);
+        console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
 
         chatSocket.emit("getChats");
         // TODO MOVE THIS .on FROM HERE TO A userEffect with socket dependency?? so it is not subscribing all the time??
@@ -35,7 +57,8 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
         });
 
         return () => {
-            console.log("[ChatRecent] Inside useEffect return function (ChatRecent Component was removed from DOM)");
+            console.log("[MyChats] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
+            setChatClicked(null);
         };
     }, []);
 
@@ -49,14 +72,14 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
                     {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
                         <>
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
-                            {chat.users && chat.users.indexOf(intraName) != -1 || chat.type == ChatType.PRIVATE && <ListGroup
+                            {((intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) != -1) || chat.type == ChatType.PRIVATE) && <ListGroup
                                 key={key}
                                 className="hidden"
                             >
                             </ListGroup>}
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
-                            {chat.users && chat.users.indexOf(intraName) != -1 && <ListGroup
+                            {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) != -1) && <ListGroup
                                 key={key}
                                 variant="flush"
                             >
@@ -95,4 +118,4 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
     );
 };
 
-export default ChatRecent;
+export default MyChats;

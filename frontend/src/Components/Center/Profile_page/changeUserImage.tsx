@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
-import axios from "axios";
 import axiosInstance from "../../Other/AxiosInstance";
 import { CurrUserData, CurrentUserContext } from "./contextCurrentUser";
 import { Form, Button, FormControl, Alert, InputGroup } from "react-bootstrap";
 
-axios.defaults.withCredentials = true;
+// import axios from "axios";
+// axios.defaults.withCredentials = true;
 
 /*
 	React.ChangeEvent<>

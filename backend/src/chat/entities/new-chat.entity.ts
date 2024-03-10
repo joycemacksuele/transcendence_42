@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany, ManyToOne, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany, ManyToOne, Unique} from 'typeorm';
 import { ChatType } from '../utils/chat-utils';
 import { UserEntity } from 'src/user/user.entity';
 import { ChatMessageEntity } from "./chat-message.entity";
-import { MutedEntity } from "./muted.entity";
+import { UsersCanChatEntity } from "./users-can-chat.entity";
 
 // Read: https://orkhan.gitbook.io/typeorm/docs/entities#column-types-for-postgres
 // Entity reflects exactly one table in the database
@@ -35,7 +35,9 @@ export class NewChatEntity {
     password: string;
 
     // the creator can kick, ban, mute anyone on the channel (even admins)
-    @ManyToOne(() => UserEntity, (user) => user.roomsCreated)
+    @ManyToOne(() => UserEntity, (user) => user.roomsCreated, {
+		onDelete: 'CASCADE',
+	})
     creator: UserEntity;
 
     // when the group is created, the admin is the owner (creator)
@@ -50,15 +52,19 @@ export class NewChatEntity {
     @JoinTable()
     users: UserEntity[];
 
-    @OneToMany(() => MutedEntity, (muted) => muted.chat)
+    @OneToMany(() => UsersCanChatEntity, (usersCanChat) => usersCanChat.chat, {
+        onDelete: 'CASCADE'
+    })
     @JoinTable()
-    usersCanChat: MutedEntity[];
+    usersCanChat: UsersCanChatEntity[];
 
     @ManyToMany(() => UserEntity)
     @JoinTable()
     bannedUsers: UserEntity[];
 
-    @OneToMany(() => ChatMessageEntity, (chatMessage) => chatMessage.chatbox)
+    @OneToMany(() => ChatMessageEntity, (chatMessage) => chatMessage.chatbox, {
+        onDelete: 'CASCADE'
+    })
     @JoinTable()
     messages: ChatMessageEntity[];
 }

@@ -1,15 +1,14 @@
 import {useEffect, useState} from 'react';
-import ChatRecent from "./ChatRecent";
-import ChatGroups from "./ChatGroups";
-import NewChat from "./NewChat";
-import Messages from "./Messages";
-import MembersPrivateMessage from "./MembersPrivateMessage";
-import MembersGroup from "./MembersGroup";
-import {ChatType, ResponseNewChatDto, ResponseMessageChatDto} from "./Utils/ChatUtils.tsx";
+import MyChats from "./LeftColumn/MyChats.tsx";
+import Channels from "./LeftColumn/Channels.tsx";
+import NewGroupButton from "./LeftColumn/NewGroupButton.tsx";
+import Messages from "./MiddleColumn/Messages.tsx";
+import MembersPrivateMessage from "./RightColumn/MembersPrivateMessage.tsx";
+import MembersGroupButtons from "./RightColumn/MembersGroupButtons.tsx";
+import MembersPrivateMessageButtons from "./RightColumn/MembersPrivateMessageButtons.tsx";
+import MembersGroup from "./RightColumn/MembersGroup.tsx";
+import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
-
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -24,44 +23,11 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
-import axiosInstance from "../../Other/AxiosInstance.tsx";
 
-const getIntraName = async () => {
-    return axiosInstance.get('/users/get-current-username').then((response): string => {
-        return response.data.username;
-    }).catch((error): null => {
-        console.error('[MembersGroup] Error getting current username: ', error);
-        return null;
-    });
-}
-
-const Chat = () => {
-    //added for the invite button
-    const [show, setShow] = useState(false);
-
-    let invitee ='';
-
-    //notify backend that the user declined
-    const declineInvite = () => {
-        chatSocket?.emit('declineInvite');
-        setShow(false);
-        console.log("declined");
-    }
-    
-
-    //move user to game page
-    const acceptInvite = () => {
-        //socket?.emit('identify', player);
-        setShow(false);
-        console.log("accepted");
-        window.location.replace("/main_page/game");
-    }
-
-    //invite button
-
+const MainComponent = () => {
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
     if (chatClicked) {
-        console.log("[Chat] chatClicked: ", chatClicked);
+        console.log("[MainComponent] chatClicked: ", chatClicked);
     }
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
@@ -75,39 +41,27 @@ const Chat = () => {
         if (!chatSocket.connected) {
             chatSocket.connect();
             chatSocket.on("connect", () => {
-                console.log("[Chat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+                console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
             });
-
-//invite button
-            chatSocket.on("inviteMessage",(message:string)=>{
-                console.log(`received string from backend :${message}`);
-                invitee = message;
-                setShow(true);
-            }
-    );
-//end invite button
-
-
-
-
             chatSocket.on("disconnect", (reason) => {
                 if (reason === "io server disconnect") {
-                    console.log("[Chat] socket disconnected: ", reason);
+                    console.log("[MainComponent] socket disconnected: ", reason);
                     // the disconnection was initiated by the server, you need to reconnect manually
                     chatSocket.connect();
                 }
                 // else the socket will automatically try to reconnect
             });
         } else {
-            console.log("[Chat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+            console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
         }
 
         return () => {
-        //     console.log(`[Chat] socket disconnected AND removeAllListeners`);
-        //     // socket.removeAllListeners();
+            console.log("[MainComponent] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
+            setChatClicked(null);
             if (chatSocket.connected) {
+                chatSocket.removeAllListeners();
                 chatSocket.disconnect();
-                console.log("[Chat] Inside useEffect return function (Chat Component was removed from DOM): Chat socket id: ", chatSocket.id, " was disconnected");
+                console.log("[MainComponent] MainComponent socket was disconnected and all listeners were removed");
             }
         };
     }, []);
@@ -138,27 +92,27 @@ const Chat = () => {
                             onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                <Nav.Link eventKey="recent">Recent</Nav.Link>
+                                <Nav.Link eventKey="recent">My chats</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="groups">Groups</Nav.Link>
+                                <Nav.Link eventKey="groups">Channels</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Row>
                     {/* Recent or Group body */}
                     <Row className='h-100'>
                         {activeContentLeft === 'recent' &&
-                            <ChatRecent setChatClicked={setChatClicked} />
+                            <MyChats setChatClicked={setChatClicked} />
                         }
                         {activeContentLeft === 'groups' &&
-                            <ChatGroups setChatClicked={setChatClicked} /> &&
-                            /* NewChat Button */
-                            <NewChat/>
+                            <Channels setChatClicked={setChatClicked} /> &&
+                            /* NewGroupButton Button */
+                            <NewGroupButton/>
                         }
                     </Row>
                 </Col>
 
-                {/* Chat column */}
+                {/* MainComponent column */}
                 <Col className='bg-light col-md-6'>
                     <Messages chatClicked={chatClicked} />
                 </Col>
@@ -175,32 +129,28 @@ const Chat = () => {
                             // onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                <Nav.Link href="members" disabled>{chatClicked?.name} members</Nav.Link>
+                                {chatClicked?.type == ChatType.PUBLIC ? (
+                                    <Nav.Link href="members" disabled>{chatClicked?.name}<b> members</b></Nav.Link>
+                                ) : (
+                                    <Nav.Link href="members" disabled> members</Nav.Link>
+                                )}
                             </Nav.Item>
                         </Nav>
                     </Row>
                     {/* Members body */}
                     <Row className='h-100'>
-                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
-                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> }
+                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> &&
+                            <MembersPrivateMessageButtons chatClicked={chatClicked}/>
+                        }
+                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> &&
+                            <MembersGroupButtons chatClicked={chatClicked}/>
+                        }
                     </Row>
                 </Col>
 
             </Row>
-                <Modal show={show}>
-                    <Modal.Body>
-                        <p>{invitee} wants to invite you for a game</p>
-                        <Button variant="secondary" onClick={acceptInvite}>
-                          Accept invite 
-                        </Button>
-                        <Button variant="primary" onClick={declineInvite}>
-                           Reject invite
-                        </Button>
-                    </Modal.Body>
-                </Modal>
         </Container>
-
     );
 };
 
-export default Chat;
+export default MainComponent;

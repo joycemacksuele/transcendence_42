@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Res, Logger } from "@nestjs/common";
+import { Response } from "express";
 import { MatchService } from "./match.service";
 import { MatchDto } from "./match.dto";
 import { UserService } from "src/user/user.service";
@@ -37,4 +38,21 @@ export class MatchController {
 		return await this.matchService.getMatchHistoryByUserId(user.id);
 		// return await this.matchService.getMatchHistoryByLoginName(loginName);
 	}
+
+
+	// Todo: To be removed (jaka):
+	// 		Prevent creating more dummy matches, if they already exists.
+	//		Assuming that there is always a dummy with id === 2 
+	//		If any match already exist, no matter which ID -> exit
+	@Get('/check-if-dummy-matches-exist')
+		//   WITH A Promise<>
+	// async checkIfDummyMatchesExists(): Promise<{ matchExists: number }>  {
+		// WITH A @Res
+		async checkIfDummyMatchesExists(@Res() res: Response)  {
+		const dummy_match = await this.matchService.getMatchHistoryByUserId(2);
+		// console.log('dummyMatch.length:', dummy_match.length)
+
+		res.json({ matchExists: dummy_match.length > 0 });
+	}
+
 }
