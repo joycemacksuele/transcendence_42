@@ -20,7 +20,8 @@ export interface ResponseNewChatDto {
     type: ChatType;
     creator: string;
     admins: string[];
-    users: string[];
+    usersIntraName: string[];
+    usersProfileName: string[];
     mutedUsers: string[];
     bannedUsers: string[];
     messages: ResponseMessageChatDto[] | null;

@@ -206,7 +206,12 @@ export class ChatService {
     await this.chatRepository.getOneChat(chatId).then(async (foundChatEntityToLeave: NewChatEntity) => {
       const userToDelete = await this.userService.getUserByLoginName(intraName);
       // Now we have the entity to update the users' array
-      return await this.chatRepository.deleteUserFromChat(foundChatEntityToLeave, userToDelete);
+      await this.chatRepository.deleteUserFromChat(foundChatEntityToLeave, userToDelete);
+
+      // Now we can delete this user from the UsersCanChat entity
+      await this.usersCanChatRepository.deleteUserFromUsersCanChatEntity(foundChatEntityToLeave, userToDelete);
+
+      // Now we can delete this user from the Admin list
       // TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT
     }).catch((err: string) => {
       throw new Error('[leaveChat] Could not delete user from chat -> err: ' + err);
@@ -225,8 +230,6 @@ export class ChatService {
   }
 
   deleteChat(chatId: number) {
-    // TODO Also delete it from the other tables as users_can_chat_entity and chat_message_entity?? or cascade works?
-
     // Then we can delete the chat row form the new_chat_entity
     return this.chatRepository.delete(chatId);
 

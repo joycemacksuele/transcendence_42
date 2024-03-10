@@ -33,7 +33,12 @@ export class ResponseNewChatDto {
     @IsArray()
     @ValidateNested({ each: true })
     @ArrayMinSize(2)
-    users: string[];
+    usersIntraName: string[];
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @ArrayMinSize(2)
+    usersProfileName: string[];
 
     @IsArray()
     @ValidateNested({ each: true })
