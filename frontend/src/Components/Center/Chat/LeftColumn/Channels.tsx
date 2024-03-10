@@ -56,7 +56,7 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
 
         return () => {
             console.log("[Channels] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
-            // setChatClicked(null);
+            setChatClicked(null);
         };
     }, []);
 
@@ -73,7 +73,7 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
                             {/* If chat is private we don't show it in this list */}
                             {chat.type == ChatType.PRIVATE &&
                                 <ListGroup
-                                    key={key + 1}
+                                    key={key + 100}
                                     className="hidden"
                                 >
                                 </ListGroup>
