@@ -6,7 +6,7 @@
 
   color-scheme: dark;
   /* color: rgba(218, 17, 17, 0.87); */
-  /* background-color: #242424; */
+  /* background-color:  */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,8 +22,13 @@
   box-sizing: border-box;
 }
 
-body {
+html, body, #root {
+  height: 100%;
   margin: 0;
+  padding: 0;
+}
+
+body {
   /* display: flex; */
   place-items: center;
   min-width: 320px;
