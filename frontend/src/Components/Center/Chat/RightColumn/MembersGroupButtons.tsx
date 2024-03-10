@@ -19,6 +19,9 @@ type PropsHeader = {
 };
 
 const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
+    if (chatClicked) {
+        console.log("[MembersGroupButtons] chatClicked: ", chatClicked);
+    }
 
     const [intraName, setIntraName] = useState<string | null>(null);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -44,6 +47,7 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
         const init = async () => {
             if (!intraName) {
                 const currUserIntraName = await getIntraName();
+                console.log("[MembersGroup] currUserIntraName: ", currUserIntraName);
                 setIntraName(currUserIntraName);
             }
         }
@@ -64,7 +68,9 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
     // We want to fetch all users every time we change goFetchUsers, that is why this useEffect depends on it
     useEffect(() => {
         console.log("[MembersGroup] inside useEffect -> will fetch all users in the database");
-        getAllUsers();
+        getAllUsers().catch((error): undefined => {
+            console.error('[MembersGroup] Error retrieving all users: ', error);
+        });
     }, [goFetchUsers]);
 
     useEffect(() => {
