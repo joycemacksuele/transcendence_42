@@ -50,7 +50,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     };
 
     const getIntraName = async () => {
-        return await axiosInstance.get('/users/get-current-username').then((response): string => {
+        return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
             console.log('[MembersGroup] Current user intraName: ', response.data.username);
             return response.data.username as string;
         }).catch((error): null => {
@@ -133,7 +133,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
             {/* Members row */}
             <Row className="me-auto">
                 <Stack gap={2}>
-                    {chatClicked?.users && chatClicked?.users.map((member: string, mapStaticKey: number) => (
+                    {chatClicked?.usersIntraName && chatClicked?.usersIntraName.map((member: string, mapStaticKey: number) => (
                         <ListGroup
                             key={mapStaticKey}
                             variant="flush"
@@ -286,12 +286,12 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
             </Row>
 
             {/* Group Buttons row */}
-            {(chatClicked?.users && intraName) &&
+            {(chatClicked?.usersIntraName && intraName) &&
                 <Row className="h-20 align-items-bottom">
                     <Stack gap={2} className="align-self-center">
 
                         {/* Add users = when we ARE members of the chat + when we ARE admin */}
-                        {(chatClicked?.users.indexOf(intraName) != -1 &&
+                        {(chatClicked?.usersIntraName.indexOf(intraName) != -1 &&
                             chatClicked?.admins.indexOf(intraName) != -1) && (
                             <>
                                 <Button
@@ -325,8 +325,11 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                         type="checkbox"
                                                         id={"inline-checkbox-" + mapStaticKey}
                                                         onClick={() => {
-                                                            {/* Add users to chat = when user is NOT banned */}
-                                                            if (chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1) {
+                                                            {/* Add users to chat = when user is NOT banned OR is NOT current user */}
+                                                            console.log("JOYCE currentChatUser.loginName: ", currentChatUser.loginName);
+                                                            console.log("JOYCE intraName: ", intraName);
+
+                                                            if (chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1 && currentChatUser.loginName != intraName) {
                                                                 setUsersToBeAddedToChat([...usersToBeAddedToChat, currentChatUser.loginName]);
                                                             }
                                                         }}
@@ -430,7 +433,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                         )}
 
                         {/* Leave Group = when we ARE a member */}
-                        {chatClicked?.users.indexOf(intraName) != -1 && (
+                        {chatClicked?.usersIntraName.indexOf(intraName) != -1 && (
                             <Button
                                 variant="warning"
                                 onClick={leaveGroupChat}
@@ -440,7 +443,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                         )}
 
                         {/* Join group = when we are NOT a member + chat is NOT PROTECTED + we are NOT banned */}
-                        {(chatClicked?.users.indexOf(intraName) == -1 &&
+                        {(chatClicked?.usersIntraName.indexOf(intraName) == -1 &&
                             chatClicked?.type != ChatType.PROTECTED &&
                             chatClicked?.bannedUsers.indexOf(intraName) == -1) && (
                             <Button
@@ -452,7 +455,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                         )}
 
                         {/* Join group = when we are NOT a member + chat is PROTECTED + we are NOT banned */}
-                        {(chatClicked?.users.indexOf(intraName) == -1 &&
+                        {(chatClicked?.usersIntraName.indexOf(intraName) == -1 &&
                             chatClicked?.type == ChatType.PROTECTED &&
                             chatClicked?.bannedUsers.indexOf(intraName) == -1) && (
                             <>
