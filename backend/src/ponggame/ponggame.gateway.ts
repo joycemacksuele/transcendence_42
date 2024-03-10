@@ -133,6 +133,7 @@ try {
 
   @SubscribeMessage('gamepage')
   gamepage(@ConnectedSocket() client: Socket){
+    console.log(">>>>>>>>>>user on gamepage identified<<<<<<<<<<<<<<<<<<<<");
     client.data.gamepage = true;
     const userId = this._socketIdUserId.get(client.id);
     const matchId = this.ponggameService.getMatchId(userId);
