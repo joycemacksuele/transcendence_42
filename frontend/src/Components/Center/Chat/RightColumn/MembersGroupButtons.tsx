@@ -47,7 +47,9 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                 setIntraName(currUserIntraName);
             }
         }
-        init();
+        init().catch((error) => {
+            console.log("[MembersGroup] Error getting current user intra name: ", error);
+        });
     }, [intraName]);
 
     const getAllUsers = async () => {

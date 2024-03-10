@@ -39,7 +39,9 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
                 setIntraName(currUserIntraName);
             }
         }
-        init();
+        init().catch((error) => {
+            console.log("[MembersGroup] Error getting current user intra name: ", error);
+        });
     }, [intraName]);
 
     useEffect(() => {
@@ -58,7 +60,7 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
 
         return () => {
             console.log("[MyChats] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
-            setChatClicked(null);
+            // setChatClicked(null);
         };
     }, []);
 
@@ -90,19 +92,19 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
                                     onClick={() => setChatClicked(chat)}
                                 >
                                     {chat.type == ChatType.PRIVATE && <Image
-                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-private.png"}
+                                        src={import.meta.env.VITE_BACKEND as string + "/resources/chat-private.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
                                     {chat.type == ChatType.PUBLIC && <Image
-                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-public.png"}
+                                        src={import.meta.env.VITE_BACKEND as string + "/resources/chat-public.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
                                     />}
                                     {chat.type == ChatType.PROTECTED && <Image
-                                        src={import.meta.env.VITE_BACKEND + "/resources/chat-protected.png"}
+                                        src={import.meta.env.VITE_BACKEND as string + "/resources/chat-protected.png"}
                                         className="me-1"
                                         width={30}
                                         alt="chat"
