@@ -35,7 +35,7 @@ const UsersList: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
   
-  console.log('USERS LIST');
+  // console.log('USERS LIST');
 
   // The 'users' need to be used in a Referrence (useRef), in order to re-render each time
   // when any online status change is detected
@@ -72,10 +72,10 @@ const UsersList: React.FC = () => {
 
 
   const fetchUsers = async () => {
-    console.log('      fetchUsers');
+    // console.log('      fetchUsers');
     try {
       const response = await axiosInstance.get<User[]>("/users/all");
-      console.log("     response.data: " + response.data);
+      // console.log("     response.data: " + response.data);
       setUsers(response.data);
       setHasFetchedUsers(true);
     } catch (error) {
@@ -89,7 +89,7 @@ const UsersList: React.FC = () => {
 
   // Get online status for each user, via websocket:
   useEffect(() => {
-    console.log('     useEffects ...');
+    // console.log('     useEffects ...');
     let unsubscribe: (() => void) | undefined;
     // fetchUsers();
     if (hasFetchedUsers) {

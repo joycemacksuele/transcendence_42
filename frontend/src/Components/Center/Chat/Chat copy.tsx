@@ -7,6 +7,7 @@ import MembersPrivateMessage from "./MembersPrivateMessage";
 import MembersGroup from "./MembersGroup";
 import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
+import GameSelection from "../Game/GameSelection.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -21,8 +22,19 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
+import axiosInstance from "../../Other/AxiosInstance.tsx";
+
+export const getIntraName = async () => {
+    return axiosInstance.get('/users/get-current-username').then((response): string => {
+        return response.data.username;
+    }).catch((error): null => {
+        console.error('[MembersGroup] Error getting current username: ', error);
+        return null;
+    });
+}
 
 const Chat = () => {
+
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
     if (chatClicked) {
         console.log("[Chat] chatClicked: ", chatClicked);
@@ -72,14 +84,14 @@ const Chat = () => {
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
-        <Container className='h-75' fluid>
+        <Container className='d-flex h-100 w-100' fluid>
             {/* I still don't understand why we need this Row here, but it is not working without it*/}
-            <Row className='chat-page'>
-
+            <Row className='chat-page flex-row w-100'>
+                
                 {/* Recent + Groups column */}
                 <Col className='col-md-3'>
                     {/* Recent + Groups header */}
-                    <Row className='h-10'>
+                    <Row className='left-column-header h-10'>
                         <Nav
                             className="border-bottom p-0"
                             activeKey="recent"
@@ -95,18 +107,25 @@ const Chat = () => {
                             </Nav.Item>
                         </Nav>
                     </Row>
-                    {/* Recent or Group body */}
-                    <Row className='h-100'>
-                        {activeContentLeft === 'recent' &&
-                            <ChatRecent setChatClicked={setChatClicked} />
-                        }
-                        {activeContentLeft === 'groups' &&
-                            <ChatGroups setChatClicked={setChatClicked} /> &&
-                            /* NewChat Button */
-                            <NewChat/>
-                        }
-                    </Row>
-                </Col>
+                        {/* Recent or Group body */}
+                        <Row className='flex-grow-1'>
+                            <Col className='d-flex flex-column'>
+                                <Row className='flex-grow-1'>
+                                    {activeContentLeft === 'recent' &&
+                                        <ChatRecent setChatClicked={setChatClicked} />
+                                    }
+                                    {activeContentLeft === 'groups' &&
+                                        <ChatGroups setChatClicked={setChatClicked} /> &&
+                                        /* NewChat Button */
+                                        <NewChat/>
+                                    }
+                                    <div className='mt-auto'>
+                                        {/* <NewChat/> */}
+                                    </div>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Col>
 
                 {/* Chat column */}
                 <Col className='bg-light col-md-6'>
