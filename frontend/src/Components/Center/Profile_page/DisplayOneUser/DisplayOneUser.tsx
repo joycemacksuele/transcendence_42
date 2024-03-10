@@ -28,7 +28,7 @@ interface UserProps {
 
 export const getCurrentUsername = async () => {
   try {
-    const response = await axiosInstance.get("/users/get-current-username");
+    const response = await axiosInstance.get("/users/get-current-intra-name");
     // console.log('=================== username: ', response.data.username);
     return response.data.username;
   } catch (error) {
