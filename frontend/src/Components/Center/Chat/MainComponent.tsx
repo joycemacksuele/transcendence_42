@@ -105,8 +105,7 @@ const MainComponent = () => {
                         {activeContentLeft === 'recent' &&
                             <MyChats setChatClicked={setChatClicked} />
                         }
-                        {activeContentLeft === 'groups' &&
-                            <Channels setChatClicked={setChatClicked} /> &&
+                        {activeContentLeft === 'groups' && <Channels setChatClicked={setChatClicked} /> &&
                             /* NewGroupButton Button */
                             <NewGroupButton/>
                         }
