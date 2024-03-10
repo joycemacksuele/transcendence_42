@@ -100,6 +100,7 @@ try {
     this.logger.log(`pong game client id ${client.id} connected with the name ${userId}`);
       this._socketIdUserId.set(client.id, userId);
       this._userIdSocketId.set(userId, client.id);
+    // moved to gamepage event
     //   const matchId = this.ponggameService.getMatchId(userId);
     //   this.logger.log(`UserId found : ${userId}`);
     //   this.logger.log(`Match Id ${matchId}`);
