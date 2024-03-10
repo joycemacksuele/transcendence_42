@@ -214,7 +214,7 @@ try {
   declineInvite(@ConnectedSocket() client: Socket){
     const userId = this._socketIdUserId.get(client.id);
     this.ponggameService.declineInvite(userId);
-    console.log("decline recieved");
+    console.log(">>>>>>>>>>>>>>>>>>>>decline recieved<<<<<<<<<<<<<<<<<<<<<");
   }
 
 
