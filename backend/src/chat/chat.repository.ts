@@ -116,7 +116,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat creator
 		const chatCreator = await this
 			.createQueryBuilder("new_chat")
-			.select('user.profileName as "creator"')
+			.select('user.loginName as "creator"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.creator","user")
 			.getRawOne();
@@ -160,7 +160,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat admin list
 		const chatAdmins = await this
 			.createQueryBuilder("new_chat")
-			.select('user.profileName as "admins"')
+			.select('user.loginName as "admins"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.admins", "user")
 			.getRawMany();
@@ -192,7 +192,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat banned users list
 		const chatBannedUsers = await this
 			.createQueryBuilder("new_chat")
-			.select('user.profileName as "bannedUsers"')
+			.select('user.loginName as "bannedUsers"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.bannedUsers", "user")
 			.getRawMany();
@@ -217,7 +217,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			try {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
-					.select('user.profileName as "loginName", user.id as "userId"')
+					.select('user.loginName as "loginName", user.id as "userId"')
 					.where('user.id = :id', {id: messagesList.creatorId})
 					.leftJoin("new_chat.users", "user")
 					.getRawOne();

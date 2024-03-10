@@ -60,7 +60,7 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
 
         return () => {
             console.log("[MyChats] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
-            // setChatClicked(null);
+            setChatClicked(null);
         };
     }, []);
 

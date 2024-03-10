@@ -1,5 +1,4 @@
 import { ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
-import { getCurrentUsername } from "../../Profile_page/DisplayOneUser/DisplayOneUser.tsx";
 import React, { useEffect, useRef, useState } from "react";
 
 // Importing bootstrap and other modules
@@ -59,7 +58,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
       <Row className="me-auto">
         <Stack gap={2}>
           {chatClicked?.usersIntraName &&
-            chatClicked?.usersIntraName.map((memberIntraName: string, mapStaticKey: number) => (
+            chatClicked?.usersIntraName.map((member: string, mapStaticKey: number) => (
               <ListGroup key={mapStaticKey} variant="flush">
                 <ListGroup.Item
                   ref={inputRef}
@@ -68,11 +67,11 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                   variant="light"
                   onClick={() => {
                     setShowMemberModal(true);
-                    setClickedMember(memberIntraName);
+                    setClickedMember(member);
                   }}
                 >
-                  {chatClicked?.mutedUsers.indexOf(memberIntraName) == -1 &&
-                  chatClicked?.bannedUsers.indexOf(memberIntraName) == -1 ? (
+                  {chatClicked?.mutedUsers.indexOf(member) == -1 &&
+                  chatClicked?.bannedUsers.indexOf(member) == -1 ? (
                     <Image
                       src={
                         import.meta.env.VITE_BACKEND as string + "/resources/member.png"
@@ -85,7 +84,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                     />
                   ) : (
                     <>
-                      {chatClicked?.mutedUsers.indexOf(memberIntraName) != -1 && (
+                      {chatClicked?.mutedUsers.indexOf(member) != -1 && (
                         <Image
                           src={import.meta.env.VITE_BACKEND as string + "/resources/member-muted.png"}
                           className="me-1"
@@ -95,7 +94,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                           alt="chat"
                         />
                       )}
-                      {chatClicked?.bannedUsers.indexOf(memberIntraName) != -1 && (
+                      {chatClicked?.bannedUsers.indexOf(member) != -1 && (
                         <Image
                           src={
                             import.meta.env.VITE_BACKEND as string + "/resources/member-banned.png"}
@@ -126,10 +125,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       </Modal.Header>
                       <Modal.Body>
                         <Button
-                          href={
-                            import.meta.env.VITE_FRONTEND + "/main_page/game"
-                          }
-                          // to="/main_page/chat"
+                          href={import.meta.env.VITE_FRONTEND as string + "/main_page/game"}
                           className="me-3"
                           variant="success"
                         >
@@ -137,9 +133,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                         </Button>
                         <Button
                           className="me-3"
-                          href={
-                            import.meta.env.VITE_FRONTEND + "/main_page/users"
-                          }
+                          href={import.meta.env.VITE_FRONTEND as string + "/main_page/users"}
                           variant="primary"
                           // onClick={ () => setShow(false)}
                         >

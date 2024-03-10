@@ -146,7 +146,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     </>
                                     )
                                 }
-                                {member}
+                                {chatClicked?.usersProfileName.at(mapStaticKey)}
                             </ListGroup.Item>
 
                             {/* Modal with buttons should not appear to the current user */}
@@ -162,7 +162,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                         </Modal.Header>
                                         <Modal.Body>
                                             <Button
-                                                href={import.meta.env.VITE_FRONTEND + "/main_page/game"}
+                                                href={import.meta.env.VITE_FRONTEND as string + "/main_page/game"}
                                                 className="me-4 mb-3"
                                                 variant="success"
                                             >
@@ -171,7 +171,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                                             <Button
                                                 className="me-4 mb-3"
                                                 value={clickedMember}
-                                                // href={import.meta.env.VITE_FRONTEND + "/main_page/users"}
+                                                // href={import.meta.env.VITE_FRONTEND as string + "/main_page/users"}
                                                 onClick={() => goToUserProfile(clickedMember)}
                                                 variant="primary"
                                             >
