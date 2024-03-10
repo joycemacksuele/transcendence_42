@@ -1,19 +1,19 @@
 import React, {useEffect, useState} from "react";
-import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
-import {chatSocket} from "./Utils/ClientSocket.tsx"
+import {ChatType, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
+import {chatSocket} from "../Utils/ClientSocket.tsx"
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
 import Stack from 'react-bootstrap/Stack';
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
-import axiosInstance from "../../Other/AxiosInstance.tsx";
+import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 type PropsHeader = {
-    setChatClicked: (chatClicked: ResponseNewChatDto) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
 };
 
-const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
+const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
 
     const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
 
@@ -43,8 +43,8 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
     }, [intraName]);
 
     useEffect(() => {
-        console.log("[ChatRecent] inside useEffect -> socket connected? ", chatSocket.connected);
-        console.log("[ChatRecent] inside useEffect -> socket id: ", chatSocket.id);
+        console.log("[MyChats] inside useEffect -> socket connected? ", chatSocket.connected);
+        console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
 
         chatSocket.emit("getChats");
         // TODO MOVE THIS .on FROM HERE TO A userEffect with socket dependency?? so it is not subscribing all the time??
@@ -57,7 +57,8 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
         });
 
         return () => {
-            console.log("[ChatRecent] Inside useEffect return function (ChatRecent Component was removed from DOM)");
+            console.log("[MyChats] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
+            setChatClicked(null);
         };
     }, []);
 
@@ -117,4 +118,4 @@ const ChatRecent: React.FC<PropsHeader> = ({setChatClicked}) => {
     );
 };
 
-export default ChatRecent;
+export default MyChats;

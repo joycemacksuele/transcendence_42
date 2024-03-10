@@ -1,10 +1,12 @@
 import {useEffect, useState} from 'react';
-import ChatRecent from "./ChatRecent";
-import ChatGroups from "./ChatGroups";
-import NewChat from "./NewChat";
-import Messages from "./Messages";
-import MembersPrivateMessage from "./MembersPrivateMessage";
-import MembersGroup from "./MembersGroup";
+import MyChats from "./LeftColumn/MyChats.tsx";
+import Channels from "./LeftColumn/Channels.tsx";
+import NewGroupButton from "./LeftColumn/NewGroupButton.tsx";
+import Messages from "./MiddleColumn/Messages.tsx";
+import MembersPrivateMessage from "./RightColumn/MembersPrivateMessage.tsx";
+import MembersGroupButtons from "./RightColumn/MembersGroupButtons.tsx";
+import MembersPrivateMessageButtons from "./RightColumn/MembersPrivateMessageButtons.tsx";
+import MembersGroup from "./RightColumn/MembersGroup.tsx";
 import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
 
@@ -22,10 +24,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 
-const Chat = () => {
+const MainComponent = () => {
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
     if (chatClicked) {
-        console.log("[Chat] chatClicked: ", chatClicked);
+        console.log("[MainComponent] chatClicked: ", chatClicked);
     }
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
@@ -39,25 +41,27 @@ const Chat = () => {
         if (!chatSocket.connected) {
             chatSocket.connect();
             chatSocket.on("connect", () => {
-                console.log("[Chat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+                console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
             });
             chatSocket.on("disconnect", (reason) => {
                 if (reason === "io server disconnect") {
-                    console.log("[Chat] socket disconnected: ", reason);
+                    console.log("[MainComponent] socket disconnected: ", reason);
                     // the disconnection was initiated by the server, you need to reconnect manually
                     chatSocket.connect();
                 }
                 // else the socket will automatically try to reconnect
             });
         } else {
-            console.log("[Chat] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+            console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
         }
 
         return () => {
+            console.log("[MainComponent] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
+            setChatClicked(null);
             if (chatSocket.connected) {
                 chatSocket.removeAllListeners();
                 chatSocket.disconnect();
-                console.log("[Chat] Inside useEffect return function (Chat Component was removed from DOM): Chat socket was disconnected and all listeners were removed");
+                console.log("[MainComponent] MainComponent socket was disconnected and all listeners were removed");
             }
         };
     }, []);
@@ -98,17 +102,17 @@ const Chat = () => {
                     {/* Recent or Group body */}
                     <Row className='h-100'>
                         {activeContentLeft === 'recent' &&
-                            <ChatRecent setChatClicked={setChatClicked} />
+                            <MyChats setChatClicked={setChatClicked} />
                         }
                         {activeContentLeft === 'groups' &&
-                            <ChatGroups setChatClicked={setChatClicked} /> &&
-                            /* NewChat Button */
-                            <NewChat/>
+                            <Channels setChatClicked={setChatClicked} /> &&
+                            /* NewGroupButton Button */
+                            <NewGroupButton/>
                         }
                     </Row>
                 </Col>
 
-                {/* Chat column */}
+                {/* MainComponent column */}
                 <Col className='bg-light col-md-6'>
                     <Messages chatClicked={chatClicked} />
                 </Col>
@@ -135,8 +139,12 @@ const Chat = () => {
                     </Row>
                     {/* Members body */}
                     <Row className='h-100'>
-                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
-                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> }
+                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> &&
+                            <MembersPrivateMessageButtons chatClicked={chatClicked}/>
+                        }
+                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> &&
+                            <MembersGroupButtons chatClicked={chatClicked}/>
+                        }
                     </Row>
                 </Col>
 
@@ -145,4 +153,4 @@ const Chat = () => {
     );
 };
 
-export default Chat;
+export default MainComponent;

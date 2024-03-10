@@ -1,29 +1,29 @@
 import React, {useEffect, useState} from "react";
-import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
+import {ChatType, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
 import Stack from 'react-bootstrap/Stack';
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
-import {chatSocket} from "./Utils/ClientSocket.tsx";
-import axiosInstance from "../../Other/AxiosInstance.tsx";
+import {chatSocket} from "../Utils/ClientSocket.tsx";
+import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 type PropsHeader = {
-    setChatClicked: (chatClicked: ResponseNewChatDto) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
 };
 
-const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
+const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
 
     const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
     const [intraName, setIntraName] = useState<string | null>(null);
 
     const getIntraName = async () => {
         return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
-            console.log('[ChatGroups] Current user intraName: ', response.data.username);
+            console.log('[Channels] Current user intraName: ', response.data.username);
             return response.data.username as string;
         }).catch((error): null => {
-            console.error('[ChatGroups] Error getting current username: ', error);
+            console.error('[Channels] Error getting current username: ', error);
             return null;
         });
     }
@@ -40,8 +40,8 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
     }, [intraName]);
 
     useEffect(() => {
-        console.log("[ChatGroups] inside useEffect -> socket connected? ", chatSocket.connected);
-        console.log("[ChatGroups] inside useEffect -> socket id: ", chatSocket.id);
+        console.log("[Channels] inside useEffect -> socket connected? ", chatSocket.connected);
+        console.log("[Channels] inside useEffect -> socket id: ", chatSocket.id);
 
         chatSocket.emit("getChats");
         chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
@@ -53,7 +53,8 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
         });
 
         return () => {
-            console.log("[ChatGroups] Inside useEffect return function (ChatGroups Component was removed from DOM)");
+            console.log("[Channels] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
+            setChatClicked(null);
         };
     }, []);
 
@@ -119,4 +120,4 @@ const ChatGroups: React.FC<PropsHeader> = ({setChatClicked}) => {
     );
 };
 
-export default ChatGroups;
+export default Channels;
