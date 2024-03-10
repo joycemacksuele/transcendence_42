@@ -9,6 +9,7 @@ import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import Modal from "react-bootstrap/Modal";
+import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
@@ -21,15 +22,27 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [clickedMember, setClickedMember] = useState<string>();
 
+  const getIntraName = async () => {
+    return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
+      console.log('[MembersGroup] Current user intraName: ', response.data.username);
+      return response.data.username as string;
+    }).catch((error): null => {
+      console.error('[MembersGroup] Error getting current username: ', error);
+      return null;
+    });
+  }
+
+  // We want to get the current user intra name when the component is reloaded only (intraName will be declared again)
   useEffect(() => {
     const init = async () => {
       if (!intraName) {
-        const currUserIntraName = await getCurrentUsername();
+        const currUserIntraName = await getIntraName();
         setIntraName(currUserIntraName);
-        console.log("[MembersGroup] JOYCE intraName: ", intraName);
       }
-    };
-    init();
+    }
+    init().catch((error) => {
+      console.log("[MembersGroup] Error getting current user intra name: ", error);
+    });
   }, [intraName]);
 
   useEffect(() => {
@@ -62,7 +75,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                   chatClicked?.bannedUsers.indexOf(memberIntraName) == -1 ? (
                     <Image
                       src={
-                        import.meta.env.VITE_BACKEND + "/resources/member.png"
+                        import.meta.env.VITE_BACKEND as string + "/resources/member.png"
                       }
                       className="me-1"
                       // id="profileImage_tiny"
@@ -74,10 +87,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                     <>
                       {chatClicked?.mutedUsers.indexOf(memberIntraName) != -1 && (
                         <Image
-                          src={
-                            import.meta.env.VITE_BACKEND +
-                            "/resources/member-muted.png"
-                          }
+                          src={import.meta.env.VITE_BACKEND as string + "/resources/member-muted.png"}
                           className="me-1"
                           // id="profileImage_tiny"
                           // roundedCircle
@@ -88,9 +98,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       {chatClicked?.bannedUsers.indexOf(memberIntraName) != -1 && (
                         <Image
                           src={
-                            import.meta.env.VITE_BACKEND +
-                            "/resources/member-banned.png"
-                          }
+                            import.meta.env.VITE_BACKEND as string + "/resources/member-banned.png"}
                           className="me-1"
                           // id="profileImage_tiny"
                           // roundedCircle

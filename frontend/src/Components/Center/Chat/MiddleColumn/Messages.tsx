@@ -52,7 +52,6 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
 		get_blocked_users();
       if (chatClicked) {
         setMessages(chatClicked);
-        console.log("[REEEE]: ", chatClicked.name);
         chatSocket.on("messageChat", (newdata : ResponseNewChatDto) => setMessages(newdata));
       }
     }, [chatClicked]);
@@ -63,8 +62,6 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
             return;
         }
         else {
-            console.log('BEFORE SENDING TO BACKEND');
-
             // make this via socket.emit("SendMessage");
             // how to send data? send the message + userId to send the message to (or chatId?)
 
@@ -97,8 +94,6 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
             </Row>
             <Row style={{maxHeight: '10vh'}}>
                 <Form.Group className="h-25">
-                    {/* what is controlId ?????*/}
-                    {/* value={message} */}
                     <Stack className="h-100" direction="horizontal">
                         <Form.Control
                             as="textarea"
@@ -106,6 +101,7 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
                             type="text"
                             placeholder={messageBoxPlaceHolder}
                             onChange={(event) => setMessage(event.target.value)}
+	                    value={message}
                         />
                         {/* TODO onClick erase the message from the form box*/}
                         <Button className="h-100" variant="primary" type="submit" onClick={sendMessage}>Send</Button>
