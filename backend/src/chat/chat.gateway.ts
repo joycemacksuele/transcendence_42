@@ -331,7 +331,7 @@ export class ChatGateway
   @SubscribeMessage('editPassword')
   async editPassword(
       @MessageBody('chatId') chatId: number,
-      @MessageBody('chatPassword') chatPassword: string | null,
+      @MessageBody('chatPassword') chatPassword: string | null,// TODO HAVE A STRINGER PASSWORD HERE
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
     this.logger.log('editPassword -> chatId: ' + chatId + " will have its password edited");

@@ -7,7 +7,6 @@ import MembersPrivateMessage from "./MembersPrivateMessage";
 import MembersGroup from "./MembersGroup";
 import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
-import GameSelection from "../Game/GameSelection.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -22,19 +21,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
-import axiosInstance from "../../Other/AxiosInstance.tsx";
-
-export const getIntraName = async () => {
-    return axiosInstance.get('/users/get-current-username').then((response): string => {
-        return response.data.username;
-    }).catch((error): null => {
-        console.error('[MembersGroup] Error getting current username: ', error);
-        return null;
-    });
-}
 
 const Chat = () => {
-
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
     if (chatClicked) {
         console.log("[Chat] chatClicked: ", chatClicked);
