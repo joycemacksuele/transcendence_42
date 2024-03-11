@@ -22,7 +22,7 @@ const applyStatusUpdates = (
 			// return update ? { ...user, onlineStatus: true }
 						// : 
 						// { ...user, onlineStatus: false};
-			const isOnline = updates.includes(user.loginName);
+			const isOnline: boolean = updates.includes(user.loginName);
 			console.log('      user [' + user.loginName + '] ' + "online:" + isOnline);
 			return { ...user, onlineStatus: isOnline };
 		});

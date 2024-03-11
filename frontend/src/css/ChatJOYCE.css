@@ -2,17 +2,15 @@
 .chat-page {
     /* color = font color */
     color: grey;
-    /* width: auto; */
-    /* height: 100vw; */
+    width: auto;
+    height: 50vw;
     /*display: flex;*/
     /*overflow-y: scroll;*/
 }
 
-
-
 ul.dropdown-menu {
     /*width: auto;*/
-    height: 100vw;
+    height: 50vw;
     overflow-y: scroll;
 }
 
@@ -22,9 +20,4 @@ ul.dropdown-menu {
 
 .add_users_to_chat {
     overflow-y: auto;
-}
-
-/* Jaka for testing */
-.members-body {
-    border: 1px solid red;
 }
