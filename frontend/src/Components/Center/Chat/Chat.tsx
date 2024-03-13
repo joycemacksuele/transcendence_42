@@ -7,7 +7,6 @@ import MembersPrivateMessage from "./MembersPrivateMessage";
 import MembersGroup from "./MembersGroup";
 import {ChatType, ResponseNewChatDto} from "./Utils/ChatUtils.tsx";
 import {chatSocket} from "./Utils/ClientSocket.tsx";
-import GameSelection from "../Game/GameSelection.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
@@ -22,19 +21,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
-import axiosInstance from "../../Other/AxiosInstance.tsx";
-
-export const getIntraName = async () => {
-    return axiosInstance.get('/users/get-current-username').then((response): string => {
-        return response.data.username;
-    }).catch((error): null => {
-        console.error('[MembersGroup] Error getting current username: ', error);
-        return null;
-    });
-}
 
 const Chat = () => {
-
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
     if (chatClicked) {
         console.log("[Chat] chatClicked: ", chatClicked);
@@ -84,14 +72,14 @@ const Chat = () => {
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
-        <Container className='d-flex' fluid>
+        <Container className='h-75' fluid>
             {/* I still don't understand why we need this Row here, but it is not working without it*/}
-            <Row className='chat-page flex-grow w-100'>
-                
+            <Row className='chat-page'>
+
                 {/* Recent + Groups column */}
-                <Col className='d-flex flex-column col-md-3'>
+                <Col className='col-md-3'>
                     {/* Recent + Groups header */}
-                    {/* <Row className='h-10'> */}
+                    <Row className='h-10'>
                         <Nav
                             className="border-bottom p-0"
                             activeKey="recent"
@@ -106,28 +94,18 @@ const Chat = () => {
                                 <Nav.Link eventKey="groups">Channels</Nav.Link>
                             </Nav.Item>
                         </Nav>
-                    {/* </Row> */}
+                    </Row>
                     {/* Recent or Group body */}
-                    {/* <Row className=''> */}
-                        {/* <Col className='d-flex flex-column'> */}
-                            {/* <Row className=''> */}
-                            <div className='flex-grow-1'>
-                                { activeContentLeft === 'recent' && (
-                                    <ChatRecent setChatClicked={setChatClicked} />
-                                )}
-                                { activeContentLeft === 'groups' && (
-                                    <ChatGroups setChatClicked={setChatClicked} />
-                                )}
-                            </div>
-                            {/* NewChat Button - at the bottom, visible only wheb Group is active */}
-                            { activeContentLeft === 'groups' && ( 
-                                <div className='mt-auto'>
-                                    <NewChat/>
-                                </div>
-                            )}
-                            {/* </Row> */}
-                        {/* </Col> */}
-                    {/* </Row> */}
+                    <Row className='h-100'>
+                        {activeContentLeft === 'recent' &&
+                            <ChatRecent setChatClicked={setChatClicked} />
+                        }
+                        {activeContentLeft === 'groups' &&
+                            <ChatGroups setChatClicked={setChatClicked} /> &&
+                            /* NewChat Button */
+                            <NewChat/>
+                        }
+                    </Row>
                 </Col>
 
                 {/* Chat column */}
@@ -138,7 +116,7 @@ const Chat = () => {
                 {/* Members column */}
                 <Col className='col-md-3'>
                     {/* Members header */}
-                    <Row className='h-25'>
+                    <Row className='h-10'>
                         <Nav
                             className="border-bottom p-0"
                             activeKey="members"
@@ -156,7 +134,7 @@ const Chat = () => {
                         </Nav>
                     </Row>
                     {/* Members body */}
-                    <Row className='h-25 members-body'>
+                    <Row className='h-100'>
                         {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/> }
                         {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/> }
                     </Row>

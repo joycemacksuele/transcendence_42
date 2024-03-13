@@ -59,8 +59,11 @@ const NewChat = () => {
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
         <>
-            <Row className='h-20 justifiy-content-end'>
-                <Stack gap={2} className='align-self-center flex-column justifiy-content-end'>     
+        {/* todo: temporarily disabled Jaka */}
+            {/* <Row className='h-20 justifiy-content-end'> */}
+                {/* <Stack gap={2} className='align-self-center flex-column justifiy-content-end'> */}
+            <Row>
+                <Stack>        
                     <Button
                         variant="primary"
                         type="submit"
