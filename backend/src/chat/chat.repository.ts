@@ -107,21 +107,21 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	private async getOneRowAndSaveAsDTO(chat: NewChatEntity) {
 		const responseDto: ResponseNewChatDto = new ResponseNewChatDto();
 		responseDto.id = chat.id;
-		this.logger.log('[getChat] Chat id: ' + chat.id);
+		this.logger.log('[getChat] NewChat id: ' + chat.id);
 		responseDto.name = chat.name;
-		this.logger.log('[getChat] Chat name: ' + chat.name);
+		this.logger.log('[getChat] NewChat name: ' + chat.name);
 		responseDto.type = chat.type;
-		this.logger.log('[getChat] Chat type: ' + chat.type);
+		this.logger.log('[getChat] NewChat type: ' + chat.type);
 
 		// ----------- get chat creator
 		const chatCreator = await this
 			.createQueryBuilder("new_chat")
-			.select('user.profileName as "creator"')
+			.select('user.loginName as "creator"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.creator","user")
 			.getRawOne();
 		responseDto.creator = chatCreator.creator;
-		this.logger.log('[getChat] Chat creator: ' + chatCreator.creator);
+		this.logger.log('[getChat] NewChat creator: ' + chatCreator.creator);
 
 		// ----------- get chat users list - intra name
 		const chatUsersIntra = await this
@@ -160,7 +160,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat admin list
 		const chatAdmins = await this
 			.createQueryBuilder("new_chat")
-			.select('user.profileName as "admins"')
+			.select('user.loginName as "admins"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.admins", "user")
 			.getRawMany();
@@ -192,7 +192,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat banned users list
 		const chatBannedUsers = await this
 			.createQueryBuilder("new_chat")
-			.select('user.profileName as "bannedUsers"')
+			.select('user.loginName as "bannedUsers"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.bannedUsers", "user")
 			.getRawMany();
@@ -213,17 +213,17 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
 			responseDto_inner.id = messagesList.id;
 			responseDto_inner.message = messagesList.message;
-			this.logger.log("[getChat] Chat message(s): " + messagesList.message);
+			this.logger.log("[getChat] NewChat message(s): " + messagesList.message);
 			try {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
-					.select('user.profileName as "loginName", user.id as "userId"')
+					.select('user.loginName as "loginName", user.id as "userId"')
 					.where('user.id = :id', {id: messagesList.creatorId})
 					.leftJoin("new_chat.users", "user")
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;
 				responseDto_inner.creator_id = messageCreator.userId;
-				this.logger.log("[getChat] Chat message sender: " + messageCreator.loginName);
+				this.logger.log("[getChat] NewChat message sender: " + messageCreator.loginName);
 				return responseDto_inner;
 			} catch (err) {
 				// throw new Error("Can't find user");
@@ -263,7 +263,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". I was deleted!");
 			return false;
 		} else {
-			// Chat has users on it, try to see if the user to be deleted is in the array of users
+			// NewChat has users on it, try to see if the user to be deleted is in the array of users
 			const index = foundChatEntityToLeave.users.findIndex(user=> user.id === userToDelete.id)
 			if (index !== -1) {
 				// If user to be deleted was found in the array of users, delete s/he from it and save the entity
@@ -297,7 +297,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// Add user to the usersCanChatEntity:
 //		chatToJoin.usersCanChat = [];
 		this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatToJoin, user).then(r => {
-			this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ' + user);
+			this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ', user);
 		});
 		await this
 			.manager

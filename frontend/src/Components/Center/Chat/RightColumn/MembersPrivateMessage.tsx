@@ -1,6 +1,4 @@
-import { ResponseNewChatDto } from "./Utils/ChatUtils.tsx";
-import { getCurrentUsername } from "../Profile_page/DisplayOneUser/DisplayOneUser.tsx";
-import { chatSocket } from "./Utils/ClientSocket.tsx";
+import { ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import React, { useEffect, useRef, useState } from "react";
 
 // Importing bootstrap and other modules
@@ -10,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import Modal from "react-bootstrap/Modal";
+import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
@@ -22,31 +21,35 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [clickedMember, setClickedMember] = useState<string>();
 
+  const getIntraName = async () => {
+    return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
+      console.log('[MembersGroup] Current user intraName: ', response.data.username);
+      return response.data.username as string;
+    }).catch((error): null => {
+      console.error('[MembersGroup] Error getting current username: ', error);
+      return null;
+    });
+  }
+
+  // We want to get the current user intra name when the component is reloaded only (intraName will be declared again)
   useEffect(() => {
     const init = async () => {
       if (!intraName) {
-        const currUserIntraName = await getCurrentUsername();
+        const currUserIntraName = await getIntraName();
         setIntraName(currUserIntraName);
-        console.log("[MembersGroup] JOYCE intraName: ", intraName);
       }
-    };
-    init();
+    }
+    init().catch((error) => {
+      console.log("[MembersGroup] Error getting current user intra name: ", error);
+    });
   }, [intraName]);
 
-  const deleteChat = (chatId: number) => {
-    if (chatId != -1) {
-      console.log(
-        "[MembersPrivateMessage] deleteChat -> socket id: ",
-        chatSocket.id
-      );
-      chatSocket.emit("deleteChat", chatId);
-      console.log(
-        "[MembersPrivateMessage] deleteChat called -> chatId ",
-        chatId,
-        " was deleted"
-      );
-    }
-  };
+  useEffect(() => {
+    return () => {
+      console.log("[MembersGroup] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
+      chatClicked = null;
+    };
+  }, []);
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
@@ -55,7 +58,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
       <Row className="me-auto">
         <Stack gap={2}>
           {chatClicked?.usersIntraName &&
-            chatClicked?.usersIntraName.map((memberIntraName: string, mapStaticKey: number) => (
+            chatClicked?.usersIntraName.map((member: string, mapStaticKey: number) => (
               <ListGroup key={mapStaticKey} variant="flush">
                 <ListGroup.Item
                   ref={inputRef}
@@ -64,14 +67,14 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                   variant="light"
                   onClick={() => {
                     setShowMemberModal(true);
-                    setClickedMember(memberIntraName);
+                    setClickedMember(member);
                   }}
                 >
-                  {chatClicked?.mutedUsers.indexOf(memberIntraName) == -1 &&
-                  chatClicked?.bannedUsers.indexOf(memberIntraName) == -1 ? (
+                  {chatClicked?.mutedUsers.indexOf(member) == -1 &&
+                  chatClicked?.bannedUsers.indexOf(member) == -1 ? (
                     <Image
                       src={
-                        import.meta.env.VITE_BACKEND + "/resources/member.png"
+                        import.meta.env.VITE_BACKEND as string + "/resources/member.png"
                       }
                       className="me-1"
                       // id="profileImage_tiny"
@@ -81,12 +84,9 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                     />
                   ) : (
                     <>
-                      {chatClicked?.mutedUsers.indexOf(memberIntraName) != -1 && (
+                      {chatClicked?.mutedUsers.indexOf(member) != -1 && (
                         <Image
-                          src={
-                            import.meta.env.VITE_BACKEND +
-                            "/resources/member-muted.png"
-                          }
+                          src={import.meta.env.VITE_BACKEND as string + "/resources/member-muted.png"}
                           className="me-1"
                           // id="profileImage_tiny"
                           // roundedCircle
@@ -94,12 +94,10 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                           alt="chat"
                         />
                       )}
-                      {chatClicked?.bannedUsers.indexOf(memberIntraName) != -1 && (
+                      {chatClicked?.bannedUsers.indexOf(member) != -1 && (
                         <Image
                           src={
-                            import.meta.env.VITE_BACKEND +
-                            "/resources/member-banned.png"
-                          }
+                            import.meta.env.VITE_BACKEND as string + "/resources/member-banned.png"}
                           className="me-1"
                           // id="profileImage_tiny"
                           // roundedCircle
@@ -127,10 +125,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       </Modal.Header>
                       <Modal.Body>
                         <Button
-                          href={
-                            import.meta.env.VITE_FRONTEND + "/main_page/game"
-                          }
-                          // to="/main_page/chat"
+                          href={import.meta.env.VITE_FRONTEND as string + "/main_page/game"}
                           className="me-3"
                           variant="success"
                         >
@@ -138,9 +133,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                         </Button>
                         <Button
                           className="me-3"
-                          href={
-                            import.meta.env.VITE_FRONTEND + "/main_page/users"
-                          }
+                          href={import.meta.env.VITE_FRONTEND as string + "/main_page/users"}
                           variant="primary"
                           // onClick={ () => setShow(false)}
                         >
@@ -152,23 +145,6 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                 )}
               </ListGroup>
             ))}
-        </Stack>
-      </Row>
-
-      {/* Private Chat Buttons row */}
-      <Row className="h-20 align-items-bottom">
-        <Stack gap={2} className="align-self-center">
-          {/* use variant="outline-secondary" disabled for when we don't want this button to be enabled */}
-          {/* Play button is available only when we are on a private chat channel */}
-          {/*<Button variant="outline-secondary" disabled >Play</Button>*/}
-          <Button
-            variant="warning"
-            onClick={() => {
-              deleteChat(chatClicked?.id ? chatClicked?.id : -1);
-            }}
-          >
-            Delete Chat
-          </Button>
         </Stack>
       </Row>
     </>

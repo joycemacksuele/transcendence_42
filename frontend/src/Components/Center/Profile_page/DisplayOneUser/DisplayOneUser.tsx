@@ -11,6 +11,9 @@ import MatchHistory from "../MatchHistory.tsx";
 import GetPlayingStatus from "../GetPlayingStatus.tsx";
 import { getOnlineStatus } from "../getOnlineStatus.ts";
 import "../../../../css/Profile-users-list.css";
+import {AxiosResponse} from "axios";
+import * as string_decoder from "string_decoder";
+import * as querystring from "querystring";
 
 
 interface UserProps {
@@ -28,7 +31,7 @@ interface UserProps {
 
 export const getCurrentUsername = async () => {
   try {
-    const response = await axiosInstance.get("/users/get-current-username");
+    const response = await axiosInstance.get("/users/get-current-intra-name");
     // console.log('=================== username: ', response.data.username);
     return response.data.username;
   } catch (error) {
