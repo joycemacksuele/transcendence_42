@@ -107,7 +107,7 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
         <>
             {/* Group Buttons row */}
             {(chatClicked?.usersIntraName && intraName) &&
-                <Row className="h-20 align-items-bottom">
+                <Row className="members-col-buttons mt-auto d-flex justify-content-end">
                     <Stack gap={2} className="align-self-center">
 
                         {/* Add users = when we ARE members of the chat + when we ARE admin */}
