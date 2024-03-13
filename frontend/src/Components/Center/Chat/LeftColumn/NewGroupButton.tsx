@@ -60,7 +60,7 @@ const NewGroupButton = () => {
     return (
         <>
             <Row className='h-20 justifiy-content-end'>
-                <Stack gap={2} className='align-self-center flex-column justifiy-content-end'>
+                <Stack gap={2} className='align-self-center flex-column justifiy-content-end'>     
                     <Button
                         variant="primary"
                         type="submit"
