@@ -64,7 +64,7 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
     return (
         <>
             {/* Available groups row */}
-            <Row className='me-auto'>
+            <Row className=''>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
                     {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
