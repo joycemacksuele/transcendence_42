@@ -77,14 +77,14 @@ const MainComponent = () => {
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
-        <Container className='chat-main d-flex w-100 justify-content-center' fluid>
+        <Container className='h-75' fluid>
             {/* I still don't understand why we need this Row here, but it is not working without it*/}
-            <Row className='chat-page w-100'>
+            <Row className='chat-page'>
 
                 {/* Recent + Groups column */}
-                <Col className='left-col d-flex flex-column col-md-3'>
+                <Col className='col-md-3'>
                     {/* Recent + Groups header */}
-                    <Row className=''>
+                    <Row className='h-10'>
                         <Nav
                             className="border-bottom p-0"
                             activeKey="recent"
@@ -100,21 +100,15 @@ const MainComponent = () => {
                             </Nav.Item>
                         </Nav>
                     </Row>
-
                     {/* Recent or Group body */}
-                    <Row className='left-col-body justify-content-center flex-grow-1'>
+                    <Row className='h-100'>
                         {activeContentLeft === 'recent' &&
                             <MyChats setChatClicked={setChatClicked} />
                         }
-                        {activeContentLeft === 'groups' &&
-                            <Channels setChatClicked={setChatClicked} />
-                        }
-                    </Row>
-                    {/* NewChat Button - at the bottom, visible only wheb Group is active */}
-                    <Row className='mt-auto'>
-                        { activeContentLeft === 'groups' && ( 
+                        {activeContentLeft === 'groups' && <Channels setChatClicked={setChatClicked} /> &&
+                            /* NewGroupButton Button */
                             <NewGroupButton/>
-                        )}
+                        }
                     </Row>
                 </Col>
 
@@ -124,9 +118,9 @@ const MainComponent = () => {
                 </Col>
 
                 {/* Members column */}
-                <Col className='members-col col-md-3'>
+                <Col className='col-md-3'>
                     {/* Members header */}
-                    <Row className='members-col-header'>
+                    <Row className='h-10'>
                         <Nav
                             className="border-bottom p-0"
                             activeKey="members"
@@ -144,24 +138,11 @@ const MainComponent = () => {
                         </Nav>
                     </Row>
                     {/* Members body */}
-                    <Row className=''>
-                        <Col className='members-col-body d-flex flex-column'>
-                            
-                            {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/>}
-                            {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessageButtons chatClicked={chatClicked}/>}
-
-                            {/* This element MembersGroup is a row and it has fixed height in .css */}
-                            {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/>}
-                            <div className='members-col-empty flex-grow-1'>
-                                {/* This is empty and should expand to occupy the remaining space of the column, pushing the next row to the bottom of the parent Col. */}
-                            </div>
-                            <Row className='members-col-bottom mt-auto'>
-                                {/* This row should be pushed to the bottom of the parent Col */}
-                                {chatClicked?.type != ChatType.PRIVATE && <MembersGroupButtons chatClicked={chatClicked}/>}
-                            </Row>
-
-
-                        </Col>
+                    <Row className='h-100'>
+                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/>}
+                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessageButtons chatClicked={chatClicked}/>}
+                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/>}
+                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroupButtons chatClicked={chatClicked}/>}
                     </Row>
                 </Col>
 
