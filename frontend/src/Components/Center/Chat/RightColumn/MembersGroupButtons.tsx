@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { ChatType, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
-import { User } from "../../Profile_page/DisplayUsers.tsx";
+import { User } from "../../Users/DisplayUsers.tsx";
 
 // Importing bootstrap and other modules
 import Row from "react-bootstrap/Row";
