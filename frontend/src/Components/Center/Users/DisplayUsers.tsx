@@ -3,9 +3,9 @@ import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import { deleteDummies } from "../../Test/deleteDummyUsers";
-import DisplayOneUser from "./DisplayOneUser/DisplayOneUser"; // without brackets, because it is exported 'default'
-import { useSelectedUser } from "./contextSelectedUserName";
-import { getOnlineStatusUpdates } from "./getOnlineStatuses";
+import DisplayOneUser from "../Profile_page/DisplayOneUser/DisplayOneUser";
+import { useSelectedUser } from "../Profile_page/contextSelectedUserName";
+import { getOnlineStatusUpdates } from "../Profile_page/getOnlineStatuses";
 // import axios from "axios";
 // import '../../../css/Profile-users-list.css'
 

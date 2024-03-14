@@ -7,7 +7,7 @@ import MainPage from "./Components/main_page.tsx";
 import UserProfilePage from "./Components/Center/Profile_page/User_profile_page";
 import ChatPage from "./Components/Center/Chat/MainComponent.tsx";
 import PlayGamePage from "./Components/Center/Game/Game";
-import UsersList from "./Components/Center/Profile_page/DisplayUsers";
+import UsersList from "./Components/Center/Users/DisplayUsers.tsx";
 import PageNotFound from "./Components/Other/PageNotFound.tsx";
 import LogoutPage from "./Components/Login_page/logoutPage.tsx";
 import ForcedLogout from "./Components/Other/ForcedLogout.tsx";
