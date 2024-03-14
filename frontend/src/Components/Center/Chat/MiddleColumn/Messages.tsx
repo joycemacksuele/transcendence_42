@@ -77,7 +77,7 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
     // let i = 0;
     return (
         <>
-            <Row style={{maxHeight: '80vh', height: '80vh', overflow: 'scroll', width: '100%'}}>
+            <Row style={{maxHeight: '70vh', height: '70vh', overflow: 'scroll', width: '100%'}}>
                 {/*<ListGroup*/}
                 {/*    key={i++}>*/}
                     {(messages && messages.messages && messages.messages[0] != null) ? messages.messages.map((message_: ResponseMessageChatDto, mapStaticKey: number) => (
