@@ -26,9 +26,12 @@ import Nav from 'react-bootstrap/Nav';
 
 const MainComponent = () => {
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
+    
     if (chatClicked) {
         console.log("[MainComponent] chatClicked: ", chatClicked);
     }
+
+
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
     // useEffect without dependencies:
@@ -69,34 +72,45 @@ const MainComponent = () => {
 
     ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
     // recent or groups
-    const [activeContentLeft, setActiveContentLeft] = useState<string>('recent');
+    const [activeContentLeft, setActiveContentLeft] = useState<string>('recent');    
+    const [activeButton, setActiveButton] = useState('recent' || '');
 
     const handleClick = (content: null | string) => {
         setActiveContentLeft(content || '');
+        setActiveButton(content || '');
     };
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
-        <Container className='chat-main d-flex w-100 justify-content-center' fluid>
+        // <Container className='chat-main d-flex w-100 justify-content-center' fluid>
+        <Container className='w-100' fluid style={{ maxWidth: '1200px' }}>
+            {/* <div  > */}
+            <Row className='justify-content-center'>
             {/* I still don't understand why we need this Row here, but it is not working without it*/}
-            <Row className='chat-page w-100'>
-
                 {/* Recent + Groups column */}
-                <Col className='left-col d-flex flex-column col-md-3'>
+                <Col xs={11} sm={10} md={3} className='left-col d-flex flex-column'>
                     {/* Recent + Groups header */}
                     <Row className=''>
                         <Nav
                             className="border-bottom p-0"
-                            activeKey="recent"
+                            // activeKey={activeButton}
                             variant="underline"
                             fill
                             onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                <Nav.Link eventKey="recent">My chats</Nav.Link>
+                                <Nav.Link eventKey="recent"
+								          className={activeButton === 'recent' ? 'nav-link active' : 'nav-link'}
+                                >
+                                    My chats
+                                </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="groups">Channels</Nav.Link>
+                                <Nav.Link eventKey="groups"
+                                    className={activeButton === 'groups' ? 'nav-link active' : 'nav-link'}
+                                >
+                                    Channels
+                                </Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Row>
@@ -119,12 +133,12 @@ const MainComponent = () => {
                 </Col>
 
                 {/* MainComponent column */}
-                <Col className='bg-light col-md-6'>
+                <Col xs={11} sm={10} md={5} className='middle-col bg-light flex-column mx-4 mt-5'>
                     <Messages chatClicked={chatClicked} />
                 </Col>
 
                 {/* Members column */}
-                <Col className='members-col col-md-3'>
+                <Col xs={11} sm={10} md={3} className='members-col flex-column mt-5 mt-md-0'>
                     {/* Members header */}
                     <Row className='members-col-header'>
                         <Nav
@@ -164,8 +178,8 @@ const MainComponent = () => {
                         </Col>
                     </Row>
                 </Col>
-
-            </Row>
+            </Row>    
+                {/* </div> */}
         </Container>
     );
 };
