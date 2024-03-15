@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../Other/AxiosInstance";
-import { insertDummyUsers } from "../../Test/InsertDummyUsers";
+import axiosInstance from "../../../Other/AxiosInstance";
+import { insertDummyUsers } from "../../../Test/InsertDummyUsers";
 import { ListGroup } from "react-bootstrap";
 // import axios from "axios";
 

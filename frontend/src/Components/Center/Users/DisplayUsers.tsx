@@ -3,9 +3,9 @@ import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import { deleteDummies } from "../../Test/deleteDummyUsers";
-import DisplayOneUser from "../Profile_page/DisplayOneUser/DisplayOneUser";
-import { useSelectedUser } from "../Profile_page/contextSelectedUserName";
-import { getOnlineStatusUpdates } from "../Profile_page/getOnlineStatuses";
+import DisplayOneUser from "../Profile/DisplayOneUser/DisplayOneUser";
+import { useSelectedUser } from "../Profile/utils/contextSelectedUserName";
+import { getOnlineStatusUpdates } from "../Profile/utils/getOnlineStatuses";
 // import axios from "axios";
 // import '../../../css/Profile-users-list.css'
 
@@ -29,17 +29,17 @@ export interface User {
 //   isOnline: boolean;
 // }
 
-
 const UsersList: React.FC = () => {
-  const [displayList, setDisplayList] = useState(true);
+  // const [displayList, setDisplayList] = useState(true);
+  const displayList = true;
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
-  
+
   // console.log('USERS LIST');
 
   // The 'users' need to be used in a Referrence (useRef), in order to re-render each time
   // when any online status change is detected
-  // It has to be sure, that the users are first fetched, and only then 
+  // It has to be sure, that the users are first fetched, and only then
   // can the online status be updated - therefore the flag variable 'hasFetchedUsers' is detecting this
   const [users, setUsers] = useState<User[]>([]);
   const [hasFetchedUsers, setHasFetchedUsers] = useState(false);
@@ -48,7 +48,6 @@ const UsersList: React.FC = () => {
   useEffect(() => {
     usersRef.current = users;
   }, [users]);
-
 
   // THIS LOGIN NAME COMES FROM CHAT, IF THERE CLICKED 'Go to profile'
   const { selectedLoginName, setSelectedLoginName } = useSelectedUser();
@@ -59,7 +58,6 @@ const UsersList: React.FC = () => {
     }
   }, [setSelectedLoginName]);
 
-
   // Check if dummies have been inserted before using local storage
   useEffect(() => {
     if (!localStorage.getItem("dummiesInserted")) {
@@ -69,7 +67,6 @@ const UsersList: React.FC = () => {
       localStorage.setItem("dummiesInserted", "true");
     }
   }, []);
-
 
   const fetchUsers = async () => {
     // console.log('      fetchUsers');
@@ -82,10 +79,10 @@ const UsersList: React.FC = () => {
       console.error("Error fetching users:", error);
     }
   };
-  
+
   useEffect(() => {
     fetchUsers();
-  }, [])
+  }, []);
 
   // Get online status for each user, via websocket:
   useEffect(() => {
@@ -99,17 +96,15 @@ const UsersList: React.FC = () => {
         if (unsubscribe) {
           unsubscribe();
         }
-      }
+      };
     }
   }, [hasFetchedUsers]);
-
 
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
     e.preventDefault();
     setSelectedUser(loginName);
     setShowMatchHistory(false);
   };
-
 
   return (
     <Container fluid className="h-100 w-100 container-max-width">
