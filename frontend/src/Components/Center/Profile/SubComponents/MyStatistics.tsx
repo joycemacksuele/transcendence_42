@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {Col, Row} from 'react-bootstrap';
-import axiosInstance from "../../Other/AxiosInstance";
+import axiosInstance from "../../../Other/AxiosInstance";
 
 interface UserStats {
 	// loginName: string;

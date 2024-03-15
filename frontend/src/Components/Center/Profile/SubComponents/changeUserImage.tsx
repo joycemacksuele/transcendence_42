@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
-import axiosInstance from "../../Other/AxiosInstance";
-import { CurrUserData, CurrentUserContext } from "./contextCurrentUser";
+import axiosInstance from "../../../Other/AxiosInstance";
+import { CurrentUserContext, CurrUserData } from "../utils/contextCurrentUser";
 import { Form, Button, FormControl, Alert, InputGroup } from "react-bootstrap";
 
 // import axios from "axios";
