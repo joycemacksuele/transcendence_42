@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import ImageUpload from "./changeUserImage";
-import ButtonTfa from "./ButtonTfa";
-import FriendsList from "./DisplayFriends";
-import ChangeProfileName from "./changeProfileName";
-import MyStatistics from "./MyStatistics";
-import MatchHistory from "./MatchHistory";
-import ChangeTheme from "./ChangeTheme";
-import { CurrUserData } from "./contextCurrentUser";
+import ImageUpload from "./SubComponents/changeUserImage";
+import ButtonTfa from "./SubComponents/TFAbutton";
+import FriendsList from "./SubComponents/DisplayFriends";
+import ChangeProfileName from "./SubComponents/changeProfileName";
+import MyStatistics from "./SubComponents/MyStatistics";
+import MatchHistory from "./SubComponents/MatchHistory";
+import ChangeTheme from "./SubComponents/ChangeTheme";
+import { CurrUserData } from "./utils/contextCurrentUser";
 
 // Importing bootstrap and other modules
 import { Container, Row, Col } from "react-bootstrap";
