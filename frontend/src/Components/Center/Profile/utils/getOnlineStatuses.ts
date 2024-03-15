@@ -1,13 +1,17 @@
 import { Dispatch, SetStateAction, RefObject } from "react";
-import { io } from "socket.io-client";
-import { User } from "./DisplayUsers";
+// import { io } from "socket.io-client";
+import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
+import { User } from "../../Users/DisplayUsers";
 
 /*
 	Getting real-time updates of the displayed online statuses.
 */
 
-const backendURL = import.meta.env.VITE_BACKEND;
+// const backendURL = import.meta.env.VITE_BACKEND;
 
+const handleError = (error: Error) => {
+	console.error("There was a WebSocket connect-error:", error);
+};
 
 const applyStatusUpdates = (
 	updates: string[],
@@ -36,17 +40,30 @@ export const getOnlineStatusUpdates = (
 	setUsers: Dispatch<SetStateAction<User[]>>
 ) => {
 	// console.log('       getOnlineStatuses(), usersRef ; ' + usersRef);
-	const socket = io(backendURL, { transports: ['websocket'] });
+	// const socket = io(backendURL, { transports: ['websocket'] });
 
-	const wrappedApplyStatusUpdates =
-		(updates: string[]) => applyStatusUpdates(updates, usersRef, setUsers);
+	try {
+		if (!chatSocket.connected)
+			chatSocket.connect();
 
-	socket.on('onlineStatusUpdates', wrappedApplyStatusUpdates);
+		const wrappedApplyStatusUpdates =
+			(updates: string[]) => applyStatusUpdates(updates, usersRef, setUsers);
 
-	return (	// Return a cleanup function
-		() => {
-			socket.off('onlineStatusUpdates', wrappedApplyStatusUpdates); 
-			socket.disconnect();
-		}
-	)
+			chatSocket.on('onlineStatusUpdates', wrappedApplyStatusUpdates);
+			chatSocket.on('connect_error', handleError);
+			chatSocket.on('disconnect', (reason) => {
+				console.error("There was a WebSocket disconnect error:", reason);
+			})
+
+		return (	// Return a cleanup function
+			() => {
+				chatSocket.off('connect_error');
+				chatSocket.off('disconnect');
+				chatSocket.off('onlineStatusUpdates', wrappedApplyStatusUpdates); 
+				//socket.disconnect();
+			}
+		)
+	} catch (error) {
+		console.error("Error in getOnlineStatusUpdates():", error);
+	}
 }
