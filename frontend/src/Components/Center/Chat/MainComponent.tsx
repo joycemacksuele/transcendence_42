@@ -28,33 +28,26 @@ import Nav from 'react-bootstrap/Nav';
 
 const MainComponent = () => {
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
-    const [show, setShow] = useState(false);
     if (chatClicked) {
-        console.log("[MainComponent] chatClicked: ", chatClicked);
+      console.log("[MainComponent] chatClicked: ", chatClicked);
     }
-
-    //added for the invite button
+    const [show, setShow] = useState(false);
     const [invitee, setInvitee] = useState("Unknown user")
-    // let invitee ='';
 
-    //notify backend that the user declined
-    const declineInvite = () => {
-        chatSocket?.emit('declineInvite');
-        setShow(false);
-        console.log("declined");
-    }
-    
+   //notify backend that the user declined
+   const declineInvite = () => {
+    chatSocket?.emit('declineInvite');
+    setShow(false);
+    console.log("declined");
+}
 
-    //move user to game page
-    const acceptInvite = () => {
-        //socket?.emit('identify', player);
-        setShow(false);
-        console.log("accepted");
-        window.location.replace("/main_page/game");
-    }
-
-
-
+//move user to game page
+const acceptInvite = () => {
+    //socket?.emit('identify', player);
+    setShow(false);
+    console.log("accepted");
+    window.location.replace("/main_page/game");
+}
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
     // useEffect without dependencies:
@@ -70,6 +63,7 @@ const MainComponent = () => {
             chatSocket.on("connect", () => {
                 console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
             });
+
 //invite button
             chatSocket.on("inviteMessage",(message:string)=>{
                 console.log(`received string from backend :${message}`);
@@ -78,6 +72,7 @@ const MainComponent = () => {
             }
     );
 //end invite button
+
             chatSocket.on("disconnect", (reason) => {
                 if (reason === "io server disconnect") {
                     console.log("[MainComponent] socket disconnected: ", reason);
@@ -103,58 +98,75 @@ const MainComponent = () => {
 
     ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
     // recent or groups
-    const [activeContentLeft, setActiveContentLeft] = useState<string>('recent');
+    const [activeContentLeft, setActiveContentLeft] = useState<string>('recent');    
+    const [activeButton, setActiveButton] = useState('recent' || '');
 
     const handleClick = (content: null | string) => {
         setActiveContentLeft(content || '');
+        setActiveButton(content || '');
     };
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
-        <Container className='h-75' fluid>
+        // <Container className='chat-main d-flex w-100 justify-content-center' fluid>
+        <Container className='w-100' fluid style={{ maxWidth: '1200px' }}>
+            {/* <div  > */}
+            <Row className='justify-content-center'>
             {/* I still don't understand why we need this Row here, but it is not working without it*/}
-            <Row className='chat-page'>
-
                 {/* Recent + Groups column */}
-                <Col className='col-md-3'>
+                <Col xs={11} sm={10} md={3} className='left-col d-flex flex-column'>
                     {/* Recent + Groups header */}
-                    <Row className='h-10'>
+                    <Row className=''>
                         <Nav
                             className="border-bottom p-0"
-                            activeKey="recent"
+                            // activeKey={activeButton}
                             variant="underline"
                             fill
                             onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                <Nav.Link eventKey="recent">My chats</Nav.Link>
+                                <Nav.Link eventKey="recent"
+								          className={activeButton === 'recent' ? 'nav-link active' : 'nav-link'}
+                                >
+                                    My chats
+                                </Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="groups">Channels</Nav.Link>
+                                <Nav.Link eventKey="groups"
+                                    className={activeButton === 'groups' ? 'nav-link active' : 'nav-link'}
+                                >
+                                    Channels
+                                </Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Row>
+
                     {/* Recent or Group body */}
-                    <Row className='h-100'>
+                    <Row className='left-col-body justify-content-center flex-grow-1'>
                         {activeContentLeft === 'recent' &&
                             <MyChats setChatClicked={setChatClicked} />
                         }
-                        {activeContentLeft === 'groups' && <Channels setChatClicked={setChatClicked} /> &&
-                            /* NewGroupButton Button */
-                            <NewGroupButton/>
+                        {activeContentLeft === 'groups' &&
+                            <Channels setChatClicked={setChatClicked} />
                         }
+                    </Row>
+                    {/* NewChat Button - at the bottom, visible only wheb Group is active */}
+                    <Row className='mt-auto'>
+                        { activeContentLeft === 'groups' && ( 
+                            <NewGroupButton/>
+                        )}
                     </Row>
                 </Col>
 
                 {/* MainComponent column */}
-                <Col className='bg-light col-md-6'>
+                <Col xs={11} sm={10} md={5} className='middle-col bg-light flex-column mx-4 mt-5'>
                     <Messages chatClicked={chatClicked} />
                 </Col>
 
                 {/* Members column */}
-                <Col className='col-md-3'>
+                <Col xs={11} sm={10} md={3} className='members-col flex-column mt-5 mt-md-0'>
                     {/* Members header */}
-                    <Row className='h-10'>
+                    <Row className='members-col-header'>
                         <Nav
                             className="border-bottom p-0"
                             activeKey="members"
@@ -172,26 +184,40 @@ const MainComponent = () => {
                         </Nav>
                     </Row>
                     {/* Members body */}
-                    <Row className='h-100'>
-                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/>}
-                        {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessageButtons chatClicked={chatClicked}/>}
-                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/>}
-                        {chatClicked?.type != ChatType.PRIVATE && <MembersGroupButtons chatClicked={chatClicked}/>}
+                    <Row className=''>
+                        <Col className='members-col-body d-flex flex-column'>
+                            
+                            {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/>}
+                            {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessageButtons chatClicked={chatClicked}/>}
+
+                            {/* This element MembersGroup is a row and it has fixed height in .css */}
+                            {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/>}
+                            <div className='members-col-empty flex-grow-1'>
+                                {/* This is empty and should expand to occupy the remaining space of the column, pushing the next row to the bottom of the parent Col. */}
+                            </div>
+                            <Row className='members-col-bottom mt-auto'>
+                                {/* This row should be pushed to the bottom of the parent Col */}
+                                {chatClicked?.type != ChatType.PRIVATE && <MembersGroupButtons chatClicked={chatClicked}/>}
+                            </Row>
+
+
+                        </Col>
                     </Row>
                 </Col>
-
             </Row>
-             <Modal show={show}>
-                    <Modal.Body>
-                        <p>{invitee} wants to invite you for a game</p>
-                        <Button variant="secondary" onClick={acceptInvite}>
-                          Accept invite 
-                        </Button>
-                        <Button variant="primary" onClick={declineInvite}>
-                           Reject invite
-                        </Button>
-                    </Modal.Body>
-                </Modal>
+            <Modal show={show}>
+              <Modal.Body>
+                  <p>{invitee} wants to invite you for a game</p>
+                  <Button variant="secondary" onClick={acceptInvite}>
+                    Accept invite 
+                  </Button>
+                  <Button variant="primary" onClick={declineInvite}>
+                      Reject invite
+                  </Button>
+              </Modal.Body>
+            </Modal>
+                {/* </div> */}
+              
         </Container>
     );
 };

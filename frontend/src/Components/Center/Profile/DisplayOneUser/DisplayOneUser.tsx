@@ -7,13 +7,10 @@ import getBlockedIds from "./getBlockedIds.ts";
 import { NavLink } from "react-router-dom";
 import { ChatType, RequestNewChatDto } from "../../Chat/Utils/ChatUtils.tsx";
 import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
-import MatchHistory from "../MatchHistory.tsx";
-import GetPlayingStatus from "../GetPlayingStatus.tsx";
-import { getOnlineStatus } from "../getOnlineStatus.ts";
+import MatchHistory from "../SubComponents/MatchHistory.tsx";
+import GetPlayingStatus from "../utils/GetPlayingStatus.tsx";
+import { useOnlineStatus } from "../utils/useOnlineStatus.ts";
 import "../../../../css/Profile-users-list.css";
-import {AxiosResponse} from "axios";
-import * as string_decoder from "string_decoder";
-import * as querystring from "querystring";
 
 
 interface UserProps {
@@ -56,8 +53,7 @@ const DisplayOneUser: React.FC<{
   const toggleModal = () => setShowModal(!showModal);
     
 
-  const isUserOnline = getOnlineStatus(loginName);
-
+  const isUserOnline = useOnlineStatus(loginName);
 
   // if the current user is displayed, do not show the buttons
   useEffect(() => {
@@ -209,12 +205,12 @@ const DisplayOneUser: React.FC<{
                   <h4>{userData.profileName}</h4>
                   <div className="d-inline-flex align-items-center">
                     <div className="circle">
-                      online
+                      {/* online
                       <span
                         id={`circle${userData.onlineStatus ? "Green" : "Red"}`}
                       >
                         &#9679;
-                      </span>
+                      </span> */}
                       onlineWS
                       <span
                         id={`circle${isUserOnline ? "Green" : "Red"}`}

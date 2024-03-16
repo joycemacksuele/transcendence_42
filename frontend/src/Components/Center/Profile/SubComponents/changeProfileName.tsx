@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
-import axiosInstance from "../../Other/AxiosInstance";
-import { CurrentUserContext, CurrUserData } from "./contextCurrentUser";
+import axiosInstance from "../../../Other/AxiosInstance";
+// import { CurrentUserContext, CurrUserData } from "./contextCurrentUser";
+import { CurrentUserContext, CurrUserData } from "../utils/contextCurrentUser";
 import { Form, Button, FormControl, Alert, InputGroup } from "react-bootstrap";
 // import axios from "axios";
 
@@ -16,8 +17,6 @@ const ChangeProfileName: React.FC<ContextProps> = ({ updateContext }) => {
 
   // jaka: checking
   console.log("ChangeProfileName: currUserData: ", currUserData);
-
-  const loginName = currUserData.loginName;
 
   const [profileName, setProfileName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
