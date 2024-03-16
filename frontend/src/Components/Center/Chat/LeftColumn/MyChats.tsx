@@ -49,7 +49,6 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
         console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
 
         chatSocket.emit("getChats");
-        // TODO MOVE THIS .on FROM HERE TO A userEffect with socket dependency?? so it is not subscribing all the time??
         chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
             const oldData = JSON.stringify(chatInfo);
             const newData = JSON.stringify(allChats);
@@ -64,6 +63,7 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
         };
     }, []);
 
+
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
         <>
@@ -71,18 +71,19 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className=''>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
+                    {chatInfo.map((chat: ResponseNewChatDto, i: number) => (
                         <>
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
-                            {((intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) != -1) || chat.type == ChatType.PRIVATE) && <ListGroup
-                                key={key}
+                            {/* If chat is private we don't show it in this list - fix to not have spaces when */}
+                            {chat.type == ChatType.PRIVATE && <ListGroup
+                                key={chat.id}
                                 className="hidden"
                             >
                             </ListGroup>}
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
                             {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) != -1) && <ListGroup
-                                key={key}
+                                key={chat.id}
                                 variant="flush"
                             >
                                 <ListGroup.Item
