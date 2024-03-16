@@ -45,7 +45,7 @@ export const getOnlineStatusUpdates = (
 	try {
 		if (!chatSocket.connected)
 			chatSocket.connect();
-
+		
 		const wrappedApplyStatusUpdates =
 			(updates: string[]) => applyStatusUpdates(updates, usersRef, setUsers);
 
