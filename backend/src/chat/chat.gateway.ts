@@ -39,7 +39,7 @@ import {UsersCanChatEntity} from "./entities/users-can-chat.entity";
 @UsePipes(new ValidationPipe({
   exceptionFactory(validationErrors: ValidationError[] = []) {
     if (this.isDetailedOutputDisabled) {
-      return new WsException('JOYCEs Bad request');
+      return new WsException('Bad request');
     }
     const errors = this.flattenValidationErrors(validationErrors);
     throw new WsException(errors.toString());

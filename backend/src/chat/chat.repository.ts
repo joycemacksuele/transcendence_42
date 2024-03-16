@@ -30,7 +30,9 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.leftJoin("users_can_chat.chat", "new_chat")
 				.leftJoin("users_can_chat.user", "user")
 				.getOne();
+
 			if (usersCanChatRow == undefined) {
+				this.logger.log("[JOYCE inside if, will try to create/save a new usersCanChatEntity");
 				const usersCanChatEntity = new UsersCanChatEntity();
 				usersCanChatEntity.user = user;
 				usersCanChatEntity.chat = chatEntity;
@@ -41,8 +43,9 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 					.save(usersCanChatEntity);
 				return usersCanChatEntity;
 			}
+			return usersCanChatRow;
 		} catch (err) {
-			throw new Error('[addNewUserToUsersCanChatEntity] err: ' + err);
+			throw new Error('[addNewUserToUsersCanChatEntity] err: ' + err as string);
 		}
 	}
 
@@ -55,7 +58,7 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.leftJoin("users_can_chat.user", "user")
 				.getOne();
 
-			this.logger.log("JOYCE [usersCanChatRow.user]: ", usersCanChatRow);
+			this.logger.log("[updateMutedTimeStamp] usersCanChatRow: " + usersCanChatRow);
 
 			usersCanChatRow.timeStamp = (new Date().getTime() + 120000).toString();// 2 min to get un-muted
 			this.logger.log("[updateMutedTimeStamp]: User " + user.loginName + " will be muted for 2 min. New timestamp: " + usersCanChatRow.timeStamp);
@@ -75,8 +78,9 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.leftJoin("users_can_chat.chat", "new_chat")
 				.leftJoin("users_can_chat.user", "user")
 				.getOne();
-				await this.delete(usersCanChatRow.id);
-				return usersCanChatRow;
+			this.logger.log("[deleteUserFromUsersCanChatEntity] usersCanChatRow: " + usersCanChatRow);
+			await this.delete(usersCanChatRow.id);
+			return usersCanChatRow;
 		} catch (err) {
 			throw new Error('[updateMutedTimeStamp] err: ' + err);
 		}
@@ -96,12 +100,16 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	}
 
 	public async getOneChat(chatId: number) {
-		return await this
-			.createQueryBuilder("new_chat")
-			.where('new_chat.id = :id', {id: chatId})
-			.leftJoinAndSelect("new_chat.users", "user")
-			.leftJoinAndSelect("new_chat.admins", "admin")
-			.getOne();
+		try {
+			return await this
+				.createQueryBuilder("new_chat")
+				.where('new_chat.id = :id', {id: chatId})
+				.leftJoinAndSelect("new_chat.users", "user")
+				.leftJoinAndSelect("new_chat.admins", "admin")
+				.getOne();
+		} catch (err) {
+			throw new Error('[getOneChat] err: ' + err);
+		}
 	}
 
 	private async getOneRowAndSaveAsDTO(chat: NewChatEntity) {
@@ -165,9 +173,9 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.admins", "user")
 			.getRawMany();
 		responseDto.admins = chatAdmins.map((adminsList) => {
-			this.logger.log('[getChat] Admins in the chat: ' + adminsList.admins);
 			return adminsList.admins;
 		});
+		this.logger.log('[getChat] Admins in the chat: ' + responseDto.admins);
 
 		// ----------- get chat muted users list
 		const usersCanChatRows = await this
@@ -184,7 +192,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 					return user.loginName;
 				}).catch((error) => {
 					// return [];
-					throw new Error("[getChat] Can't find a muted user for this chat " + chat.name + ". error: " + error);
+					throw new Error("[getChat] Can't find the muted user in the user entity table " + chat.name + ". error: " + error);
 				})
 			}
 		}));
@@ -200,6 +208,11 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			this.logger.log("[getChat] Banned users in the chat: " + bannedUsersList.bannedUsers);
 			return bannedUsersList.bannedUsers;
 		});
+		if (responseDto.bannedUsers.toString()) {
+			this.logger.log('[getChat] Banned users in the chat: ' + responseDto.bannedUsers.toString());
+		} else {
+			this.logger.log('[getChat] No banned users in the chat: ' + chat.name);
+		}
 
 		// ----------- get chat messages
 		const chatMessages = await this
@@ -218,7 +231,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
 					.select('user.loginName as "loginName", user.id as "userId"')
-					.where('user.id = :id', {id: messagesList.creatorId})
+					.where('user.id = :id', {id: messagesList.creator})
 					.leftJoin("new_chat.users", "user")
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;
@@ -230,126 +243,172 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
 			}
 		}));
+
 		return responseDto;
 	}
 
 	public async getOneChatDto(chatId: number) {
-		const chat: NewChatEntity = await this
-			.createQueryBuilder("new_chat")
-			.orderBy('new_chat.id', 'DESC')
-			.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
-			.where('new_chat.id = :id', {id: chatId})
-			.getRawOne();
-		return this.getOneRowAndSaveAsDTO(chat);
+		try {
+			const chat: NewChatEntity = await this
+				.createQueryBuilder("new_chat")
+				.orderBy('new_chat.id', 'DESC')
+				.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
+				.where('new_chat.id = :id', {id: chatId})
+				.getRawOne();
+			return this.getOneRowAndSaveAsDTO(chat);
+		} catch (err) {
+			throw new Error('[getOneChatDto] err: ' + err);
+		}
 	}
 
 	public async getAllChats() {
-		const newChatTable: NewChatEntity[] = await this
-			.createQueryBuilder("new_chat")
-			.orderBy('new_chat.id', 'DESC')
-			.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
-			.getRawMany();
-		return await Promise.all(newChatTable.map(async (chat: NewChatEntity): Promise<ResponseNewChatDto> => {
-			return this.getOneRowAndSaveAsDTO(chat);
-		}));
+		try {
+			const newChatTable: NewChatEntity[] = await this
+				.createQueryBuilder("new_chat")
+				.orderBy('new_chat.id', 'DESC')
+				.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
+				.getRawMany();
+			return await Promise.all(newChatTable.map(async (chat: NewChatEntity): Promise<ResponseNewChatDto> => {
+				return this.getOneRowAndSaveAsDTO(chat);
+			}));
+		} catch (err) {
+			throw new Error('[getAllChats] err: ' + err);
+		}
 	}
 
 	public async deleteUserFromChat(foundChatEntityToLeave: NewChatEntity, userToDelete: UserEntity) {
-		this.logger.log("[deleteUserFromChat] foundChatEntityToLeave: " + foundChatEntityToLeave);
-		if (!foundChatEntityToLeave.users.toString()) {
-			// TODO DELETE FROM ChatMessageEntity AND USERS_CAN_CHAT??
-			//     seems like cascade is not working to delete the child rows in the joined tables
-			await this.delete(foundChatEntityToLeave.id);
-			this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". I was deleted!");
-			return false;
-		} else {
-			// NewChat has users on it, try to see if the user to be deleted is in the array of users
-			const index = foundChatEntityToLeave.users.findIndex(user=> user.id === userToDelete.id)
-			if (index !== -1) {
-				// If user to be deleted was found in the array of users, delete s/he from it and save the entity
-				foundChatEntityToLeave.users.splice(index, 1);
-				await this
-					.manager
-					.save(foundChatEntityToLeave);
-
-				// After deleting the correct user, if we don't have any oser left, we can delete the chat
-				if (!foundChatEntityToLeave.users.toString()) {
-					// TODO DELETE FROM ChatMessageEntity AND USERS_CAN_CHAT??
-					//     seems like cascade is not working to delete the child rows in the joined tables
-					await this.delete(foundChatEntityToLeave.id);
-				}
-			} else {
-				this.logger.log("[deleteUserFromChat] User " + userToDelete.loginName + " is not a member of the chat " + foundChatEntityToLeave.name);
+		try {
+			this.logger.log("[deleteUserFromChat] foundChatEntityToLeave: " + foundChatEntityToLeave);
+			if (!foundChatEntityToLeave.users.toString()) {
+				// TODO DELETE FROM ChatMessageEntity AND USERS_CAN_CHAT??
+				//     seems like cascade is not working to delete the child rows in the joined tables
+				await this.delete(foundChatEntityToLeave.id);
+				this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". I was deleted!");
 				return false;
+			} else {
+				// NewChat has users on it, try to see if the user to be deleted is in the array of users
+				const index = foundChatEntityToLeave.users.findIndex(user=> user.id === userToDelete.id)
+				if (index !== -1) {
+					// If user to be deleted was found in the array of users, delete s/he from it and save the entity
+					foundChatEntityToLeave.users.splice(index, 1);
+					await this
+						.manager
+						.save(foundChatEntityToLeave);
+
+					// After deleting the correct user, if we don't have any oser left, we can delete the chat
+					if (!foundChatEntityToLeave.users.toString()) {
+						// TODO DELETE FROM ChatMessageEntity AND USERS_CAN_CHAT??
+						//     seems like cascade is not working to delete the child rows in the joined tables
+						await this.delete(foundChatEntityToLeave.id);
+					}
+				} else {
+					this.logger.log("[deleteUserFromChat] User " + userToDelete.loginName + " is not a member of the chat " + foundChatEntityToLeave.name);
+					return false;
+				}
 			}
+			return true
+		} catch (err) {
+			throw new Error('[deleteUserFromChat] err: ' + err);
 		}
-		return true
 	}
 
 	public async joinChat(user: UserEntity, chat: NewChatEntity) {
-		let chatToJoin = await this
-			.createQueryBuilder("new_chat")
-			.where('new_chat.id = :id', { id: chat.id })
-			.leftJoinAndSelect("new_chat.users", "user")
-			.leftJoinAndSelect("new_chat.usersCanChat", "users_can_chat")
-			.getOne();
-		chatToJoin.users.push(user);
-		// Add user to the usersCanChatEntity:
-//		chatToJoin.usersCanChat = [];
-		this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatToJoin, user).then(r => {
-			this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r.id + ' created for the ', user);
-		});
-		await this
-			.manager
-			.save(chatToJoin);
-		return chatToJoin
+		try {
+			let chatToJoin = await this
+				.createQueryBuilder("new_chat")
+				.where('new_chat.id = :id', { id: chat.id })
+				.leftJoinAndSelect("new_chat.users", "user")
+				.leftJoinAndSelect("new_chat.usersCanChat", "users_can_chat")
+				.getOne()
+			.catch ((err) => {
+				this.logger.log("[JOYCE] err getting chat to join: " + err);
+				return null;
+			});
+			if (chatToJoin != null) {
+				try {
+					chatToJoin.users.push(user);
+				} catch (err) {
+					this.logger.log("[JOYCE] err pushing user entity to users list: " + err);
+				}
+
+				this.logger.log("[JOYCE] new Users list ", chatToJoin.users);
+			}
+
+
+			// Add user to the usersCanChatEntity (before saving the chat entity):
+			this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatToJoin, user).then(r => {
+				if (r) {
+					this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity id ' + r.id +
+						' created for the user ' + user.loginName + " and chat id: " + chat.id);
+				}
+			});
+
+			await this
+				.manager
+				.save(chatToJoin);
+			return chatToJoin
+		} catch (err) {
+			throw new Error('[joinChat] err: ' + err);
+		}
 	}
 
 	public async addAdmin(user : UserEntity, chat : NewChatEntity) {
-		let chatAdmins = await this
-			.createQueryBuilder("new_chat")
-			.where('new_chat.id = :id', { id: chat.id })
-			.leftJoinAndSelect("new_chat.admins", "admin")// why admin and not user for the alias?
-			.getOne();
-		chatAdmins.admins.push(user);
-		await this
-			.manager
-			.save(chatAdmins);
-		return chatAdmins
+		try {
+			let chatAdmins = await this
+				.createQueryBuilder("new_chat")
+				.where('new_chat.id = :id', { id: chat.id })
+				.leftJoinAndSelect("new_chat.admins", "admin")// why admin and not user for the alias?
+				.getOne();
+			chatAdmins.admins.push(user);
+			await this
+				.manager
+				.save(chatAdmins);
+			return chatAdmins
+		} catch (err) {
+			throw new Error('[addAdmin] err: ' + err);
+		}
 	}
 
 	public async banUserFromChat(user: UserEntity, chat: NewChatEntity) {
-		let chatToBan = await this
-			.createQueryBuilder("new_chat")
-			.where('new_chat.id = :id', { id: chat.id })
-			.leftJoinAndSelect("new_chat.bannedUsers", "bannedUser")
-			.getOne();
-		chatToBan.bannedUsers.push(user);
-		await this
-			.manager
-			.save(chatToBan);
-		return chatToBan
+		try {
+			let chatToBan = await this
+				.createQueryBuilder("new_chat")
+				.where('new_chat.id = :id', { id: chat.id })
+				.leftJoinAndSelect("new_chat.bannedUsers", "bannedUser")
+				.getOne();
+			chatToBan.bannedUsers.push(user);
+			await this
+				.manager
+				.save(chatToBan);
+			return chatToBan
+		} catch (err) {
+			throw new Error('[banUserFromChat] err: ' + err);
+		}
 	}
 
 	public async editPasswordFromChat(foundEntityToJoin: NewChatEntity, chatPassword: string) {
-		this.logger.log("[editPasswordFromChat] foundEntityToJoin: ", foundEntityToJoin);
-		if (foundEntityToJoin.type == ChatType.PROTECTED) {
-			if (chatPassword != null) {
-				bcryptjs.hash(chatPassword, 10).then((password: string) => {
-					this.logger.log('[editPasswordFromChat] hashed password: ', password);
-					foundEntityToJoin.password = password;
-				}).catch((err: string) => {
-					throw new Error('[editPasswordFromChat] Can not hash password -> err: ' + err);
-				});
-			} else {
-				// If password is deleted we want to set the chat type to PUBLIC
-				foundEntityToJoin.password = null;
-				foundEntityToJoin.type = ChatType.PUBLIC;
+		try {
+			this.logger.log("[editPasswordFromChat] foundEntityToJoin: ", foundEntityToJoin);
+			if (foundEntityToJoin.type == ChatType.PROTECTED) {
+				if (chatPassword != null) {
+					bcryptjs.hash(chatPassword, 10).then((password: string) => {
+						this.logger.log('[editPasswordFromChat] hashed password: ', password);
+						foundEntityToJoin.password = password;
+					}).catch((err: string) => {
+						throw new Error('[editPasswordFromChat] Can not hash password -> err: ' + err);
+					});
+				} else {
+					// If password is deleted we want to set the chat type to PUBLIC
+					foundEntityToJoin.password = null;
+					foundEntityToJoin.type = ChatType.PUBLIC;
+				}
+				await this
+					.manager
+					.save(foundEntityToJoin);
 			}
-			await this
-				.manager
-				.save(foundEntityToJoin);
+			return true
+		} catch (err) {
+			throw new Error('[editPasswordFromChat] err: ' + err);
 		}
-		return true
 	}
 }
