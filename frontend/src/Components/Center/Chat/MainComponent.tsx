@@ -34,8 +34,8 @@ const MainComponent = () => {
     }
 
     //added for the invite button
-
-    let invitee ='';
+    const [invitee, setInvitee] = useState("Unknown user")
+    // let invitee ='';
 
     //notify backend that the user declined
     const declineInvite = () => {
@@ -73,7 +73,7 @@ const MainComponent = () => {
 //invite button
             chatSocket.on("inviteMessage",(message:string)=>{
                 console.log(`received string from backend :${message}`);
-                invitee = message;
+                setInvitee(message);
                 setShow(true);
             }
     );

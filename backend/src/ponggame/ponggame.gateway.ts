@@ -98,8 +98,11 @@ try {
     const userId = payload.username;
     
     this.logger.log(`pong game client id ${client.id} connected with the name ${userId}`);
-      this._socketIdUserId.set(client.id, userId);
-      this._userIdSocketId.set(userId, client.id);
+    if(this._userIdSocketId.get(client.id))
+        console.log(">>>>>>>>>>>>>>>>>OVERRIDE HAPPENING<<<<<<<<<<<<<<<<<<");
+    this._socketIdUserId.set(client.id, userId);
+    this._userIdSocketId.set(userId, client.id);
+
     // moved to gamepage event
     //   const matchId = this.ponggameService.getMatchId(userId);
     //   this.logger.log(`UserId found : ${userId}`);
@@ -133,7 +136,6 @@ try {
 
   @SubscribeMessage('gamepage')
   gamepage(@ConnectedSocket() client: Socket){
-    console.log(">>>>>>>>>>user on gamepage identified<<<<<<<<<<<<<<<<<<<<");
     client.data.gamepage = true;
     const userId = this._socketIdUserId.get(client.id);
       
@@ -206,7 +208,8 @@ try {
   invitePlayer(@MessageBody() userId: string, @ConnectedSocket() client: Socket): boolean{
     console.log(`invite for ${userId} received`);
     const invitedSocketId = this._userIdSocketId.get(userId);
-    this.server.to(invitedSocketId).emit("inviteMessage","testmessage");
+    const inviteeName = this._socketIdUserId.get(client.id);
+    this.server.to(invitedSocketId).emit("inviteMessage",inviteeName);
     return true;
   }
 
@@ -214,7 +217,6 @@ try {
   declineInvite(@ConnectedSocket() client: Socket){
     const userId = this._socketIdUserId.get(client.id);
     this.ponggameService.declineInvite(userId);
-    console.log(">>>>>>>>>>>>>>>>>>>>decline recieved<<<<<<<<<<<<<<<<<<<<<");
   }
 
 
