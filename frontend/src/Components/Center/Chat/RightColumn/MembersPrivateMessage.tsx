@@ -58,8 +58,11 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
       <Row className="members-col-members flex-grow-1">
         <Stack gap={2}>
           {chatClicked?.usersIntraName &&
-            chatClicked?.usersIntraName.map((member: string, mapStaticKey: number) => (
-              <ListGroup key={mapStaticKey} variant="flush">
+            chatClicked?.usersIntraName.map((member: string, i: number) => (
+              <ListGroup
+                  key={JSON.stringify(member)}
+                  variant="flush"
+              >
                 <ListGroup.Item
                   ref={inputRef}
                   as="li"
@@ -107,7 +110,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       )}
                     </>
                   )}
-                  {chatClicked?.usersProfileName.at(mapStaticKey)}
+                  {chatClicked?.usersProfileName.at(key)}
                 </ListGroup.Item>
 
                 {/* Modal with buttons should not appear to the current user */}
