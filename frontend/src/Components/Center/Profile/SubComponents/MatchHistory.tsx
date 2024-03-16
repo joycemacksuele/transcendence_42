@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import axiosInstance from "../../Other/AxiosInstance";
+import axiosInstance from "../../../Other/AxiosInstance";
 import { Row, Col, ListGroup } from "react-bootstrap";
-import { getCurrentUsername } from "./DisplayOneUser/DisplayOneUser";
-import { addDummyMatches } from "../../Test/addDummyMatches";
+import { getCurrentUsername } from "../DisplayOneUser/DisplayOneUser";
+
+import { addDummyMatches } from "../../../Test/addDummyMatches";
 
 
 interface UserProps {

@@ -68,7 +68,7 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
     return (
         <>
             {/* Recent chats row */}
-            <Row className='me-auto'>
+            <Row className=''>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
                     {chatInfo.map((chat: ResponseNewChatDto, key: number) => (

@@ -1,11 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import Header from "./Header/Header.tsx";
 import Center from "./Center/Center.tsx";
-import {
-  CurrentUserContext,
-  CurrUserData,
-} from "./Center/Profile_page/contextCurrentUser.tsx";
-import { checkIfUserExistsInDB } from "./Center/Profile_page/checkIfUserExistsInDB.tsx";
+import { CurrUserData } from "./Center/Profile/utils/contextCurrentUser.tsx";
+import { checkIfUserExistsInDB } from "./Center/Profile/utils/checkIfUserExistsInDB.tsx";
 import { Container } from "react-bootstrap";
 
 interface ContextProps {
@@ -36,12 +33,13 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
             response.user.profileImage || ""
           );
           //updateContext(response.user); // todo: check if ok
-		  console.log("Current user context updated: " + userData?.loginName);
-          if (userData !== null)
-		  	updateContext(userData);
-        //   const { loginName } = useContext(CurrentUserContext);
           console.log("Current user context updated: " + userData?.loginName);
-          console.log("Current user context updated: " + response.user.loginName);
+          if (userData !== null) updateContext(userData);
+          //   const { loginName } = useContext(CurrentUserContext);
+          console.log("Current user context updated: " + userData?.loginName);
+          console.log(
+            "Current user context updated: " + response.user.loginName
+          );
         }
       } catch (error) {
         if (process.env.NODE_ENV === "development") {

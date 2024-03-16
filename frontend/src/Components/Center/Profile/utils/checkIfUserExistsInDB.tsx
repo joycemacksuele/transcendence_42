@@ -1,5 +1,5 @@
 import { AxiosResponse, AxiosError } from "axios";
-import axiosInstance from "../../Other/AxiosInstance";
+import axiosInstance from "../../../Other/AxiosInstance";
 
 // axios.defaults.withCredentials = true;
 

@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { ChatType, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
-import { User } from "../../Profile_page/DisplayUsers.tsx";
+import { User } from "../../Users/DisplayUsers.tsx";
 
 // Importing bootstrap and other modules
 import Row from "react-bootstrap/Row";
@@ -107,7 +107,7 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
         <>
             {/* Group Buttons row */}
             {(chatClicked?.usersIntraName && intraName) &&
-                <Row className="h-20 align-items-bottom">
+                <Row className="members-col-buttons mt-auto d-flex justify-content-end">
                     <Stack gap={2} className="align-self-center">
 
                         {/* Add users = when we ARE members of the chat + when we ARE admin */}
@@ -137,24 +137,22 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                         <Form>
                                             {currentChatUsers && currentChatUsers.map((currentChatUser, mapStaticKey: number) => (
                                                 <div key={mapStaticKey} className="mb-3">
-                                                    <Form.Check
-                                                        inline
-                                                        value={currentChatUser.loginName}
-                                                        label={currentChatUser.loginName}
-                                                        // name="group1" -> not needed it seems
-                                                        type="checkbox"
-                                                        id={"inline-checkbox-" + mapStaticKey}
-                                                        onClick={() => {
-                                                            {/* Add users to chat = when user is NOT banned OR is NOT current user */}
-                                                            console.log("JOYCE currentChatUser.loginName: ", currentChatUser.loginName);
-                                                            console.log("JOYCE intraName: ", intraName);
-
-                                                            if (chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1 && currentChatUser.loginName != intraName) {
+                                                    {/* Add users to chat = when user is NOT current user AND is NOT banned */}
+                                                    {(currentChatUser.loginName != intraName && chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1) &&
+                                                        <Form.Check
+                                                            inline
+                                                            value={currentChatUser.loginName}
+                                                            label={currentChatUser.profileName}
+                                                            // name="group1" -> not needed it seems
+                                                            type="checkbox"
+                                                            id={"inline-checkbox-" + mapStaticKey.toString()}
+                                                            onClick={() => {
+                                                                console.log("JOYCE currentChatUser.loginName: ", currentChatUser.loginName);
+                                                                console.log("JOYCE intraName: ", intraName);
                                                                 setUsersToBeAddedToChat([...usersToBeAddedToChat, currentChatUser.loginName]);
-                                                            }
-                                                        }}
-
-                                                    />
+                                                            }}
+                                                        />
+                                                    }
                                                 </div>
                                             ))}
                                         </Form>

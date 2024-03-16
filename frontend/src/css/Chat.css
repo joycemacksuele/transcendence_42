@@ -1,16 +1,22 @@
 /* # is used inside id='' */
+.chat-main {
+    /* padding: 0; */
+}
+
 .chat-page {
     /* color = font color */
-    color: grey;
-    width: auto;
-    height: 50vw;
+    /* color: grey; */
+    /* width: auto; */
+    /* height: 100vw; */
     /*display: flex;*/
     /*overflow-y: scroll;*/
 }
 
+
+
 ul.dropdown-menu {
     /*width: auto;*/
-    height: 50vw;
+    height: 100vw;
     overflow-y: scroll;
 }
 
@@ -20,4 +26,63 @@ ul.dropdown-menu {
 
 .add_users_to_chat {
     overflow-y: auto;
+}
+
+
+/***************************************************************/
+/* Jaka for testing ********************************************/
+
+/* Left column */
+.left-col-body {
+    background: rgb(212, 194, 194);
+
+    overflow-y: auto;
+    height: calc(100vh - 400px);
+    padding: 5px 0 5px 0;
+    margin-bottom: 5px;
+    /* margin-left: 0px; */
+    /* margin-right: 0px; */
+    /* max-height: calc(100vh - 200px); */
+    /* display: none; */
+    /* border: 1px solid red; */
+}
+
+.middle-col {
+    /* margin-left: 5px; */
+    /* margin-right: 5px; */
+}
+
+/* Members column */
+.members-col
+/* .middle-col */
+{
+    border: 0px solid blue;
+}
+.members-col-header {
+    border: 0px solid rgb(34, 130, 69);
+}
+
+.members-col-body {
+    border: 0px solid red;
+    height: calc(100vh - 120px);
+    max-height: calc(100vh - 120px);
+    background: rgb(212, 194, 194);
+    padding-top: 5px;
+}
+.members-col-members {
+    overflow-y: auto;
+    height: calc(100vh - 300px);
+    max-height: calc(100vh - 300px);
+    border: 0px solid green;
+}
+.members-col-empty {
+    border: 1px solid pink;
+
+}
+.members-col-bottom {
+    border: 1px solid rgb(13, 13, 13);
+}
+
+.members-col-buttons {
+    border: 1px solid rgb(114, 241, 3);
 }
