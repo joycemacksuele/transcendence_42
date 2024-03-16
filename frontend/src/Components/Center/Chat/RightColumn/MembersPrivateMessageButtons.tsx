@@ -67,7 +67,7 @@ const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked }) =>
   return (
     <>
       {/* Private MainComponent Buttons row */}
-      <Row className="h-20 align-items-bottom">
+      <Row className="align-items-bottom">
         <Stack gap={2} className="align-self-center">
           {/* use variant="outline-secondary" disabled for when we don't want this button to be enabled */}
           {/* Play button is available only when we are on a private chat channel */}
