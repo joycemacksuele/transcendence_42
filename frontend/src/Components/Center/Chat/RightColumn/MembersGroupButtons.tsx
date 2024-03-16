@@ -34,10 +34,10 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
 
     const getIntraName = async () => {
         return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
-            console.log('[MembersGroup] Current user intraName: ', response.data.username);
+            console.log('[MembersGroupButtons] Current user intraName: ', response.data.username);
             return response.data.username as string;
         }).catch((error): null => {
-            console.error('[MembersGroup] Error getting current username: ', error);
+            console.error('[MembersGroupButtons] Error getting current username: ', error);
             return null;
         });
     }
@@ -47,58 +47,59 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
         const init = async () => {
             if (!intraName) {
                 const currUserIntraName = await getIntraName();
-                console.log("[MembersGroup] currUserIntraName: ", currUserIntraName);
+                console.log("[MembersGroupButtons] currUserIntraName: ", currUserIntraName);
                 setIntraName(currUserIntraName);
             }
         }
         init().catch((error) => {
-            console.log("[MembersGroup] Error getting current user intra name: ", error);
+            console.log("[MembersGroupButtons] Error getting current user intra name: ", error);
         });
     }, [intraName]);
 
     const getAllUsers = async () => {
         return await axiosInstance.get<User[]>('/users/all').then((response) => {
             setCurrentChatUsers(response.data);
-            console.log("[MembersGroup] All users were fetched from the database");
+            console.log("[MembersGroupButtons] All users were fetched from the database");
         }).catch((error): undefined => {
-            console.error('[MembersGroup] Error retrieving all users: ', error);
+            console.error('[MembersGroupButtons] Error retrieving all users: ', error);
         });
     };
 
     // We want to fetch all users every time we change goFetchUsers, that is why this useEffect depends on it
     useEffect(() => {
-        console.log("[MembersGroup] inside useEffect -> will fetch all users in the database");
+        console.log("[MembersGroupButtons] inside useEffect -> will fetch all users in the database");
         getAllUsers().catch((error): undefined => {
-            console.error('[MembersGroup] Error retrieving all users: ', error);
+            console.error('[MembersGroupButtons] Error retrieving all users: ', error);
         });
     }, [goFetchUsers]);
 
     useEffect(() => {
         return () => {
-            console.log("[MembersGroup] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
+            console.log("[MembersGroupButtons] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
             chatClicked = null;
+            setUsersToBeAddedToChat([])
         };
     }, []);
 
     const joinGroupChat = () => {
-        console.log("[MembersGroup] Current user will join the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
+        console.log("[MembersGroupButtons] Current user will join the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
         chatSocket.emit("joinChat", { chatId: chatClicked?.id, chatPassword: chatPassword });
         setChatPassword(null);
     };
 
     const leaveGroupChat = () => {
-        console.log("[MembersGroup] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
+        console.log("[MembersGroupButtons] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
         chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
     };
 
     const addUsers = () => {
-        console.log("[MembersGroup] users [", usersToBeAddedToChat, "] will be added to chat [", chatClicked?.name, "]");
+        console.log("[MembersGroupButtons] users [", usersToBeAddedToChat, "] will be added to chat [", chatClicked?.name, "]");
         chatSocket.emit("addUsers", { chatId: chatClicked?.id, newUsers: usersToBeAddedToChat });
         setUsersToBeAddedToChat([]);
     };
 
     const editGroupPassword = () => {
-        console.log("[MembersGroup] [", chatClicked?.name, "] will have its password changed or deleted");
+        console.log("[MembersGroupButtons] [", chatClicked?.name, "] will have its password changed or deleted");
         chatSocket.emit("editPassword", { chatId: chatClicked?.id, chatPassword: chatPassword });
     };
 
@@ -135,8 +136,11 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     </Modal.Header>
                                     <Modal.Body className="column-list-matches overflow-y">
                                         <Form>
-                                            {currentChatUsers && currentChatUsers.map((currentChatUser, mapStaticKey: number) => (
-                                                <div key={mapStaticKey} className="mb-3">
+                                            {currentChatUsers && currentChatUsers.map((currentChatUser, i: number) => (
+                                                <div
+                                                    key={JSON.stringify(currentChatUser)}
+                                                    className="mb-3"
+                                                >
                                                     {/* Add users to chat = when user is NOT current user AND is NOT banned */}
                                                     {(currentChatUser.loginName != intraName && chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1) &&
                                                         <Form.Check
@@ -145,9 +149,9 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                             label={currentChatUser.profileName}
                                                             // name="group1" -> not needed it seems
                                                             type="checkbox"
-                                                            id={"inline-checkbox-" + mapStaticKey.toString()}
+                                                            id={"inline-checkbox-" + i.toString()}
                                                             onClick={() => {
-                                                                console.log("JOYCE currentChatUser.loginName: ", currentChatUser.loginName);
+                                                                console.log("JOYCE user clicked: ", currentChatUser.loginName);
                                                                 console.log("JOYCE intraName: ", intraName);
                                                                 setUsersToBeAddedToChat([...usersToBeAddedToChat, currentChatUser.loginName]);
                                                             }}
