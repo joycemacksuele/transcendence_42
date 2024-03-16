@@ -149,7 +149,7 @@ const MainComponent = () => {
                             // onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                {chatClicked?.type == ChatType.PUBLIC ? (
+                                {chatClicked?.type != ChatType.PRIVATE ? (
                                     <Nav.Link href="members" disabled>{chatClicked?.name}<b> members</b></Nav.Link>
                                 ) : (
                                     <Nav.Link href="members" disabled> members</Nav.Link>

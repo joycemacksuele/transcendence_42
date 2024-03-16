@@ -150,11 +150,7 @@ const DisplayOneUser: React.FC<{
     if (!chatSocket.connected) {
       chatSocket.connect();
       chatSocket.on("connect", () => {
-        console.log(
-          "[DisplayOneUser] socket connected: ",
-          chatSocket.connected,
-          " -> socket id: " + chatSocket.id
-        );
+        console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
         const requestNewChatDto: RequestNewChatDto = {
           name: loginName,
           type: ChatType.PRIVATE,
@@ -175,11 +171,7 @@ const DisplayOneUser: React.FC<{
         // else the socket will automatically try to reconnect
       });
     } else {
-      console.log(
-        "[DisplayOneUser] socket connected: ",
-        chatSocket.connected,
-        " -> socket id: " + chatSocket.id
-      );
+      console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
     }
   };
 

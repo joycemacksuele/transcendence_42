@@ -67,13 +67,15 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className=''>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.map((chat: ResponseNewChatDto, key: number) => (
-                        <>
+                    {chatInfo.map((chat: ResponseNewChatDto, i: number) => (
+                        <> key={chat.id}
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
+
                             {/* If chat is private we don't show it in this list */}
                             {chat.type == ChatType.PRIVATE &&
                                 <ListGroup
-                                    key={key + 100}
+                                    // key={"Channels-hidden-" + i.toString()}
+                                    // key={chat.id}
                                     className="hidden"
                                 >
                                 </ListGroup>
@@ -83,7 +85,8 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
                             {/* And chat is not private  (i.e. is a public or protected group) */}
                             {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) == -1 && chat.type != ChatType.PRIVATE) &&
                                 <ListGroup
-                                    key={key + 1}
+                                    // key={"Channels-" + i.toString()}
+                                    // key={chat.id}
                                     variant="flush"
                                 >
                                     <ListGroup.Item
