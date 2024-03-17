@@ -20,6 +20,7 @@ import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
 import {WsExceptionFilter} from "./utils/chat-exception-handler";
 import {UserService} from "../user/user.service";
+import {RequestPasswordRelatedChatDto} from "./dto/request-password-related-chat.dto";
 
 /*
     Websockets tips:
@@ -31,7 +32,6 @@ import {UserService} from "../user/user.service";
  */
 
 @UseFilters(new WsExceptionFilter())
-// @UsePipes(new ValidationPipe())// As the global one does not work for web sockets
 @UsePipes(new ValidationPipe({
   exceptionFactory(validationErrors: ValidationError[] = []) {
     if (this.isDetailedOutputDisabled) {
@@ -98,7 +98,7 @@ export class ChatGateway
       }
     } catch (error) {
       this.logger.error('[handleConnection] error: ' + error);
-      clientSocket.emit("exception", new UnauthorizedException(error));
+      clientSocket.emit("exceptionHandleConnection", new UnauthorizedException(error));
       clientSocket.disconnect();
     }
   }
@@ -148,7 +148,7 @@ export class ChatGateway
       }
     }).catch((err) => {
       this.logger.error('[createChat] Could not create chat -> err: ' + err.message);
-      clientSocket.emit("exception", err.message);
+      clientSocket.emit("exceptionCreateChat", err.message);
     });
   }
 
@@ -172,17 +172,14 @@ export class ChatGateway
   }
 
   @SubscribeMessage('joinChat')
-  async joinChat(
-      @MessageBody('chatId') chatId: number,
-      @MessageBody('chatPassword') chatPassword: string | null,
-      @ConnectedSocket() clientSocket: Socket) {
+  async joinChat(@MessageBody() requestPasswordRelatedChatDto: RequestPasswordRelatedChatDto, @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
-    this.logger.log('joinChat -> chatId: ' + chatId + " clientSocket.data.user: " + clientSocket.data.user);
-    await this.chatService.joinChat(chatId, chatPassword, clientSocket.data.user).then( () => {
+    this.logger.log('joinChat -> chat: ' + requestPasswordRelatedChatDto.name + " clientSocket.data.user: " + clientSocket.data.user);
+    await this.chatService.joinChat(requestPasswordRelatedChatDto.id, requestPasswordRelatedChatDto.password, clientSocket.data.user).then( () => {
       // Join the specific room after chat was created
-      clientSocket.join(chatId.toString());
-      this.ws_server.in(clientSocket.id).socketsJoin(chatId.toString());
-      this.logger.log('Socket has joined room ' + chatId.toString());
+      clientSocket.join(requestPasswordRelatedChatDto.id.toString());
+      this.ws_server.in(clientSocket.id).socketsJoin(requestPasswordRelatedChatDto.id.toString());
+      this.logger.log('Socket has joined room ' + requestPasswordRelatedChatDto.id.toString());
 
       // If we could join the chat, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
@@ -190,10 +187,13 @@ export class ChatGateway
         clientSocket.emit("getChats", allChats);
         this.logger.log('deleteChat -> getChats -> all chats were emitted to the frontend');
       });
+    }).catch((err) => {
+      this.logger.error('[joinChat] Could join chat -> err: ' + err.message);
+      clientSocket.emit("exceptionCheckPassword", err.message);
     });
   }
 
-  @SubscribeMessage('leaveChat')
+  @SubscribeMessage('leaveChat')// TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT??
   async leaveChat(
       @MessageBody('chatId') chatId: number,
       @ConnectedSocket() clientSocket: Socket) {
@@ -282,7 +282,7 @@ export class ChatGateway
     });
   }
 
-  @SubscribeMessage('banFromChat')
+  @SubscribeMessage('banFromChat')// TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT??
   async banFromChat(
       @MessageBody('chatId') chatId: number,
       @MessageBody('user') user: string,
@@ -327,13 +327,10 @@ export class ChatGateway
   }
 
   @SubscribeMessage('editPassword')
-  async editPassword(
-      @MessageBody('chatId') chatId: number,
-      @MessageBody('chatPassword') chatPassword: string | null,// TODO HAVE A STRINGER PASSWORD HERE
-      @ConnectedSocket() clientSocket: Socket) {
+  async editPassword(@MessageBody() requestPasswordRelatedChatDto: RequestPasswordRelatedChatDto, @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('clientSocket.id: ' + clientSocket.id);
-    this.logger.log('editPassword -> chatId: ' + chatId + " will have its password edited");
-    await this.chatService.editPassword(chatId, chatPassword).then( () => {
+    this.logger.log('editPassword -> chat: ' + requestPasswordRelatedChatDto.name + " will have its password edited");
+    await this.chatService.editPassword(requestPasswordRelatedChatDto.id, requestPasswordRelatedChatDto.password).then( () => {
 
       // If we could edit the password, get the whole table
       this.chatService.getAllChats().then( (allChats) => {
@@ -341,6 +338,9 @@ export class ChatGateway
         clientSocket.emit("getChats", allChats);
         this.logger.log('editPassword -> getChats -> all chats were emitted to the frontend');
       });
+    }).catch((err) => {
+      this.logger.error('[editPassword] Could edit chat\'s password -> err: ' + err.message);
+      clientSocket.emit("exceptionEditPassword", err.message);
     });
   }
 

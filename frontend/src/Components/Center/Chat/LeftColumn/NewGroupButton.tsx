@@ -15,7 +15,7 @@ const NewGroupButton = () => {
 
     let alertKey = 0;
     const [errorException, setErrorException] = useState<string[]>([]);
-    const [show, setShow] = useState(false);
+    const [showNewChatModal, setShowNewChatModal] = useState(false);
 
     ////////////////////////////////////////////////////////////////////// CREATE SOCKET CHAT ROOM
     const [chatName, setChatName] = useState('');
@@ -31,9 +31,9 @@ const NewGroupButton = () => {
         // if alertKey is zero, we know we did not show any error message (since it did not loop this key in the map)
         // But if we did not show any error message, AND nothing was input, then we want to keep the modal
         if (alertKey > 0 && (chatName.length == 0 || (chatType == ChatType.PROTECTED && chatPassword?.length == 0))) {
-            setShow(true);
+            setShowNewChatModal(true);
         } else {
-            setShow(false);
+            setShowNewChatModal(false);
         }
 
         alertKey = 0;
@@ -49,13 +49,13 @@ const NewGroupButton = () => {
         console.log("[NewGroupButton] inside useEffect -> socket connected? ", chatSocket.connected);
         console.log("[NewGroupButton] inside useEffect -> socket id: ", chatSocket.id);
 
-        chatSocket.on("exception", (error: string) => {
+        chatSocket.on("exceptionCreateChat", (error: string) => {
             if (error.length > 0) {
-                console.log("[NewGroupButton useEffect] errorException:", error);
+                console.log("[NewGroupButton useEffect] exceptionCreateChat:", error);
                 const parsedError = error.split(",");
 
                 setErrorException(parsedError);
-                setShow(true);
+                setShowNewChatModal(true);
             }
         });
 
@@ -63,7 +63,7 @@ const NewGroupButton = () => {
             console.log("[NewGroupButton] Inside useEffect return function (NewGroupButton Component was removed from DOM)");
             alertKey = 0;
             setErrorException([]);
-            setShow(false);
+            setShowNewChatModal(false);
 
             setChatName('');
             setChatType(ChatType.PUBLIC);
@@ -79,13 +79,13 @@ const NewGroupButton = () => {
                     <Button
                         variant="primary"
                         type="submit"
-                        onClick={ () => setShow(true)}
+                        onClick={ () => setShowNewChatModal(true)}
                     >
                         New Group
                     </Button>
-                    <Modal show={show} onHide={ () => {
+                    <Modal show={showNewChatModal} onHide={ () => {
                             alertKey = 0;
-                            setShow(false);
+                            setShowNewChatModal(false);
                             setErrorException([]);
 
                             setChatName('');
@@ -101,8 +101,8 @@ const NewGroupButton = () => {
                                 <Form.Group className="mb-3">
                                     <Form.Select
                                         // id="roomForm.type"
-                                        // value={chatType}
-                                        defaultValue={ChatType.PUBLIC}
+                                        value={chatType}
+                                        // defaultValue={ChatType.PUBLIC}
                                         aria-label="Default select example"
                                         className="mb-3"
                                         onChange={event=> {
@@ -152,7 +152,7 @@ const NewGroupButton = () => {
                             ))}
                             <Button variant="secondary" onClick={ () => {
                                 alertKey = 0;
-                                setShow(false);
+                                setShowNewChatModal(false);
                                 setErrorException([]);
 
                                 setChatName('');
