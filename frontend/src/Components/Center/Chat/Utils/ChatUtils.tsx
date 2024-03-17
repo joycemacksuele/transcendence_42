@@ -1,10 +1,7 @@
-// This is mapped to request-new-chat.dto.ts on the backend
 export interface RequestNewChatDto {
-    // socketId: string;
-    name: string;// Can also be a login name
+    name: string;// Can also be a login name for a private chat
     type: ChatType;
     password: string | null;
-    // loginName: string;
 }
 
 export interface ResponseMessageChatDto {
@@ -29,6 +26,6 @@ export interface ResponseNewChatDto {
 
 export enum ChatType {
     PRIVATE = 0,// Max 2 people (DM)
-    PUBLIC,// Can have > 2
-    PROTECTED,// Can have > 2 AND has a password
+    PUBLIC = 1,// Can have > 2
+    PROTECTED = 2,// Can have > 2 AND has a password
 }

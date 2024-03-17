@@ -85,6 +85,7 @@ export class ChatService {
       try {
         chatEntity.password = await bcryptjs.hash(requestNewChatDto.password, 10);
       } catch (err) {
+        this.logger.error('[createChat] password hash exception err: ' + err.message);
         // This goes to the UI (keep lower case to match the Validator errors)
         throw new Error('internal error with password');
       }
@@ -107,6 +108,7 @@ export class ChatService {
 
       return chatEntity;
     }).catch((err) => {
+      this.logger.error('[createChat] exception err: ' + err.message);
       // This goes to the UI (keep lower case to match the Validator errors)
       throw new Error("group [" + requestNewChatDto.name + '] already exist');
     });
@@ -133,7 +135,8 @@ export class ChatService {
       },
     }).then((foundEntityToJoin) => {
       if (foundEntityToJoin.type == ChatType.PROTECTED && foundEntityToJoin.password == null) {
-        throw new Error('Password is required for PROTECTED group');
+        // This goes to the UI (keep lower case to match the Validator errors)
+        throw new Error('password is required for PROTECTED group');
       } else {
         if (foundEntityToJoin.type == ChatType.PROTECTED) {
           // Join a PROTECTED chat
@@ -145,8 +148,10 @@ export class ChatService {
               this.logger.log('[joinChat] Password if ok, joining the chat');
               return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
             }
-          }).catch((err: string) => {
-            throw new Error('[joinChat] Can not hash password -> err: ' + err);
+          }).catch((err) => {
+            this.logger.error('[joinChat] password hash exception err: ' + err.message);
+            // This goes to the UI (keep lower case to match the Validator errors)
+            throw new Error('internal error with password');
           });
         } else {
           // Join a PUBLIC OR PRIVATE chat
@@ -155,7 +160,9 @@ export class ChatService {
         }
       }
     }).catch((err: string) => {
-      throw new Error('[joinChat] Could not join chat -> err: ' + err);
+      this.logger.error('[joinChat] Could not join chat err: ' + err);
+      // This goes to the UI (keep lower case to match the Validator errors)
+      throw new Error('could not join chat');
     });
     return false;
   }
@@ -166,7 +173,9 @@ export class ChatService {
       // Now we have the entity to update the users' array
       return await this.chatRepository.addAdmin(userEntity, foundChatEntityToAdd);
     }).catch((err: string) => {
-      throw new Error('[addAdmin] Could not add admin to chat -> err: ' + err);
+      this.logger.error('[addAdmin] Could not add admin to chat exception: ' + err);
+      // This goes to the UI (keep lower case to match the Validator errors)
+      throw new Error('could not add admin to chat');
     });
     return false;
   }
@@ -179,7 +188,9 @@ export class ChatService {
       // Now we have the entity to add the user and timestamp to the usersCanChat array
       return await this.usersCanChatRepository.updateMutedTimeStamp(userEntity, foundChatEntity);
     }).catch((err: string) => {
-      throw new Error('[muteFromChat] Could not mute user from chat -> err: ' + err);
+      this.logger.error('[muteFromChat] Could not mute user from chat exception: ' + err);
+      // This goes to the UI (keep lower case to match the Validator errors)
+      throw new Error('could not mute user from chat');
     });
     return false;
   }
@@ -190,9 +201,11 @@ export class ChatService {
       // Now we have the entity to update the users' array (delete banned user) and add the user to the bannedUsers array
       await this.chatRepository.banUserFromChat(userEntity, foundChatEntity);
       return await this.chatRepository.deleteUserFromChat(foundChatEntity, userEntity);
-      // TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT
+      // TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT??
     }).catch((err: string) => {
-      throw new Error('[banFromChat] Could not ban user from chat -> err: ' + err);
+      this.logger.error('[banFromChat] Could not ban user from chat exception: ' + err);
+      // This goes to the UI (keep lower case to match the Validator errors)
+      throw new Error('could not ban user from chat');
     });
     return false;
   }
@@ -205,7 +218,9 @@ export class ChatService {
         await this.chatRepository.joinChat(userEntity, foundChatEntityToAdd);
       });
     }).catch((err: string) => {
-      throw new Error('[addUsers] Could not add users to chat -> err: ' + err);
+      this.logger.error('[addUsers] Could not add users to chat exception: ' + err);
+      // This goes to the UI (keep lower case to match the Validator errors)
+      throw new Error('could not add users to chat');
     });
     return false;
   }
@@ -222,7 +237,9 @@ export class ChatService {
       // Now we can delete this user from the Admin list
       // TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT
     }).catch((err: string) => {
-      throw new Error('[leaveChat] Could not delete user from chat -> err: ' + err);
+      this.logger.error('[leaveChat] Could not delete user from chat exception: ' + err);
+      // This goes to the UI (keep lower case to match the Validator errors)
+      throw new Error('could not delete user from chat');
     });
     return false;
   }
@@ -232,7 +249,9 @@ export class ChatService {
       // Now we have the entity to update the password
       return await this.chatRepository.editPasswordFromChat(foundEntityToEdit, chatPassword);
     }).catch((err: string) => {
-      throw new Error('[editPassword] Could not edit password -> err: ' + err);
+      this.logger.error('[editPassword] Could not edit password from chat exception: ' + err);
+      // This goes to the UI (keep lower case to match the Validator errors)
+      throw new Error('could not edit password from chat');
     });
     return false;
   }

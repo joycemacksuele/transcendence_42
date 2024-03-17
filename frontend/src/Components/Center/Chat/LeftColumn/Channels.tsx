@@ -68,7 +68,8 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
                     {chatInfo.map((chat: ResponseNewChatDto, i: number) => (
-                        <> key={chat.id}
+                        <>
+                            {/*key={chat.id}*/}
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
 
                             {/* If chat is private we don't show it in this list */}
@@ -90,7 +91,7 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
                                     variant="flush"
                                 >
                                     {/*printing id for testing*/}
-                                    key={chat.id}
+                                    {/*key={chat.id}*/}
                                     <ListGroup.Item
                                         as="li"
                                         className="justify-content-between align-items-start"

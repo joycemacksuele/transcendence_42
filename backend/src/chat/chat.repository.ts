@@ -230,7 +230,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
 					.select('user.loginName as "loginName", user.id as "userId"')
-					.where('user.id = :id', {id: messagesList.creator})
+					.where('user.id = :id', {id: messagesList.creator})// TODO: There is probably something wrong here, it was as creatorId before and we were still getting the exception
 					.leftJoin("new_chat.users", "user")
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;

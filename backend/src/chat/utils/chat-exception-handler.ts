@@ -18,6 +18,6 @@ export class WsExceptionFilter {
         this.logger.log('clientSocket.id: ' + clientSocket.id);
         this.logger.log('exception.message: ' + exception.message);
         // this.logger.log('exception.getError(): ' + exception.getError());
-        clientSocket.emit("exception", exception.message);
+        clientSocket.emit("exceptionDtoValidation", exception.message);
     }
 }
