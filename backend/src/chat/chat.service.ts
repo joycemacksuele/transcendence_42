@@ -79,28 +79,36 @@ export class ChatService {
 
     } else if (requestNewChatDto.type == ChatType.PROTECTED) {
       if (requestNewChatDto.password == null) {
-        throw new Error('[createChat] Password is required for PROTECTED group');
+        // This goes to the UI (keep lower case to match the Validator errors)
+        throw new Error('password is required for protected groups');
       }
       try {
         chatEntity.password = await bcryptjs.hash(requestNewChatDto.password, 10);
       } catch (err) {
-        throw new Error('[createChat] Can not hash password');
+        // This goes to the UI (keep lower case to match the Validator errors)
+        throw new Error('internal error with password');
       }
     }
     return this.chatRepository.save(chatEntity).then(async r => {
       this.logger.log('[createChat] chat created: ' + r.name);
+
 	  // Add creator to the UsersCanChatEntity:
       this.usersCanChatRepository.addNewUserToUsersCanChatEntity(r, r.creator).then(r2 => {
 	    this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the bzzzt ' + chatEntity.creator.loginName);
       });
+
+      // Add friend to the UsersCanChatEntity:
       if (requestNewChatDto.type == ChatType.PRIVATE) {
         const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
-        // Add friend to the UsersCanChatEntity:
         this.usersCanChatRepository.addNewUserToUsersCanChatEntity(r, friend).then(r2 => {
           this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the friend ' + friend.loginName);
         });
-      }      
+      }
+
       return chatEntity;
+    }).catch((err) => {
+      // This goes to the UI (keep lower case to match the Validator errors)
+      throw new Error("group [" + requestNewChatDto.name + '] already exist');
     });
   }
 

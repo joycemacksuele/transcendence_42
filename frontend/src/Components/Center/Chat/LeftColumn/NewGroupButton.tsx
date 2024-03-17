@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -12,9 +12,9 @@ import {chatSocket} from "../Utils/ClientSocket.tsx"
 import {Alert} from "react-bootstrap";
 
 const NewGroupButton = () => {
-    // const [errorMessage, setErrorMessage] = useState<string>("");
-    const [errorGroupName, setErrorGroupName] = useState<string|null>(null);
-    const [errorPassword, setErrorPassword] = useState<string|null>(null);
+
+    let alertKey = 0;
+    const [errorException, setErrorException] = useState<string[]>([]);
     const [show, setShow] = useState(false);
 
     ////////////////////////////////////////////////////////////////////// CREATE SOCKET CHAT ROOM
@@ -24,35 +24,50 @@ const NewGroupButton = () => {
 
     const createGroupChat = () => {
         const requestNewChatDto: RequestNewChatDto = {name: chatName, type: chatType, password: chatPassword};
-        console.log("[NewGroupButton] createGroupChat called. requestNewChatDto:", requestNewChatDto);
-
+        console.log("[NewGroupButton] requestNewChatDto:", requestNewChatDto);
         chatSocket.emit("createChat", requestNewChatDto);
 
-        if (errorGroupName || errorPassword) {
+        // To keep the modal, check that any error message was shown when the "Save Changes" button was clicked
+        // if alertKey is zero, we know we did not show any error message (since it did not loop this key in the map)
+        // But if we did not show any error message, AND nothing was input, then we want to keep the modal
+        if (alertKey > 0 && (chatName.length == 0 || (chatType == ChatType.PROTECTED && chatPassword?.length == 0))) {
             setShow(true);
         } else {
             setShow(false);
         }
+
+        alertKey = 0;
+        setErrorException([]);
+
+        setChatName('');
+        // We don't want to set this here so when we click in "Save Changes" it does not reset the modal to the public
+        // setChatType(ChatType.PUBLIC);
         setChatPassword(null);
-        setErrorGroupName(null);
-        setErrorPassword(null);
     };
 
     useEffect(() => {
         console.log("[NewGroupButton] inside useEffect -> socket connected? ", chatSocket.connected);
         console.log("[NewGroupButton] inside useEffect -> socket id: ", chatSocket.id);
-        setErrorGroupName(null);
-        setErrorPassword(null);
 
         chatSocket.on("exception", (error: string) => {
-            console.log(" USEEFFECT chatSocket.on(\"exception\"..............: " + error);
-            setErrorGroupName(error);
-            setErrorPassword(error);
-            // setShow(true);
+            if (error.length > 0) {
+                console.log("[NewGroupButton useEffect] errorException:", error);
+                const parsedError = error.split(",");
+
+                setErrorException(parsedError);
+                setShow(true);
+            }
         });
 
         return () => {
             console.log("[NewGroupButton] Inside useEffect return function (NewGroupButton Component was removed from DOM)");
+            alertKey = 0;
+            setErrorException([]);
+            setShow(false);
+
+            setChatName('');
+            setChatType(ChatType.PUBLIC);
+            setChatPassword(null);
         };
     }, []);
 
@@ -68,7 +83,15 @@ const NewGroupButton = () => {
                     >
                         New Group
                     </Button>
-                    <Modal show={show} onHide={ () => {setShow(false)}}>
+                    <Modal show={show} onHide={ () => {
+                            alertKey = 0;
+                            setShow(false);
+                            setErrorException([]);
+
+                            setChatName('');
+                            setChatType(ChatType.PUBLIC);
+                            setChatPassword(null);
+                    }}>
                         <Modal.Header closeButton>
                             <Modal.Title>Create new chat group</Modal.Title>
                         </Modal.Header>
@@ -78,8 +101,8 @@ const NewGroupButton = () => {
                                 <Form.Group className="mb-3">
                                     <Form.Select
                                         // id="roomForm.type"
-                                        value={chatType}
-                                        // defaultValue={ChatType.PUBLIC}
+                                        // value={chatType}
+                                        defaultValue={ChatType.PUBLIC}
                                         aria-label="Default select example"
                                         className="mb-3"
                                         onChange={event=> {
@@ -95,21 +118,18 @@ const NewGroupButton = () => {
 
                                 {/* Group Name */}
                                 <Form.Group className="mb-3">
-                                    {/* <Form.Label>Group name</Form.Label> */}
                                     <Form.Control
-                                        className="mb-3"
                                         type="text"
+                                        value={chatName ? chatName : ""}
                                         placeholder="Group name"
                                         autoFocus
                                         onChange={event => setChatName(event.target.value)}
                                     />
-                                    {/*{errorGroupName && (<Alert variant="danger">{errorGroupName}</Alert>)}*/}
                                 </Form.Group>
 
                                 {/* Group password - if it's protected */}
-                                {chatType === ChatType.PROTECTED &&
+                                {chatType == ChatType.PROTECTED &&
                                     <Form.Group className="mb-3">
-                                        {/* <Form.Label htmlFor="inputPassword5"></Form.Label> */}
                                         <Form.Control
                                             type="password"
                                             value={chatPassword ? chatPassword : ""}
@@ -119,29 +139,30 @@ const NewGroupButton = () => {
                                             onChange={event=> setChatPassword(event.target.value)}
                                         />
                                         <Form.Text id="passwordHelpBlock" className="mb-3" muted>
-                                            Your password must be 5-20 characters long, contain letters and numbers,
-                                            and must not contain spaces, special characters, or emoji.
+                                            Your password must be 5-15 characters long, contain letters and numbers,
+                                            and must not contain special characters, or emoji.
                                         </Form.Text>
-                                        {/*{errorPassword && (<Alert variant="danger">{errorPassword}</Alert>)}*/}
-                                        {/*{!errorMessage && !errorMessage && OkMessage && (*/}
-                                        {/*    <Alert variant="success">{OkMessage}</Alert>*/}
-                                        {/*)}*/}
                                     </Form.Group>
                                 }
                             </Form>
                         </Modal.Body>
                         <Modal.Footer>
-                            {errorPassword && (<Alert variant="danger">{errorPassword}</Alert>)}
+                            {errorException.map((errorMessage) => (
+                                <Alert key={alertKey++} style={{ width: "42rem" }} variant="danger">{errorMessage}</Alert>
+                            ))}
                             <Button variant="secondary" onClick={ () => {
+                                alertKey = 0;
                                 setShow(false);
-                                setErrorGroupName(null);
-                                setErrorPassword(null);
+                                setErrorException([]);
+
+                                setChatName('');
+                                setChatType(ChatType.PUBLIC);
+                                setChatPassword(null);
                             }}>
                                 Close
                             </Button>
                             <Button variant="primary" onClick={ () => {
                                 createGroupChat();
-                                {!errorPassword && setShow(false)}
                             }}>
                                 Save Changes
                             </Button>

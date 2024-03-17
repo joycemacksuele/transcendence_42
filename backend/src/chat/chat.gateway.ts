@@ -11,19 +11,15 @@ import {
 import {Server, Socket} from 'socket.io';
 import {Logger, UnauthorizedException, UseFilters, UsePipes, ValidationPipe, ValidationError} from '@nestjs/common';
 import {ChatService} from './chat.service';
-import {ChatMessageEntity} from './entities/chat-message.entity';
 import {NewChatEntity} from './entities/new-chat.entity';
 import {ChatRepository} from './chat.repository';
 import {ResponseNewChatDto} from './dto/response-new-chat.dto';
 import {RequestNewChatDto} from './dto/request-new-chat.dto';
-import {ResponseMessageChatDto} from './dto/response-message-chat.dto';
 import {RequestMessageChatDto} from './dto/request-message-chat.dto';
 import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
-import {ChatType} from "./utils/chat-utils";
 import {WsExceptionFilter} from "./utils/chat-exception-handler";
 import {UserService} from "../user/user.service";
-import {UsersCanChatEntity} from "./entities/users-can-chat.entity";
 
 /*
     Websockets tips:
@@ -101,8 +97,8 @@ export class ChatGateway
         }
       }
     } catch (error) {
-      this.logger.log('[handleConnection] ' + error);
-      clientSocket.emit('error', new UnauthorizedException(error));
+      this.logger.error('[handleConnection] error: ' + error);
+      clientSocket.emit("exception", new UnauthorizedException(error));
       clientSocket.disconnect();
     }
   }
@@ -122,7 +118,7 @@ export class ChatGateway
         this.logger.log('getChats -> all chats were emitted to the frontend');
       });
     } catch (err) {
-      this.logger.log(err);
+      this.logger.error('[getChats] error: ', err);
     }
   }
 
@@ -134,23 +130,25 @@ export class ChatGateway
 
     this.chatService.createChat(requestNewChatDto, clientSocket.data.user).then(async (newChatEntity) => {
 
-      // Join the specific room after chat was created
-      // room name can be the chat id since they are unique
-      clientSocket.join(newChatEntity.id.toString());
-      this.ws_server.in(clientSocket.id).socketsJoin(newChatEntity.id.toString());
-      this.logger.log('Socket has joined room ' + newChatEntity.id.toString());
-      this.logger.log('Number of socket rooms: ' + clientSocket.rooms.size);
+      if (newChatEntity != null) {
+        // Join the specific room after chat was created
+        // room name can be the chat id since they are unique
+        clientSocket.join(newChatEntity.id.toString());
+        this.ws_server.in(clientSocket.id).socketsJoin(newChatEntity.id.toString());
+        this.logger.log('Socket has joined room ' + newChatEntity.id.toString());
+        this.logger.log('Number of socket rooms: ' + clientSocket.rooms.size);
 
-      // If we could save a new chat in the database, get the whole table
-      this.logger.log('getChats -> chat ' + requestNewChatDto.name + ' was created');
-      this.chatService.getAllChats().then((allChats) => {
-        // If we could get the whole table from the database, emit it to the frontend
-        clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
-        this.logger.log('createChat -> getChats -> all chats were emitted to the frontend');
-      });
+        // If we could save a new chat in the database, get the whole table
+        this.logger.log('getChats -> chat ' + requestNewChatDto.name + ' was created');
+        this.chatService.getAllChats().then((allChats) => {
+          // If we could get the whole table from the database, emit it to the frontend
+          clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
+          this.logger.log('createChat -> getChats -> all chats were emitted to the frontend');
+        });
+      }
     }).catch((err) => {
-      this.logger.log('createChat -> Could not create chat -> err: ' + err.message);
-      clientSocket.emit("error", err.message);
+      this.logger.error('[createChat] Could not create chat -> err: ' + err.message);
+      clientSocket.emit("exception", err.message);
     });
   }
 
@@ -361,7 +359,7 @@ export class ChatGateway
     this.ws_server.to(theChat.name).emit('messageChat', ret);
   }
 
-  @SubscribeMessage('registerChat')
+  @SubscribeMessage('registerChat')// TODO: ARE WE USING THIS? This DTO repeats the new chat dto and is not updated with the password/name validations
   registerChat(@MessageBody() requestRegisterChatDto: RequestRegisterChatDto) {
     this.logger.log('registerChat -> requestRegisterChatDto: ', requestRegisterChatDto);
     // const ret = this.chatService.messageChat(requestMessageChatDto);

@@ -1,37 +1,23 @@
-import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, IsEnum, IsStrongPassword} from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, IsEnum, IsStrongPassword, ValidateIf} from 'class-validator';
 import {ChatType} from '../utils/chat-utils'
-
-
-
-// export const getCreateUserDto = (ApiPropertySwagger?: any) => {
-//     // We did this to avoid having to include all nest dependencies related to ApiProperty on the client side too
-//     // With this approach the value of this decorator will be injected by the server but wont affect the client
-//     const ApiProperty = ApiPropertySwagger || function () {};
-
 
 export class RequestNewChatDto {
     @IsEnum(ChatType)
+    @IsNotEmpty()
     type: ChatType;
     
     @IsString()
     @MinLength(3)
     @MaxLength(15)
-    @IsNotEmpty({ message: 'Required' })
+    @IsNotEmpty()
     name: string;
 
     // PRIVATE   | is a DM - can't be joined  | only members can see it
     // PUBLIC    | everyone can join it       | everyone can see it
     // PROTECTED | password to join           | everyone can see it
-    // @IsStrongPassword()
-    @MinLength(5)
+    @ValidateIf((o) => o == ChatType.PROTECTED)
+    @IsNotEmpty()
+    @IsStrongPassword({ minNumbers: 1, minLength: 5, minUppercase: 1, minSymbols: 0, minLowercase: 1 })
     @MaxLength(15)
-    @IsOptional()
     password: string | null;
-
-    // @IsString()
-    // @MinLength(3)
-    // @MaxLength(15)
-    // @IsNotEmpty({ message: 'Required' })
-    // loginName: string;// todo rename to friendId? or friendProfileName -> use clientSocket.data.user for current user
 }

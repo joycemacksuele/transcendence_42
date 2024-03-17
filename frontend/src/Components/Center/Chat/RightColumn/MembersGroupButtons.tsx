@@ -151,8 +151,6 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                             type="checkbox"
                                                             id={"inline-checkbox-" + i.toString()}
                                                             onClick={() => {
-                                                                console.log("JOYCE user clicked: ", currentChatUser.loginName);
-                                                                console.log("JOYCE intraName: ", intraName);
                                                                 setUsersToBeAddedToChat([...usersToBeAddedToChat, currentChatUser.loginName]);
                                                             }}
                                                         />
