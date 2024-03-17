@@ -32,7 +32,6 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.getOne();
 
 			if (usersCanChatRow == undefined) {
-				this.logger.log("[JOYCE inside if, will try to create/save a new usersCanChatEntity");
 				const usersCanChatEntity = new UsersCanChatEntity();
 				usersCanChatEntity.user = user;
 				usersCanChatEntity.chat = chatEntity;
@@ -320,18 +319,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				.leftJoinAndSelect("new_chat.users", "user")
 				.leftJoinAndSelect("new_chat.usersCanChat", "users_can_chat")
 				.getOne()
-			.catch ((err) => {
-				this.logger.log("[JOYCE] err getting chat to join: " + err);
-				return null;
-			});
-			if (chatToJoin != null) {
-				try {
-					chatToJoin.users.push(user);
-				} catch (err) {
-					this.logger.log("[JOYCE] err pushing user entity to users list: " + err);
-				}
 
-				this.logger.log("[JOYCE] new Users list ", chatToJoin.users);
+			if (chatToJoin != null) {
+				chatToJoin.users.push(user);
+				this.logger.log("[joinChat] new Users list ", chatToJoin.users);
 			}
 
 			// Add user to the usersCanChatEntity (before saving the chat entity):

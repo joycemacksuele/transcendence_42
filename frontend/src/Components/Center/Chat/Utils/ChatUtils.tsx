@@ -29,6 +29,6 @@ export interface ResponseNewChatDto {
 
 export enum ChatType {
     PRIVATE = 0,// Max 2 people (DM)
-    PUBLIC = 1,// Can have > 2
-    PROTECTED = 2,// Can have > 2 AND has a password
+    PUBLIC,// Can have > 2
+    PROTECTED,// Can have > 2 AND has a password
 }
