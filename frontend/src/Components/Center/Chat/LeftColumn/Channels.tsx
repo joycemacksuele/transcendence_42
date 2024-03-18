@@ -68,7 +68,8 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
                     {chatInfo.map((chat: ResponseNewChatDto, i: number) => (
-                        <> key={chat.id}
+                        <>
+                            {/*key={chat.id}*/}
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
 
                             {/* If chat is private we don't show it in this list */}
@@ -83,31 +84,27 @@ const Channels: React.FC<PropsHeader> = ({setChatClicked}) => {
 
                             {/* If current user is not a member of the chat (i.e. is not in the members array) */}
                             {/* And chat is not private  (i.e. is a public or protected group) */}
-                            {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) == -1 && chat.type != ChatType.PRIVATE) &&
-                                <ListGroup
+                            {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) == -1 &&
+                                chat.type != ChatType.PRIVATE) && <ListGroup
                                     // key={"Channels-" + i.toString()}
                                     // key={chat.id}
                                     variant="flush"
                                 >
+                                    {/*printing id for testing*/}
+                                    {/*key={chat.id}*/}
                                     <ListGroup.Item
                                         as="li"
                                         className="justify-content-between align-items-start"
                                         variant="light"
                                         onClick={() => setChatClicked(chat)}
                                     >
-                                        { chat.type == ChatType.PROTECTED && <Image
-                                            src={import.meta.env.VITE_BACKEND as string + "/resources/chat-private.png"}
-                                            className="me-1"
-                                            width={30}
-                                            alt="chat"
-                                        />}
-                                        { chat.type == ChatType.PUBLIC && <Image
+                                        {chat.type == ChatType.PUBLIC && <Image
                                             src={import.meta.env.VITE_BACKEND as string + "/resources/chat-public.png"}
                                             className="me-1"
                                             width={30}
                                             alt="chat"
                                         />}
-                                        { chat.type == ChatType.PROTECTED && <Image
+                                        {chat.type == ChatType.PROTECTED && <Image
                                             src={import.meta.env.VITE_BACKEND as string + "/resources/chat-protected.png"}
                                             className="me-1"
                                             width={30}
