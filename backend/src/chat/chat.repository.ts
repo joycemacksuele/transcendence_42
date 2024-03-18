@@ -231,7 +231,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
 					.select('user.loginName as "loginName", user.id as "userId"')
-					.where('user.id = :id', {id: messagesList.creator})
+					.where('user.id = :id', {id: messagesList.creator})// TODO: There is probably something wrong here, it was as creatorId before and we were still getting the exception
 					.leftJoin("new_chat.users", "user")
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;
@@ -320,20 +320,11 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				.leftJoinAndSelect("new_chat.users", "user")
 				.leftJoinAndSelect("new_chat.usersCanChat", "users_can_chat")
 				.getOne()
-			.catch ((err) => {
-				this.logger.log("[JOYCE] err getting chat to join: " + err);
-				return null;
-			});
+
 			if (chatToJoin != null) {
-				try {
-					chatToJoin.users.push(user);
-				} catch (err) {
-					this.logger.log("[JOYCE] err pushing user entity to users list: " + err);
-				}
-
-				this.logger.log("[JOYCE] new Users list ", chatToJoin.users);
+				chatToJoin.users.push(user);
+				this.logger.log("[joinChat] new Users list ", chatToJoin.users);
 			}
-
 
 			// Add user to the usersCanChatEntity (before saving the chat entity):
 			this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatToJoin, user).then(r => {

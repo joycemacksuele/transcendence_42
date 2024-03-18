@@ -23,6 +23,9 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
+import {Alert} from "react-bootstrap";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 const MainComponent = () => {
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
@@ -31,7 +34,9 @@ const MainComponent = () => {
         console.log("[MainComponent] chatClicked: ", chatClicked);
     }
 
-
+    let alertKey = 0;
+    const [errorException, setErrorException] = useState<string[]>([]);
+    const [showExceptionModal, setShowExceptionModal] = useState(false);
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
     // useEffect without dependencies:
@@ -45,7 +50,7 @@ const MainComponent = () => {
         if (!chatSocket.connected) {
             chatSocket.connect();
             chatSocket.on("connect", () => {
-                console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+                console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
             });
             chatSocket.on("disconnect", (reason) => {
                 if (reason === "io server disconnect") {
@@ -56,8 +61,18 @@ const MainComponent = () => {
                 // else the socket will automatically try to reconnect
             });
         } else {
-            console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: " + chatSocket.id);
+            console.log("[MainComponent] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
         }
+
+        chatSocket.on("exceptionDtoValidation", (error: string) => {
+            if (error.length > 0) {
+                console.log("[MembersGroupButtons useEffect] exceptionDtoValidation:", error);
+                const parsedError = error.split(",");
+
+                setErrorException(parsedError);
+                setShowExceptionModal(true);
+            }
+        });
 
         return () => {
             console.log("[MainComponent] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
@@ -67,6 +82,10 @@ const MainComponent = () => {
                 chatSocket.disconnect();
                 console.log("[MainComponent] MainComponent socket was disconnected and all listeners were removed");
             }
+
+            alertKey = 0;
+            setShowExceptionModal(false);
+            setErrorException([]);
         };
     }, []);
 
@@ -99,8 +118,7 @@ const MainComponent = () => {
                             onSelect={(k) => handleClick(k)}
                         >
                             <Nav.Item>
-                                <Nav.Link eventKey="recent"
-								          className={activeButton === 'recent' ? 'nav-link active' : 'nav-link'}
+                                <Nav.Link eventKey="recent" className={activeButton === 'recent' ? 'nav-link active' : 'nav-link'}
                                 >
                                     My chats
                                 </Nav.Link>
@@ -189,8 +207,34 @@ const MainComponent = () => {
                         </Col>
                     </Row>
                 </Col>
-            </Row>    
-                {/* </div> */}
+            </Row>
+            <Modal size="sm" show={showExceptionModal} onHide={() => {
+                alertKey = 0;
+                setShowExceptionModal(false);
+                setErrorException([]);
+
+            }}>
+                {/*<Modal.Header closeButton>*/}
+                {/*    <Modal.Title>Add user(s)</Modal.Title>*/}
+                {/*</Modal.Header>*/}
+                <Modal.Body className="column-list-matches overflow-y">
+                    {errorException.map((errorMessage) => (
+                        <Alert key={alertKey++} variant="danger">{errorMessage}</Alert>
+                    ))}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="secondary"
+                        onClick={ () => {
+                            alertKey = 0;
+                            setShowExceptionModal(false);
+                            setErrorException([]);
+                        }}
+                    >
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 };
