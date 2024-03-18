@@ -110,7 +110,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       )}
                     </>
                   )}
-                  {chatClicked?.usersProfileName.at(key)}
+                  {chatClicked?.usersProfileName.at(i)}
                 </ListGroup.Item>
 
                 {/* Modal with buttons should not appear to the current user */}

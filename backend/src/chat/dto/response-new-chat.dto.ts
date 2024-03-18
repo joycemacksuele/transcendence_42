@@ -2,11 +2,9 @@ import {
     IsString,
     IsEnum,
     IsNumber,
-    IsStrongPassword,
     IsArray,
     ValidateNested,
-    ArrayMinSize,
-    MinLength, MaxLength, IsNotEmpty
+    ArrayMinSize
 } from 'class-validator';
 import {ChatType} from '../utils/chat-utils'
 import {ResponseMessageChatDto} from "./response-message-chat.dto";
