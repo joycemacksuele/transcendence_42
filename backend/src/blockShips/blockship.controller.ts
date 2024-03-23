@@ -17,7 +17,6 @@ export class BlockshipController {
 		private readonly blockshipService: BlockshipService
 	) {}
 
-
 	@Post('/check-blocked-status')
 	async checkBlockStatus(
 			@Request() req,
@@ -30,8 +29,6 @@ export class BlockshipController {
 		const blockedStatus = await this.blockshipService.checkBlockedStatus(currUser.id, checkId);
 		return blockedStatus;
 	}
-
-
 
 	@Post('/block-user')
 	async blockUser(
@@ -69,8 +66,6 @@ export class BlockshipController {
 		}
 	}
 
-
-
 	@Get('/get-blocked-ids')
 	async getBlockedUsers(
 		@Request() req
@@ -80,7 +75,9 @@ export class BlockshipController {
 		// console.log("currUser.id: ", currUser.id);
 
 		const blockedIds = await this.blockshipService.getBlockedIds(currUser.id);
-		console.log("The user [" + currUser.loginName +  "] has blocked users (id's): " + blockedIds);
+		if (blockedIds) {
+			console.log("The user [" + currUser.loginName + "] has blocked users (id's): " + blockedIds);
+		}
 		return blockedIds;
 	}
 

@@ -1,6 +1,6 @@
 import {IsNotEmpty, IsOptional, IsString, MinLength, MaxLength} from 'class-validator';
 
-export class RequestRegisterChatDto {
+export class RequestRegisterChatDto {// TODO: ARE WE USING THIS?
 
 /*    @IsString()
     @MinLength(2)

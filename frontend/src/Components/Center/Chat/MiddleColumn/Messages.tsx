@@ -97,8 +97,8 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
         {/*    key={i++}>*/}
         {messages && messages.messages && messages.messages[0] != null ? (
           messages.messages.map(
-            (message_: ResponseMessageChatDto, mapStaticKey: number) => (
-              <ListGroup key={mapStaticKey}>
+            (message_: ResponseMessageChatDto, i: number) => (
+              <ListGroup key={i}>
                 <ListGroup.Item>
                   <div className="fw-bold">{message_.creator}</div>
                   {!blockedids ||

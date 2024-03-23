@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { ChatType, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
+import {ChatType, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
 import { User } from "../../Users/DisplayUsers.tsx";
 
@@ -10,6 +10,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
+import {Alert} from "react-bootstrap";
 
 // the creator can kick, ban, mute anyone on the group (even admins)
 // the admin can kick, ban, mute others on the group (besides the creator)
@@ -23,21 +24,24 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
         console.log("[MembersGroupButtons] chatClicked: ", chatClicked);
     }
 
-    const [intraName, setIntraName] = useState<string | null>(null);
-    const [showPasswordModal, setShowPasswordModal] = useState(false);
-    const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
-    const [showAddUsersModal, setShowAddUsersModal] = useState(false);
+    let alertKey = 0;
     const [chatPassword, setChatPassword] = useState<string | null>(null);
+    const [errorException, setErrorException] = useState<string[]>([]);
+    const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+    const [intraName, setIntraName] = useState<string | null>(null);
+    const [showAddUsersModal, setShowAddUsersModal] = useState(false);
     const [usersToBeAddedToChat, setUsersToBeAddedToChat] = useState<string[]>([]);
     const [currentChatUsers, setCurrentChatUsers] = useState<User[]>([]);
     const [goFetchUsers, setGoFetchUsers] = useState(false);
 
     const getIntraName = async () => {
         return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
-            console.log('[MembersGroup] Current user intraName: ', response.data.username);
+            console.log('[MembersGroupButtons] Current user intraName: ', response.data.username);
             return response.data.username as string;
         }).catch((error): null => {
-            console.error('[MembersGroup] Error getting current username: ', error);
+            console.error('[MembersGroupButtons] Error getting current username: ', error);
             return null;
         });
     }
@@ -47,59 +51,118 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
         const init = async () => {
             if (!intraName) {
                 const currUserIntraName = await getIntraName();
-                console.log("[MembersGroup] currUserIntraName: ", currUserIntraName);
+                console.log("[MembersGroupButtons] currUserIntraName: ", currUserIntraName);
                 setIntraName(currUserIntraName);
             }
         }
         init().catch((error) => {
-            console.log("[MembersGroup] Error getting current user intra name: ", error);
+            console.log("[MembersGroupButtons] Error getting current user intra name: ", error);
         });
     }, [intraName]);
 
     const getAllUsers = async () => {
         return await axiosInstance.get<User[]>('/users/all').then((response) => {
             setCurrentChatUsers(response.data);
-            console.log("[MembersGroup] All users were fetched from the database");
+            console.log("[MembersGroupButtons] All users were fetched from the database");
         }).catch((error): undefined => {
-            console.error('[MembersGroup] Error retrieving all users: ', error);
+            console.error('[MembersGroupButtons] Error retrieving all users: ', error);
         });
     };
 
     // We want to fetch all users every time we change goFetchUsers, that is why this useEffect depends on it
     useEffect(() => {
-        console.log("[MembersGroup] inside useEffect -> will fetch all users in the database");
+        console.log("[MembersGroupButtons] inside useEffect -> will fetch all users in the database");
         getAllUsers().catch((error): undefined => {
-            console.error('[MembersGroup] Error retrieving all users: ', error);
+            console.error('[MembersGroupButtons] Error retrieving all users: ', error);
         });
     }, [goFetchUsers]);
 
     useEffect(() => {
+        console.log("[MembersGroupButtons] inside useEffect -> socket connected? ", chatSocket.connected);
+        console.log("[MembersGroupButtons] inside useEffect -> socket id: ", chatSocket.id);
+
+        chatSocket.on("exceptionEditPassword", (error: string) => {
+            if (error.length > 0) {
+                console.log("[MembersGroupButtons useEffect] exceptionEditPassword:", error);
+                const parsedError = error.split(",");
+
+                setErrorException(parsedError);
+                setShowEditPasswordModal(true);
+            }
+        });
+
+        chatSocket.on("exceptionCheckPassword", (error: string) => {
+            if (error.length > 0) {
+                console.log("[MembersGroupButtons useEffect] exceptionCheckPassword:", error);
+                const parsedError = error.split(",");
+
+                setErrorException(parsedError);
+                setShowPasswordModal(true);
+            }
+        });
+
         return () => {
-            console.log("[MembersGroup] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
+            console.log("[MembersGroupButtons] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
             chatClicked = null;
+            setUsersToBeAddedToChat([])
+
+            alertKey = 0;
+            setShowEditPasswordModal(false);
+            setShowPasswordModal(false);
+            setErrorException([]);
+            setChatPassword(null);
         };
     }, []);
 
     const joinGroupChat = () => {
-        console.log("[MembersGroup] Current user will join the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
-        chatSocket.emit("joinChat", { chatId: chatClicked?.id, chatPassword: chatPassword });
+        console.log("[MembersGroupButtons] Current user will join the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
+        const requestPasswordRelatedChatDto = { id: chatClicked?.id, name: chatClicked?.name, password: chatPassword };
+        console.log("[MembersGroupButtons][joinGroupChat] requestPasswordRelatedChatDto:", requestPasswordRelatedChatDto);
+        chatSocket.emit("joinChat", requestPasswordRelatedChatDto);
+
+        // To keep the modal, check that any error message was shown when the "Save Changes" button was clicked
+        // if alertKey is zero, we know we did not show any error message (since it did not loop this key in the map)
+        // But if we did not show any error message, AND nothing was input, then we want to keep the modal
+        if (alertKey > 0 && chatPassword?.length == 0) {
+            setShowPasswordModal(true);
+        } else {
+            setShowPasswordModal(false);
+        }
+
+        alertKey = 0;
+        setErrorException([]);
         setChatPassword(null);
     };
 
     const leaveGroupChat = () => {
-        console.log("[MembersGroup] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
+        console.log("[MembersGroupButtons] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
         chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
     };
 
     const addUsers = () => {
-        console.log("[MembersGroup] users [", usersToBeAddedToChat, "] will be added to chat [", chatClicked?.name, "]");
+        console.log("[MembersGroupButtons] users [", usersToBeAddedToChat, "] will be added to chat [", chatClicked?.name, "]");
         chatSocket.emit("addUsers", { chatId: chatClicked?.id, newUsers: usersToBeAddedToChat });
         setUsersToBeAddedToChat([]);
     };
 
     const editGroupPassword = () => {
-        console.log("[MembersGroup] [", chatClicked?.name, "] will have its password changed or deleted");
-        chatSocket.emit("editPassword", { chatId: chatClicked?.id, chatPassword: chatPassword });
+        console.log("[MembersGroupButtons] [", chatClicked?.name, "] will have its password changed or deleted");
+        const requestPasswordRelatedChatDto = { id: chatClicked?.id, name: chatClicked?.name, password: chatPassword };
+        console.log("[MembersGroupButtons][editGroupPassword] requestPasswordRelatedChatDto:", requestPasswordRelatedChatDto);
+        chatSocket.emit("editPassword", requestPasswordRelatedChatDto);
+
+        // To keep the modal, check that any error message was shown when the "Save Changes" button was clicked
+        // if alertKey is zero, we know we did not show any error message (since it did not loop this key in the map)
+        // But if we did not show any error message, AND nothing was input, then we want to keep the modal
+        if (alertKey > 0 && chatPassword?.length == 0) {
+            setShowEditPasswordModal(true);
+        } else {
+            setShowEditPasswordModal(false);
+        }
+
+        alertKey = 0;
+        setErrorException([]);
+        setChatPassword(null);
     };
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
@@ -135,8 +198,11 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     </Modal.Header>
                                     <Modal.Body className="column-list-matches overflow-y">
                                         <Form>
-                                            {currentChatUsers && currentChatUsers.map((currentChatUser, mapStaticKey: number) => (
-                                                <div key={mapStaticKey} className="mb-3">
+                                            {currentChatUsers && currentChatUsers.map((currentChatUser, i: number) => (
+                                                <div
+                                                    key={JSON.stringify(currentChatUser)}
+                                                    className="mb-3"
+                                                >
                                                     {/* Add users to chat = when user is NOT current user AND is NOT banned */}
                                                     {(currentChatUser.loginName != intraName && chatClicked?.bannedUsers.indexOf(currentChatUser.loginName) == -1) &&
                                                         <Form.Check
@@ -145,10 +211,8 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                             label={currentChatUser.profileName}
                                                             // name="group1" -> not needed it seems
                                                             type="checkbox"
-                                                            id={"inline-checkbox-" + mapStaticKey.toString()}
+                                                            id={"inline-checkbox-" + i.toString()}
                                                             onClick={() => {
-                                                                console.log("JOYCE currentChatUser.loginName: ", currentChatUser.loginName);
-                                                                console.log("JOYCE intraName: ", intraName);
                                                                 setUsersToBeAddedToChat([...usersToBeAddedToChat, currentChatUser.loginName]);
                                                             }}
                                                         />
@@ -194,7 +258,11 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     // size="sm"
                                     show={showEditPasswordModal}
                                     onHide={() => {
+                                        alertKey = 0;
+                                        setChatPassword(null);
                                         setShowEditPasswordModal(false);
+                                        setErrorException([]);
+                                        setChatPassword(null);
                                     }}
                                 >
                                     <Modal.Header closeButton>
@@ -204,29 +272,34 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                         <Form.Group className="mb-3">
                                             <Form.Control
                                                 type="password"
-                                                placeholder="Input password"
+                                                value={chatPassword ? chatPassword : ""}
+                                                placeholder="Protected chat password"
                                                 id="inputPassword5"
                                                 aria-describedby="passwordHelpBlock"
-                                                onChange={ (event) =>
-                                                    setChatPassword(event.target.value)
-                                                }
+                                                onChange={event=> setChatPassword(event.target.value)}
                                             />
+                                            <Form.Text id="passwordHelpBlock" className="mb-3" muted>
+                                                Your password must be 5-15 characters long, contain letters and numbers,
+                                                and must not contain special characters, or emoji.
+                                            </Form.Text>
                                         </Form.Group>
                                     </Modal.Body>
                                     <Modal.Footer>
-                                        <Button
-                                            variant="secondary"
-                                            onClick={ () =>
-                                                setShowEditPasswordModal(false)
-                                            }
-                                        >
+                                        {errorException.map((errorMessage) => (
+                                            <Alert key={alertKey++} style={{ width: "42rem" }} variant="danger">{errorMessage}</Alert>
+                                        ))}
+                                        <Button variant="secondary" onClick={ () => {
+                                            alertKey = 0;
+                                            setShowEditPasswordModal(false);
+                                            setErrorException([]);
+                                            setChatPassword(null);
+                                        }}>
                                             Close
                                         </Button>
                                         <Button
                                             variant="primary"
                                             onClick={ () => {
                                                 editGroupPassword();
-                                                setShowEditPasswordModal(false);
                                             }}
                                         >
                                             Save Changes
@@ -261,9 +334,8 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                         )}
 
                         {/* Join group = when we are NOT a member + chat is NOT PROTECTED + we are NOT banned */}
-                        {(chatClicked?.usersIntraName.indexOf(intraName) == -1 &&
-                            chatClicked?.type != ChatType.PROTECTED &&
-                            chatClicked?.bannedUsers.indexOf(intraName) == -1) && (
+                        {((chatClicked?.usersIntraName.indexOf(intraName) == -1 &&
+                            chatClicked?.type != ChatType.PROTECTED)) && (
                             <Button
                                 variant="primary"
                                 onClick={joinGroupChat}
@@ -287,39 +359,48 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     // size="sm"
                                     show={showPasswordModal}
                                     onHide={() => {
+                                        alertKey = 0;
+                                        setChatPassword(null);
                                         setShowPasswordModal(false);
+                                        setErrorException([]);
+                                        setChatPassword(null);
                                     }}
                                 >
                                     <Modal.Header closeButton>
-                                        <Modal.Title>Protected group requires password</Modal.Title>
+                                        <Modal.Title>Join protected group</Modal.Title>
                                     </Modal.Header>
                                     <Modal.Body>
                                         <Form.Group className="mb-3">
                                             <Form.Control
                                                 type="password"
-                                                placeholder="Input password"
+                                                value={chatPassword ? chatPassword : ""}
+                                                placeholder="Protected chat password"
                                                 id="inputPassword5"
                                                 aria-describedby="passwordHelpBlock"
-                                                onChange={ (event) =>
-                                                    setChatPassword(event.target.value)
-                                                }
+                                                onChange={event=> setChatPassword(event.target.value)}
                                             />
+                                            <Form.Text id="passwordHelpBlock" className="mb-3" muted>
+                                                Your password must be 5-15 characters long, contain letters and numbers,
+                                                and must not contain special characters, or emoji.
+                                            </Form.Text>
                                         </Form.Group>
                                     </Modal.Body>
                                     <Modal.Footer>
-                                        <Button
-                                            variant="secondary"
-                                            onClick={ () =>
-                                                setShowPasswordModal(false)
-                                            }
-                                        >
+                                        {errorException.map((errorMessage) => (
+                                            <Alert key={alertKey++} style={{ width: "42rem" }} variant="danger">{errorMessage}</Alert>
+                                        ))}
+                                        <Button variant="secondary" onClick={ () => {
+                                            alertKey = 0;
+                                            setShowPasswordModal(false);
+                                            setErrorException([]);
+                                            setChatPassword(null);
+                                        }}>
                                             Close
                                         </Button>
                                         <Button
                                             variant="primary"
                                             onClick={() => {
                                                 joinGroupChat();
-                                                setShowPasswordModal(false);
                                             }}
                                         >
                                             Save Changes
