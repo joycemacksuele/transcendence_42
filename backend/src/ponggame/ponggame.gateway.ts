@@ -103,22 +103,8 @@ try {
     this._socketIdUserId.set(client.id, userId);
     this._userIdSocketId.set(userId, client.id);
 
-    // moved to gamepage event
-    //   const matchId = this.ponggameService.getMatchId(userId);
-    //   this.logger.log(`UserId found : ${userId}`);
-    //   this.logger.log(`Match Id ${matchId}`);
-    //   if (matchId == "") {
-    //     //if not get the selection screen
-    //     client.emit(
-    //       "stateUpdate",
-    //       this.ponggameService.getInitMatch("Default")
-    //     );
-    //   } else {
-    //     //if part of a game then join the match
-    //     this.logger.log(`Joining game room ${matchId}`);
-    //     client.join(matchId);
-    //   }
-    } catch {
+
+} catch {
       this.logger.log("something went wrong verifying the token");
       this.logger.log("Disconnecting the client socket");
       client.disconnect();
