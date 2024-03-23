@@ -82,12 +82,14 @@ export class PonggameGateway
 
         if (token_key_value.includes("token")) {
           const token_index_start = token_key_value.indexOf("token");
-          let token_index_end = token_key_value.indexOf(";");
-          if (token_index_end == -1) {
-            token_index_end = token_key_value.length;
+          const token_index_end_global = token_key_value.length;
+          const from_token_to_end = token_key_value.substring(token_index_start, token_index_end_global);
+          let token_index_end_local = from_token_to_end.indexOf(";");
+          if (token_index_end_local == -1) {
+            token_index_end_local = from_token_to_end.length;
           }
-          const token_key_value_2 = token_key_value.substring(token_index_start, token_index_end);
-          token = token_key_value_2.split('=')[1];
+          const token_key_value_2 = from_token_to_end.substring(0, token_index_end_local);
+          const token = token_key_value_2.split('=')[1];
           this.logger.log('[handleConnection] token: ' + token);
 
           try {
