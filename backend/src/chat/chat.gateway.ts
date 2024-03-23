@@ -71,7 +71,6 @@ export class ChatGateway
     try {
       this.logger.log(`[handleConnection] chat client id ${clientSocket.id} connected`);
 
-      let token = null;
       // this.logger.log('[handleConnection] header: ', clientSocket.handshake.headers);
       if (clientSocket.handshake.headers.cookie) {
         const token_key_value = clientSocket.handshake.headers.cookie;
