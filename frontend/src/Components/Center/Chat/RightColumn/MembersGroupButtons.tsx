@@ -129,7 +129,7 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
             setShowPasswordModal(false);
         }
 
-        alertKey = 0;
+        alertKey = 0; 
         setErrorException([]);
         setChatPassword(null);
     };
@@ -327,7 +327,12 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                         {chatClicked?.usersIntraName.indexOf(intraName) != -1 && (
                             <Button
                                 variant="warning"
-                                onClick={leaveGroupChat}
+                                onClick={ () => {
+                                    leaveGroupChat();
+                                    // todo remove - jaka testing
+                                    // setGoFetchUsers(true);
+                                }}
+
                             >
                                 Leave group
                             </Button>
