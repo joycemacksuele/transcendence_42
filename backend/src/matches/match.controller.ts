@@ -55,4 +55,8 @@ export class MatchController {
 		res.json({ matchExists: dummy_match.length > 0 });
 	}
 
+	@Get('/recalculateRanks')
+	async updateAllRanks(@Res() res: Response) {
+		await this.matchService.recalculateRanks();
+	}
 }
