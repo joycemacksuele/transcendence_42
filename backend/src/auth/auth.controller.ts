@@ -55,7 +55,7 @@ export class AuthController {
 		parameters.append('code', requestCode);
 
 		try {
-			this.logger.log('getAuthorizationToken: ' + response);
+			// this.logger.log('getAuthorizationToken: ' + response);
 			this.logger.log('Jaka, AUTH response HEADERS:\n', response.getHeaders());
 			return await this.authService.exchangeCodeForAccessToken(parameters, response);
 		} catch (err) {
