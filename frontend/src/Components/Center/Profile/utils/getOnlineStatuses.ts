@@ -60,7 +60,7 @@ export const getOnlineStatusUpdates = (
 				chatSocket.off('connect_error');
 				chatSocket.off('disconnect');
 				chatSocket.off('onlineStatusUpdates', wrappedApplyStatusUpdates); 
-				//socket.disconnect();
+				//chatSocket.disconnect();
 			}
 		)
 	} catch (error) {
