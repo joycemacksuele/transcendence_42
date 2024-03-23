@@ -75,7 +75,7 @@ export class ChatGateway
       // this.logger.log('[handleConnection] header: ', clientSocket.handshake.headers);
       if (clientSocket.handshake.headers.cookie) {
         const token_key_value = clientSocket.handshake.headers.cookie;
-        this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
+//        this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
         if (token_key_value.includes("token")) {
           const token_index_start = token_key_value.indexOf("token");
           const token_index_end_global = token_key_value.length;
@@ -86,7 +86,7 @@ export class ChatGateway
           }
           const token_key_value_2 = from_token_to_end.substring(0, token_index_end_local);
           const token = token_key_value_2.split('=')[1];
-          this.logger.log('[handleConnection] token: ' + token);
+//          this.logger.log('[handleConnection] token: ' + token);
 
           try {
             const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
@@ -119,6 +119,7 @@ export class ChatGateway
     try {
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
+        this.logger.log("Henk", allChats);
         clientSocket.emit("getChats", allChats);
         this.logger.log('getChats -> all chats were emitted to the frontend');
       });

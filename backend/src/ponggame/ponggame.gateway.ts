@@ -78,7 +78,7 @@ export class PonggameGateway
       let token = null;
       if (client.handshake.headers.cookie) {
         const token_key_value = client.handshake.headers.cookie;
-        this.logger.log('[handleConnection] token found in the header: ', client.handshake.headers);
+//        this.logger.log('[handleConnection] token found in the header: ', client.handshake.headers);
 
         if (token_key_value.includes("token")) {
           const token_index_start = token_key_value.indexOf("token");
@@ -90,7 +90,7 @@ export class PonggameGateway
           }
           const token_key_value_2 = from_token_to_end.substring(0, token_index_end_local);
           const token = token_key_value_2.split('=')[1];
-          this.logger.log('[handleConnection] token: ' + token);
+  //        this.logger.log('[handleConnection] token: ' + token);
 
           try {
             const payload = await this.authService.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
