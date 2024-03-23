@@ -26,8 +26,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import {Alert} from "react-bootstrap";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+
 
 const MainComponent = () => {
     const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(null);
@@ -38,23 +37,23 @@ const MainComponent = () => {
     let alertKey = 0;
     const [errorException, setErrorException] = useState<string[]>([]);
     const [showExceptionModal, setShowExceptionModal] = useState(false);
+
+    //
     const [show, setShow] = useState(false);
     const [invitee, setInvitee] = useState("Unknown user")
 
    //notify backend that the user declined
-   const declineInvite = () => {
+    const declineInvite = () => {
     chatSocket?.emit('declineInvite');
     setShow(false);
     console.log("declined");
 }
-
-//move user to game page
-const acceptInvite = () => {
-    //socket?.emit('identify', player);
-    setShow(false);
-    console.log("accepted");
-    window.location.replace("/main_page/game");
-}
+    //move user to game page
+    const acceptInvite = () => {
+        setShow(false);
+        console.log("accepted");
+        window.location.replace("/main_page/game");
+    }
 
     ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
     // useEffect without dependencies:
@@ -229,7 +228,6 @@ const acceptInvite = () => {
                 alertKey = 0;
                 setShowExceptionModal(false);
                 setErrorException([]);
-
             }}>
                 {/*<Modal.Header closeButton>*/}
                 {/*    <Modal.Title>Add user(s)</Modal.Title>*/}
@@ -252,7 +250,6 @@ const acceptInvite = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            </Row>
             <Modal show={show}>
               <Modal.Body>
                   <p>{invitee} wants to invite you for a game</p>
