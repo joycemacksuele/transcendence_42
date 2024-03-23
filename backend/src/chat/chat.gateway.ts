@@ -69,32 +69,32 @@ export class ChatGateway
 
   async handleConnection(clientSocket: Socket) {
     try {
-      this.logger.log('[handleConnection] Socket connected: ' + clientSocket.id);
+      this.logger.log(`[handleConnection] chat client id ${clientSocket.id} connected`);
 
       let token = null;
       // this.logger.log('[handleConnection] header: ', clientSocket.handshake.headers);
-      // this.logger.log('[handleConnection] cookie: ', clientSocket.handshake.headers.cookie);
       if (clientSocket.handshake.headers.cookie) {
-        const token_index_start = clientSocket.handshake.headers.cookie.indexOf("token");
-        const token_key_value = clientSocket.handshake.headers.cookie.substring(token_index_start);
-        // this.logger.log('[handleConnection] token_key_value: ' + token_key_value);
-
-        if (token_key_value.includes(";")) {
+        const token_key_value = clientSocket.handshake.headers.cookie;
+        this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
+        if (token_key_value.includes("token")) {
+          const token_index_start = token_key_value.indexOf("token");
           const token_index_end = token_key_value.indexOf(";");
-          const token_key_value_2 = token_key_value.substring(0, token_index_end);
+          const token_key_value_2 = token_key_value.substring(token_index_start, token_index_end);
           token = token_key_value_2.split('=')[1];
-        } else {
-          token = token_key_value.split('=')[1];
-        }
-        this.logger.log('[handleConnection] token: ' + token);
+          this.logger.log('[handleConnection] token: ' + token);
 
-        try {
-          const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-          this.logger.log('[handleConnection] payload.username: ' + payload.username);
-          clientSocket.data.user = payload.username;
-        } catch {
-          throw new UnauthorizedException('Invalid token');
+          try {
+            const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+            this.logger.log('[handleConnection] payload.username: ' + payload.username);
+            clientSocket.data.user = payload.username;
+          } catch {
+            throw new UnauthorizedException('Invalid token');
+          }
+        } else {
+          throw new UnauthorizedException('Token does not exist (yet?), disconnecting');
         }
+      } else {
+        throw new UnauthorizedException('No cookie found in the header, disconnecting');
       }
     } catch (error) {
       this.logger.error('[handleConnection] error: ' + error);
@@ -104,7 +104,7 @@ export class ChatGateway
   }
 
   handleDisconnect(clientSocket: Socket) {
-    this.logger.log(`[handleDisconnect] Socket disconnected: ${clientSocket.id}`);
+    this.logger.log(`[handleConnection] chat client id ${clientSocket.id} disconnected`);
   }
 
   @SubscribeMessage('getChats')
