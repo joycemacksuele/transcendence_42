@@ -114,7 +114,8 @@ export class MatchService {
 		Sort all users by gamesWon from most to least. Then assign them the rank, starting from 1.
 		If 2 players share the same gamesWon value, they get the same rank.
 	*/
-	private async recalculateRanks(): Promise<void> {
+	// private async recalculateRanks(): Promise<void> {
+	async recalculateRanks(): Promise<void> {
 		const allUsers = await this.userRepository.find();
 		allUsers.sort((a, b) => b.gamesWon - a.gamesWon);
 
