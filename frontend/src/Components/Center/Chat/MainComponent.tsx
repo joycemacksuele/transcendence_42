@@ -77,11 +77,11 @@ const MainComponent = () => {
         return () => {
             console.log("[MainComponent] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
             setChatClicked(null);
-            if (chatSocket.connected) {
-                chatSocket.removeAllListeners();
-                chatSocket.disconnect();
-                console.log("[MainComponent] MainComponent socket was disconnected and all listeners were removed");
-            }
+            // if (chatSocket.connected) {
+            //     chatSocket.removeAllListeners();
+            //     chatSocket.disconnect();
+            //     console.log("[MainComponent] MainComponent socket was disconnected and all listeners were removed");
+            // }
 
             alertKey = 0;
             setShowExceptionModal(false);
