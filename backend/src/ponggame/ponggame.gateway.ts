@@ -75,11 +75,8 @@ export class PonggameGateway
     try {
       this.logger.log(`[handleConnection] pong game client id ${client.id} connected`);
 
-      let token = null;
       if (client.handshake.headers.cookie) {
         const token_key_value = client.handshake.headers.cookie;
-        this.logger.log('[handleConnection] token found in the header: ', client.handshake.headers);
-
         if (token_key_value.includes("token")) {
           const token_index_start = token_key_value.indexOf("token");
           const token_index_end_global = token_key_value.length;

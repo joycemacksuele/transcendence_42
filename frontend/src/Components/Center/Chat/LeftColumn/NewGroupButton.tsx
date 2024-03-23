@@ -139,8 +139,8 @@ const NewGroupButton = () => {
                                             onChange={event=> setChatPassword(event.target.value)}
                                         />
                                         <Form.Text id="passwordHelpBlock" className="mb-3" muted>
-                                            Your password must be 5-15 characters long, contain letters and numbers,
-                                            and must not contain special characters, or emoji.
+                                            Your password must be 5-15 characters long, contain letters and numbers
+                                            and one upper case character.
                                         </Form.Text>
                                     </Form.Group>
                                 }
