@@ -78,11 +78,14 @@ export class PonggameGateway
       let token = null;
       if (client.handshake.headers.cookie) {
         const token_key_value = client.handshake.headers.cookie;
-        this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
+        this.logger.log('[handleConnection] token found in the header: ', client.handshake.headers);
 
         if (token_key_value.includes("token")) {
           const token_index_start = token_key_value.indexOf("token");
-          const token_index_end = token_key_value.indexOf(";");
+          let token_index_end = token_key_value.indexOf(";");
+          if (token_index_end == -1) {
+            token_index_end = token_key_value.length;
+          }
           const token_key_value_2 = token_key_value.substring(token_index_start, token_index_end);
           token = token_key_value_2.split('=')[1];
           this.logger.log('[handleConnection] token: ' + token);
