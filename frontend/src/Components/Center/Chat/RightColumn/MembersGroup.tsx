@@ -173,8 +173,8 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
         <Stack gap={2}>
           {chatClicked?.usersIntraName &&
             chatClicked?.usersIntraName.map(
-              (member: string, mapStaticKey: number) => (
-                <ListGroup key={mapStaticKey} variant="flush">
+              (member: string, i: number) => (
+                <ListGroup key={i} variant="flush">
                   <ListGroup.Item
                     ref={inputRef}
                     as="li"
@@ -186,8 +186,8 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                     }}
                   >
                     {/* Users' list (with pictos) = when we are NOT muted + when we are NOT banned */}
-                    {chatClicked?.mutedUsers.indexOf(member) == -1 &&
-                    chatClicked?.bannedUsers.indexOf(member) == -1 ? (
+                    {(chatClicked?.mutedUsers.indexOf(member) == -1 &&
+                    chatClicked?.bannedUsers.indexOf(member) == -1) ? (
                       <Image
                         src={
                           (import.meta.env.VITE_BACKEND as string) +
@@ -231,7 +231,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                         )}
                       </>
                     )}
-                    {chatClicked?.usersProfileName.at(mapStaticKey)}
+                    {chatClicked?.usersProfileName.at(i)}
                   </ListGroup.Item>
 
                   {/* Modal with buttons should not appear to the current user */}

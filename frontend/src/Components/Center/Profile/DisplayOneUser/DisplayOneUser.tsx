@@ -12,7 +12,6 @@ import GetPlayingStatus from "../utils/GetPlayingStatus.tsx";
 import { useOnlineStatus } from "../utils/useOnlineStatus.ts";
 import "../../../../css/Profile-users-list.css";
 
-
 interface UserProps {
   id: number;
   loginName: string;
@@ -37,7 +36,6 @@ export const getCurrentUsername = async () => {
   }
 };
 
-
 const DisplayOneUser: React.FC<{
   loginName: string;
   showMatchHistory: boolean;
@@ -51,7 +49,6 @@ const DisplayOneUser: React.FC<{
   const isUserPlaying = GetPlayingStatus(loginName);
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
-    
 
   const isUserOnline = useOnlineStatus(loginName);
 
@@ -145,42 +142,38 @@ const DisplayOneUser: React.FC<{
   }
 
 
+  const creatChat = () => {
+    const requestNewChatDto: RequestNewChatDto = {
+      name: loginName,
+      type: ChatType.PRIVATE,
+      password: null,
+    };
+    chatSocket.emit("createChat", requestNewChatDto);
+    console.log("[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:", requestNewChatDto);
+  };
+
+  const reconnectChatSocketIfNecessary = () => {
+    chatSocket.on("disconnect", (reason) => {
+      if (reason === "io server disconnect") {
+        console.log("[DisplayOneUser] socket disconnected: ", reason);
+        // the disconnection was initiated by the server, you need to reconnect manually
+        chatSocket.connect();
+      } // else the socket will automatically try to reconnect
+    });
+  }
+
   const handleClickPrivateChat = () => {
-    // console.log("[DisplayOneUser] handleClickPrivateChat");
-    if (!chatSocket.connected) {
+    if (chatSocket.connected) {
+      console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
+      creatChat();
+    } else {
       chatSocket.connect();
       chatSocket.on("connect", () => {
-        console.log(
-          "[DisplayOneUser] socket connected: ",
-          chatSocket.connected,
-          " -> socket id: " + chatSocket.id
-        );
-        const requestNewChatDto: RequestNewChatDto = {
-          name: loginName,
-          type: ChatType.PRIVATE,
-          password: null,
-        };
-        chatSocket.emit("createChat", requestNewChatDto);
-        console.log(
-          "[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:",
-          requestNewChatDto
-        );
+        console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
+        creatChat();
       });
-      chatSocket.on("disconnect", (reason) => {
-        if (reason === "io server disconnect") {
-          console.log("[DisplayOneUser] socket disconnected: ", reason);
-          // the disconnection was initiated by the server, you need to reconnect manually
-          chatSocket.connect();
-        }
-        // else the socket will automatically try to reconnect
-      });
-    } else {
-      console.log(
-        "[DisplayOneUser] socket connected: ",
-        chatSocket.connected,
-        " -> socket id: " + chatSocket.id
-      );
     }
+    reconnectChatSocketIfNecessary();
   };
 
   return (
