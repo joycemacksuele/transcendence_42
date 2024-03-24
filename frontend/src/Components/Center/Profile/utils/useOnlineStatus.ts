@@ -7,7 +7,9 @@ import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
 	Real-time update of the displayed online status:
 	When the parent component mounts, it calls this function, which opens the 
 	socket connection and starts the 'listener'. At the detected change of status, 
-	the callback function is triggered and updates the status variable 'isOnline'
+	the callback function is triggered and updates the status variable 'isOnline'.
+	When the 'state' is updated via the 'setIsUserOnline', any component using this hook will 
+	re-render.
 */
 
 // const apiAddress = import.meta.env.VITE_BACKEND;

@@ -75,9 +75,9 @@ services:
             - UPLOADS=${UPLOADS}
             - EHOST=${EHOST}
             - EPORT=${EPORT}
-            - EPASS=${EPASS}
             - APASS=${APASS}
             - JWT_SECRET=${JWT_SECRET}
+            # - EPASS=${EPASS}
 
 
     # --------------------------------------------- ReactJS

@@ -13,6 +13,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import DisplayOneUser from "./DisplayOneUser/DisplayOneUser";
 import axiosInstance from "../../Other/AxiosInstance";
 
+
 // interface User {
 // 	name: string;
 // }
@@ -49,6 +50,8 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   // const [isFirstLogin, setIsFirstLogin] = useState<boolean>(true);
 
+
+
   const handleClickOnUser = (loginName: string) => {
     setSelectedUser(loginName);
   };
@@ -70,6 +73,21 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
     };
     greetingIfFirstLogin();
   }, []);
+
+
+  // Update the game ranks of all users (otherwise it put the users with zero
+  //  matches at the top, as Rank 0) 
+  useEffect(() => {
+    const updateAllRanks = async () => {
+      try {
+        await axiosInstance.get('matches/recalculateRanks'); 
+      } catch (error) {
+
+      }
+    }
+    updateAllRanks();
+  }, []);
+
 
   return (
     <Container fluid className="container-max-width">
