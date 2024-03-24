@@ -61,7 +61,18 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
     }
   }, [chatClicked]);
 
-  const sendMessage = () => {
+  const getCurrentUsername = async () => {
+    try {
+      const response = await axiosInstance.get("/users/get-current-intra-name");
+      // console.log('=================== username: ', response.data.username);
+      return response.data.username;
+    } catch (error) {
+      console.error("Error getting current username: ", error);
+      return null;
+    }
+  };
+
+  const sendMessage = async () => {
     if (message.trim() == "") {
       setMessageBoxPlaceHolder("Please write a message.");
       return;
@@ -69,7 +80,7 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
       // make this via socket.emit("SendMessage");
       // how to send data? send the message + userId to send the message to (or chatId?)
 
-      const loginName = currUserData.loginName;
+      const loginName = await getCurrentUsername(); //currUserData.loginName;
       chatSocket.emit("messageChat", {
         loginName: loginName,
         message: message,

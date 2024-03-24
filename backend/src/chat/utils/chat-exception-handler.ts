@@ -16,7 +16,7 @@ export class WsExceptionFilter {
 
     public handleError(@ConnectedSocket() clientSocket: Socket, exception: WsException) {
         this.logger.log('clientSocket.id: ' + clientSocket.id);
-        this.logger.log('exception.message: ' + exception.message);
+        this.logger.warn('exception.message: ' + exception.message);
         // this.logger.log('exception.getError(): ' + exception.getError());
         clientSocket.emit("exceptionDtoValidation", exception.message);
     }
