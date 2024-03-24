@@ -69,7 +69,8 @@ export class ChatGateway
 
   async handleConnection(clientSocket: Socket) {
     try {
-      this.logger.log('[handleConnection] Socket connected: ' + clientSocket.id);
+    //DISABLE LOGGER
+    //   this.logger.log('[handleConnection] Socket connected: ' + clientSocket.id);
 
       let token = null;
       // this.logger.log('[handleConnection] header: ', clientSocket.handshake.headers);
@@ -86,25 +87,28 @@ export class ChatGateway
         } else {
           token = token_key_value.split('=')[1];
         }
-        this.logger.log('[handleConnection] token: ' + token);
+        //this.logger.log('[handleConnection] token: ' + token);
 
         try {
           const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-          this.logger.log('[handleConnection] payload.username: ' + payload.username);
+          //DISABLE LOGGER
+          //this.logger.log('[handleConnection] payload.username: ' + payload.username);
           clientSocket.data.user = payload.username;
         } catch {
           throw new UnauthorizedException('Invalid token');
         }
       }
     } catch (error) {
-      this.logger.error('[handleConnection] error: ' + error);
+        //DISABLE LOGGER
+        //this.logger.error('[handleConnection] error: ' + error);
       clientSocket.emit("exceptionHandleConnection", new UnauthorizedException(error));
       clientSocket.disconnect();
     }
   }
 
   handleDisconnect(clientSocket: Socket) {
-    this.logger.log(`[handleDisconnect] Socket disconnected: ${clientSocket.id}`);
+    //DISABLE LOGGER
+    //this.logger.log(`[handleDisconnect] Socket disconnected: ${clientSocket.id}`);
   }
 
   @SubscribeMessage('getChats')

@@ -244,10 +244,10 @@ export class AuthService {
 		let expiryDate = new Date();
 
 		expiryDate.setDate(expiryDate.getDate() + 30);
-		this.logger.log("expiry date refresh token: " + expiryDate);
+		//this.logger.log("expiry date refresh token: " + expiryDate);
 
 		let time = expiryDate.valueOf();
-		this.logger.log("time: " + time);
+		//this.logger.log("time: " + time);
 
 		const payload = { sub: player.intraId, username:player.loginName, exp: time };  // https://docs.nestjs.com/security/authentication
 		try {
@@ -298,10 +298,11 @@ export class AuthService {
     // BECAUSE 'CONTEXT' IS NOT AVAILABLE THERE.
     // SO THIS FUNCION NEEDS TO BE MODIFIED
     async extractUserdataFromToken(request: Request): Promise<JwtPayload> { 
-		console.log('extract data from token()');
+        //DISABLE LOGGER
+		//console.log('extract data from token()');
         const token = this.extractTokenFromHeader(request);
         if (!token) {
-			console.log('     Token not found');
+			//console.log('     Token not found');
             throw new UnauthorizedException('Token not found');
         }
         try {
@@ -322,7 +323,8 @@ export class AuthService {
     extractTokenFromHeader(request: Request): string | undefined {
         let cookie: string;
         let token: string;
-		console.log('extract token from header()');
+        //DISABLE LOGGER
+		//console.log('extract token from header()');
 
         cookie = request.get('Cookie');
         if (!cookie)

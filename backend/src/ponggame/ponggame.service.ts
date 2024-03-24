@@ -36,11 +36,20 @@ export class PonggameService {
     if (matchId == undefined) return;
     const match = this._currentMatches.get(matchId);
 
-       if (match == undefined) return;
-    console.log(`${match.currentState} and ${match.player2info} and ${userId} ${(match.currentState == 'WaitingForInvited' && match.player2info == 'userId')}`);
+    if (match == undefined) return;
     if (match.currentState == "Playing") {
       match.currentState = "End";
       match.stateMessage = "Opponent disconnected. You win be default";
+      console.log(`match info ${match.player1info} equal to ${userId}`);
+      if(match.player1info === userId)
+      {
+        match.winner = 2;
+        console.log("player 2 is set to winnner");
+      } else {
+        match.winner = 1;
+        console.log("player 1 is set to winner");
+      }
+
     } else if (match != undefined && match.currentState == "Queue") {
       match.currentState = "Disconnection";
       match.stateMessage = "Opponent left before the game started";
