@@ -17,35 +17,68 @@ export class PonggameService {
     return this._currentMatches;
   }
 
+  playerConnected(userId: string){
+    const matchId = this.getMatchId(userId);
+    const match =this._currentMatches.get(matchId);
+    console.log(`${match.currentState} check`);
+    if(match.currentState == 'PrivateQueue')
+        match.currentState = 'WaitingForInvited';
+    else if (match.currentState == 'WaitingForInvited')
+    {
+        console.log(`${matchId} has been set to playing`);
+        match.currentState = 'Playing';
+    }
+    console.log(`${match.currentState} check`);
+  }
+
   playerDisconnected(userId: string) {
     const matchId = this._userMatch.get(userId);
     if (matchId == undefined) return;
     const match = this._currentMatches.get(matchId);
-    if (match != undefined && match.currentState == "Playing") {
+
+    if (match == undefined) return;
+    if (match.currentState == "Playing") {
       match.currentState = "End";
       match.stateMessage = "Opponent disconnected. You win be default";
+      console.log(`match info ${match.player1info} equal to ${userId}`);
+      if(match.player1info === userId)
+      {
+        match.winner = 2;
+        console.log("player 2 is set to winnner");
+      } else {
+        match.winner = 1;
+        console.log("player 1 is set to winner");
+      }
+
     } else if (match != undefined && match.currentState == "Queue") {
       match.currentState = "Disconnection";
       match.stateMessage = "Opponent left before the game started";
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
       else if (match.gameType == "Custom") this._queueCustomMatchId = "";
     }
+    else if (match.currentState == 'WaitingForInvited' && match.player1info == userId){
+        match.currentState = 'Disconnection';
+        match.stateMessage = 'Opponent left before the game started';
+    }
+    else if (match.currentState =="PrivateQueue" || (match.currentState == 'WaitingForInvited' && match.player2info == userId))
+        return;
+    console.log(`deleting ${userId} from matchesmap`);
     this._userMatch.delete(userId);
   }
 
   cleanUpMatches() {
     this._currentMatches.forEach((gameState: GameState, matchId: string) => {
-      if (gameState.currentState == "End" || gameState.currentState == "Disconnection") this._currentMatches.delete(matchId);
+      if (gameState.currentState == "End" || gameState.currentState == "Disconnection") {
+        console.log(`deleting ${matchId}`);
+        this._currentMatches.delete(matchId);
+      }
     });
   }
   updateCurrentMatches() {
     this._currentMatches.forEach((gameState, matchId) => {
-      if (
-        gameState.currentState != "Message" &&
-        gameState.currentState != "End" &&
-        gameState.currentState != "Queue"
-      )
+      if ( gameState.currentState == "Playing")
         this._currentMatches[matchId] = this._gameLogic.updateState(gameState);
+      
     });
   }
 
@@ -106,6 +139,19 @@ export class PonggameService {
     return currentMatchId;
   }
 
+  createPrivateMatch(userId: string, userId2: string, matchType: string){
+    const newMatch = this.getInitMatch(matchType);
+    const currentMatchId= "match" + userId;
+    newMatch.roomName = currentMatchId;
+    newMatch.currentState = "PrivateQueue";
+    newMatch.stateMessage = "Waiting for " + userId2 + " to accept the invite";
+    newMatch.player1info = userId;
+    newMatch.player2info = userId2;
+    this._currentMatches.set(currentMatchId, newMatch);
+    this._userMatch.set(userId, currentMatchId);
+    this._userMatch.set(userId2, currentMatchId);
+  }
+
   // provide initial gamestate template
   getInitMatch(matchType: string): GameState {
     const starting_angle = 180;
@@ -149,6 +195,21 @@ export class PonggameService {
     state.ball_x_speed = state.ball_speed * Math.cos(starting_angle_radians);
     state.ball_y_speed = state.ball_speed * Math.sin(starting_angle_radians);
     return state;
+  }
+
+  removeUserIdMatch(userId: string)
+  {
+    this._userMatch.delete(userId);
+  }
+
+  declineInvite(userId: string){
+    if (this._userMatch.has(userId)) {
+        const matchId = this._userMatch.get(userId);
+        const currentGamestate = this._currentMatches.get(matchId);
+        currentGamestate.currentState= 'End';
+        currentGamestate.stateMessage= 'Player declined your invite';
+        this.removeUserIdMatch(userId);
+    }
   }
 
   test_display_userMatch() {

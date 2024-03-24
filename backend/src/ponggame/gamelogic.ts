@@ -1,6 +1,6 @@
 import { GameState } from './dto/game-state.dto';
 
-const MAX_GAME_SCORE = 3;
+const MAX_GAME_SCORE = 1;
 
 interface object_dims {
   x: number;
@@ -22,43 +22,7 @@ enum CollisionSide {
 }
 
 export class GameLogic {
-  public initState(): GameState {
-    const starting_angle = 180;
-    const starting_angle_radians = (starting_angle * Math.PI) / 180;
-    const ball_speed = 0.009;
-    const state: GameState = {
-      roomName: 'default',
-      gameType: 'default',
-      currentState: 'Message',
-      stateMessage: 'Waiting for opponent...',
-      timer: 100,
-      winner: 0,
-      ball_speed: ball_speed,
-      ball_x_speed: 0,
-      ball_y_speed: 0,
-      ball_x: 0.5,
-      ball_y: 0.5,
-      ball_size: 0.01,
-      player1info: '',
-      player1pos: 0.5,
-      player1height: 0.2,
-      player1width: 0.01,
-      player1speed: 0.01,
-      player2info: '',
-      player2pos: 0.5,
-      player2height: 0.2,
-      player2width: 0.01,
-      player2speed: 0.01,
-      player1input: 0,
-      player2input: 0,
-      player1score: 0,
-      player2score: 0,
-    };
 
-    state.ball_x_speed = state.ball_speed * Math.cos(starting_angle_radians);
-    state.ball_y_speed = state.ball_speed * Math.sin(starting_angle_radians);
-    return state;
-  }
 
   private hitWall(gs: GameState, ballpos: object_dims): boolean {
     if (
@@ -99,7 +63,7 @@ export class GameLogic {
   //determine if the ball intersect a paddle and if it does return
   //whether it hits the sides first or the top/bottom first.
   private insectPaddles(gs: GameState, ballpos: object_dims): number {
-    //TODO
+    
     const leftpaddle = this.calculatePaddleInfo(
       0,
       gs.player1pos,
@@ -297,7 +261,7 @@ export class GameLogic {
         if (gameState.player2score >= MAX_GAME_SCORE) {
           gameState.currentState = 'End';
           gameState.winner = 2;
-          gameState.stateMessage = `${(gameState.player1info).toUpperCase()}, YOU LOST!!!`;
+          gameState.stateMessage = `${(gameState.player1info).toUpperCase()} LOST!!!`;
           return gameState;
         }
       } else if (gameState.ball_x > 1) {
@@ -305,7 +269,7 @@ export class GameLogic {
         if (gameState.player1score >= MAX_GAME_SCORE) {
           gameState.currentState = 'End';
           gameState.winner = 1;
-          gameState.stateMessage = `${(gameState.player2info).toUpperCase()}, YOU LOST!!!`;
+          gameState.stateMessage = `${(gameState.player2info).toUpperCase()} YOU LOST!!!`;
           return gameState;
         }
       }

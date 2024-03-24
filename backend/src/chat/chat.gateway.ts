@@ -101,7 +101,8 @@ export class ChatGateway
         throw new UnauthorizedException('No cookie found in the header, disconnecting');
       }
     } catch (error) {
-      this.logger.error('[handleConnection] error: ' + error);
+        //DISABLE LOGGER
+        //this.logger.error('[handleConnection] error: ' + error);
       clientSocket.emit("exceptionHandleConnection", new UnauthorizedException(error));
       clientSocket.disconnect();
     }

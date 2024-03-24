@@ -17,14 +17,16 @@ export class AuthMiddleware implements NestMiddleware {
     
   async use(request: Request, response: Response, next: NextFunction) {
 
-    this.logger.log('Enter the AuthMiddleware');
+    //DISABLE LOGGER
+    //this.logger.log('Enter the AuthMiddleware');
     let token: string;
 
     try{
         token = this.authService.extractTokenFromHeader(request);
         // if (request.path === "/users/all")
         // token = ""; // TEST
-        this.logger.log("ExistingToken: " + token);
+        //DISABLE LOGGER
+        //this.logger.log("ExistingToken: " + token);
     } catch(err){
         throw new UnauthorizedException('Player not authorized! Exiting Ping Pong!' + err);
     }
@@ -45,8 +47,9 @@ export class AuthMiddleware implements NestMiddleware {
         let player : UserEntity;
         player = await this.userService.getUserByLoginName(payload.username);
 
-        this.logger.log(" middleware path: " + request.path);
-        this.logger.log(" tfaEnabled: " + player.tfaEnabled + " tfaVerified: " + player.tfaVerified);
+        //DISABLE LOGGER
+        //this.logger.log(" middleware path: " + request.path);
+        //this.logger.log(" tfaEnabled: " + player.tfaEnabled + " tfaVerified: " + player.tfaVerified);
 
         let freePath = await this.notFreePath(request.path);
         if (freePath === false)
@@ -68,13 +71,13 @@ export class AuthMiddleware implements NestMiddleware {
 
         if (expiry === true){
             try {
-                this.logger.log("Token has expired. Starting the process to get a new one!")
+                //this.logger.log("Token has expired. Starting the process to get a new one!")
                 let refreshToken = player.refreshToken;
-                this.logger.log("Refresh token: " + refreshToken);
+                //this.logger.log("Refresh token: " + refreshToken);
                
                 const payloadRefreshToken = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_SECRET});
                 let expiryRefreshToken = await this.tokenExpired(payloadRefreshToken.exp);
-                this.logger.log("expiry refreshtoken: ", expiryRefreshToken);
+                //this.logger.log("expiry refreshtoken: ", expiryRefreshToken);
                 if (expiryRefreshToken === true)
                 {
                     this.logger.log('No refresh token! Go away!');
@@ -86,9 +89,9 @@ export class AuthMiddleware implements NestMiddleware {
 
                 // make a new refresh token 
                 let newRefreshToken = await this.authService.signRefreshToken(player);
-			    this.logger.log("New refreshToken: " + newRefreshToken);
+			    //this.logger.log("New refreshToken: " + newRefreshToken);
 			    await this.userService.updateRefreshToken(player.loginName, newRefreshToken);
-			    this.logger.log('New refresh token set in the database');
+			    //this.logger.log('New refresh token set in the database');
 
                 // create new authorization token 
                 let replaceToken = await this.authService.signToken(player);
@@ -104,19 +107,19 @@ export class AuthMiddleware implements NestMiddleware {
 			        } else
 				        cookieToken += ` ${attribute}=${cookieAttributes[attribute]};`;
 		        }
-                this.logger.log("New Authorization Token: " + replaceToken);
+                //this.logger.log("New Authorization Token: " + replaceToken);
 
                 // add the new token to the response header
                 response.clearCookie('Cookie');
                 response.append('Set-Cookie', cookieToken);
-                this.logger.log('Replaced token in header');
+                //this.logger.log('Replaced token in header');
             }catch(err){
-                this.logger.log('Error in refreshing tokens ' + err);
+                //this.logger.log('Error in refreshing tokens ' + err);
                 throw new UnauthorizedException('Player not authorized! Exiting Ping Pong!' + err);
             }
         }
         else{
-            this.logger.log('Token still valid. Exiting the function!');
+            //this.logger.log('Token still valid. Exiting the function!');
         }
     }catch(err){
         this.logger.log('General error AuthMiddleware: ' + err);

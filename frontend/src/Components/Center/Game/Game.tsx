@@ -25,7 +25,10 @@ function Game() {
   }, []);
 
   useEffect(() => {
-    socket?.on("stateUpdate", (newdata: GameState) => setGameState(newdata));
+    socket?.on("connect", () => {
+      socket?.on("stateUpdate", (newdata: GameState) => setGameState(newdata));
+      socket.emit('gamepage');
+    });
 
     //add keylistener
     window.addEventListener("keydown", handleKeyDown);

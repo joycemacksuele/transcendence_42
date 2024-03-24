@@ -1,7 +1,7 @@
 export class GameState {
   roomName: string;
   gameType: string;
-  currentState: string; //current states ("Selection, Message, Queue, End, Disconnection")
+  currentState: string; //current states ("Selection, Playing, Queue, PrivateQueue, End, Disconnection")
   stateMessage: string;
   timer: number;
   winner: number;
