@@ -34,17 +34,16 @@ ul.dropdown-menu {
 
 /* Left column */
 .left-col-body {
-    background: rgb(212, 194, 194);
-
+    /* background: rgb(212, 194, 194); */
     overflow-y: auto;
     height: calc(100vh - 400px);
     padding: 5px 0 5px 0;
     margin-bottom: 5px;
-    /* margin-left: 0px; */
-    /* margin-right: 0px; */
-    /* max-height: calc(100vh - 200px); */
-    /* display: none; */
-    /* border: 1px solid red; */
+}
+
+.left-col-bottom-buttons {
+    /* background: rgb(212, 194, 194); */
+    
 }
 
 .middle-col {
@@ -54,10 +53,10 @@ ul.dropdown-menu {
 
 /* Members column */
 .members-col
-/* .middle-col */
-{
+/* .middle-col */ {
     border: 0px solid blue;
 }
+
 .members-col-header {
     border: 0px solid rgb(34, 130, 69);
 }
@@ -66,23 +65,26 @@ ul.dropdown-menu {
     border: 0px solid red;
     height: calc(100vh - 120px);
     max-height: calc(100vh - 120px);
-    background: rgb(212, 194, 194);
+    /* background: rgb(212, 194, 194); */
     padding-top: 5px;
+    padding-bottom: 5px;
 }
+
 .members-col-members {
     overflow-y: auto;
     height: calc(100vh - 300px);
     max-height: calc(100vh - 300px);
     border: 0px solid green;
 }
-.members-col-empty {
-    border: 1px solid pink;
 
+.members-col-empty {
+    border: 0px solid pink;
 }
+
 .members-col-bottom {
-    border: 1px solid rgb(13, 13, 13);
+    border: 0px solid rgb(13, 13, 13);
 }
 
 .members-col-buttons {
-    border: 1px solid rgb(114, 241, 3);
+    border: 0px solid rgb(114, 241, 3);
 }

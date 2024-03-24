@@ -55,7 +55,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
   return (
     <>
       {/* Members row */}
-      <Row className="me-auto">
+      <Row className="members-col-members flex-grow-1">
         <Stack gap={2}>
           {chatClicked?.usersIntraName &&
             chatClicked?.usersIntraName.map((member: string, i: number) => (
