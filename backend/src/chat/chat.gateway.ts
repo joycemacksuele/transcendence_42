@@ -193,7 +193,7 @@ export class ChatGateway
         this.logger.log('deleteChat -> getChats -> all chats were emitted to the frontend');
       });
     }).catch((err) => {
-      this.logger.error('[joinChat] Could join chat -> err: ' + err.message);
+      this.logger.error('[joinChat] Could not join chat -> err: ' + err.message);
       clientSocket.emit("exceptionCheckPassword", err.message);
     });
   }
