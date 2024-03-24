@@ -9,8 +9,6 @@ export class RequestMessageChatDto {
     name: string;
 */
     @IsString()
-    @MinLength(3)
-    @MaxLength(10)
     @IsNotEmpty()
     loginName: string;// todo rename to friendId? or friendProfileName -> use clientSocket.data.user for current user
 

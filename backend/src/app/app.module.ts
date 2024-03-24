@@ -4,9 +4,6 @@
   Path must match, but it can be without .ts suffix
 */
 
-// jaka, todo: here apparently it is enough to only import the module of each entity (ie: UserModule), and not UserController etc ...
-// --> remove the unnecessary
-
 import { Logger, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
@@ -24,13 +21,9 @@ import { FriendshipModule } from "../friendships/friendship.module";
 import { Blockship } from "src/blockShips/blockship.entity";
 import { BlockshipModule } from "src/blockShips/blockship.module";
 
-import { DataSource } from "typeorm";
-
 import { DuplicateService } from '../duplicate/duplicate.service';
 
 import { ChatModule } from "../chat/chat.module";
-// import { ChatGateway } from "../chat/chat.gateway";
-// import { ChatService } from '../chat/chat.service';
 import { UsersCanChatRepository } from "../chat/chat.repository";
 import { ChatRepository } from "../chat/chat.repository";
 import { ChatMessageEntity } from "src/chat/entities/chat-message.entity";
@@ -79,10 +72,10 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
       entities: [
         UserEntity,
         Friendship,
-        UsersCanChatEntity,
         Blockship,
         NewChatEntity,
         ChatMessageEntity,
+        UsersCanChatEntity,
         MatchEntity,
       ],
       synchronize: true, // WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
@@ -91,11 +84,11 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
 
     TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
     UserModule,
-    ChatModule,
     TwoFactorAuthModule,
     MailerModule,
     FriendshipModule,
     BlockshipModule,
+    ChatModule,
     MatchModule,
     PonggameModule,
   ],

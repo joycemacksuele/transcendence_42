@@ -217,7 +217,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// ----------- get chat messages
 		const chatMessages = await this
 			.createQueryBuilder("new_chat")
-			.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creatorId"')
+			.select('chat_message.id as "id", chat_message.message as "message", chat_message.creator as "creator"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.messages", "chat_message")
 			.orderBy("chat_message.id", "ASC")
