@@ -58,6 +58,7 @@ export class PonggameGateway
         currentGames.forEach((gamestate: GameState) => {
           this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
           if (gamestate.currentState == "End"){
+console.log("match is being processed");
               this.processMatch(gamestate); //send the match data to the database
               this.server.socketsLeave(gamestate.roomName);
               this.ponggameService.removeUserIdMatch(gamestate.player1info);
@@ -98,8 +99,8 @@ try {
     const userId = payload.username;
     
     this.logger.log(`pong game client id ${client.id} connected with the name ${userId}`);
-    if(this._userIdSocketId.get(client.id))
-        console.log(">>>>>>>>>>>>>>>>>OVERRIDE HAPPENING<<<<<<<<<<<<<<<<<<");
+    if(this._userIdSocketId.get(userId))
+        this.logger.log("client id of userid is being overwritten");
     this._socketIdUserId.set(client.id, userId);
     this._userIdSocketId.set(userId, client.id);
 

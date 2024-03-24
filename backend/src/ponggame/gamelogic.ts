@@ -1,6 +1,6 @@
 import { GameState } from './dto/game-state.dto';
 
-const MAX_GAME_SCORE = 3;
+const MAX_GAME_SCORE = 1;
 
 interface object_dims {
   x: number;
