@@ -259,8 +259,9 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                             </>
                         )}
 
-                        {/* Change password = when we ARE admin and chat type is PROTECTED */}
-                        {(chatClicked?.admins.indexOf(intraName) != -1 &&
+                        {/* Change password = when we are a user AND when we ARE admin and chat type is PROTECTED */}
+                        {(chatClicked?.usersIntraName.indexOf(intraName) != -1 &&
+                          chatClicked?.admins.indexOf(intraName) != -1 &&
                             chatClicked?.type == ChatType.PROTECTED) && (
                             <>
                                 <Button
@@ -324,8 +325,9 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                             </>
                         )}
 
-                        {/* Delete password = when we ARE admin and chat type is PROTECTED */}
-                        {(chatClicked?.admins.indexOf(intraName) != -1 &&
+                        {/* Delete password = when we are a user AND when we ARE admin AND chat type is PROTECTED*/}
+                        {(chatClicked?.usersIntraName.indexOf(intraName) != -1 &&
+                          chatClicked?.admins.indexOf(intraName) != -1 &&
                             chatClicked?.type == ChatType.PROTECTED) && (
                             <Button
                                 variant="warning"
@@ -366,7 +368,9 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                             <>
                                 <Button
                                     variant="primary"
-                                    onClick={ () => setShowPasswordModal(true)}
+                                    onClick={ () => {
+                                        setShowPasswordModal(true)
+                                    }}
                                 >
                                     Join group
                                 </Button>
