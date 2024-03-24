@@ -45,7 +45,7 @@ export const getOnlineStatusUpdates = (
 	try {
 		if (!chatSocket.connected)
 			chatSocket.connect();
-
+		
 		const wrappedApplyStatusUpdates =
 			(updates: string[]) => applyStatusUpdates(updates, usersRef, setUsers);
 
@@ -60,7 +60,7 @@ export const getOnlineStatusUpdates = (
 				chatSocket.off('connect_error');
 				chatSocket.off('disconnect');
 				chatSocket.off('onlineStatusUpdates', wrappedApplyStatusUpdates); 
-				//socket.disconnect();
+				//chatSocket.disconnect();
 			}
 		)
 	} catch (error) {
