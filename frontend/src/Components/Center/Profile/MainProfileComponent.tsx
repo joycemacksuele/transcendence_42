@@ -75,11 +75,12 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
   }, []);
 
 
-  // Update the game ranks of all users 
+  // Update the game ranks of all users (otherwise it put the users with zero
+  //  matches at the top, as Rank 0) 
   useEffect(() => {
     const updateAllRanks = async () => {
       try {
-        const response = await axiosInstance.get('matches/recalculateRanks'); 
+        await axiosInstance.get('matches/recalculateRanks'); 
       } catch (error) {
 
       }
