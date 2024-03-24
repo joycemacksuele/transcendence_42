@@ -145,8 +145,6 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                       setClickedMember(member);
                     }}
                   >
-                    testXXX 
-
                     {/* Users' list (with pictos) = when we are NOT muted + when we are NOT banned */}
                     {(chatClicked?.mutedUsers.indexOf(member) == -1 &&
                     chatClicked?.bannedUsers.indexOf(member) == -1) ? (
@@ -177,7 +175,6 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             alt="chat"
                           />
                         )}
-                        test01 jaka
                         {/* Users' list (with pictos) = when we ARE banned */}
                         {chatClicked?.bannedUsers.indexOf(member) != -1 && (
                           <Image
@@ -192,7 +189,6 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             alt="chat"
                           />
                         )}
-                        test02 jaka
                       </>
                     )}
                     {chatClicked?.usersProfileName.at(i)}
