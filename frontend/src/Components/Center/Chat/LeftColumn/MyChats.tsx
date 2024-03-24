@@ -49,12 +49,8 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
         console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
 
         chatSocket.emit("getChats");
-        chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
-            const oldData = JSON.stringify(chatInfo);
-            const newData = JSON.stringify(allChats);
-            if (oldData != newData) {
-                setChatInfo(allChats);
-            }
+        chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {            
+            setChatInfo(allChats);
         });
 
         return () => {
@@ -71,19 +67,22 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className=''>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.map((chat: ResponseNewChatDto, i: number) => (
+                    {chatInfo.length === 0 ? (<>Jaka</>) : (
+                    chatInfo.map((chat: ResponseNewChatDto, i: number) => (
                         <>
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
                             {/* If chat is private we don't show it in this list - fix to not have spaces when */}
-                            
+                            {/* {chat.type == ChatType.PRIVATE && <ListGroup */}
+                                {/* key={chat.id} */}
+                                {/* className="hidden" */}
+                            {/* > */}
+                            {/* </ListGroup>} */}
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
                             {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) != -1) && <ListGroup
                                 key={chat.id}
                                 variant="flush"
                             >
-                                {/*printing id for testing*/}
-                                {/* key={chat.id} */}
                                 <ListGroup.Item
                                     as="li"
                                     className="justify-content-between align-items-start"
@@ -112,7 +111,9 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
                                 </ListGroup.Item>
                             </ListGroup>}
                         </>
-                    ))}
+                    ))
+                
+                )}
                 </Stack>
             </Row>
         </>
