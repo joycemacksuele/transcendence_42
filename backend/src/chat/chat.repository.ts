@@ -32,6 +32,7 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.getOne();
 
 			if (usersCanChatRow == undefined) {
+				this.logger.log("[JOYCE inside if, will try to create/save a new usersCanChatEntity");
 				const usersCanChatEntity = new UsersCanChatEntity();
 				usersCanChatEntity.user = user;
 				usersCanChatEntity.chat = chatEntity;

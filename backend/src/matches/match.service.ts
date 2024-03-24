@@ -75,17 +75,17 @@ export class MatchService {
 
 	private async updateAchievements(player1: UserEntity, player2: UserEntity, winnerId: number ) : Promise<void> {
 		if (player1.id === winnerId) {
-			if (player1.gamesWon >= 1)
+			if (player1.gamesWon = 1)
 				player1.achievements = 'Happy Day';
-			if (player1.gamesWon >= 2)
+			if (player1.gamesWon = 2)
 				player1.achievements = 'Stardoom Devotion';
 			if (player1.gamesWon >= 3)
 				player1.achievements = 'Zen';
 		}
 		else {
-			if (player2.gamesWon >= 1)
+			if (player2.gamesWon = 1)
 				player2.achievements = 'Happy Day';
-			if (player2.gamesWon >= 2)
+			if (player2.gamesWon = 2)
 				player2.achievements = 'Stardoom Devotion';
 			if (player2.gamesWon >= 3)
 				player2.achievements = 'Zen';
@@ -114,7 +114,8 @@ export class MatchService {
 		Sort all users by gamesWon from most to least. Then assign them the rank, starting from 1.
 		If 2 players share the same gamesWon value, they get the same rank.
 	*/
-	private async recalculateRanks(): Promise<void> {
+	// private async recalculateRanks(): Promise<void> {
+	async recalculateRanks(): Promise<void> {
 		const allUsers = await this.userRepository.find();
 		allUsers.sort((a, b) => b.gamesWon - a.gamesWon);
 

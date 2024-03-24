@@ -77,11 +77,11 @@ const MainComponent = () => {
         return () => {
             console.log("[MainComponent] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
             setChatClicked(null);
-            if (chatSocket.connected) {
-                chatSocket.removeAllListeners();
-                chatSocket.disconnect();
-                console.log("[MainComponent] MainComponent socket was disconnected and all listeners were removed");
-            }
+            // if (chatSocket.connected) {
+            //     chatSocket.removeAllListeners();
+            //     chatSocket.disconnect();
+            //     console.log("[MainComponent] MainComponent socket was disconnected and all listeners were removed");
+            // }
 
             alertKey = 0;
             setShowExceptionModal(false);
@@ -143,7 +143,7 @@ const MainComponent = () => {
                         }
                     </Row>
                     {/* NewChat Button - at the bottom, visible only wheb Group is active */}
-                    <Row className='mt-auto'>
+                    <Row className='left-col-bottom-buttons justify-content-center'>
                         { activeContentLeft === 'groups' && ( 
                             <NewGroupButton/>
                         )}
@@ -179,15 +179,26 @@ const MainComponent = () => {
                     <Row className=''>
                         <Col className='members-col-body d-flex flex-column'>
                             
-                            {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/>}
-                            {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessageButtons chatClicked={chatClicked}/>}
 
                             {/* This element MembersGroup is a row and it has fixed height in .css */}
                             {chatClicked?.type != ChatType.PRIVATE && <MembersGroup chatClicked={chatClicked}/>}
+
+
+                            {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessage chatClicked={chatClicked}/>}
                             <div className='members-col-empty flex-grow-1'>
                                 {/* This is empty and should expand to occupy the remaining space of the column, pushing the next row to the bottom of the parent Col. */}
                             </div>
-                            <Row className='members-col-bottom mt-auto'>
+                            <Row className='members-col-bottom justify-content-center'>
+                                {/* This row should be pushed to the bottom of the parent Col */}
+                                {chatClicked?.type == ChatType.PRIVATE && <MembersPrivateMessageButtons chatClicked={chatClicked}/>}
+                            </Row>
+
+
+
+
+                            
+                         
+                            <Row className='members-col-bottom justify-content-center'>
                                 {/* This row should be pushed to the bottom of the parent Col */}
                                 {chatClicked?.type != ChatType.PRIVATE && <MembersGroupButtons chatClicked={chatClicked}/>}
                             </Row>
