@@ -79,8 +79,8 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
         MatchEntity,
       ],
       synchronize: true, // WARNING -> Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
-      logging: ["query"],
     }),
+    // logging: ["query"],
 
     TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
     UserModule,

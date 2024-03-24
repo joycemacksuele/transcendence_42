@@ -29,11 +29,13 @@ export class UserService {
       // private userRepository: Repository<UserEntity>,
       // public readonly justRepository: Repository<UserEntity>
   ) {
-      this.logger.log('constructor');
+      //DISABLE LOGGER
+      //this.logger.log('constructor');
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-    this.logger.log('createUser');
+    //DISABLE LOGGER
+    //this.logger.log('createUser');
     const user = this.userRepository.create(createUserDto);
     return this.userRepository.save(user);
   }
@@ -61,7 +63,8 @@ export class UserService {
 
 
   async getUserByLoginName(loginName: string): Promise<UserEntity | null> {
-    this.logger.log("getUserByLoginName function, loginName: " + loginName);
+    //DISABLE LOGGER
+    //this.logger.log("getUserByLoginName function, loginName: " + loginName);
     const options: FindOneOptions<UserEntity> = { where: { loginName } };
     // this.logger.log("getUserByLoginName function options: " + options);
 
@@ -95,14 +98,14 @@ export class UserService {
   
   async updateRefreshToken(loginName: string, refreshToken: string) {
     const response = await this.userRepository.update({ loginName} , { refreshToken });
-    this.logger.log('updaterefreshtoken function after: ' + refreshToken);
+    //this.logger.log('updaterefreshtoken function after: ' + refreshToken);
   }
 
   async updateStoredTFACode(loginName: string, tfaCode: string) {
     // this.logger.log('updateStoredTFACode function before: ' + this.userRepository.findOne("tfaCode"));
 
     const response = await this.userRepository.update({ loginName} , { tfaCode });
-    this.logger.log('updateStoredTFACode function after: ' + tfaCode);
+    //this.logger.log('updateStoredTFACode function after: ' + tfaCode);
   }
   
   async enableTFA(loginName: string, tfaEnabled: boolean) {
@@ -139,7 +142,7 @@ export class UserService {
     
     if (user) {
       user.onlineStatus = status;
-      this.logger.log("setOnlineStatus(): ", user.onlineStatus);
+      //this.logger.log("setOnlineStatus(): ", user.onlineStatus);
       await this.userRepository.save(user);
     } else {
       throw new NotFoundException(`User with login name ${loginName} not found`);
