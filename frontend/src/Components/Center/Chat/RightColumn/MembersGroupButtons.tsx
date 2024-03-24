@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {ChatType, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
-import { chatSocket } from "../Utils/ClientSocket.tsx";
-import { User } from "../../Users/DisplayUsers.tsx";
+import {chatSocket} from "../Utils/ClientSocket.tsx";
+import {User} from "../../Users/DisplayUsers.tsx";
 
 // Importing bootstrap and other modules
 import Row from "react-bootstrap/Row";
@@ -116,7 +116,22 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
 
     const joinGroupChat = () => {
         console.log("[MembersGroupButtons] Current user will join the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
-        const requestPasswordRelatedChatDto = { id: chatClicked?.id, name: chatClicked?.name, password: chatPassword };
+        let requestPasswordRelatedChatDto;
+        if (chatClicked?.type == ChatType.PROTECTED) {
+            requestPasswordRelatedChatDto = {
+                id: chatClicked?.id,
+                type: ChatType.PROTECTED,
+                name: chatClicked?.name,
+                password: chatPassword
+            };
+        } else {
+            requestPasswordRelatedChatDto = {
+                id: chatClicked?.id,
+                type: ChatType.PUBLIC,
+                name: chatClicked?.name,
+                password: chatPassword
+            };
+        }
         console.log("[MembersGroupButtons][joinGroupChat] requestPasswordRelatedChatDto:", requestPasswordRelatedChatDto);
         chatSocket.emit("joinChat", requestPasswordRelatedChatDto);
 
@@ -279,8 +294,8 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                 onChange={event=> setChatPassword(event.target.value)}
                                             />
                                             <Form.Text id="passwordHelpBlock" className="mb-3" muted>
-                                                Your password must be 5-15 characters long, contain letters and numbers,
-                                                and must not contain special characters, or emoji.
+                                                Your password must be 5-15 characters long, contain letters and numbers
+                                                and one upper case character.
                                             </Form.Text>
                                         </Form.Group>
                                     </Modal.Body>
@@ -385,8 +400,8 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                                 onChange={event=> setChatPassword(event.target.value)}
                                             />
                                             <Form.Text id="passwordHelpBlock" className="mb-3" muted>
-                                                Your password must be 5-15 characters long, contain letters and numbers,
-                                                and must not contain special characters, or emoji.
+                                                Your password must be 5-15 characters long, contain letters and numbers
+                                                and one upper case character.
                                             </Form.Text>
                                         </Form.Group>
                                     </Modal.Body>
