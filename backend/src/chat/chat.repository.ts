@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DataSource, Repository} from 'typeorm';
 import * as bcryptjs from 'bcryptjs';
@@ -58,13 +58,15 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.leftJoin("users_can_chat.user", "user")
 				.getOne();
 
-			this.logger.log("[updateMutedTimeStamp] usersCanChatRow: " + usersCanChatRow);
+			if (usersCanChatRow != undefined) {
+				this.logger.log("[updateMutedTimeStamp] usersCanChatRow: " + usersCanChatRow);
 
-			usersCanChatRow.timeStamp = (new Date().getTime() + 120000).toString();// 2 min to get un-muted
-			this.logger.log("[updateMutedTimeStamp]: User " + user.loginName + " will be muted for 2 min. New timestamp: " + usersCanChatRow.timeStamp);
-			await this
-				.manager
-				.save(usersCanChatRow)
+				usersCanChatRow.timeStamp = (new Date().getTime() + 120000).toString();// 2 min to get un-muted
+				this.logger.log("[updateMutedTimeStamp]: User " + user.loginName + " will be muted for 2 min. New timestamp: " + usersCanChatRow.timeStamp);
+				await this
+					.manager
+					.save(usersCanChatRow)
+			}
 		} catch (err) {
 			throw new Error('[updateMutedTimeStamp] err: ' + err);
 		}
@@ -78,11 +80,13 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.leftJoin("users_can_chat.chat", "new_chat")
 				.leftJoin("users_can_chat.user", "user")
 				.getOne();
-			this.logger.log("[deleteUserFromUsersCanChatEntity] usersCanChatRow: " + usersCanChatRow);
-			await this.delete(usersCanChatRow.id);
-			return usersCanChatRow;
+			if (usersCanChatRow != undefined) {
+				this.logger.log("[deleteUserFromUsersCanChatEntity] usersCanChatRow: " + usersCanChatRow);
+				await this.delete(usersCanChatRow.id);
+				return usersCanChatRow;
+			}
 		} catch (err) {
-			throw new Error('[updateMutedTimeStamp] err: ' + err);
+			throw new Error('[deleteUserFromUsersCanChatEntity] err: ' + err);
 		}
 	}
 }
@@ -239,8 +243,8 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				this.logger.log("[getChat] NewChat message sender: " + messageCreator.loginName);
 				return responseDto_inner;
 			} catch (err) {
-				// throw new Error("Can't find user");
 				this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
+				// throw new Error('[getChat] err: ' + err);// TODO ERROR: err: TypeError: Cannot read properties of undefined (reading 'loginName')
 			}
 		}));
 
@@ -377,29 +381,47 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		}
 	}
 
-	public async editPasswordFromChat(foundEntityToJoin: NewChatEntity, chatPassword: string) {
+	public async editPasswordFromChat(foundEntityToEdit: NewChatEntity, chatPassword: string) {
 		try {
-			this.logger.log("[editPasswordFromChat] foundEntityToJoin: ", foundEntityToJoin);
-			if (foundEntityToJoin.type == ChatType.PROTECTED) {
+			this.logger.log("[editPasswordFromChat] foundEntityToEdit: " + foundEntityToEdit);
+			if (foundEntityToEdit.type == ChatType.PROTECTED) {
 				if (chatPassword != null) {
-					bcryptjs.hash(chatPassword, 10).then((password: string) => {
+					const password = bcryptjs.hashSync(chatPassword, 10);
 						this.logger.log('[editPasswordFromChat] hashed password: ', password);
-						foundEntityToJoin.password = password;
-					}).catch((err: string) => {
-						throw new Error('[editPasswordFromChat] Can not hash password -> err: ' + err);
-					});
+					foundEntityToEdit.password = password;
+					if (password == undefined) {
+						throw new Error('[editPasswordFromChat] Password was not hashed');
+					}
 				} else {
 					// If password is deleted we want to set the chat type to PUBLIC
-					foundEntityToJoin.password = null;
-					foundEntityToJoin.type = ChatType.PUBLIC;
+					foundEntityToEdit.password = null;
+					foundEntityToEdit.type = ChatType.PUBLIC;
 				}
 				await this
 					.manager
-					.save(foundEntityToJoin);
+					.save(foundEntityToEdit);
 			}
 			return true
 		} catch (err) {
 			throw new Error('[editPasswordFromChat] err: ' + err);
+		}
+	}
+
+	public async deletePasswordFromChat(foundEntityToEdit: NewChatEntity) {
+		try {
+			this.logger.log("[deletePasswordFromChat] foundEntityToEdit: " + foundEntityToEdit);
+			if (foundEntityToEdit.type == ChatType.PROTECTED) {
+					// If password is deleted we want to set the chat type to PUBLIC
+					foundEntityToEdit.password = null;
+					foundEntityToEdit.type = ChatType.PUBLIC;
+
+				await this
+					.manager
+					.save(foundEntityToEdit);
+			}
+			return true
+		} catch (err) {
+			throw new Error('[deletePasswordFromChat] err: ' + err);
 		}
 	}
 }
