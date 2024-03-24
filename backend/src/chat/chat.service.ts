@@ -134,35 +134,34 @@ export class ChatService {
         id: chatId,
       },
     }).then((foundEntityToJoin) => {
-      if (foundEntityToJoin.type == ChatType.PROTECTED && foundEntityToJoin.password == null) {
-        // This goes to the UI (keep lower case to match the Validator errors)
-        throw new Error('password is required for PROTECTED group');
-      } else {
-        if (foundEntityToJoin.type == ChatType.PROTECTED) {
-          // Join a PROTECTED chat
-          bcryptjs.hash(password, 10).then((password: string) => {
-            this.logger.log('[joinChat] hashed password: ', password);
+      if (foundEntityToJoin.type == ChatType.PROTECTED) {
+        // Join a PROTECTED chat
+        bcryptjs.hash(password, 10).then((password: string) => {
+          this.logger.log('[joinChat] typed hashed password: ' + password);
+          this.logger.log('[joinChat] current hashed password: ' + foundEntityToJoin.password);
 
-            // TODO HERE EVERYTIME ITS CREATING A NEW HASH SO THE COMPARE IS NOT WORKING
-            if (bcryptjs.compare(password, foundEntityToJoin.password)) {
-              this.logger.log('[joinChat] Password if ok, joining the chat');
-              return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
-            }
-          }).catch((err) => {
-            this.logger.error('[joinChat] password hash exception err: ' + err.message);
+          if (bcryptjs.compareSync(password, foundEntityToJoin.password)) {
+            this.logger.log('[joinChat] Password if ok, joining the chat');
+            return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
+          } else {
             // This goes to the UI (keep lower case to match the Validator errors)
-            throw new Error('internal error with password');
-          });
-        } else {
-          // Join a PUBLIC OR PRIVATE chat
-          this.logger.log('[joinChat] No password required, joining the chat');
-          return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
-        }
+            throw new Error('wrong password');
+          }
+        });
+        //   .catch((err) => {
+        //   this.logger.error('[joinChat] password hash exception err: ' + err.message);
+        //   // This goes to the UI (keep lower case to match the Validator errors)
+        //   throw new Error('internal error with password');
+        // });
+      } else {
+        // Join a PUBLIC OR PRIVATE chat
+        this.logger.log('[joinChat] No password required, joining the chat');
+        return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
       }
     }).catch((err: string) => {
-      this.logger.error('[joinChat] Could not join chat err: ' + err);
+      // this.logger.error('[joinChat] Could not join chat err: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
-      throw new Error('could not join chat');
+      throw new Error(err);
     });
     return false;
   }
