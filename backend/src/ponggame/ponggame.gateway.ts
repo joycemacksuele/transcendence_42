@@ -19,7 +19,7 @@ import { MatchDto } from "src/matches/match.dto";
 
 //for testing
 import { MatchEntity } from "src/matches/match.entity";
-import {Logger} from "@nestjs/common";
+import {Logger, UnauthorizedException} from "@nestjs/common";
 
 @WebSocketGateway({
   cors: {
@@ -72,56 +72,71 @@ export class PonggameGateway
   }
 
   async handleConnection(client: Socket) {
-    this.logger.log(`pong game client id ${client.id} connected`);
-
-
-    let token = null;
-
-    if(client.handshake.headers.cookie){
-      const token_index_start = client.handshake.headers.cookie.indexOf("token");
-      const token_key_value = client.handshake.headers.cookie.substring(token_index_start);
-
-      if (token_key_value.includes(";")) {
-        const token_index_end = token_key_value.indexOf(";");
-        const token_key_value_2 = token_key_value.substring(0, token_index_end);
-        token = token_key_value_2.split('=')[1];
-      } else {
-        token = token_key_value.split('=')[1];
-      }
-    }
-
     try {
-      const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-      const userId = payload.username;
-      
-      this._socketIdUserId.set(client.id, userId);
-      this._userIdSocketId.set(userId, client.id);
-      
-      // added Jaka:
-      this.emitOnlineStatuses();
+      this.logger.log(`[handleConnection] pong game client id ${client.id} connected`);
 
-      const matchId = this.ponggameService.getMatchId(userId);
-      this.logger.log(`UserId found : ${userId}`);
-      this.logger.log(`Match Id ${matchId}`);
-      if (matchId == "") {
-        //if not get the selection screen
-        client.emit(
-          "stateUpdate",
-          this.ponggameService.getInitMatch("Default")
-        );
+      if (client.handshake.headers.cookie) {
+        const token_key_value = client.handshake.headers.cookie;
+//        this.logger.log('[handleConnection] token found in the header: ', client.handshake.headers);
+        if (token_key_value.includes("token")) {
+          const token_index_start = token_key_value.indexOf("token");
+          const token_index_end_global = token_key_value.length;
+          const from_token_to_end = token_key_value.substring(token_index_start, token_index_end_global);
+          let token_index_end_local = from_token_to_end.indexOf(";");
+          if (token_index_end_local == -1) {
+            token_index_end_local = from_token_to_end.length;
+          }
+          const token_key_value_2 = from_token_to_end.substring(0, token_index_end_local);
+          const token = token_key_value_2.split('=')[1];
+  //        this.logger.log('[handleConnection] token: ' + token);
+
+          try {
+            const payload = await this.authService.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
+            this.logger.log('[handleConnection] payload.username: ' + payload.username);
+            client.data.user = payload.username;
+
+            const userId = payload.username;
+
+            this._socketIdUserId.set(client.id, userId);
+            this._userIdSocketId.set(userId, client.id);
+
+            // added Jaka:
+            this.emitOnlineStatuses();
+
+            const matchId = this.ponggameService.getMatchId(userId);
+            this.logger.log(`UserId found : ${userId}`);
+            this.logger.log(`Match Id ${matchId}`);
+            if (matchId == "") {
+              //if not get the selection screen
+              client.emit(
+                  "stateUpdate",
+                  this.ponggameService.getInitMatch("Default")
+              );
+            } else {
+              //if part of a game then join the match
+              client.join(matchId);
+            }
+
+          } catch {
+            throw new UnauthorizedException('Invalid token');
+          }
+        } else {
+          throw new UnauthorizedException('Token does not exist (yet?), disconnecting');
+        }
       } else {
-        //if part of a game then join the match
-        client.join(matchId);
+        throw new UnauthorizedException('No cookie found in the header, disconnecting');
       }
-    } catch {
-      this.logger.log("something went wrong verifying the token");
-      this.logger.log("Disconnecting the client socket");
+    } catch (error) {
+      // this.logger.error("something went wrong verifying the token");
+      // this.logger.error("Disconnecting the client socket");
+      this.logger.error('[handleConnection] error: ' + error);
+      client.emit("exceptionHandleConnection", new UnauthorizedException(error));
       client.disconnect();
     }
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`pong game client id ${client.id} disconnected`);
+    this.logger.log(`[handleDisconnect] pong game client id ${client.id} disconnected`);
     this.ponggameService.playerDisconnected(
       this._socketIdUserId.get(client.id),
     );
