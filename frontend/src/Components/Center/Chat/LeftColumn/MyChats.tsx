@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, Fragment } from "react";
 import {ChatType, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
 import {chatSocket} from "../Utils/ClientSocket.tsx"
 
@@ -9,11 +9,18 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
+// type PropsHeader = {
+//     setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+// };
+
+
+// Jaka
 type PropsHeader = {
     setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    activeChatId: number;
 };
 
-const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
+const MyChats: React.FC<PropsHeader> = ({setChatClicked, activeChatId}) => {
 
     const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
 
@@ -49,7 +56,7 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
         console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
 
         chatSocket.emit("getChats");
-        chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {            
+        chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {     
             setChatInfo(allChats);
         });
 
@@ -67,9 +74,11 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className=''>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.length === 0 ? (<>Jaka</>) : (
+                    {chatInfo.length === 0 ? (
+                        <span className='pt-5'>You are not a member of any chat yet.</span>
+                        ) : (
                     chatInfo.map((chat: ResponseNewChatDto, i: number) => (
-                        <>
+                        <Fragment key={chat.id}>
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
                             {/* If chat is private we don't show it in this list - fix to not have spaces when */}
                             {/* {chat.type == ChatType.PRIVATE && <ListGroup */}
@@ -80,14 +89,20 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
                             {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) != -1) && <ListGroup
-                                key={chat.id}
+                                // key={chat.id}
                                 variant="flush"
+                                // className="chat-item"
+                                // className={`chat-item ${chat.id === activeChatId ? 'active' : ''}`}
                             >
                                 <ListGroup.Item
                                     as="li"
-                                    className="justify-content-between align-items-start"
+                                    className={`chat-item
+                                                ${chat.id === activeChatId ? 'active' : ''}
+                                                justify-content-between align-items-start`}
                                     variant="light"
-                                    onClick={() => setChatClicked(chat)}
+                                    onClick={() => { setChatClicked(chat)
+                                    }
+                                }
                                 >
                                     {chat.type == ChatType.PRIVATE && <Image
                                         src={import.meta.env.VITE_BACKEND as string + "/resources/chat-private.png"}
@@ -110,9 +125,8 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
                                     {chat.name}
                                 </ListGroup.Item>
                             </ListGroup>}
-                        </>
+                        </Fragment>
                     ))
-                
                 )}
                 </Stack>
             </Row>

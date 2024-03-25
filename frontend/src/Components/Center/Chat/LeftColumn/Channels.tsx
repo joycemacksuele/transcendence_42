@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { ChatType, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 
 // Importing bootstrap and other modules
@@ -9,11 +9,18 @@ import Image from "react-bootstrap/Image";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
+// type PropsHeader = {
+//   setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+// };
+
+// Jaka
 type PropsHeader = {
-  setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    activeChatId: number;
 };
 
-const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
+
+const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId }) => {
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
   const [intraName, setIntraName] = useState<string | null>(null);
 
@@ -78,7 +85,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
         {/* TODO SCROLL HERE*/}
         <Stack gap={2}>
           {chatInfo.map((chat: ResponseNewChatDto) => (
-            <>
+            <Fragment key={chat.id}>
               {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
 
             {/* Jaka:   Commenting out the first ListGroup fixed the 'unique key' error   */}
@@ -102,14 +109,17 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
                 chat.type != ChatType.PRIVATE && (
                   <ListGroup
                     // key={"Channels-" + i.toString()}
-                    key={"Chat" + chat.id}
+                    // key={"Chat" + chat.id}
                     variant="flush"
                   >
                     {/*printing id for testing*/}
                     {/* key={"Chat" + chat.id} */}
                     <ListGroup.Item
                       as="li"
-                      className="justify-content-between align-items-start"
+                    //   className="justify-content-between align-items-start"
+                      className={`chat-item
+                                 ${chat.id === activeChatId ? 'active' : ''}
+                                 justify-content-between align-items-start`}
                       variant="light"
                       onClick={() => setChatClicked(chat)}
                     >
@@ -139,7 +149,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
                     </ListGroup.Item>
                   </ListGroup>
                 )}
-            </>
+            </Fragment>
           ))}
         </Stack>
       </Row>
