@@ -350,6 +350,24 @@ export class ChatGateway
     });
   }
 
+  @SubscribeMessage('deletePassword')
+  async deletePassword(@MessageBody() chatId: number, @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
+    this.logger.log('deletePassword -> chat: ' + chatId + " will have its password deleted");
+    await this.chatService.deletePassword(chatId).then( () => {
+
+      // If we could edit the password, get the whole table
+      this.chatService.getAllChats().then( (allChats) => {
+        // If we could get the whole table from the database, emit it to the frontend
+        clientSocket.emit("getChats", allChats);
+        this.logger.log('deletePassword -> getChats -> all chats were emitted to the frontend');
+      });
+    }).catch((err) => {
+      this.logger.error('[deletePassword] Could edit chat\'s password -> err: ' + err.message);
+      clientSocket.emit("exceptionEditPassword", err.message);
+    });
+  }
+
   @SubscribeMessage('messageChat')
   async messageChat(
       @MessageBody() requestMessageChatDto: RequestMessageChatDto,
