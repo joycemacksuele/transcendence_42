@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { ChatType, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 
 // Importing bootstrap and other modules
@@ -78,7 +78,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
         {/* TODO SCROLL HERE*/}
         <Stack gap={2}>
           {chatInfo.map((chat: ResponseNewChatDto) => (
-            <>
+            <Fragment key={chat.id}>
               {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
 
             {/* Jaka:   Commenting out the first ListGroup fixed the 'unique key' error   */}
@@ -102,7 +102,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
                 chat.type != ChatType.PRIVATE && (
                   <ListGroup
                     // key={"Channels-" + i.toString()}
-                    key={"Chat" + chat.id}
+                    // key={"Chat" + chat.id}
                     variant="flush"
                   >
                     {/*printing id for testing*/}
@@ -139,7 +139,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
                     </ListGroup.Item>
                   </ListGroup>
                 )}
-            </>
+            </Fragment>
           ))}
         </Stack>
       </Row>

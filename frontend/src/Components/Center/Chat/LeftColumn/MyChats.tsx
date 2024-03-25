@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, Fragment } from "react";
 import {ChatType, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
 import {chatSocket} from "../Utils/ClientSocket.tsx"
 
@@ -67,9 +67,11 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
             <Row className=''>
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
-                    {chatInfo.length === 0 ? (<>Jaka</>) : (
+                    {chatInfo.length === 0 ? (
+                        <span className='pt-5'>No chats here at the moment ...</span>
+                        ) : (
                     chatInfo.map((chat: ResponseNewChatDto, i: number) => (
-                        <>
+                        <Fragment key={chat.id}>
                             {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
                             {/* If chat is private we don't show it in this list - fix to not have spaces when */}
                             {/* {chat.type == ChatType.PRIVATE && <ListGroup */}
@@ -80,9 +82,10 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
 
                             {/* If current user is a member of the chat (i.e. is in the members array) */}
                             {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) != -1) && <ListGroup
-                                key={chat.id}
+                                // key={chat.id}
                                 variant="flush"
                             >
+                                jaka
                                 <ListGroup.Item
                                     as="li"
                                     className="justify-content-between align-items-start"
@@ -110,9 +113,8 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
                                     {chat.name}
                                 </ListGroup.Item>
                             </ListGroup>}
-                        </>
+                        </Fragment>
                     ))
-                
                 )}
                 </Stack>
             </Row>
