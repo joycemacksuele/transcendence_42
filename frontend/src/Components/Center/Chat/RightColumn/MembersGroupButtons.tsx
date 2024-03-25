@@ -161,8 +161,13 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
     };
 
     const editGroupPassword = () => {
-        console.log("[MembersGroupButtons] [", chatClicked?.name, "] will have its password changed or deleted");
-        const requestPasswordRelatedChatDto = { id: chatClicked?.id, name: chatClicked?.name, password: chatPassword };
+        console.log("[MembersGroupButtons] [", chatClicked?.name, "] will have its password changed");
+        const requestPasswordRelatedChatDto = {
+            id: chatClicked?.id,
+            type: ChatType.PROTECTED,
+            name: chatClicked?.name,
+            password: chatPassword
+        };
         console.log("[MembersGroupButtons][editGroupPassword] requestPasswordRelatedChatDto:", requestPasswordRelatedChatDto);
         chatSocket.emit("editPassword", requestPasswordRelatedChatDto);
 
@@ -179,6 +184,15 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
         setErrorException([]);
         setChatPassword(null);
     };
+
+    const deleteGroupPassword = () => {
+        console.log("[MembersGroupButtons] [", chatClicked?.name, "] will have its password deleted");
+        chatSocket.emit("deletePassword", chatClicked?.id);
+
+        alertKey = 0;
+        setErrorException([]);
+        setChatPassword(null);
+    }
 
     ////////////////////////////////////////////////////////////////////// UI OUTPUT
     return (
@@ -262,7 +276,7 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                         {/* Change password = when we are a user AND when we ARE admin and chat type is PROTECTED */}
                         {(chatClicked?.usersIntraName.indexOf(intraName) != -1 &&
                           chatClicked?.admins.indexOf(intraName) != -1 &&
-                            chatClicked?.type == ChatType.PROTECTED) && (
+                          chatClicked?.type == ChatType.PROTECTED) && (
                             <>
                                 <Button
                                     variant="light"
@@ -275,7 +289,6 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                     show={showEditPasswordModal}
                                     onHide={() => {
                                         alertKey = 0;
-                                        setChatPassword(null);
                                         setShowEditPasswordModal(false);
                                         setErrorException([]);
                                         setChatPassword(null);
@@ -333,7 +346,7 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
                                 variant="warning"
                                 onClick={ () => {
                                     setChatPassword(null);
-                                    editGroupPassword();
+                                    deleteGroupPassword();
                                 }}
                             >
                                 Delete password
