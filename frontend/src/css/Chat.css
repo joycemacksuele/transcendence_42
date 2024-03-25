@@ -43,8 +43,23 @@ ul.dropdown-menu {
 
 .left-col-bottom-buttons {
     /* background: rgb(212, 194, 194); */
-    
 }
+
+.chat-item {
+    /* border: 1px solid red; */
+    /* background: rgb(121, 18, 18); */
+}
+
+.chat-item:hover {
+    cursor: pointer;
+    background: rgb(214, 188, 192);
+}
+
+.chat-item.active {
+    border: 0px solid rgb(208, 175, 11);
+    background: rgb(169, 132, 137);
+}
+
 
 .middle-col {
     /* margin-left: 5px; */

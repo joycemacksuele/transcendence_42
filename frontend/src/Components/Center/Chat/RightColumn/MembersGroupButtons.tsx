@@ -17,9 +17,10 @@ import {Alert} from "react-bootstrap";
 
 type PropsHeader = {
     chatClicked: ResponseNewChatDto | null;
+    setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
 };
 
-const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
+const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, setChatClicked }) => {
     if (chatClicked) {
         console.log("[MembersGroupButtons] chatClicked: ", chatClicked);
     }
@@ -152,6 +153,8 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
     const leaveGroupChat = () => {
         console.log("[MembersGroupButtons] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
         chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
+        setChatClicked(null);
+
     };
 
     const addUsers = () => {
