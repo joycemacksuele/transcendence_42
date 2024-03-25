@@ -9,11 +9,18 @@ import Image from "react-bootstrap/Image";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
+// type PropsHeader = {
+//   setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+// };
+
+// Jaka
 type PropsHeader = {
-  setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    activeChatId: number;
 };
 
-const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
+
+const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId }) => {
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
   const [intraName, setIntraName] = useState<string | null>(null);
 
@@ -109,7 +116,10 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
                     {/* key={"Chat" + chat.id} */}
                     <ListGroup.Item
                       as="li"
-                      className="justify-content-between align-items-start"
+                    //   className="justify-content-between align-items-start"
+                      className={`chat-item
+                                 ${chat.id === activeChatId ? 'active' : ''}
+                                 justify-content-between align-items-start`}
                       variant="light"
                       onClick={() => setChatClicked(chat)}
                     >

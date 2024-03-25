@@ -9,11 +9,18 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
+// type PropsHeader = {
+//     setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+// };
+
+
+// Jaka
 type PropsHeader = {
     setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    activeChatId: number;
 };
 
-const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
+const MyChats: React.FC<PropsHeader> = ({setChatClicked, activeChatId}) => {
 
     const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
 
@@ -49,7 +56,7 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
         console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
 
         chatSocket.emit("getChats");
-        chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {            
+        chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {     
             setChatInfo(allChats);
         });
 
@@ -68,7 +75,7 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
                 {/* TODO SCROLL HERE*/}
                 <Stack gap={2}>
                     {chatInfo.length === 0 ? (
-                        <span className='pt-5'>No chats here at the moment ...</span>
+                        <span className='pt-5'>You are not a member of any chat yet.</span>
                         ) : (
                     chatInfo.map((chat: ResponseNewChatDto, i: number) => (
                         <Fragment key={chat.id}>
@@ -84,13 +91,18 @@ const MyChats: React.FC<PropsHeader> = ({setChatClicked}) => {
                             {(intraName && chat.usersIntraName && chat.usersIntraName.indexOf(intraName) != -1) && <ListGroup
                                 // key={chat.id}
                                 variant="flush"
+                                // className="chat-item"
+                                // className={`chat-item ${chat.id === activeChatId ? 'active' : ''}`}
                             >
-                                jaka
                                 <ListGroup.Item
                                     as="li"
-                                    className="justify-content-between align-items-start"
+                                    className={`chat-item
+                                                ${chat.id === activeChatId ? 'active' : ''}
+                                                justify-content-between align-items-start`}
                                     variant="light"
-                                    onClick={() => setChatClicked(chat)}
+                                    onClick={() => { setChatClicked(chat)
+                                    }
+                                }
                                 >
                                     {chat.type == ChatType.PRIVATE && <Image
                                         src={import.meta.env.VITE_BACKEND as string + "/resources/chat-private.png"}
