@@ -9,18 +9,15 @@ import Image from "react-bootstrap/Image";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
-// type PropsHeader = {
-//   setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
-// };
-
 // Jaka
 type PropsHeader = {
-    setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | null, activeContentLeft: string) => void;
     activeChatId: number;
+    activeContentLeft: string;
 };
 
 
-const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId }) => {
+const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, activeContentLeft }) => {
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
   const [intraName, setIntraName] = useState<string | null>(null);
 
@@ -73,9 +70,23 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId }) => {
       console.log(
         "[Channels] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
       );
-      setChatClicked(null);
+      setChatClicked(null, '');
     };
   }, []);
+
+
+  // jaka: To remember which Chat is selected in MyChats, when going from MyChats to Channels and back
+    useEffect(() => {
+      console.log('jaka: setChatClicked() -> Channels')
+      const activeChat:ResponseNewChatDto | undefined = 
+          chatInfo.find((chat) =>
+              chat.id === activeChatId
+          );
+      //console.log('            activeChat: ' + JSON.stringify(activeChat));
+      if (activeChat) {
+          setChatClicked(activeChat, activeContentLeft);
+      }
+  }, [chatInfo, activeChatId]);
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
@@ -86,21 +97,6 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId }) => {
         <Stack gap={2}>
           {chatInfo.map((chat: ResponseNewChatDto) => (
             <Fragment key={chat.id}>
-              {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
-
-            {/* Jaka:   Commenting out the first ListGroup fixed the 'unique key' error   */}
-              {/* If chat is private we don't show it in this list */}
-              {/* {chat.type == ChatType.PRIVATE && ( */}
-                {/* <ListGroup */}
-                  {/* // key={"Channels-hidden-" + i.toString()} */}
-                  {/* key={"Chat" + chat.id} */}
-                  {/* className="hidden" */}
-                {/* > */}
-                  {/*printing id for testing*/}
-                  {/* key={"Chat" + chat.id} */}
-                {/* </ListGroup> */}
-              {/* )} */}
-
               {/* If current user is not a member of the chat (i.e. is not in the members array) */}
               {/* And chat is not private  (i.e. is a public or protected group) */}
               {intraName &&
@@ -116,12 +112,11 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId }) => {
                     {/* key={"Chat" + chat.id} */}
                     <ListGroup.Item
                       as="li"
-                    //   className="justify-content-between align-items-start"
                       className={`chat-item
                                  ${chat.id === activeChatId ? 'active' : ''}
                                  justify-content-between align-items-start`}
                       variant="light"
-                      onClick={() => setChatClicked(chat)}
+                      onClick={() => setChatClicked(chat, activeContentLeft)}
                     >
                       {chat.type == ChatType.PUBLIC && (
                         <Image

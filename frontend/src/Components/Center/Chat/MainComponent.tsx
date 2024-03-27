@@ -32,16 +32,23 @@ const MainComponent = () => {
     null
   );
 
-  // jaka
-  const [activeChatId, setActiveChatId] = useState<number>(0); // should it be zero initially ???
+  // jaka:  To keep track of which Chat is selected in MyChats or Channels, when
+  //        switching between MyChats to Channels  
+  const [activeId_Chats, setactiveId_Chats] = useState<number>(-1);
+  const [activeId_Channels, setactiveId_Channels] = useState<number>(-1);
 
   
   // jaka
-  const handleClickChat = (chat: ResponseNewChatDto | null) => {
+  const handleClickChat = (chat: ResponseNewChatDto | null, activeContentLeft: string) => {
     console.log('Handle Click Chat');
     setChatClicked(chat);
-    if (chat != null)
-        setActiveChatId(chat.id);
+    if (chat != null) {
+        // setActiveChatId(chat.id);
+        if (activeContentLeft === 'recent')
+          setactiveId_Chats(chat.id);  
+        else if (activeContentLeft === 'groups')
+          setactiveId_Channels(chat.id);
+    }
   }
 
   if (chatClicked) {
@@ -200,11 +207,17 @@ const MainComponent = () => {
           {/* Recent or Group body */}
           <Row className="left-col-body justify-content-center flex-grow-1">
             {activeContentLeft === "recent" && (
-              <MyChats setChatClicked={handleClickChat} activeChatId={activeChatId}/>      // jaka
+              <MyChats setChatClicked={handleClickChat}
+                       activeChatId={activeId_Chats}      // jaka
+                       activeContentLeft={activeContentLeft}
+              />
             //   <MyChats setChatClicked={setChatClicked} />
             )}
             {activeContentLeft === "groups" && (
-              <Channels setChatClicked={handleClickChat} activeChatId={activeChatId} />     // jaka
+              <Channels setChatClicked={handleClickChat}
+                        activeChatId={activeId_Channels}     // jaka
+                        activeContentLeft={activeContentLeft}
+              />
             )}
           </Row>
           {/* NewChat Button - at the bottom, visible only wheb Group is active */}
