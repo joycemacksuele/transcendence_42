@@ -58,6 +58,8 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
       chatSocket.on("messageChat", (newdata: ResponseNewChatDto) =>
         setMessages(newdata)
       );
+    } else {
+      setMessages(null);
     }
   }, [chatClicked]);
 
@@ -87,7 +89,7 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
         chatId: chatClicked?.id,
       });
       setMessage("");
-      setMessageBoxPlaceHolder("Write a message...");
+      setMessageBoxPlaceHolder("Write a message ...");
     }
   };
 
@@ -113,36 +115,35 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
   return (
     <>
       <Row className="row-all-messages">
-        {/*<ListGroup*/}
         {/*    key={i++}>*/}
-        {messages && messages.messages && messages.messages[0] != null ? (
-          messages.messages.map(
-            (message_: ResponseMessageChatDto, i: number) => (
-              <ListGroup key={i}>
-                <ListGroup.Item>
-                  <div className="fw-bold">{message_.creator}</div>
-                  {!blockedids ||
-                  blockedids.data.indexOf(message_.creator_id) == -1
-                    ? message_.message
-                    : "This message is not displayed because you blocked the sender"}
-                </ListGroup.Item>
-              </ListGroup>
+        <ListGroup>
+          {messages && messages.messages && messages.messages[0] != null ? (
+            messages.messages.map(
+              (message_: ResponseMessageChatDto, i: number) => (
+                  <ListGroup.Item className="message-item" key={i}>
+                    <div className="fw-bold">{message_.creator}</div>
+                    {!blockedids ||
+                    blockedids.data.indexOf(message_.creator_id) == -1
+                      ? message_.message
+                      : "This message is not displayed because you blocked the sender"}
+                  </ListGroup.Item>
+              )
             )
-          )
-        ) : (
-          <div> No messages yet! </div>
-        )}
+          ) : (
+            <div style={{padding: '1em'}}> No messages yet! </div>
+          )}
+        </ListGroup>
+
         {/* Added Jaka: Invisible div that jumps to the bottom,
         to always see the last message */}
         <div ref={lastMessagePositionRef} />
-        {/*// </ListGroup>*/}
       </Row>
-      <Row className="msg-input-field">
-        <Form.Group className="h-25">
+      <Row className="row-write-and-send">
+        <Form.Group className="w-100">
           <Stack className="h-100" direction="horizontal">
             <Form.Control
               as="textarea"
-              className="me-2 h-100"
+              className="me-2 h-75"
               type="text"
               placeholder={messageBoxPlaceHolder}
               onChange={(event) => setMessage(event.target.value)}
@@ -150,7 +151,7 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
             />
             {/* TODO onClick erase the message from the form box*/}
             <Button
-              className="h-100"
+              className="h-90"
               variant="primary"
               type="submit"
               onClick={sendMessage}
