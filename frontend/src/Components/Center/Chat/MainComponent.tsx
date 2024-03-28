@@ -34,8 +34,8 @@ const MainComponent = () => {
 
   // jaka:  To keep track of which Chat is selected in MyChats or Channels, when
   //        switching between MyChats to Channels  
-  const [activeId_Chats, setactiveId_Chats] = useState<number>(-1);
-  const [activeId_Channels, setactiveId_Channels] = useState<number>(-1);
+  const [activeId_Chats, setActiveId_Chats] = useState<number>(-1);
+  const [activeId_Channels, setActiveId_Channels] = useState<number>(-1);
 
   
   // jaka
@@ -43,11 +43,10 @@ const MainComponent = () => {
     console.log('Handle Click Chat');
     setChatClicked(chat);
     if (chat != null) {
-        // setActiveChatId(chat.id);
         if (activeContentLeft === 'recent')
-          setactiveId_Chats(chat.id);  
+          setActiveId_Chats(chat.id);
         else if (activeContentLeft === 'groups')
-          setactiveId_Channels(chat.id);
+          setActiveId_Channels(chat.id);
     }
   }
 
