@@ -29,10 +29,7 @@ ul.dropdown-menu {
 }
 
 
-/***************************************************************/
-/* Jaka for testing ********************************************/
-
-/* Left column */
+/* LEFT COLUMN ***************************************************/
 .left-col-body {
     /* background: rgb(212, 194, 194); */
     overflow-y: auto;
@@ -60,15 +57,23 @@ ul.dropdown-menu {
     background: rgb(169, 132, 137);
 }
 
-
-.middle-col {
-    /* margin-left: 5px; */
-    /* margin-right: 5px; */
+/* MIDDLE COLUMN - messages ***************************************************/
+.row-all-messages {
+    display: flex;
+    max-height: 70vh;
+    height: 70vh;
+    overflow-y: scroll;
+    width: 100%;
+    border: 1px solid black;
 }
 
-/* Members column */
-.members-col
-/* .middle-col */ {
+.msg-input-field {
+    max-height: "10vh";
+}
+
+
+/* RIGHT COLUMN - members ***************************************************/
+.members-col {
     border: 0px solid blue;
 }
 
