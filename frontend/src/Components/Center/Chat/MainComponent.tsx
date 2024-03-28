@@ -55,7 +55,7 @@ const MainComponent = () => {
   }
 
   if (chatClicked) {
-    console.log("[MainComponent] chatClicked: ", chatClicked);
+    console.log("[MainComponent] chatClicked: ", chatClicked.name );
   }
 
 
@@ -161,9 +161,11 @@ const MainComponent = () => {
   // Jaka: When Leaving/Deleting Group, the messages should dissapear,
   //        and Chat/Channel is de-selected  
   useEffect(() => {
+    console.log('[Main, useEffect], chatClicked just changed: ' + chatClicked?.name);
     if (chatClicked === null) {
       setActiveId_Chats(-1);
       setActiveId_Channels(-1);
+      setMessages(null);
     }
   }, [chatClicked]);
 
@@ -176,6 +178,7 @@ const MainComponent = () => {
   const handleClick = (content: null | string) => {
     setActiveContentLeft(content || "");
     setActiveButton(content || "");
+    console.log('[Main] Clicked navigation - value in chatClicked: ' + chatClicked?.name);
   };
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT

@@ -32,7 +32,7 @@ type PropsHeader = {
 
 const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages }) => {
   if (chatClicked) {
-    console.log("[Messages] chatClicked: ", chatClicked);
+    console.log("[Messages] chatClicked: " + chatClicked.name);
   } else {
     console.log("[Messages] no chatClicked");
   }
@@ -60,9 +60,10 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages })
       chatSocket.on("messageChat", (newdata: ResponseNewChatDto) =>
         setMessages(newdata)
       );
-    } else {
-      setMessages(null);
     }
+    // else {
+    //   setMessages(null);
+    // }
   }, [chatClicked]);
 
   const getCurrentUsername = async () => {
