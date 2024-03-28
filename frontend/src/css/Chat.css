@@ -29,10 +29,7 @@ ul.dropdown-menu {
 }
 
 
-/***************************************************************/
-/* Jaka for testing ********************************************/
-
-/* Left column */
+/* LEFT COLUMN ***************************************************/
 .left-col-body {
     /* background: rgb(212, 194, 194); */
     overflow-y: auto;
@@ -45,10 +42,10 @@ ul.dropdown-menu {
     /* background: rgb(212, 194, 194); */
 }
 
-.chat-item {
+/* .chat-item { */
     /* border: 1px solid red; */
     /* background: rgb(121, 18, 18); */
-}
+/* } */
 
 .chat-item:hover {
     cursor: pointer;
@@ -56,19 +53,51 @@ ul.dropdown-menu {
 }
 
 .chat-item.active {
-    border: 0px solid rgb(208, 175, 11);
+    border-bottom: 2px solid rgb(70, 21, 21) !important;
     background: rgb(169, 132, 137);
 }
 
+/* MIDDLE COLUMN - messages ***************************************************/
 
 .middle-col {
-    /* margin-left: 5px; */
-    /* margin-right: 5px; */
+    /* border: 1px solid red; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 0 0;
 }
 
-/* Members column */
-.members-col
-/* .middle-col */ {
+.row-all-messages {
+    display: flex;
+    max-height: 65vh;
+    height: 65vh;
+    overflow-y: scroll;
+    width: 100%;
+    padding: 0 0 0 3%;
+    background: rgb(236, 236, 236);
+    /* border: 1px solid black; */
+}
+
+.message-item {
+    margin: 10px;
+    border-radius: 5px;
+    /* border: 0px solid black; */
+}
+
+.row-write-and-send {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 100%;
+    height: 15vh;
+    /* display: flex; */
+    /* height: "30vh"; */
+    /* max-height: "10vh"; */
+    /* border: 1px solid black; */
+}
+
+
+/* RIGHT COLUMN - members ***************************************************/
+.members-col {
     border: 0px solid blue;
 }
 
@@ -102,4 +131,9 @@ ul.dropdown-menu {
 
 .members-col-buttons {
     border: 0px solid rgb(114, 241, 3);
+}
+
+.member-item:hover {
+    cursor: pointer;
+    background: rgb(214, 188, 192);
 }

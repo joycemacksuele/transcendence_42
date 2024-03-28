@@ -178,7 +178,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                   <ListGroup.Item
                     ref={inputRef}
                     as="li"
-                    className="justify-content-between align-items-start"
+                    className="member-item justify-content-between align-items-start"
                     variant="light"
                     onClick={() => {
                       setShowMemberModal(true);
