@@ -22,7 +22,7 @@ type PropsHeader = {
 
 const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
   if (chatClicked) {
-    console.log("[MembersGroup] chatClicked: ", chatClicked);
+    console.log("[MembersGroup] chatClicked: ", chatClicked.name);
   }
 
   const inputRef = useRef(null);
