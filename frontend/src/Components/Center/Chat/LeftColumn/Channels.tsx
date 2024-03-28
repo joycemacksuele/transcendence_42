@@ -70,7 +70,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, activeC
       console.log(
         "[Channels] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
       );
-      setChatClicked(null, '');
+      //setChatClicked(null, '');
     };
   }, []);
 
