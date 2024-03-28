@@ -22,7 +22,7 @@ type PropsHeader = {
 
 const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, setChatClicked }) => {
     if (chatClicked) {
-        console.log("[MembersGroupButtons] chatClicked: ", chatClicked);
+        console.log("[MembersGroupButtons] chatClicked: ", chatClicked.name);
     }
 
     let alertKey = 0;
@@ -154,7 +154,6 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, setChatClicke
         console.log("[MembersGroupButtons] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
         chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
         setChatClicked(null);
-
     };
 
     const addUsers = () => {
