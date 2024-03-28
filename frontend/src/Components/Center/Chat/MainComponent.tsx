@@ -32,6 +32,9 @@ const MainComponent = () => {
     null
   );
 
+  const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved from Messages
+
+
   // jaka:  To keep track of which Chat is selected in MyChats or Channels, when
   //        switching between MyChats to Channels  
   const [activeId_Chats, setActiveId_Chats] = useState<number>(-1);
@@ -48,6 +51,7 @@ const MainComponent = () => {
         else if (activeContentLeft === 'groups')
           setActiveId_Channels(chat.id);
     }
+    console.log('-- -- - - - -- - - activeChatID: ' + activeId_Chats + ', activeChannelID: ' + activeId_Channels);
   }
 
   if (chatClicked) {
@@ -152,6 +156,18 @@ const MainComponent = () => {
     };
   }, []);
 
+
+
+  // Jaka: When Leaving/Deleting Group, the messages should dissapear,
+  //        and Chat/Channel is de-selected  
+  useEffect(() => {
+    if (chatClicked === null) {
+      setActiveId_Chats(-1);
+      setActiveId_Channels(-1);
+    }
+  }, [chatClicked]);
+
+
   ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
   // recent or groups
   const [activeContentLeft, setActiveContentLeft] = useState<string>("recent");
@@ -232,7 +248,7 @@ const MainComponent = () => {
           md={5}
           className="middle-col bg-light flex-column mx-4 mt-5"
         >
-          <Messages chatClicked={chatClicked} />
+          <Messages chatClicked={chatClicked} messages={messages} setMessages={setMessages}/>
         </Col>
 
         {/* Members column */}
