@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import {
   ResponseMessageChatDto,
   ResponseNewChatDto,
@@ -91,19 +91,28 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
     }
   };
 
+
+  // Jaka: The last message must always be seen, at the bottom
+  //       This is solved by an empty dummy div at the end of list,
+  //        which is always there and has a function scrollIntoView            
+  const lastMessagePositionRef = useRef<HTMLDivElement | null>(null);
+  const jumpToLastMessage = () => {
+    lastMessagePositionRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        // block: 'end',
+        // inline: 'nearest'
+    });
+  }
+  useEffect(() => {
+    jumpToLastMessage();
+  }, [messages])
+
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
 
   // let i = 0;
   return (
     <>
-      <Row
-        style={{
-          maxHeight: "70vh",
-          height: "70vh",
-          overflow: "scroll",
-          width: "100%",
-        }}
-      >
+      <Row className="row-all-messages">
         {/*<ListGroup*/}
         {/*    key={i++}>*/}
         {messages && messages.messages && messages.messages[0] != null ? (
@@ -123,9 +132,12 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
         ) : (
           <div> No messages yet! </div>
         )}
+        {/* Added Jaka: Invisible div that jumps to the bottom,
+        to always see the last message */}
+        <div ref={lastMessagePositionRef} />
         {/*// </ListGroup>*/}
       </Row>
-      <Row style={{ maxHeight: "10vh" }}>
+      <Row className="msg-input-field">
         <Form.Group className="h-25">
           <Stack className="h-100" direction="horizontal">
             <Form.Control
