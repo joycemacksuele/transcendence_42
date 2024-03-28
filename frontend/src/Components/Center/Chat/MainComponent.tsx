@@ -32,16 +32,26 @@ const MainComponent = () => {
     null
   );
 
-  // jaka
-  const [activeChatId, setActiveChatId] = useState<number>(0); // should it be zero initially ???
+  const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved from Messages
+
+
+  // jaka:  To keep track of which Chat is selected in MyChats or Channels, when
+  //        switching between MyChats to Channels  
+  const [activeId_Chats, setActiveId_Chats] = useState<number>(-1);
+  const [activeId_Channels, setActiveId_Channels] = useState<number>(-1);
 
   
   // jaka
-  const handleClickChat = (chat: ResponseNewChatDto | null) => {
+  const handleClickChat = (chat: ResponseNewChatDto | null, activeContentLeft: string) => {
     console.log('Handle Click Chat');
     setChatClicked(chat);
-    if (chat != null)
-        setActiveChatId(chat.id);
+    if (chat != null) {
+        if (activeContentLeft === 'recent')
+          setActiveId_Chats(chat.id);
+        else if (activeContentLeft === 'groups')
+          setActiveId_Channels(chat.id);
+    }
+    console.log('-- -- - - - -- - - activeChatID: ' + activeId_Chats + ', activeChannelID: ' + activeId_Channels);
   }
 
   if (chatClicked) {
@@ -146,6 +156,18 @@ const MainComponent = () => {
     };
   }, []);
 
+
+
+  // Jaka: When Leaving/Deleting Group, the messages should dissapear,
+  //        and Chat/Channel is de-selected  
+  useEffect(() => {
+    if (chatClicked === null) {
+      setActiveId_Chats(-1);
+      setActiveId_Channels(-1);
+    }
+  }, [chatClicked]);
+
+
   ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
   // recent or groups
   const [activeContentLeft, setActiveContentLeft] = useState<string>("recent");
@@ -200,11 +222,17 @@ const MainComponent = () => {
           {/* Recent or Group body */}
           <Row className="left-col-body justify-content-center flex-grow-1">
             {activeContentLeft === "recent" && (
-              <MyChats setChatClicked={handleClickChat} activeChatId={activeChatId}/>      // jaka
+              <MyChats setChatClicked={handleClickChat}
+                       activeChatId={activeId_Chats}      // jaka
+                       activeContentLeft={activeContentLeft}
+              />
             //   <MyChats setChatClicked={setChatClicked} />
             )}
             {activeContentLeft === "groups" && (
-              <Channels setChatClicked={handleClickChat} activeChatId={activeChatId} />     // jaka
+              <Channels setChatClicked={handleClickChat}
+                        activeChatId={activeId_Channels}     // jaka
+                        activeContentLeft={activeContentLeft}
+              />
             )}
           </Row>
           {/* NewChat Button - at the bottom, visible only wheb Group is active */}
@@ -220,7 +248,7 @@ const MainComponent = () => {
           md={5}
           className="middle-col bg-light flex-column mx-4 mt-5"
         >
-          <Messages chatClicked={chatClicked} />
+          <Messages chatClicked={chatClicked} messages={messages} setMessages={setMessages}/>
         </Col>
 
         {/* Members column */}
