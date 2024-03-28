@@ -26,9 +26,11 @@ import { CurrentUserContext, CurrUserData } from "../../Profile/utils/contextCur
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
+  messages: ResponseNewChatDto | null;
+  setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
-const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
+const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages }) => {
   if (chatClicked) {
     console.log("[Messages] chatClicked: ", chatClicked);
   } else {
@@ -37,7 +39,7 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
 
   ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
-  const [messages, setMessages] = useState<ResponseNewChatDto | null>(null);
+  // const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved to MainComponent
   const [blockedids, setBlockedIds] = useState(null);
   const [message, setMessage] = useState("");
   const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] =
