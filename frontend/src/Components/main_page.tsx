@@ -60,7 +60,10 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
         style={{ minHeight: "100vh" }}
       >
         <div className="d-flex flex-column align-items-center">
-          <h3>Loading ...</h3>
+          <div className="spinner p-3">
+            <div className="spinner-pizza"></div>
+            <h5>Loading ...</h5>
+          </div>
         </div>
       </Container>
     );

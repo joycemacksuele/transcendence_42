@@ -17,10 +17,18 @@ import {Alert} from "react-bootstrap";
 
 type PropsHeader = {
     chatClicked: ResponseNewChatDto | null;
+    handleClick: (content: string | null) => void;
     setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    // setActiveButton: (activeButton: string) => void;
+    // setActiveContentLeft: (activeContentLeft: string) => void;
 };
 
-const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, setChatClicked }) => {
+const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, 
+                                                      handleClick,      // jaka: maybe not all of these are needed, to test
+                                                      setChatClicked,
+                                                    //   setActiveButton,
+                                                    //   setActiveContentLeft
+    }) => {
     if (chatClicked) {
         console.log("[MembersGroupButtons] chatClicked: ", chatClicked.name);
     }
@@ -148,6 +156,13 @@ const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, setChatClicke
         alertKey = 0; 
         setErrorException([]);
         setChatPassword(null);
+
+
+        // Jaka: on Join it should jump fro Channels to MyChats, show chats content in middle col, and add user to right col
+        handleClick('recent');
+        setChatClicked(chatClicked);
+        // setActiveButton('recent');
+        // setActiveContentLeft('recent');
     };
 
     const leaveGroupChat = () => {
