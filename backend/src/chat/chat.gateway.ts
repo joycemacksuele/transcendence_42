@@ -148,7 +148,7 @@ export class ChatGateway
         this.logger.log('getChats -> chat ' + requestNewChatDto.name + ' was created');
         this.chatService.getAllChats().then((allChats) => {
           // If we could get the whole table from the database, emit it to the frontend
-          clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
+          clientSocket.emit("getChats", allChats);
           this.logger.log('createChat -> getChats -> all chats were emitted to the frontend');
         });
       }
@@ -199,7 +199,7 @@ export class ChatGateway
     });
   }
 
-  @SubscribeMessage('leaveChat')// TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT??
+  @SubscribeMessage('leaveChat')
   async leaveChat(
       @MessageBody('chatId') chatId: number,
       @ConnectedSocket() clientSocket: Socket) {
@@ -288,7 +288,7 @@ export class ChatGateway
     });
   }
 
-  @SubscribeMessage('banFromChat')// TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT??
+  @SubscribeMessage('banFromChat')
   async banFromChat(
       @MessageBody('chatId') chatId: number,
       @MessageBody('user') user: string,

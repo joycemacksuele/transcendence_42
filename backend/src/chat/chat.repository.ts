@@ -284,8 +284,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		try {
 			this.logger.log("[deleteUserFromChat] foundChatEntityToLeave: " + foundChatEntityToLeave);
 			if (!foundChatEntityToLeave.users.toString()) {
-				// TODO DELETE FROM ChatMessageEntity AND USERS_CAN_CHAT??
-				//     seems like cascade is not working to delete the child rows in the joined tables
+				// TODO DELETE FROM ChatMessageEntity is working?
 				await this.delete(foundChatEntityToLeave.id);
 				this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". I was deleted!");
 				return false;
@@ -299,10 +298,9 @@ export class ChatRepository extends Repository<NewChatEntity> {
 						.manager
 						.save(foundChatEntityToLeave);
 
-					// After deleting the correct user, if we don't have any oser left, we can delete the chat
+					// After deleting the correct user, if we don't have any other left, we can delete the chat
 					if (!foundChatEntityToLeave.users.toString()) {
-						// TODO DELETE FROM ChatMessageEntity AND USERS_CAN_CHAT??
-						//     seems like cascade is not working to delete the child rows in the joined tables
+						// TODO DELETE FROM ChatMessageEntity is working?
 						await this.delete(foundChatEntityToLeave.id);
 					}
 				} else {
@@ -407,13 +405,40 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		}
 	}
 
+	public async deleteAdminFromChat(foundEntityToEdit: NewChatEntity, userToDelete: UserEntity) {
+		try {
+			this.logger.log("[deleteAdminFromChat] foundEntityToEdit: " + foundEntityToEdit);
+
+			// NewChat has users on it, try to see if the user to be deleted is in the array of users
+			const index = foundEntityToEdit.admins.findIndex(user=> user.id === userToDelete.id)
+			if (index !== -1) {
+				// If user to be deleted was found in the array of admins, delete s/he from it and save the entity
+				foundEntityToEdit.admins.splice(index, 1);
+				await this
+					.manager
+					.save(foundEntityToEdit);
+			} else {
+				this.logger.log("[deleteAdminFromChat] User " + userToDelete.loginName + " is not an admin of the chat " + foundEntityToEdit.name);
+				return false;
+			}
+
+			await this
+				.manager
+				.save(foundEntityToEdit);
+
+			return true
+		} catch (err) {
+			throw new Error('[deleteAdminFromChat] err: ' + err);
+		}
+	}
+
 	public async deletePasswordFromChat(foundEntityToEdit: NewChatEntity) {
 		try {
 			this.logger.log("[deletePasswordFromChat] foundEntityToEdit: " + foundEntityToEdit);
 			if (foundEntityToEdit.type == ChatType.PROTECTED) {
-					// If password is deleted we want to set the chat type to PUBLIC
-					foundEntityToEdit.password = null;
-					foundEntityToEdit.type = ChatType.PUBLIC;
+				// If password is deleted we want to set the chat type to PUBLIC
+				foundEntityToEdit.password = null;
+				foundEntityToEdit.type = ChatType.PUBLIC;
 
 				await this
 					.manager
