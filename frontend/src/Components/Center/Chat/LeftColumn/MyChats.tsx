@@ -120,7 +120,7 @@ const MyChats: React.FC<PropsHeader> = ({
           {chatInfo.length === 0 ? (
             <span className="pt-5">You are not a member of any chat yet.</span>
           ) : (
-            chatInfo.map((chat: ResponseNewChatDto, i: number) => (
+            chatInfo.map((chat: ResponseNewChatDto) => (
               <Fragment key={chat.id}>
                 {(intraName &&
                   chat.usersIntraName &&
