@@ -82,7 +82,7 @@ export class ChatService {
         // chat name is the name of the friend in case of a private chat
         chatEntity.name = requestNewChatDto.name;
         // If it is a PRIVATE chat we need to add the friend to the users list
-        const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
+        const friend = await this.userService.getUserByProfileName(requestNewChatDto.name);
         chatEntity.users.push(friend);
 
       } else if (requestNewChatDto.type == ChatType.PROTECTED) {
@@ -103,14 +103,18 @@ export class ChatService {
 
         // Add creator to the UsersCanChatEntity:
         this.usersCanChatRepository.addNewUserToUsersCanChatEntity(r, r.creator).then(r2 => {
-          this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the bzzzt ' + chatEntity.creator.loginName);
+          if (r2) {
+            this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the currenct user ' + chatEntity.creator.loginName);
+          }
         });
 
         // Add friend to the UsersCanChatEntity:
         if (requestNewChatDto.type == ChatType.PRIVATE) {
-          const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
+          const friend = await this.userService.getUserByProfileName(requestNewChatDto.name);
           this.usersCanChatRepository.addNewUserToUsersCanChatEntity(r, friend).then(r2 => {
-            this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the friend ' + friend.loginName);
+            if (r2) {
+              this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the friend ' + friend.loginName);
+            }
           });
         }
 
