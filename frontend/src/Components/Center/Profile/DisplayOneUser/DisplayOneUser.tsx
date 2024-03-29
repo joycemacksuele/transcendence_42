@@ -25,7 +25,7 @@ interface UserProps {
   achievements: string;
 }
 
-export const getCurrentUsername = async () => {
+export const getCurrentIntraName = async () => {
   try {
     const response = await axiosInstance.get("/users/get-current-intra-name");
     // console.log('=================== username: ', response.data.username);
@@ -41,6 +41,7 @@ const DisplayOneUser: React.FC<{
   showMatchHistory: boolean;
   setShowMatchHistory: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ loginName, showMatchHistory, setShowMatchHistory }) => {
+
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [IamFollowing, setIamFollowing] = useState(false);
   const [isBlocked, setIsBlocked] = useState(true);
@@ -55,9 +56,9 @@ const DisplayOneUser: React.FC<{
   // if the current user is displayed, do not show the buttons
   useEffect(() => {
     const compareUserNames = async () => {
-      const currUsername = await getCurrentUsername();
-      // console.log("=================== compare: ", currUsername, ", ", loginName);
-      if (currUsername === loginName) {
+      const currIntraName = await getCurrentIntraName();
+      // console.log("=================== compare: ", currIntraName, ", ", loginName);
+      if (currIntraName === loginName) {
         setShowButtons(false); // do not show buttons
       } else {
         setShowButtons(true);
@@ -144,16 +145,18 @@ const DisplayOneUser: React.FC<{
   }
 
   const creatChat = () => {
-    const requestNewChatDto: RequestNewChatDto = {
-      name: loginName,
-      type: ChatType.PRIVATE,
-      password: null,
-    };
-    chatSocket.emit("createChat", requestNewChatDto);
-    console.log(
-      "[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:",
-      requestNewChatDto
-    );
+    if (userData) {
+      const requestNewChatDto: RequestNewChatDto = {
+        name: userData.profileName,
+        type: ChatType.PRIVATE,
+        password: null,
+      };
+      chatSocket.emit("createChat", requestNewChatDto);
+
+      console.log("[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:", requestNewChatDto);
+    } else {
+      console.log("[DisplayOneUser] ERROR could not creat private chat: Could not retrieve user's name");
+    }
   };
 
   const reconnectChatSocketIfNecessary = () => {
