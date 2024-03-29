@@ -42,7 +42,8 @@ const MainComponent = () => {
 
   
   // jaka
-  const handleClickChat = (chat: ResponseNewChatDto | null, activeContentLeft: string) => {
+  // const handleClickChat = (chat: ResponseNewChatDto | null, activeContentLeft: string) => {
+    const handleClickChat = (chat: ResponseNewChatDto | null) => {
     console.log('Handle Click Chat');
     setChatClicked(chat);
     if (chat != null) {
@@ -167,6 +168,10 @@ const MainComponent = () => {
       setActiveId_Channels(-1);
       setMessages(null);
     }
+    else {
+      setActiveButton(activeButton);
+      setActiveContentLeft(activeButton);
+    }
   }, [chatClicked]);
 
 
@@ -174,6 +179,12 @@ const MainComponent = () => {
   // recent or groups
   const [activeContentLeft, setActiveContentLeft] = useState<string>("recent");
   const [activeButton, setActiveButton] = useState("recent" || "");
+
+
+  // useEffect(() => {
+  //   handleClick(activeButton);
+  // }, [activeButton]); 
+
 
   const handleClick = (content: null | string) => {
     setActiveContentLeft(content || "");
@@ -316,7 +327,10 @@ const MainComponent = () => {
                 {chatClicked?.type != ChatType.PRIVATE && (
                   <MembersGroupButtons
                     chatClicked={chatClicked}
+                    handleClick={handleClick}
                     setChatClicked={setChatClicked}
+                    // setActiveButton={setActiveButton}
+                    // setActiveContentLeft={setActiveContentLeft}
                   />
                 )}
               </Row>

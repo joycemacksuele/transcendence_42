@@ -67,7 +67,6 @@ const DisplayOneUser: React.FC<{
   }, [loginName]);
   const buttonsVisible = showButtons ? {} : { display: "none" };
 
-
   useEffect(() => {
     if (!myId) return; // GUARD CLAUSE: wait until myID is available
 
@@ -122,7 +121,6 @@ const DisplayOneUser: React.FC<{
     fetchUserData();
   }, [loginName, myId]);
 
-  
   useEffect(() => {
     const fetchMyData = async () => {
       try {
@@ -136,11 +134,14 @@ const DisplayOneUser: React.FC<{
     fetchMyData();
   }, []);
 
-
   if (!userData) {
-    return <div>Loading ...</div>;
+    return (
+      <div className="spinner p-3">
+        <div className="spinner-pizza"></div>
+        <h5>Loading ...</h5>
+      </div>
+    );
   }
-
 
   const creatChat = () => {
     const requestNewChatDto: RequestNewChatDto = {
@@ -149,7 +150,10 @@ const DisplayOneUser: React.FC<{
       password: null,
     };
     chatSocket.emit("createChat", requestNewChatDto);
-    console.log("[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:", requestNewChatDto);
+    console.log(
+      "[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:",
+      requestNewChatDto
+    );
   };
 
   const reconnectChatSocketIfNecessary = () => {
@@ -160,16 +164,26 @@ const DisplayOneUser: React.FC<{
         chatSocket.connect();
       } // else the socket will automatically try to reconnect
     });
-  }
+  };
 
   const handleClickPrivateChat = () => {
     if (chatSocket.connected) {
-      console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
+      console.log(
+        "[DisplayOneUser] socket connected: ",
+        chatSocket.connected,
+        " -> socket id: ",
+        chatSocket.id
+      );
       creatChat();
     } else {
       chatSocket.connect();
       chatSocket.on("connect", () => {
-        console.log("[DisplayOneUser] socket connected: ", chatSocket.connected, " -> socket id: ", chatSocket.id);
+        console.log(
+          "[DisplayOneUser] socket connected: ",
+          chatSocket.connected,
+          " -> socket id: ",
+          chatSocket.id
+        );
         creatChat();
       });
     }
@@ -205,9 +219,7 @@ const DisplayOneUser: React.FC<{
                         &#9679;
                       </span> */}
                       onlineWS
-                      <span
-                        id={`circle${isUserOnline ? "Green" : "Red"}`}
-                      >
+                      <span id={`circle${isUserOnline ? "Green" : "Red"}`}>
                         &#9679;
                       </span>
                       {/* <span>{userData.onlineStatus ? "Yes" : "No"}</span> */}
@@ -256,9 +268,16 @@ const DisplayOneUser: React.FC<{
                 <Button
                   onClick={() => {
                     if (myId !== undefined) {
-                      handleClickFollowing(myId, userData.id, IamFollowing, setIamFollowing);
+                      handleClickFollowing(
+                        myId,
+                        userData.id,
+                        IamFollowing,
+                        setIamFollowing
+                      );
                     } else {
-                      console.log("myId is undefined, cannot proceed with following/unfollowing.");                      
+                      console.log(
+                        "myId is undefined, cannot proceed with following/unfollowing."
+                      );
                     }
                   }}
                   className="button_default"
@@ -286,11 +305,9 @@ const DisplayOneUser: React.FC<{
               </Col>
 
               {/* Temporary button, to be removed */}
-              <Button onClick={() => getBlockedIds()} variant='' size='sm'>
-                  Test: Get blocked ids
+              <Button onClick={() => getBlockedIds()} variant="" size="sm">
+                Test: Get blocked ids
               </Button>
-
-
             </Row>
             <Modal show={showModal} onHide={toggleModal} centered size="lg">
               <Modal.Body>
