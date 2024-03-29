@@ -93,16 +93,15 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, activeC
     <>
       {/* Available groups row */}
       <Row className="">
-        {/* TODO SCROLL HERE*/}
         <Stack gap={2}>
           {chatInfo.map((chat: ResponseNewChatDto) => (
             <Fragment key={chat.id}>
               {/* If current user is not a member of the chat (i.e. is not in the members array) */}
               {/* And chat is not private  (i.e. is a public or protected group) */}
-              {intraName &&
+              {(intraName &&
                 chat.usersIntraName &&
                 chat.usersIntraName.indexOf(intraName) == -1 &&
-                chat.type != ChatType.PRIVATE && (
+                chat.type != ChatType.PRIVATE) && (
                   <ListGroup
                     // key={"Channels-" + i.toString()}
                     // key={"Chat" + chat.id}

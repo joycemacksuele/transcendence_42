@@ -8,10 +8,8 @@ import {ChatMessageRepository} from "./chat-message.repository";
 import {RequestMessageChatDto} from "./dto/request-message-chat.dto";
 import {RequestNewChatDto} from "./dto/request-new-chat.dto";
 import {ResponseNewChatDto} from "./dto/response-new-chat.dto";
-import {ResponseMessageChatDto} from "./dto/response-message-chat.dto";
 import {UserService} from "../user/user.service";
 import {UserEntity} from "src/user/user.entity";
-import {UsersCanChatEntity} from "./entities/users-can-chat.entity";
 import {WsException} from "@nestjs/websockets";
 
 @Injectable()
@@ -82,7 +80,7 @@ export class ChatService {
         // chat name is the name of the friend in case of a private chat
         chatEntity.name = requestNewChatDto.name;
         // If it is a PRIVATE chat we need to add the friend to the users list
-        const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
+        const friend = await this.userService.getUserByProfileName(requestNewChatDto.name);
         chatEntity.users.push(friend);
 
       } else if (requestNewChatDto.type == ChatType.PROTECTED) {
@@ -103,24 +101,23 @@ export class ChatService {
 
         // Add creator to the UsersCanChatEntity:
         this.usersCanChatRepository.addNewUserToUsersCanChatEntity(r, r.creator).then(r2 => {
-          this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the bzzzt ' + chatEntity.creator.loginName);
+          if (r2) {
+            this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the currenct user ' + chatEntity.creator.loginName);
+          }
         });
 
         // Add friend to the UsersCanChatEntity:
         if (requestNewChatDto.type == ChatType.PRIVATE) {
-          const friend = await this.userService.getUserByLoginName(requestNewChatDto.name);
+          const friend = await this.userService.getUserByProfileName(requestNewChatDto.name);
           this.usersCanChatRepository.addNewUserToUsersCanChatEntity(r, friend).then(r2 => {
-            this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the friend ' + friend.loginName);
+            if (r2) {
+              this.logger.log('[createChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity ' + r2.id + ' created for the friend ' + friend.loginName);
+            }
           });
         }
 
         return chatEntity;
       });
-      // .catch((err) => {
-      //   this.logger.error('[createChat] exception err: ' + err.message);
-      //   // This goes to the UI (keep lower case to match the Validator errors)
-      //   throw new WsException("group [" + requestNewChatDto.name + '] already exist');
-      // });
     } catch (err) {
       this.logger.error('[createChat] Could not create chat err: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
@@ -175,10 +172,6 @@ export class ChatService {
           return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
         }
       });
-      //   .catch((err) => {
-      //   // This goes to the UI (keep lower case to match the Validator errors)
-      //   throw new WsException(err);
-      // });
     } catch (err) {
       // This goes to the UI (keep lower case to match the Validator errors)
       throw new WsException(err);
@@ -193,11 +186,6 @@ export class ChatService {
         // Now we have the entity to update the users' array
         return await this.chatRepository.addAdmin(userEntity, foundChatEntityToAdd);
       });
-      // .catch((err: string) => {
-      //   this.logger.error('[addAdmin] Could not add admin to chat exception: ' + err);
-      //   // This goes to the UI (keep lower case to match the Validator errors)
-      //   throw new WsException('could not add admin to chat');
-      // });
     } catch (err) {
       this.logger.error('[addAdmin] Could not add admin to chat exception: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
@@ -215,11 +203,6 @@ export class ChatService {
         // Now we have the entity to add the user and timestamp to the usersCanChat array
         return await this.usersCanChatRepository.updateMutedTimeStamp(userEntity, foundChatEntity);
       });
-      //   .catch((err: string) => {
-      //   this.logger.error('[muteFromChat] Could not mute user from chat exception: ' + err);
-      //   // This goes to the UI (keep lower case to match the Validator errors)
-      //   throw new WsException('could not mute user from chat');
-      // });
     } catch (err) {
       this.logger.error('[muteFromChat] Could not mute user from chat exception: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
@@ -234,14 +217,17 @@ export class ChatService {
         const userEntity = await this.userService.getUserByLoginName(intraName);
         // Now we have the entity to update the users' array (delete banned user) and add the user to the bannedUsers array
         await this.chatRepository.banUserFromChat(userEntity, foundChatEntity);
-        return await this.chatRepository.deleteUserFromChat(foundChatEntity, userEntity);
-        // TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT??
+        await this.chatRepository.deleteUserFromChat(foundChatEntity, userEntity);
+
+        const userToDelete = await this.userService.getUserByLoginName(intraName);
+        // Now we can delete this user from the UsersCanChat entity
+        await this.usersCanChatRepository.deleteUserFromUsersCanChatEntity(foundChatEntity, userToDelete);
+
+        // Now we can delete this user from the Admin list
+        await this.chatRepository.deleteAdminFromChat(foundChatEntity, userToDelete);
+
+        return true;
       });
-      // .catch((err: string) => {
-      //   this.logger.error('[banFromChat] Could not ban user from chat exception: ' + err);
-      //   // This goes to the UI (keep lower case to match the Validator errors)
-      //   throw new WsException('could not ban user from chat');
-      // });
     } catch (err) {
       this.logger.error('[banFromChat] Could not ban user from chat exception: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
@@ -259,11 +245,6 @@ export class ChatService {
           await this.chatRepository.joinChat(userEntity, foundChatEntityToAdd);
         });
       });
-      // .catch((err: string) => {
-      //   this.logger.error('[addUsers] Could not add users to chat exception: ' + err);
-      //   // This goes to the UI (keep lower case to match the Validator errors)
-      //   throw new WsException('could not add users to chat');
-      // });
     } catch (err) {
       this.logger.error('[addUsers] Could not add users to chat exception: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
@@ -283,13 +264,10 @@ export class ChatService {
         await this.usersCanChatRepository.deleteUserFromUsersCanChatEntity(foundChatEntityToLeave, userToDelete);
 
         // Now we can delete this user from the Admin list
-        // TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT
+        await this.chatRepository.deleteAdminFromChat(foundChatEntityToLeave, userToDelete);
+
+        return true;
       });
-      // .catch((err: string) => {
-      //   this.logger.error('[leaveChat] Could not delete user from chat exception: ' + err);
-      //   // This goes to the UI (keep lower case to match the Validator errors)
-      //   throw new WsException('could not delete user from chat');
-      // });
     } catch (err) {
       this.logger.error('[editPassword] Could not delete user from chat exception: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
@@ -304,11 +282,6 @@ export class ChatService {
         // Now we have the entity to update the password
         return await this.chatRepository.editPasswordFromChat(foundEntityToEdit, chatPassword);
       });
-      // .catch((err) => {
-      //   this.logger.error('[editPassword] Could not edit password from chat exception: ' + err);
-      //   // This goes to the UI (keep lower case to match the Validator errors)
-      //   throw new WsException('could not edit password from chat');
-      // });
     } catch (err) {
       this.logger.error('[editPassword] Could not edit password from chat exception: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
