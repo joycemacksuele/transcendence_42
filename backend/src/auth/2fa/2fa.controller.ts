@@ -21,7 +21,7 @@ export class TwoFactorAuthController {
         try{
             // extractUserFromHeader
             let payload = await this.authService.extractUserdataFromToken(request);
-            this.logger.log("      ... payload.username: ", payload.username);
+            this.logger.log("      ... payload.username: " + payload.username);
 
             this.logger.log('Start verify_code function: ');
             this.logger.log('code to verify: ' + data.inputValue);
