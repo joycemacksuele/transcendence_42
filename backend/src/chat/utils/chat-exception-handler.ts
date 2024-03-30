@@ -1,11 +1,11 @@
-import {ArgumentsHost, Catch, Logger} from '@nestjs/common';
+import {ArgumentsHost, Catch, Logger, UnauthorizedException} from '@nestjs/common';
 import {ConnectedSocket, WsException} from '@nestjs/websockets';
 import {Socket} from "socket.io";
 
 // https://www.youtube.com/watch?v=klgVOanP564
 
 // @Catch()// catch all (then chant WsException to Error)
-@Catch(WsException)
+@Catch(WsException,)
 export class WsExceptionFilter {
     private readonly logger = new Logger(WsExceptionFilter.name);
 
@@ -19,5 +19,12 @@ export class WsExceptionFilter {
         this.logger.warn('exception.message: ' + exception.message);
         // this.logger.log('exception.getError(): ' + exception.getError());
         clientSocket.emit("exceptionDtoValidation", exception.message);
+    }
+}
+
+Catch(UnauthorizedException)
+export class UnauthorizedExceptionFilter {
+    public catch(exception: UnauthorizedException) {
+        throw exception;
     }
 }

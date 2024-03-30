@@ -192,14 +192,14 @@ export class UserController {
     try {
       // get user and loginName from request-token
       let payload = await this.authService.extractUserdataFromToken(request);
-      this.logger.log("      ... payload.username: ", payload.username);
+      this.logger.log("      ... payload.username: " + payload.username);
 
 
       // Check if user with the same loginName already exists
       this.logger.log('Endpoint: Check_if_user_in_db()');
       const existingUser = await this.userService.getUserByLoginName(payload.username);
       if (existingUser) {
-        this.logger.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
+        this.logger.log('CHECK: This loginName already exists in databs, LoginName:' + existingUser.loginName);
         return { exists: true, user: existingUser};
         // return { message: 'This loginName already exists in database == the current user.'};
       }
@@ -237,7 +237,7 @@ export class UserController {
 
       // get user and loginName from request-token
       let payload = await this.authService.extractUserdataFromToken(request);
-      this.logger.log("      ... payload.username: ", payload.username);
+      this.logger.log("      ... payload.username: " + payload.username);
 
 
       const user = await this.userService.getUserByLoginName(payload.username);

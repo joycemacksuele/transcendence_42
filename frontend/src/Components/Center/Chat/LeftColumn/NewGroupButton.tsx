@@ -1,4 +1,7 @@
 import {useEffect, useState} from 'react';
+import {ChatType, RequestNewChatDto} from "../Utils/ChatUtils.tsx";
+import {chatSocket} from "../Utils/ClientSocket.tsx"
+import {Alert} from "react-bootstrap";
 
 // Importing bootstrap and other modules
 import Row from 'react-bootstrap/Row';
@@ -6,10 +9,6 @@ import Stack from 'react-bootstrap/Stack';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-
-import {ChatType, RequestNewChatDto} from "../Utils/ChatUtils.tsx";
-import {chatSocket} from "../Utils/ClientSocket.tsx"
-import {Alert} from "react-bootstrap";
 
 const NewGroupButton = () => {
 
