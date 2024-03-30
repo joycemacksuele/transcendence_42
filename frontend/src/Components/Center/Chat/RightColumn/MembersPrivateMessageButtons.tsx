@@ -10,9 +10,10 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
+  setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
 };
 
-const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked }) => {
+const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked, setChatClicked }) => {
   if (chatClicked) {
     console.log("[MembersPrivateMessageButtons] chatClicked: ", chatClicked);
   }
@@ -55,6 +56,7 @@ const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked }) =>
         chatSocket.id
       );
       chatSocket.emit("deleteChat", chatId);
+      setChatClicked(null);
       console.log(
         "[MembersPrivateMessage] deleteChat called -> chatId ",
         chatId,

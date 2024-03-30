@@ -1,4 +1,16 @@
-import { Controller, Body, Request, Req, Post, Get, Param, ParseIntPipe, HttpException, HttpStatus } from "@nestjs/common";
+import {
+	Controller,
+	Body,
+	Request,
+	Req,
+	Post,
+	Get,
+	Param,
+	ParseIntPipe,
+	HttpException,
+	HttpStatus,
+	Logger
+} from "@nestjs/common";
 import { BlockshipService } from "./blockship.service"
 import { UserEntity } from "src/user/user.entity";
 import { AuthService } from "src/auth/auth.service";
@@ -11,6 +23,8 @@ interface BlockResponse {
 
 @Controller('blockship')
 export class BlockshipController {
+
+	private readonly logger = new Logger(BlockshipController.name);
 	constructor(
 		private readonly authService: AuthService,
 		private readonly userService: UserService,
@@ -40,7 +54,7 @@ export class BlockshipController {
 		const currUser = await this.userService.getUserByLoginName(payload.username);
 		
 		const blockedStatus = await this.blockshipService.checkBlockedStatus(currUser.id, checkId);
-		console.log("Blocked status: ", blockedStatus);
+		this.logger.log("Blocked status: ", blockedStatus);
 
 		try {
 			if (blockedStatus) {
@@ -72,11 +86,11 @@ export class BlockshipController {
 		): Promise<number[]> {
 
 		const currUser = await this.userService.getUserByLoginName(req.user.username);
-		// console.log("currUser.id: ", currUser.id);
+		// this.logger.log("currUser.id: ", currUser.id);
 
 		const blockedIds = await this.blockshipService.getBlockedIds(currUser.id);
-		if (blockedIds) {
-			console.log("The user [" + currUser.loginName + "] has blocked users (id's): " + blockedIds);
+		if (blockedIds.length > 0) {
+			this.logger.log("The user [" + currUser.loginName + "] has blocked users (id's): " + blockedIds);
 		}
 		return blockedIds;
 	}

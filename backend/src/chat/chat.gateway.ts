@@ -119,7 +119,7 @@ export class ChatGateway
     try {
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
-        this.logger.log("Henk", allChats);
+        // this.logger.log("Henk", allChats);
         clientSocket.emit("getChats", allChats);
         this.logger.log('getChats -> all chats were emitted to the frontend');
       });
@@ -148,7 +148,7 @@ export class ChatGateway
         this.logger.log('getChats -> chat ' + requestNewChatDto.name + ' was created');
         this.chatService.getAllChats().then((allChats) => {
           // If we could get the whole table from the database, emit it to the frontend
-          clientSocket.emit("getChats", allChats);// todo emit to everyone -> use ws_socket?
+          clientSocket.emit("getChats", allChats);
           this.logger.log('createChat -> getChats -> all chats were emitted to the frontend');
         });
       }
@@ -199,7 +199,7 @@ export class ChatGateway
     });
   }
 
-  @SubscribeMessage('leaveChat')// TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT??
+  @SubscribeMessage('leaveChat')
   async leaveChat(
       @MessageBody('chatId') chatId: number,
       @ConnectedSocket() clientSocket: Socket) {
@@ -288,7 +288,7 @@ export class ChatGateway
     });
   }
 
-  @SubscribeMessage('banFromChat')// TODO DELETE FROM ADMIN LIST, USERS_CAN_CHAT??
+  @SubscribeMessage('banFromChat')
   async banFromChat(
       @MessageBody('chatId') chatId: number,
       @MessageBody('user') user: string,
@@ -346,6 +346,24 @@ export class ChatGateway
       });
     }).catch((err) => {
       this.logger.error('[editPassword] Could edit chat\'s password -> err: ' + err.message);
+      clientSocket.emit("exceptionEditPassword", err.message);
+    });
+  }
+
+  @SubscribeMessage('deletePassword')
+  async deletePassword(@MessageBody() chatId: number, @ConnectedSocket() clientSocket: Socket) {
+    this.logger.log('clientSocket.id: ' + clientSocket.id);
+    this.logger.log('deletePassword -> chat: ' + chatId + " will have its password deleted");
+    await this.chatService.deletePassword(chatId).then( () => {
+
+      // If we could edit the password, get the whole table
+      this.chatService.getAllChats().then( (allChats) => {
+        // If we could get the whole table from the database, emit it to the frontend
+        clientSocket.emit("getChats", allChats);
+        this.logger.log('deletePassword -> getChats -> all chats were emitted to the frontend');
+      });
+    }).catch((err) => {
+      this.logger.error('[deletePassword] Could edit chat\'s password -> err: ' + err.message);
       clientSocket.emit("exceptionEditPassword", err.message);
     });
   }
