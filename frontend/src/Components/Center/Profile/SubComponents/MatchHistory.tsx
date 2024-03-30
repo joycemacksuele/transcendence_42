@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../Other/AxiosInstance";
 import { Row, Col, ListGroup } from "react-bootstrap";
-import { getCurrentUsername } from "../DisplayOneUser/DisplayOneUser";
+import { getCurrentIntraName } from "../DisplayOneUser/DisplayOneUser";
 
 import { addDummyMatches } from "../../../Test/addDummyMatches";
 
@@ -47,7 +47,7 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 	useEffect(() => {
 		const init = async () => {
 			if (!loginName) {
-				const currUserLoginName = await getCurrentUsername();
+				const currUserLoginName = await getCurrentIntraName();
 				setLoginName(currUserLoginName);
 			}
 		}

@@ -194,8 +194,8 @@ export class AuthService {
 		if (player.tfaEnabled === true)
 		{
 			this.logger.log('Two factor authentication enabled! Sending verification mail.');
-			this.tfaService.sendVerificationMail(player);
-			path = `${process.env.FRONTEND}/Login_2fa`;
+			// this.tfaService.sendVerificationMail(player);
+			// path = `${process.env.FRONTEND}/Login_2fa`;
 		}
 		else{
 			path = `${process.env.FRONTEND}/main_page/profile`;
@@ -299,10 +299,10 @@ export class AuthService {
     // SO THIS FUNCION NEEDS TO BE MODIFIED
     async extractUserdataFromToken(request: Request): Promise<JwtPayload> { 
         //DISABLE LOGGER
-		//console.log('extract data from token()');
+		    //this.logger.log('extract data from token()');
         const token = this.extractTokenFromHeader(request);
         if (!token) {
-			//console.log('     Token not found');
+			      //this.logger.log('     Token not found');
             throw new UnauthorizedException('Token not found');
         }
         try {
@@ -324,7 +324,7 @@ export class AuthService {
         let cookie: string;
         let token: string;
         //DISABLE LOGGER
-		//console.log('extract token from header()');
+		    //this.logger.log('extract token from header()');
 
         cookie = request.get('Cookie');
         if (!cookie)

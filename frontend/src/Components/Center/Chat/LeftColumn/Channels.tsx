@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { ChatType, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 
 // Importing bootstrap and other modules
@@ -9,11 +9,15 @@ import Image from "react-bootstrap/Image";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
+// Jaka
 type PropsHeader = {
-  setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | null, activeContentLeft: string) => void;
+    activeChatId: number;
+    activeContentLeft: string;
 };
 
-const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
+
+const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, activeContentLeft }) => {
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
   const [intraName, setIntraName] = useState<string | null>(null);
 
@@ -66,52 +70,52 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
       console.log(
         "[Channels] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
       );
-      setChatClicked(null);
+      //setChatClicked(null, '');
     };
   }, []);
+
+
+  // jaka: To remember which Chat is selected in MyChats, when going from MyChats to Channels and back
+    useEffect(() => {
+      console.log('jaka: setChatClicked() -> Channels')
+      const activeChat:ResponseNewChatDto | undefined = 
+          chatInfo.find((chat) =>
+              chat.id === activeChatId
+          );
+      //console.log('            activeChat: ' + JSON.stringify(activeChat));
+      if (activeChat) {
+          setChatClicked(activeChat, activeContentLeft);
+      }
+  }, [chatInfo, activeChatId]);
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
     <>
       {/* Available groups row */}
       <Row className="">
-        {/* TODO SCROLL HERE*/}
         <Stack gap={2}>
           {chatInfo.map((chat: ResponseNewChatDto) => (
-            <>
-              {/* TODO FIX THE Warning: Each child in a list should have a unique "key" prop. */}
-
-            {/* Jaka:   Commenting out the first ListGroup fixed the 'unique key' error   */}
-              {/* If chat is private we don't show it in this list */}
-              {/* {chat.type == ChatType.PRIVATE && ( */}
-                {/* <ListGroup */}
-                  {/* // key={"Channels-hidden-" + i.toString()} */}
-                  {/* key={"Chat" + chat.id} */}
-                  {/* className="hidden" */}
-                {/* > */}
-                  {/*printing id for testing*/}
-                  {/* key={"Chat" + chat.id} */}
-                {/* </ListGroup> */}
-              {/* )} */}
-
+            <Fragment key={chat.id}>
               {/* If current user is not a member of the chat (i.e. is not in the members array) */}
               {/* And chat is not private  (i.e. is a public or protected group) */}
-              {intraName &&
+              {(intraName &&
                 chat.usersIntraName &&
                 chat.usersIntraName.indexOf(intraName) == -1 &&
-                chat.type != ChatType.PRIVATE && (
+                chat.type != ChatType.PRIVATE) && (
                   <ListGroup
                     // key={"Channels-" + i.toString()}
-                    key={"Chat" + chat.id}
+                    // key={"Chat" + chat.id}
                     variant="flush"
                   >
                     {/*printing id for testing*/}
                     {/* key={"Chat" + chat.id} */}
                     <ListGroup.Item
                       as="li"
-                      className="justify-content-between align-items-start"
+                      className={`chat-item
+                                 ${chat.id === activeChatId ? 'active' : ''}
+                                 justify-content-between align-items-start`}
                       variant="light"
-                      onClick={() => setChatClicked(chat)}
+                      onClick={() => setChatClicked(chat, activeContentLeft)}
                     >
                       {chat.type == ChatType.PUBLIC && (
                         <Image
@@ -139,7 +143,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked }) => {
                     </ListGroup.Item>
                   </ListGroup>
                 )}
-            </>
+            </Fragment>
           ))}
         </Stack>
       </Row>

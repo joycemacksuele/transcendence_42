@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import {
   ResponseMessageChatDto,
   ResponseNewChatDto,
@@ -26,18 +26,20 @@ import { CurrentUserContext, CurrUserData } from "../../Profile/utils/contextCur
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
+  messages: ResponseNewChatDto | null;
+  setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
-const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
+const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages }) => {
   if (chatClicked) {
-    console.log("[Messages] chatClicked: ", chatClicked);
+    console.log("[Messages] chatClicked: " + chatClicked.name);
   } else {
     console.log("[Messages] no chatClicked");
   }
 
   ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
-  const [messages, setMessages] = useState<ResponseNewChatDto | null>(null);
+  // const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved to MainComponent
   const [blockedids, setBlockedIds] = useState(null);
   const [message, setMessage] = useState("");
   const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] =
@@ -59,6 +61,9 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
         setMessages(newdata)
       );
     }
+    // else {
+    //   setMessages(null);
+    // }
   }, [chatClicked]);
 
   const getCurrentUsername = async () => {
@@ -87,50 +92,61 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
         chatId: chatClicked?.id,
       });
       setMessage("");
-      setMessageBoxPlaceHolder("Write a message...");
+      setMessageBoxPlaceHolder("Write a message ...");
     }
   };
+
+
+  // Jaka: The last message must always be seen, at the bottom
+  //       This is solved by an empty dummy div at the end of list,
+  //        which is always there and has a function scrollIntoView            
+  const lastMessagePositionRef = useRef<HTMLDivElement | null>(null);
+  const jumpToLastMessage = () => {
+    lastMessagePositionRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        // block: 'end',
+        // inline: 'nearest'
+    });
+  }
+  useEffect(() => {
+    jumpToLastMessage();
+  }, [messages])
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
 
   // let i = 0;
   return (
     <>
-      <Row
-        style={{
-          maxHeight: "70vh",
-          height: "70vh",
-          overflow: "scroll",
-          width: "100%",
-        }}
-      >
-        {/*<ListGroup*/}
+      <Row className="row-all-messages">
         {/*    key={i++}>*/}
-        {messages && messages.messages && messages.messages[0] != null ? (
-          messages.messages.map(
-            (message_: ResponseMessageChatDto, i: number) => (
-              <ListGroup key={i}>
-                <ListGroup.Item>
-                  <div className="fw-bold">{message_.creator}</div>
-                  {!blockedids ||
-                  blockedids.data.indexOf(message_.creator_id) == -1
-                    ? message_.message
-                    : "This message is not displayed because you blocked the sender"}
-                </ListGroup.Item>
-              </ListGroup>
+        <ListGroup>
+          {messages && messages.messages && messages.messages[0] != null ? (
+            messages.messages.map(
+              (message_: ResponseMessageChatDto, i: number) => (
+                  <ListGroup.Item className="message-item" key={i}>
+                    <div className="fw-bold">{message_.creator}</div>
+                    {!blockedids ||
+                    blockedids.data.indexOf(message_.creator_id) == -1
+                      ? message_.message
+                      : "This message is not displayed because you blocked the sender"}
+                  </ListGroup.Item>
+              )
             )
-          )
-        ) : (
-          <div> No messages yet! </div>
-        )}
-        {/*// </ListGroup>*/}
+          ) : (
+            <div style={{padding: '1em'}}> No messages yet! </div>
+          )}
+        </ListGroup>
+
+        {/* Added Jaka: Invisible div that jumps to the bottom,
+        to always see the last message */}
+        <div ref={lastMessagePositionRef} />
       </Row>
-      <Row style={{ maxHeight: "10vh" }}>
-        <Form.Group className="h-25">
+      <Row className="row-write-and-send">
+        <Form.Group className="w-100">
           <Stack className="h-100" direction="horizontal">
             <Form.Control
               as="textarea"
-              className="me-2 h-100"
+              className="me-2 h-75"
               type="text"
               placeholder={messageBoxPlaceHolder}
               onChange={(event) => setMessage(event.target.value)}
@@ -138,7 +154,7 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked }) => {
             />
             {/* TODO onClick erase the message from the form box*/}
             <Button
-              className="h-100"
+              className="h-90"
               variant="primary"
               type="submit"
               onClick={sendMessage}

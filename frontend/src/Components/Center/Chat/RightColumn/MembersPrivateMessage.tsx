@@ -9,6 +9,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import Modal from "react-bootstrap/Modal";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
+import useFetchMemberImages from "../Utils/useFetchMemberImages.ts";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
@@ -20,6 +21,9 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
   const [intraName, setIntraName] = useState<string | null>();
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [clickedMember, setClickedMember] = useState<string>();
+
+  // jaka
+  const memberImages = useFetchMemberImages(chatClicked?.usersIntraName);
 
   const getIntraName = async () => {
     return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
@@ -51,6 +55,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
     };
   }, []);
 
+
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
     <>
@@ -66,7 +71,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                 <ListGroup.Item
                   ref={inputRef}
                   as="li"
-                  className="justify-content-between align-items-start"
+                  className="member-item justify-content-between align-items-start"
                   variant="light"
                   onClick={() => {
                     setShowMemberModal(true);
@@ -75,16 +80,20 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                 >
                   {chatClicked?.mutedUsers.indexOf(member) == -1 &&
                   chatClicked?.bannedUsers.indexOf(member) == -1 ? (
-                    <Image
-                      src={
-                        import.meta.env.VITE_BACKEND as string + "/resources/member.png"
-                      }
+                    <>
+                    {/* <Image
+                    src={import.meta.env.VITE_BACKEND as string + "/resources/member.png"}
                       className="me-1"
                       // id="profileImage_tiny"
                       // roundedCircle
                       width={30}
                       alt="chat"
+                    /> */}
+                    <Image  width={25} height={25} className="me-2"
+                            src={`${import.meta.env.VITE_BACKEND}/${memberImages[i]}`}
+                            roundedCircle
                     />
+                    </>
                   ) : (
                     <>
                       {chatClicked?.mutedUsers.indexOf(member) != -1 && (
