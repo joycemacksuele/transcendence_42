@@ -77,6 +77,8 @@ console.log("match is being processed");
   }
 
   async handleConnection(client: Socket) {
+    client.data.gamepage = false;
+
     try {
       this.logger.log(`[handleConnection] pong game client id ${client.id} connected`);
 
@@ -108,20 +110,6 @@ console.log("match is being processed");
             // added Jaka:
             this.emitOnlineStatuses();
 
-            const matchId = this.ponggameService.getMatchId(userId);
-            this.logger.log(`UserId found : ${userId}`);
-            this.logger.log(`Match Id ${matchId}`);
-            if (matchId == "") {
-              //if not get the selection screen
-              client.emit(
-                  "stateUpdate",
-                  this.ponggameService.getInitMatch("Default")
-              );
-            } else {
-              //if part of a game then join the match
-              client.join(matchId);
-            }
-
           } catch {
             throw new UnauthorizedException('Invalid token');
           }
@@ -150,6 +138,28 @@ console.log("match is being processed");
 
     // Added Jaka:
     this.emitOnlineStatuses();
+  }
+
+
+@SubscribeMessage('gamepage')
+  gamepage(@ConnectedSocket() client: Socket){
+    client.data.gamepage = true;
+    const userId = this._socketIdUserId.get(client.id);
+      
+    const matchId = this.ponggameService.getMatchId(userId);
+      this.logger.log(`UserId found : ${userId}`);
+      this.logger.log(`Match Id ${matchId}`);
+      if (matchId == "") {
+        //if not get the selection screen
+        client.emit(
+          "stateUpdate",
+          this.ponggameService.getInitMatch("Default")
+        );
+      } else {
+        //if part of a game then join the match
+        this.ponggameService.playerConnected(userId);
+        client.join(matchId);
+      }
   }
 
 @SubscribeMessage('joinGame')
