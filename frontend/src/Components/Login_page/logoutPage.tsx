@@ -1,10 +1,9 @@
-import axios from "axios";
 import axiosInstance from "../Other/AxiosInstance";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Col, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-
+import {chatSocket} from "../Center/Chat/Utils/ClientSocket.tsx";
 
 const LogoutPage = () => {
   const navigate = useNavigate();
@@ -13,10 +12,7 @@ const LogoutPage = () => {
     const handleLogout = async () => {
       try {
         console.log('Start handle logout() ---> send request to /auth/logout');
-        const response = await axiosInstance.get(
-          "/auth/logout"
-        );
-
+        const response = await axiosInstance.get("/auth/logout");
 
         console.log(
           "HandleLogout(): Trying to log out ...",
@@ -29,6 +25,12 @@ const LogoutPage = () => {
       }
     };
     handleLogout();
+
+    return () => {
+      console.log("[LogoutPage] Inside useEffect return function (Component was removed from DOM) and chatSocket is disconnected");
+      chatSocket.disconnect();
+    };
+
   }, [navigate]);
 
   return (
