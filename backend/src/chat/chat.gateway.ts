@@ -18,7 +18,7 @@ import {RequestNewChatDto} from './dto/request-new-chat.dto';
 import {RequestMessageChatDto} from './dto/request-message-chat.dto';
 import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
-import {WsExceptionFilter} from "./utils/chat-exception-handler";
+import {UnauthorizedExceptionFilter, WsExceptionFilter} from "./utils/chat-exception-handler";
 import {UserService} from "../user/user.service";
 import {RequestPasswordRelatedChatDto} from "./dto/request-password-related-chat.dto";
 
@@ -31,7 +31,7 @@ import {RequestPasswordRelatedChatDto} from "./dto/request-password-related-chat
     closed, the data is lost.
  */
 
-@UseFilters(new WsExceptionFilter())
+@UseFilters(new WsExceptionFilter(), new UnauthorizedExceptionFilter())// todo trying this
 @UsePipes(new ValidationPipe({
   exceptionFactory(validationErrors: ValidationError[] = []) {
     if (this.isDetailedOutputDisabled) {
@@ -74,7 +74,7 @@ export class ChatGateway
       // this.logger.log('[handleConnection] header: ', clientSocket.handshake.headers);
       if (clientSocket.handshake.headers.cookie) {
         const token_key_value = clientSocket.handshake.headers.cookie;
-//        this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
+        // this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
         if (token_key_value.includes("token")) {
           const token_index_start = token_key_value.indexOf("token");
           const token_index_end_global = token_key_value.length;
@@ -85,7 +85,7 @@ export class ChatGateway
           }
           const token_key_value_2 = from_token_to_end.substring(0, token_index_end_local);
           const token = token_key_value_2.split('=')[1];
-//          this.logger.log('[handleConnection] token: ' + token);
+          //  this.logger.log('[handleConnection] token: ' + token);
 
           try {
             const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });

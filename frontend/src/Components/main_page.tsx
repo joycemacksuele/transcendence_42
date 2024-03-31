@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header/Header.tsx";
 import Center from "./Center/Center.tsx";
 import { CurrUserData } from "./Center/Profile/utils/contextCurrentUser.tsx";
