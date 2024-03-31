@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 import axiosInstance from "../../../Other/AxiosInstance";
+import { CustomSpinner } from "../../../Other/Spinner";
 
 interface UserStats {
   // loginName: string;
@@ -30,10 +31,7 @@ const MyStatistics: React.FC = () => {
   return (
     <>
       {!currUser ? (
-        <div className="spinner p-3">
-          <div className="spinner-pizza"></div>
-          <h5>Loading ...</h5>
-        </div>
+        <CustomSpinner />
       ) : (
         <Col className="column-bckg p-3 rounded inner-section">
           <Row className="m-2">Rank: {currUser?.rank}</Row>

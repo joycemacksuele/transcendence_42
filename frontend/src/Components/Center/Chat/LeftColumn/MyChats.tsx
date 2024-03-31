@@ -12,8 +12,8 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 // Jaka
 type PropsHeader = {
   setChatClicked: (
-    chatClicked: ResponseNewChatDto | null,
-    activeContentLeft: string
+    chatClicked: ResponseNewChatDto | undefined,
+    // activeContentLeft: string
   ) => void;
   activeChatId: number;
   activeContentLeft: string;
@@ -89,6 +89,7 @@ const MyChats: React.FC<PropsHeader> = ({
 
     chatSocket.emit("getChats");
     chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
+      console.log("[lllllllllllllllll] allChats", allChats);
       setChatInfo(allChats);
     });
 
@@ -105,10 +106,11 @@ const MyChats: React.FC<PropsHeader> = ({
     const activeChat: ResponseNewChatDto | undefined = chatInfo.find(
       (chat) => chat.id === activeChatId
     );
-    //console.log('            activeChat: ' + JSON.stringify(activeChat));
-    if (activeChat) {
-      setChatClicked(activeChat, activeContentLeft);
-    }
+    console.log('            activeChat: ' + JSON.stringify(activeChat));
+    // if (activeChat) {
+      // setChatClicked(activeChat, activeContentLeft);
+      setChatClicked(activeChat);
+    // }
   }, [chatInfo, activeChatId]);
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
@@ -135,7 +137,8 @@ const MyChats: React.FC<PropsHeader> = ({
                                     ${chat.id === activeChatId ? "active" : ""}
                                     justify-content-between align-items-start`}
                         variant="light"
-                        onClick={() => setChatClicked(chat, activeContentLeft)}
+                        // onClick={() => setChatClicked(chat, activeContentLeft)}
+                        onClick={() => setChatClicked(chat)}
                       >
                         {chat.type == ChatType.PRIVATE && (
                           <Image

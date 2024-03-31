@@ -7,6 +7,7 @@ import MyStatistics from "./SubComponents/MyStatistics";
 import MatchHistory from "./SubComponents/MatchHistory";
 import ChangeTheme from "./SubComponents/ChangeTheme";
 import { CurrUserData } from "./utils/contextCurrentUser";
+import { CustomSpinner } from "../../Other/Spinner";
 
 // Importing bootstrap and other modules
 import { Container, Row, Col } from "react-bootstrap";
@@ -95,19 +96,8 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
                 <i className="fas fa-user"></i>
                 MY PROFILE PAGE
               </h5>
-              {/* <div className="spinner-border" role="status">
-                <span className="sr-only">Loading...</span>
-              </div> */}
-              {/* <div className='spinner p-3'>
-                <div className='spinner-pizza'></div><h5>Loading ...</h5>
-              </div> */}
-              {/* <div className="spinner-pizza">
-                <iframe
-                  className="giphy-embed"
-                  src="https://giphy.com/embed/3o7bu8sRnYpTOG1p8k"
-                  // allowFullScreen
-                ></iframe>
-              </div> */}
+              {/* <CustomSpinner /> */}
+              
               <ChangeProfileName updateContext={updateContext} />
               <ImageUpload updateContext={updateContext} />
               <ButtonTfa />
