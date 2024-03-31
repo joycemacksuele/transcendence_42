@@ -9,8 +9,8 @@ import Button from "react-bootstrap/Button";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 type PropsHeader = {
-  chatClicked: ResponseNewChatDto | null;
-  setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+  chatClicked: ResponseNewChatDto | undefined;
+  setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
 };
 
 const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked, setChatClicked }) => {
@@ -45,7 +45,7 @@ const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked, setC
   useEffect(() => {
     return () => {
       console.log("[MembersGroup] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
-      chatClicked = null;
+      chatClicked = undefined;
     };
   }, []);
 
@@ -56,7 +56,7 @@ const MembersPrivateMessageButtons: React.FC<PropsHeader> = ({ chatClicked, setC
         chatSocket.id
       );
       chatSocket.emit("deleteChat", chatId);
-      setChatClicked(null);
+      setChatClicked(undefined);
       console.log(
         "[MembersPrivateMessage] deleteChat called -> chatId ",
         chatId,

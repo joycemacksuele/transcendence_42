@@ -11,7 +11,7 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 // Jaka
 type PropsHeader = {
-    setChatClicked: (chatClicked: ResponseNewChatDto | null, activeContentLeft: string) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
     activeChatId: number;
     activeContentLeft: string;
 };
@@ -84,7 +84,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, activeC
           );
       //console.log('            activeChat: ' + JSON.stringify(activeChat));
       if (activeChat) {
-          setChatClicked(activeChat, activeContentLeft);
+          setChatClicked(activeChat);
       }
   }, [chatInfo, activeChatId]);
 
@@ -115,7 +115,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, activeC
                                  ${chat.id === activeChatId ? 'active' : ''}
                                  justify-content-between align-items-start`}
                       variant="light"
-                      onClick={() => setChatClicked(chat, activeContentLeft)}
+                      onClick={() => setChatClicked(chat)}
                     >
                       {chat.type == ChatType.PUBLIC && (
                         <Image
