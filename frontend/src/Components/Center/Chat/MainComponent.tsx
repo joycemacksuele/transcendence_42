@@ -28,9 +28,7 @@ import Nav from "react-bootstrap/Nav";
 import { Alert } from "react-bootstrap";
 
 const MainComponent = () => {
-  const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | null>(
-    null
-  );
+  const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | undefined>();
 
   const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved from Messages
 
@@ -43,7 +41,7 @@ const MainComponent = () => {
   
   // jaka
   // const handleClickChat = (chat: ResponseNewChatDto | null, activeContentLeft: string) => {
-    const handleClickChat = (chat: ResponseNewChatDto | null) => {
+    const handleClickChat = (chat: ResponseNewChatDto | undefined) => {
     console.log('Handle Click Chat');
     setChatClicked(chat);
     if (chat != null) {
@@ -90,7 +88,7 @@ const MainComponent = () => {
   // - After every re-render with changed dependencies, React will first run the cleanup function with the old values
   // - Then run your setup function with the new values
   useEffect(() => {
-    setChatClicked(null);
+    setChatClicked(undefined);
     if (!chatSocket.connected) {
       chatSocket.connect();
       chatSocket.on("connect", () => {
@@ -144,7 +142,7 @@ const MainComponent = () => {
       console.log(
         "[MainComponent] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
       );
-      setChatClicked(null);
+      setChatClicked(undefined);
       // if (chatSocket.connected) {
       //     chatSocket.removeAllListeners();
       //     chatSocket.disconnect();
@@ -157,6 +155,11 @@ const MainComponent = () => {
     };
   }, []);
 
+  ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
+  // recent or groups
+  const [activeContentLeft, setActiveContentLeft] = useState<string>("recent");
+  const [activeButton, setActiveButton] = useState("recent" || "");
+
 
 
   // Jaka: When Leaving/Deleting Group, the messages should dissapear,
@@ -168,28 +171,12 @@ const MainComponent = () => {
       setActiveId_Channels(-1);
       setMessages(null);
     }
-    else {
-      setActiveButton(activeButton);
-      setActiveContentLeft(activeButton);
-    }
   }, [chatClicked]);
-
-
-  ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
-  // recent or groups
-  const [activeContentLeft, setActiveContentLeft] = useState<string>("recent");
-  const [activeButton, setActiveButton] = useState("recent" || "");
-
-
-  // useEffect(() => {
-  //   handleClick(activeButton);
-  // }, [activeButton]); 
-
 
   const handleClick = (content: null | string) => {
     setActiveContentLeft(content || "");
     setActiveButton(content || "");
-    console.log('[Main] Clicked navigation - value in chatClicked: ' + chatClicked?.name);
+    console.log('[Main] Clicked navigation - value in chatClicked: ' + chatClicked?.name + ', Content: ' + content);
   };
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
@@ -205,7 +192,7 @@ const MainComponent = () => {
           <Row className="">
             <Nav
               className="border-bottom p-0"
-              // activeKey={activeButton}
+              activeKey={activeButton}
               variant="underline"
               fill
               onSelect={(k) => handleClick(k)}
@@ -330,7 +317,7 @@ const MainComponent = () => {
                     handleClick={handleClick}
                     setChatClicked={setChatClicked}
                     // setActiveButton={setActiveButton}
-                    // setActiveContentLeft={setActiveContentLeft}
+                    setActiveContentLeft={setActiveContentLeft}
                   />
                 )}
               </Row>

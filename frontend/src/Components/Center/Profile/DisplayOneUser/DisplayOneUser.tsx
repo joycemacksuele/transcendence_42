@@ -11,6 +11,7 @@ import MatchHistory from "../SubComponents/MatchHistory.tsx";
 import GetPlayingStatus from "../utils/GetPlayingStatus.tsx";
 import { useOnlineStatus } from "../utils/useOnlineStatus.ts";
 import "../../../../css/Profile-users-list.css";
+import { CustomSpinner } from "../../../Other/Spinner.tsx";
 
 interface UserProps {
   id: number;
@@ -137,11 +138,8 @@ const DisplayOneUser: React.FC<{
 
   if (!userData) {
     return (
-      <div className="spinner p-3">
-        <div className="spinner-pizza"></div>
-        <h5>Loading ...</h5>
-      </div>
-    );
+      <CustomSpinner />
+    )
   }
 
   const creatChat = () => {

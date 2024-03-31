@@ -11,23 +11,24 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 import {Alert} from "react-bootstrap";
+import { unescape } from "querystring";
 
 // the creator can kick, ban, mute anyone on the group (even admins)
 // the admin can kick, ban, mute others on the group (besides the creator)
 
 type PropsHeader = {
-    chatClicked: ResponseNewChatDto | null;
+    chatClicked: ResponseNewChatDto | undefined;
     handleClick: (content: string | null) => void;
-    setChatClicked: (chatClicked: ResponseNewChatDto | null) => void;
+    setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
     // setActiveButton: (activeButton: string) => void;
-    // setActiveContentLeft: (activeContentLeft: string) => void;
+    setActiveContentLeft: (activeContentLeft: string) => void;
 };
 
 const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, 
                                                       handleClick,      // jaka: maybe not all of these are needed, to test
                                                       setChatClicked,
                                                     //   setActiveButton,
-                                                    //   setActiveContentLeft
+                                                      setActiveContentLeft
     }) => {
     if (chatClicked) {
         console.log("[MembersGroupButtons] chatClicked: ", chatClicked.name);
@@ -112,7 +113,7 @@ useEffect(() => {
 
     return () => {
         console.log("[MembersGroupButtons] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned");
-        chatClicked = null;
+        chatClicked = undefined;
         setUsersToBeAddedToChat([])
 
         alertKey = 0;
@@ -153,22 +154,21 @@ const joinGroupChat = () => {
         setShowPasswordModal(false);
     }
 
-        alertKey = 0; 
+        alertKey = 0;
         setErrorException([]);
         setChatPassword(null);
 
 
         // Jaka: on Join it should jump fro Channels to MyChats, show chats content in middle col, and add user to right col
+        setActiveContentLeft('recent');
         handleClick('recent');
-        setChatClicked(chatClicked);
         // setActiveButton('recent');
-        // setActiveContentLeft('recent');
     };
 
 const leaveGroupChat = () => {
     console.log("[MembersGroupButtons] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
     chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
-    setChatClicked(null);
+    setChatClicked(undefined);
 };
 
 const addUsers = () => {
