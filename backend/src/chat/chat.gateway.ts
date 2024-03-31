@@ -18,7 +18,7 @@ import {RequestNewChatDto} from './dto/request-new-chat.dto';
 import {RequestMessageChatDto} from './dto/request-message-chat.dto';
 import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
-import {UnauthorizedExceptionFilter, WsExceptionFilter} from "./utils/chat-exception-handler";
+import {WsExceptionFilter} from "./utils/chat-exception-handler";
 import {UserService} from "../user/user.service";
 import {RequestPasswordRelatedChatDto} from "./dto/request-password-related-chat.dto";
 
@@ -31,7 +31,7 @@ import {RequestPasswordRelatedChatDto} from "./dto/request-password-related-chat
     closed, the data is lost.
  */
 
-@UseFilters(new WsExceptionFilter(), new UnauthorizedExceptionFilter())// todo trying this
+@UseFilters(new WsExceptionFilter())
 @UsePipes(new ValidationPipe({
   exceptionFactory(validationErrors: ValidationError[] = []) {
     if (this.isDetailedOutputDisabled) {
@@ -74,7 +74,7 @@ export class ChatGateway
       // this.logger.log('[handleConnection] header: ', clientSocket.handshake.headers);
       if (clientSocket.handshake.headers.cookie) {
         const token_key_value = clientSocket.handshake.headers.cookie;
-        // this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
+//        this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
         if (token_key_value.includes("token")) {
           const token_index_start = token_key_value.indexOf("token");
           const token_index_end_global = token_key_value.length;
@@ -85,7 +85,7 @@ export class ChatGateway
           }
           const token_key_value_2 = from_token_to_end.substring(0, token_index_end_local);
           const token = token_key_value_2.split('=')[1];
-          //  this.logger.log('[handleConnection] token: ' + token);
+//          this.logger.log('[handleConnection] token: ' + token);
 
           try {
             const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
@@ -179,24 +179,26 @@ export class ChatGateway
 
   @SubscribeMessage('joinChat')
   async joinChat(@MessageBody() requestPasswordRelatedChatDto: RequestPasswordRelatedChatDto, @ConnectedSocket() clientSocket: Socket) {
-    this.logger.log('clientSocket.id: ' + clientSocket.id);
-    this.logger.log('joinChat -> chat: ' + requestPasswordRelatedChatDto.name + " clientSocket.data.user: " + clientSocket.data.user);
-    await this.chatService.joinChat(requestPasswordRelatedChatDto.id, requestPasswordRelatedChatDto.password, clientSocket.data.user).then( () => {
+    try {
+      this.logger.log('clientSocket.id: ' + clientSocket.id);
+      this.logger.log('joinChat -> chat: ' + requestPasswordRelatedChatDto.name + " clientSocket.data.user: " + clientSocket.data.user);
+      await this.chatService.joinChat(requestPasswordRelatedChatDto.id, requestPasswordRelatedChatDto.password, clientSocket.data.user);
+
       // Join the specific room after chat was created
       clientSocket.join(requestPasswordRelatedChatDto.id.toString());
       this.ws_server.in(clientSocket.id).socketsJoin(requestPasswordRelatedChatDto.id.toString());
       this.logger.log('Socket has joined room ' + requestPasswordRelatedChatDto.id.toString());
 
       // If we could join the chat, get the whole table
-      this.chatService.getAllChats().then( (allChats) => {
-        // If we could get the whole table from the database, emit it to the frontend
-        clientSocket.emit("getChats", allChats);
-        this.logger.log('deleteChat -> getChats -> all chats were emitted to the frontend');
-      });
-    }).catch((err) => {
+      const allChats = await this.chatService.getAllChats();
+      // If we could get the whole table from the database, emit it to the frontend
+      clientSocket.emit("getChats", allChats);
+      this.logger.log('joinChat -> getChats -> all chats were emitted to the frontend: ', allChats);
+
+    } catch (err) {
       this.logger.error('[joinChat] Could not join chat -> err: ' + err.message);
       clientSocket.emit("exceptionCheckPassword", err.message);
-    });
+    };
   }
 
   @SubscribeMessage('leaveChat')

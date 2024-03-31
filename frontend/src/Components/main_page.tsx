@@ -4,6 +4,7 @@ import Center from "./Center/Center.tsx";
 import { CurrUserData } from "./Center/Profile/utils/contextCurrentUser.tsx";
 import { checkIfUserExistsInDB } from "./Center/Profile/utils/checkIfUserExistsInDB.tsx";
 import { Container } from "react-bootstrap";
+import { CustomSpinner } from "./Other/Spinner.tsx";
 
 interface ContextProps {
   updateContext: (updateUserData: CurrUserData) => void;
@@ -53,15 +54,11 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
     fetchUserData();
   }, [updateContext]);
 
+
   if (!userData) {
     return (
-      <Container
-        className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: "100vh" }}
-      >
-        <div className="d-flex flex-column align-items-center">
-          <h3>Loading ...</h3>
-        </div>
+      <Container className='d-flex justify-content-center align-items-center' style={{ width: "100vw", height: "100vh" }}>
+        <CustomSpinner />
       </Container>
     );
   }

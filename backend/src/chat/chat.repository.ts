@@ -136,21 +136,24 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		this.logger.log('[getChat] NewChat creator: ' + chatCreator.creator);
 
 		// ----------- get chat users list - intra name
-		const chatUsersIntra = await this
+		await this
 			.createQueryBuilder("new_chat")
 			.select('user.loginName as "users"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.users", "user")
-			.getRawMany();
-		const usersIntraName = chatUsersIntra.map((usersList) => {
-			return usersList.users;
-		});
-		if (usersIntraName.toString()) {
-			this.logger.log('[getChat] Users in the chat (Intra Name): ' + usersIntraName.toString());
-			responseDto.usersIntraName = usersIntraName;
-		} else {
-			this.logger.log('[getChat] No users in the chat: ' + chat.name);
-		}
+			.getRawMany()
+			.then((chatUsersIntra) => {
+				const usersIntraName = chatUsersIntra.map((usersList) => {
+					return usersList.users;
+				});
+				
+				if (usersIntraName.toString()) {
+					this.logger.log('[getChat] Users in the chat ' + chat.name + ',  (Intra Name): ' + usersIntraName.toString());
+					responseDto.usersIntraName = usersIntraName;
+				} else {
+					this.logger.log('[getChat] No users in the chat: ' + chat.name);
+				}
+			});
 
 		// ----------- get chat users list - profile name
 		const chatUsers = await this
@@ -259,7 +262,8 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
 				.where('new_chat.id = :id', {id: chatId})
 				.getRawOne();
-			return this.getOneRowAndSaveAsDTO(chat);
+			// return this.getOneRowAndSaveAsDTO(chat);
+			return await this.getOneRowAndSaveAsDTO(chat); // jaka
 		} catch (err) {
 			throw new Error('[getOneChatDto] err: ' + err);
 		}
@@ -273,7 +277,8 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
 				.getRawMany();
 			return await Promise.all(newChatTable.map(async (chat: NewChatEntity): Promise<ResponseNewChatDto> => {
-				return this.getOneRowAndSaveAsDTO(chat);
+				// return this.getOneRowAndSaveAsDTO(chat);
+				return await this.getOneRowAndSaveAsDTO(chat); // jaka
 			}));
 		} catch (err) {
 			throw new Error('[getAllChats] err: ' + err);
