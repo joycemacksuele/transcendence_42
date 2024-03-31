@@ -54,9 +54,12 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
     fetchUserData();
   }, [updateContext]);
 
+
   if (!userData) {
     return (
-      <CustomSpinner />
+      <Container className='d-flex justify-content-center align-items-center' style={{ width: "100vw", height: "100vh" }}>
+        <CustomSpinner />
+      </Container>
     );
   }
 

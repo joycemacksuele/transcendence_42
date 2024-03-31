@@ -154,16 +154,16 @@ const joinGroupChat = () => {
         setShowPasswordModal(false);
     }
 
-        alertKey = 0;
-        setErrorException([]);
-        setChatPassword(null);
+    alertKey = 0;
+    setErrorException([]);
+    setChatPassword(null);
 
 
-        // Jaka: on Join it should jump fro Channels to MyChats, show chats content in middle col, and add user to right col
-        setActiveContentLeft('recent');
-        handleClick('recent');
-        // setActiveButton('recent');
-    };
+    // Jaka: on Join it should jump fro Channels to MyChats, show chats content in middle col, and add user to right col
+    setActiveContentLeft('recent');
+    handleClick('recent');
+    // setActiveButton('recent');
+};
 
 const leaveGroupChat = () => {
     console.log("[MembersGroupButtons] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
