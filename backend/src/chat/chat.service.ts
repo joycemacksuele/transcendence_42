@@ -300,7 +300,7 @@ export class ChatService {
         return true;
       });
     } catch (err) {
-      this.logger.error('[editPassword] Could not delete user from chat exception: ' + err);
+      this.logger.error('[leaveChat] Could not delete user from chat exception: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
       throw new WsException('could not delete user from chat');
     }
