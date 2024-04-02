@@ -299,6 +299,12 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				if (index !== -1) {
 					// If user to be deleted was found in the array of users, delete s/he from it and save the entity
 					foundChatEntityToLeave.users.splice(index, 1);
+
+					// Also delete the user form the creatorId if sh/e is the creator
+					if (userToDelete.id == foundChatEntityToLeave.creator.id) {
+						foundChatEntityToLeave.creator = new UserEntity();
+					}
+
 					await this
 						.manager
 						.save(foundChatEntityToLeave);

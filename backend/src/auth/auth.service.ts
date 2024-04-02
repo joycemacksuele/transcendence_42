@@ -194,8 +194,8 @@ export class AuthService {
 		if (player.tfaEnabled === true)
 		{
 			this.logger.log('Two factor authentication enabled! Sending verification mail.');
-			// this.tfaService.sendVerificationMail(player);
-			// path = `${process.env.FRONTEND}/Login_2fa`;
+			this.tfaService.sendVerificationMail(player);
+			path = `${process.env.FRONTEND}/Login_2fa`;
 		}
 		else{
 			path = `${process.env.FRONTEND}/main_page/profile`;
