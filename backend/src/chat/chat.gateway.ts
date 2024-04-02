@@ -179,24 +179,26 @@ export class ChatGateway
 
   @SubscribeMessage('joinChat')
   async joinChat(@MessageBody() requestPasswordRelatedChatDto: RequestPasswordRelatedChatDto, @ConnectedSocket() clientSocket: Socket) {
-    this.logger.log('clientSocket.id: ' + clientSocket.id);
-    this.logger.log('joinChat -> chat: ' + requestPasswordRelatedChatDto.name + " clientSocket.data.user: " + clientSocket.data.user);
-    await this.chatService.joinChat(requestPasswordRelatedChatDto.id, requestPasswordRelatedChatDto.password, clientSocket.data.user).then( () => {
+    try {
+      this.logger.log('clientSocket.id: ' + clientSocket.id);
+      this.logger.log('joinChat -> chat: ' + requestPasswordRelatedChatDto.name + " clientSocket.data.user: " + clientSocket.data.user);
+      await this.chatService.joinChat(requestPasswordRelatedChatDto.id, requestPasswordRelatedChatDto.password, clientSocket.data.user);
+
       // Join the specific room after chat was created
       clientSocket.join(requestPasswordRelatedChatDto.id.toString());
       this.ws_server.in(clientSocket.id).socketsJoin(requestPasswordRelatedChatDto.id.toString());
       this.logger.log('Socket has joined room ' + requestPasswordRelatedChatDto.id.toString());
 
       // If we could join the chat, get the whole table
-      this.chatService.getAllChats().then( (allChats) => {
-        // If we could get the whole table from the database, emit it to the frontend
-        clientSocket.emit("getChats", allChats);
-        this.logger.log('deleteChat -> getChats -> all chats were emitted to the frontend');
-      });
-    }).catch((err) => {
+      const allChats = await this.chatService.getAllChats();
+      // If we could get the whole table from the database, emit it to the frontend
+      clientSocket.emit("getChats", allChats);
+      this.logger.log('joinChat -> getChats -> all chats were emitted to the frontend: ', allChats);
+
+    } catch (err) {
       this.logger.error('[joinChat] Could not join chat -> err: ' + err.message);
       clientSocket.emit("exceptionCheckPassword", err.message);
-    });
+    };
   }
 
   @SubscribeMessage('leaveChat')
