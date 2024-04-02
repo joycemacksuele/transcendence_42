@@ -12,6 +12,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Modal from "react-bootstrap/Modal";
 import Image from "react-bootstrap/Image";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
+import useFetchMemberImages from "../Utils/useFetchMemberImages.ts";
 
 // the creator can kick, ban, mute anyone on the group (even admins)
 // the admin can kick, ban, mute others on the group (besides the creator)
@@ -39,6 +40,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
 
   const handleErrorClose = () => setShowErrorModal(false);
   const handleOfflineShow = () => setShowOfflineModal(false);
+
+  const memberImages = useFetchMemberImages(chatClicked?.usersIntraName); // jaka
+
   
   const goToUserProfile = (loginName: string) => {
     setSelectedLoginName(loginName);
@@ -187,17 +191,21 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                     {/* Users' list (with pictos) = when we are NOT muted + when we are NOT banned */}
                     {(chatClicked?.mutedUsers.indexOf(memberIntraName) == -1 &&
                     chatClicked?.bannedUsers.indexOf(memberIntraName) == -1) ? (
-                      <Image
-                        src={
-                          (import.meta.env.VITE_BACKEND as string) +
-                          "/resources/member.png"
-                        }
-                        className="me-1"
-                        // id="profileImage_tiny"
-                        // roundedCircle
-                        width={30}
-                        alt="chat"
-                      />
+                      // <Image
+                      //   src={
+                      //     (import.meta.env.VITE_BACKEND as string) +
+                      //     "/resources/member.png"
+                      //   }
+                      //   className="me-1"
+                      //   // id="profileImage_tiny"
+                      //   // roundedCircle
+                      //   width={30}
+                      //   alt="chat"
+                      // />
+                      <Image  width={25} height={25} className="me-2"
+                            src={`${import.meta.env.VITE_BACKEND}/${memberImages[i]}`}
+                            roundedCircle
+                    />
                     ) : (
                       <>
                         {/* Users' list (with pictos) = when we ARE muted */}
