@@ -7,10 +7,6 @@ function GameSelection(props: { socket: Socket | null }) {
     props.socket?.emit("joinGame", type);
   }
 
-  function testMatch() {
-    props.socket?.emit("testMatchDb");
-  }
-
   return (
     <>
       <div
@@ -33,14 +29,6 @@ function GameSelection(props: { socket: Socket | null }) {
             onClick={() => joinGame("Custom")}
           >
             Custom Game
-          </Button>
-
-          <Button
-            variant="dark"
-            className="button_default"
-            onClick={() => testMatch()}
-          >
-            Test match
           </Button>
 
           <p></p>
