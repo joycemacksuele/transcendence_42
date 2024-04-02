@@ -105,12 +105,6 @@ function drawCurrentGameState(
   drawPaddles(context, width, height, gameState);
   drawScores(context, width, height, gameState);
   drawNames(context, width, height, gameState);
-  console.log(
-    "scores " +
-      gameState.player1score.toString() +
-      " " +
-      gameState.player2score.toString()
-  );
 }
 
 function drawField(
@@ -146,7 +140,6 @@ function drawMessage(
   context.fillStyle = "white";
   context.textAlign = "center";
   context.fillText(message, width / 2, height / 2);
-  console.log("drawing text" + (0.05 * height).toString());
 }
 
 export function drawScene(
@@ -178,8 +171,5 @@ export function drawScene(
     drawMessage(context, width, height, gameState.stateMessage);
     drawField(context, width, height);
     drawCurrentGameState(context, width, height, gameState);
-  }
-  else {
-    console.log("test" + currentState);
   }
 }

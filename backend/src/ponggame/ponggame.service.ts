@@ -1,9 +1,18 @@
 import {Injectable, Logger} from "@nestjs/common";
 import { GameLogic } from "./gamelogic";
 import { GameState } from "./dto/game-state.dto";
+import { UserRepository } from "src/user/user.repository";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UserEntity } from "src/user/user.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class PonggameService {
+  constructor(
+		@InjectRepository(UserEntity)
+		private readonly userRepository: Repository<UserEntity>
+		// private readonly userRepository: UserRepository
+	) {}
   private readonly logger = new Logger(PonggameService.name);
 
   private _currentMatches: Map<string, GameState> = new Map(); //string represent the matchId
