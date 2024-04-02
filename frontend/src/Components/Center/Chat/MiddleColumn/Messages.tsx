@@ -25,7 +25,7 @@ import { chatSocket } from "../Utils/ClientSocket.tsx";
 import { CurrentUserContext, CurrUserData } from "../../Profile/utils/contextCurrentUser.tsx";
 
 type PropsHeader = {
-  chatClicked: ResponseNewChatDto | null;
+  chatClicked: ResponseNewChatDto | undefined;
   messages: ResponseNewChatDto | null;
   setMessages: (messages: ResponseNewChatDto | null) => void;
 };

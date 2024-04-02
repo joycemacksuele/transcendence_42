@@ -17,7 +17,7 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 // the admin can kick, ban, mute others on the group (besides the creator)
 
 type PropsHeader = {
-  chatClicked: ResponseNewChatDto | null;
+  chatClicked: ResponseNewChatDto | undefined;
 };
 
 const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
@@ -83,7 +83,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
       console.log(
         "[MembersGroup] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
       );
-      chatClicked = null;
+      chatClicked = undefined;
     };
   }, []);
 

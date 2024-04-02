@@ -7,12 +7,12 @@ import MyStatistics from "./SubComponents/MyStatistics";
 import MatchHistory from "./SubComponents/MatchHistory";
 import ChangeTheme from "./SubComponents/ChangeTheme";
 import { CurrUserData } from "./utils/contextCurrentUser";
+import { CustomSpinner } from "../../Other/Spinner";
 
 // Importing bootstrap and other modules
 import { Container, Row, Col } from "react-bootstrap";
 import DisplayOneUser from "./DisplayOneUser/DisplayOneUser";
 import axiosInstance from "../../Other/AxiosInstance";
-
 
 // interface User {
 // 	name: string;
@@ -50,8 +50,6 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   // const [isFirstLogin, setIsFirstLogin] = useState<boolean>(true);
 
-
-
   const handleClickOnUser = (loginName: string) => {
     setSelectedUser(loginName);
   };
@@ -74,20 +72,16 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
     greetingIfFirstLogin();
   }, []);
 
-
   // Update the game ranks of all users (otherwise it put the users with zero
-  //  matches at the top, as Rank 0) 
+  //  matches at the top, as Rank 0)
   useEffect(() => {
     const updateAllRanks = async () => {
       try {
-        await axiosInstance.get('matches/recalculateRanks'); 
-      } catch (error) {
-
-      }
-    }
+        await axiosInstance.get("matches/recalculateRanks");
+      } catch (error) {}
+    };
     updateAllRanks();
   }, []);
-
 
   return (
     <Container fluid className="container-max-width">
@@ -99,9 +93,11 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
               className="column-bckg justify-content-center align-items-left p-2 mx-0 rounded"
             >
               <h5>
-          			<i className="fas fa-user"></i>
+                <i className="fas fa-user"></i>
                 MY PROFILE PAGE
               </h5>
+              {/* <CustomSpinner /> */}
+              
               <ChangeProfileName updateContext={updateContext} />
               <ImageUpload updateContext={updateContext} />
               <ButtonTfa />
@@ -118,7 +114,8 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
               {/* <Row className='h-75'> */}
               <h5>
                 <i className="fas solid fa-chart-line"></i>
-                MY STATISTICS</h5>
+                MY STATISTICS
+              </h5>
               <MyStatistics />
               {/* <br /><h5>MY MATCH HISTORY</h5> */}
               {/* <MatchHistory /> */}

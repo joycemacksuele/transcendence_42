@@ -84,9 +84,9 @@ console.log("match is being processed");
 
       if (client.handshake.headers.cookie) {
         const token_key_value = client.handshake.headers.cookie;
-//        this.logger.log('[handleConnection] token found in the header: ', client.handshake.headers);
+        // this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
         if (token_key_value.includes("token")) {
-          const token_index_start = token_key_value.indexOf("token");
+          const token_index_start= token_key_value.indexOf("token");
           const token_index_end_global = token_key_value.length;
           const from_token_to_end = token_key_value.substring(token_index_start, token_index_end_global);
           let token_index_end_local = from_token_to_end.indexOf(";");
@@ -95,7 +95,7 @@ console.log("match is being processed");
           }
           const token_key_value_2 = from_token_to_end.substring(0, token_index_end_local);
           const token = token_key_value_2.split('=')[1];
-  //        this.logger.log('[handleConnection] token: ' + token);
+          // this.logger.log('[handleConnection] token: ' + token);
 
           try {
             const payload = await this.authService.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});

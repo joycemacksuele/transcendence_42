@@ -21,7 +21,7 @@ export class TwoFactorAuthController {
         try{
             // extractUserFromHeader
             let payload = await this.authService.extractUserdataFromToken(request);
-            this.logger.log("      ... payload.username: ", payload.username);
+            this.logger.log("      ... payload.username: " + payload.username);
 
             this.logger.log('Start verify_code function: ');
             this.logger.log('code to verify: ' + data.inputValue);
@@ -75,8 +75,8 @@ export class TwoFactorAuthController {
             let user = await this.userService.getUserByLoginName(payload.username); // retrieve user
             this.logger.log('User data retrieved: email: ' + user.email);
 
-            // await this.tfaService.sendVerificationMail(user);
-            // res.status(HttpStatus.OK).send({ message: 'Verification email has been re-sent.' });
+            await this.tfaService.sendVerificationMail(user);
+            res.status(HttpStatus.OK).send({ message: 'Verification email has been re-sent.' });
         } catch (error) {
             this.logger.log('Error re-sending the code email: ', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: 'To Factor Authentication verification attempt two/three failed' });

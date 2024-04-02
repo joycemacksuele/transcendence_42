@@ -139,7 +139,7 @@ export class ChatService {
     try {// Now we have the entity to update the users' array
       const foundUser: UserEntity = await this.userService.getUserByLoginName(intraName);
       // this.logger.log('[saveNewUserToChat] new users list: ' + foundEntityToJoin.users);
-      this.chatRepository.joinChat(foundUser, foundEntityToJoin).then(r => {
+      await this.chatRepository.joinChat(foundUser, foundEntityToJoin).then(r => {
         this.logger.log('[saveNewUserToChat] joined chat -> chatId should match: ' + chatId + " = " + r.id);
       });
       return true;
@@ -150,34 +150,65 @@ export class ChatService {
     }
   }
 
+  // async joinChat(chatId: number, password: string, intraName: string)  {
+  //   try {
+  //     await this.chatRepository.findOneOrFail({
+  //       where: {id: chatId,},
+  //     }).then((foundEntityToJoin) => {
+  //       if (foundEntityToJoin.type == ChatType.PROTECTED) {
+
+  //         // Join a PROTECTED chat
+  //         if (bcryptjs.compareSync(password, foundEntityToJoin.password)) {
+  //           this.logger.log('[joinChat] Password if ok, joining the chat');
+  //           return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
+  //         } else {
+  //           // This goes to the UI (keep lower case to match the Validator errors)
+  //           throw new WsException('wrong password');
+  //         }
+
+  //       } else {
+  //         // Join a PUBLIC OR PRIVATE chat
+  //         this.logger.log('[joinChat] No password required, joining the chat');
+  //         return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
+  //       }
+  //     });
+  //   } catch (err) {
+  //     // This goes to the UI (keep lower case to match the Validator errors)
+  //     throw new WsException(err);
+  //   }
+  //   return false;
+  // }
+
+
+
+  // Jaka
   async joinChat(chatId: number, password: string, intraName: string)  {
     try {
-      await this.chatRepository.findOneOrFail({
+      const foundEntityToJoin = await this.chatRepository.findOneOrFail({
         where: {id: chatId,},
-      }).then((foundEntityToJoin) => {
-        if (foundEntityToJoin.type == ChatType.PROTECTED) {
-
-          // Join a PROTECTED chat
-          if (bcryptjs.compareSync(password, foundEntityToJoin.password)) {
-            this.logger.log('[joinChat] Password if ok, joining the chat');
-            return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
-          } else {
-            // This goes to the UI (keep lower case to match the Validator errors)
-            throw new WsException('wrong password');
-          }
-
-        } else {
-          // Join a PUBLIC OR PRIVATE chat
-          this.logger.log('[joinChat] No password required, joining the chat');
-          return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
-        }
       });
+      if (foundEntityToJoin.type == ChatType.PROTECTED) {
+
+        // Join a PROTECTED chat
+        if (bcryptjs.compareSync(password, foundEntityToJoin.password)) {
+          this.logger.log('[joinChat] Password if ok, joining the chat');
+          return this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
+        } else {
+          // This goes to the UI (keep lower case to match the Validator errors)
+          throw new WsException('wrong password');
+        }
+      } else {
+        // Join a PUBLIC OR PRIVATE chat
+        this.logger.log('[joinChat] No password required, joining the chat');
+        return await this.saveNewUserToChat(foundEntityToJoin, intraName, chatId);
+      }
     } catch (err) {
       // This goes to the UI (keep lower case to match the Validator errors)
       throw new WsException(err);
     }
     return false;
   }
+
 
   async addAdmin(chatId: number, newAdmin: string)  {
     try {
@@ -269,7 +300,7 @@ export class ChatService {
         return true;
       });
     } catch (err) {
-      this.logger.error('[editPassword] Could not delete user from chat exception: ' + err);
+      this.logger.error('[leaveChat] Could not delete user from chat exception: ' + err);
       // This goes to the UI (keep lower case to match the Validator errors)
       throw new WsException('could not delete user from chat');
     }
