@@ -3,7 +3,7 @@
   application, it attaches the 'AppModule' and creates an instance of 'NestApplication'.
 */
 
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { DataSource } from "typeorm";
 // import { ConfigModule } from '@nestjs/config';
