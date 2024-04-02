@@ -13,11 +13,11 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 type PropsHeader = {
     setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
     activeChatId: number;
-    activeContentLeft: string;
+    setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
 
-const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, activeContentLeft }) => {
+const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, setMessages }) => {
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
   const [intraName, setIntraName] = useState<string | null>(null);
 
@@ -83,8 +83,11 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, activeC
               chat.id === activeChatId
           );
       //console.log('            activeChat: ' + JSON.stringify(activeChat));
-      if (activeChat) {
+      // if (activeChat) {
           setChatClicked(activeChat);
+      // }
+      if (activeChatId === -1) {
+        setMessages(null);
       }
   }, [chatInfo, activeChatId]);
 
