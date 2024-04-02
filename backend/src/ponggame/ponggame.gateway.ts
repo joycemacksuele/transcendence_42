@@ -132,10 +132,14 @@ console.log("match is being processed");
       client.disconnect();
     }
   }
-  
+
   @SubscribeMessage('leavinggamepage')
   leavingGamePage(@ConnectedSocket() client: Socket){
     client.data.gamepage = false;
+    this.ponggameService.playerDisconnected(
+      this._socketIdUserId.get(client.id));
+    this.logger.log(`User ${this._socketIdUserId.get(client.id)} left the game page`);
+
   }
   @SubscribeMessage('gamepage')
   gamepage(@ConnectedSocket() client: Socket){
