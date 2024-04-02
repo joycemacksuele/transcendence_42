@@ -22,9 +22,9 @@ export class WsExceptionFilter {
     }
 }
 
-Catch(UnauthorizedException)
-export class UnauthorizedExceptionFilter {
-    public catch(exception: UnauthorizedException) {
-        throw exception;
-    }
-}
+// Catch(UnauthorizedException)
+// export class UnauthorizedExceptionFilter {
+//     public catch(exception: UnauthorizedException) {
+//         throw exception;
+//     }
+// }
