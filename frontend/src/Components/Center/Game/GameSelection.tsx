@@ -2,9 +2,9 @@ import Button from "react-bootstrap/Button";
 import { Socket } from "socket.io-client";
 import "./Button.css";
 
-function GameSelection(props: { socket: Socket | null }) {
+function GameSelection(props: { socket: Socket}) {
   function joinGame(type: string) {
-    props.socket?.emit("joinGame", type);
+    props.socket.emit("joinGame", type);
   }
 
   return (
