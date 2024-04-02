@@ -61,14 +61,14 @@ export class UserController {
     	private readonly authService: AuthService   // added jaka, to enable extractUserdataFromToken()
 		// public readonly userRepository: UserRepository // jaka: Controller should not interact with UserRepository
 	) {
-		this.logger.log('constructor');
+		// this.logger.log('constructor');
 	}
 
 
 	@Post()
 	async createUser(@Body() createUserDto: CreateUserDto) {
-		this.logger.log('createUser');
-		this.logger.log('Received user data:', JSON.stringify(createUserDto));
+		// this.logger.log('createUser');
+		// this.logger.log('Received user data:', JSON.stringify(createUserDto));
 		return this.userService.createUser(createUserDto);// UserEntity
 	}
 
@@ -76,7 +76,7 @@ export class UserController {
     // GET ALL USERS
     @Get('all')
     async getAllUsers(): Promise<UserEntity[]> {
-        this.logger.log('getAllUsers');
+        // this.logger.log('getAllUsers');
         return (this.userService.getAllUsers());
     }
 	
@@ -87,7 +87,7 @@ export class UserController {
 		@Param('loginName') loginName: string
 	): Promise<UserEntity>
 	{
-		this.logger.log('getUser');
+		// this.logger.log('getUser');
 		// throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED); // jaka: just for testing
 		return (this.userService.getUserByLoginName(loginName));
 	}
@@ -98,7 +98,7 @@ export class UserController {
 		@Param('profileName') profileName: string
 	): Promise<UserEntity>
 	{	
-		this.logger.log('getUser');
+		// this.logger.log('getUser');
 		return (this.userService.getUserByProfileName(profileName));
 	}
 
@@ -107,7 +107,7 @@ export class UserController {
 	@Get('get-current-user')
 	async getCurrentUser(@Req() req: Request) {
 		try {
-			console.log('Get current user ...');
+			// console.log('Get current user ...');
 			const payload = await this.authService.extractUserdataFromToken(req);
 			//console.log('         ... payload: ', payload);
 
@@ -176,10 +176,10 @@ export class UserController {
 
 	@Delete()
 	async deleteDummies(): Promise<void> {
-		this.logger.log('DELETE All Dummies');
+		// this.logger.log('DELETE All Dummies');
 		try {
 			await this.userService.deleteDummies();
-			this.logger.log('from nest user.controller: All dummies deleted.');
+			// this.logger.log('from nest user.controller: All dummies deleted.');
 		} catch (error) {
 			this.logger.error('from nest user.controller: Error deleting dummies.', error);
 		}
@@ -192,23 +192,23 @@ export class UserController {
     try {
       // get user and loginName from request-token
       let payload = await this.authService.extractUserdataFromToken(request);
-      this.logger.log("      ... payload.username: ", payload.username);
+    //   this.logger.log("      ... payload.username: ", payload.username);
 
 
       // Check if user with the same loginName already exists
-      this.logger.log('Endpoint: Check_if_user_in_db()');
+    //   this.logger.log('Endpoint: Check_if_user_in_db()');
       const existingUser = await this.userService.getUserByLoginName(payload.username);
       if (existingUser) {
-        this.logger.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
+        // this.logger.log('CHECK: This loginName already exists in databs, LoginName:', existingUser.loginName);
         return { exists: true, user: existingUser};
         // return { message: 'This loginName already exists in database == the current user.'};
       }
-      this.logger.log('Endpoint: Check_if_user_in_db, LoginName:', existingUser); // jaka, temp
+    //   this.logger.log('Endpoint: Check_if_user_in_db, LoginName:', existingUser); // jaka, temp
       
       return { exists: false }; 
       // return { message: 'CHECK User does not exist in the database.' };
     } catch (error) {
-		this.logger.error('Error in checkIfCurrUserIsInDB', error);
+		// this.logger.error('Error in checkIfCurrUserIsInDB', error);
 		if (error instanceof ForbiddenException) {
 			throw new HttpException('Forbidden Access', HttpStatus.FORBIDDEN);
 		}
