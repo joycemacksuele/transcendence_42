@@ -24,7 +24,7 @@ function Game() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
       chatSocket.removeAllListeners("stateUpdate");
-      chatSocket.emit('leavinggamepage');
+      chatSocket.emit('leavingGamepage');
     };
   }, []);
 
