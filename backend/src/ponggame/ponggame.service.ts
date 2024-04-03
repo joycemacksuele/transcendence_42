@@ -58,8 +58,8 @@ export class PonggameService {
         match.winner = 1;
         console.log("player 1 is set to winner");
       }
-
-    } else if (match != undefined && match.currentState == "Queue") {
+    } 
+    else if (match.currentState == "Queue") {
       match.currentState = "Disconnection";
       match.stateMessage = "Opponent left before the game started";
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
