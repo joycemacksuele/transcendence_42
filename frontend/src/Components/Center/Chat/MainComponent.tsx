@@ -29,9 +29,11 @@ import { Alert } from "react-bootstrap";
 
 const MainComponent = () => {
   const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | undefined>();
-
   const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved from Messages
-
+  
+  if (chatClicked) {
+    console.log("[MainComponent] chatClicked: ", chatClicked.name );
+  }
 
   // jaka:  To keep track of which Chat is selected in MyChats or Channels, when
   //        switching between MyChats to Channels  
@@ -41,10 +43,10 @@ const MainComponent = () => {
   
   // jaka
   // const handleClickChat = (chat: ResponseNewChatDto | null, activeContentLeft: string) => {
-    const handleClickChat = (chat: ResponseNewChatDto | undefined) => {
+  const handleClickChat = (chat: ResponseNewChatDto | undefined) => {
     console.log('Handle Click Chat');
     setChatClicked(chat);
-    if (chat != null) {
+    if (chat != undefined) {
         if (activeContentLeft === 'recent')
           setActiveId_Chats(chat.id);
         else if (activeContentLeft === 'groups')
@@ -52,11 +54,6 @@ const MainComponent = () => {
     }
     console.log('-- -- - - - -- - - activeChatID: ' + activeId_Chats + ', activeChannelID: ' + activeId_Channels);
   }
-
-  if (chatClicked) {
-    console.log("[MainComponent] chatClicked: ", chatClicked.name );
-  }
-
 
 
   let alertKey = 0;
@@ -225,14 +222,14 @@ const MainComponent = () => {
             {activeContentLeft === "recent" && (
               <MyChats setChatClicked={handleClickChat}
                        activeChatId={activeId_Chats}      // jaka
-                       activeContentLeft={activeContentLeft}
+                       setMessages={setMessages}
               />
             //   <MyChats setChatClicked={setChatClicked} />
             )}
             {activeContentLeft === "groups" && (
               <Channels setChatClicked={handleClickChat}
                         activeChatId={activeId_Channels}     // jaka
-                        activeContentLeft={activeContentLeft}
+                        setMessages={setMessages}
               />
             )}
           </Row>
@@ -318,6 +315,7 @@ const MainComponent = () => {
                     setChatClicked={setChatClicked}
                     // setActiveButton={setActiveButton}
                     setActiveContentLeft={setActiveContentLeft}
+                    setActiveId_Chats={setActiveId_Chats}
                   />
                 )}
               </Row>
