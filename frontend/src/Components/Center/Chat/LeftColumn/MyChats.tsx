@@ -11,22 +11,20 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 // Jaka
 type PropsHeader = {
-  setChatClicked: (
-    chatClicked: ResponseNewChatDto | undefined,
-    // activeContentLeft: string
-  ) => void;
+  setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
   activeChatId: number;
-  activeContentLeft: string;
+  setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
 const MyChats: React.FC<PropsHeader> = ({
   setChatClicked,
   activeChatId,
-  activeContentLeft,
+  setMessages,
 }) => {
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
   const [intraName, setIntraName] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [chatsExist, setChatsExist] = useState<boolean>(false);
 
   const getIntraName = async () => {
     return await axiosInstance
@@ -39,7 +37,10 @@ const MyChats: React.FC<PropsHeader> = ({
         return response.data.username as string;
       })
       .catch((error): null => {
-        console.error("[MembersGroup] Error getting current intraName: ", error);
+        console.error(
+          "[MembersGroup] Error getting current intraName: ",
+          error
+        );
         return null;
       });
   };
@@ -55,7 +56,10 @@ const MyChats: React.FC<PropsHeader> = ({
         return response.data.username as string;
       })
       .catch((error): null => {
-        console.error("[MembersGroup] Error getting current profileName: ", error);
+        console.error(
+          "[MembersGroup] Error getting current profileName: ",
+          error
+        );
         return null;
       });
   };
@@ -86,32 +90,40 @@ const MyChats: React.FC<PropsHeader> = ({
       chatSocket.connected
     );
     console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
-
     chatSocket.emit("getChats");
     chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
-      console.log("[lllllllllllllllll] allChats", allChats);
-      setChatInfo(allChats);
+      //console.log("[lllllllllllllllll] allChats", allChats);
+      setChatInfo(allChats);      
     });
-
     return () => {
       console.log(
         "[MyChats] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
       );
-      //setChatClicked(null, "");
     };
   }, []);
 
-  // jaka: To remember which Chat is selected in MyChats, when going from MyChats to Channels and back
+  // MyChat must remember which Chat is selected when going from MyChats to Channels and back
   useEffect(() => {
+    // console.log("[MyChats]            chatInfo: " + JSON.stringify(chatInfo));
     const activeChat: ResponseNewChatDto | undefined = chatInfo.find(
       (chat) => chat.id === activeChatId
     );
-    console.log('            activeChat: ' + JSON.stringify(activeChat));
-    // if (activeChat) {
-      // setChatClicked(activeChat, activeContentLeft);
-      setChatClicked(activeChat);
-    // }
+    //console.log('            activeChat: ' + JSON.stringify(activeChat));
+    setChatClicked(activeChat);
+    if (activeChatId === -1)
+      setMessages(null);
   }, [chatInfo, activeChatId]);
+
+
+  // If curr. user is not a member of any chat, display just a message 'Not a member ...'
+  useEffect(() => {
+    const myChatsExist = chatInfo.some( (chat) => {
+      if (chat.usersIntraName && intraName)
+        return chat.usersIntraName.includes(intraName);        
+    });
+    setChatsExist(myChatsExist);
+    // console.log("[MYCHATS] chatsExist: ", chatsExist);
+  }, [chatInfo])
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
@@ -119,14 +131,15 @@ const MyChats: React.FC<PropsHeader> = ({
       {/* Recent chats row */}
       <Row className="">
         <Stack gap={2}>
-          {chatInfo.length === 0 ? (
+          {/*{chatInfo.length === 0 ? (*/}
+          {!chatsExist ? (
             <span className="pt-5">You are not a member of any chat yet.</span>
           ) : (
             chatInfo.map((chat: ResponseNewChatDto) => (
               <Fragment key={chat.id}>
-                {(intraName &&
+                {intraName &&
                   chat.usersIntraName &&
-                  chat.usersIntraName.indexOf(intraName) != -1) && (
+                  chat.usersIntraName.indexOf(intraName) != -1 && (
                     <ListGroup
                       // key={chat.id}
                       variant="flush"
@@ -173,12 +186,14 @@ const MyChats: React.FC<PropsHeader> = ({
                             alt="chat"
                           />
                         )}
-                        {chat.name == profileName ? (chat.usersProfileName.map((userProfileName) => {
-                          // Here we are trying to get the second user profile name to set as the chat name
-                          if (userProfileName != chat.name) {
-                            return userProfileName;
-                          }
-                        })) : (chat.name)}
+                        {chat.name == profileName
+                          ? chat.usersProfileName.map((userProfileName) => {
+                              // Here we are trying to get the second user profile name to set as the chat name
+                              if (userProfileName != chat.name) {
+                                return userProfileName;
+                              }
+                            })
+                          : chat.name}
                       </ListGroup.Item>
                     </ListGroup>
                   )}
