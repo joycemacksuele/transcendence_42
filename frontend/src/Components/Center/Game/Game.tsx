@@ -19,10 +19,12 @@ function Game() {
     //add keylistener
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("unload", handleUnload);
     //clean up
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("unload", handleUnload);
       chatSocket.removeAllListeners("stateUpdate");
       chatSocket.emit('leavingGamepage');
     };
@@ -32,6 +34,9 @@ function Game() {
     if (gameState != undefined) drawScene(canvasRef, gameState);
   }, [gameState]);
 
+  function handleUnload(){
+    chatSocket.emit('leaveGamePage');
+  }
   function handleKeyDown(event: KeyboardEvent) {
     if (event.repeat) return;
     if (event.code == "KeyS") {
