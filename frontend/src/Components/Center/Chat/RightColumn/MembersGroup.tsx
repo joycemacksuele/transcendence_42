@@ -160,7 +160,8 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                         () => {
                             chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
                                 {
-                                    window.location.replace("/main_page/game");
+                                    //window.location.replace("/main_page/game");
+                                    console.log("moving to gamepage");
                                 }
                             );
                         }
@@ -262,7 +263,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                               variant="success"
                               onClick={()=>invitePlayer(clickedMemberIntraName)}
                             >
-                              Invite to play pong!
+                              Invite to play pongi!
                             </Button>
                             <Button
                               className="me-4 mb-3"

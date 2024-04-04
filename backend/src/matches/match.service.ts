@@ -3,6 +3,7 @@ import { Repository } from "typeorm";
 import { UserRepository } from "src/user/user.repository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MatchDto } from "./match.dto"
+import { MatchResponse } from "./matchResponse";
 import { MatchEntity } from "./match.entity"
 import { UserEntity } from "src/user/user.entity";
 import { all } from "axios";
@@ -136,28 +137,45 @@ export class MatchService {
 
 
 	// Fetch all matches that include this userId?
-	async getMatchHistory(userId: number): Promise<MatchEntity[]> {
-		// const matches = await this.matchRepository.find({ 
-		// 	where: [
-		// 		{ player1: { id: userId } },
-		// 		{ player2: { id: userId } }
-		// 	],
-		// 	relations: ['player1', 'player2'] 
-		// });
-		// console.log('Matches found: ', matches);
-		// return matches;
+	// async getMatchHistory(userId: number): Promise<MatchResponse[]> {
+	// 	// const matches = await this.matchRepository.find({ 
+	// 	// 	where: [
+	// 	// 		{ player1: { id: userId } },
+	// 	// 		{ player2: { id: userId } }
+	// 	// 	],
+	// 	// 	relations: ['player1', 'player2'] 
+	// 	// });
+	// 	// console.log('Matches found: ', matches);
+	// 	// return matches;
 		
-		// const matches = await this.matchRepository.createQueryBuilder('match')
-		// .where('match.player1Id = :userId OR match.player2Id = :userId', { userId })
-		// .getMany();
+	// 	// const matches = await this.matchRepository.createQueryBuilder('match')
+	// 	// .where('match.player1Id = :userId OR match.player2Id = :userId', { userId })
+	// 	// .getMany();
 
-		const matches = await this.matchRepository.createQueryBuilder('match').getMany();
-			
-		console.log('Matches found: ', matches);
-		return matches;
-	}
+	// 	const matches = await this.matchRepository.createQueryBuilder('match').getMany();
+	// 	const matchesResponse = matches.map(match =>
+	// 		{
+	// 			let result ="L";
+	// 			if(match.winnerId == userId)
+	// 				result = "W"
+	// 			return new MatchResponse(
+	// 				match.id,
+	// 				match.profileName1,
+	// 				match.profileName2,
+	// 				match.player1Score,
+	// 				match.player2Score,
+	// 				match.winnerId,
+	// 				result,
+	// 				match.timeStamp
+	// 			)
+	// 		}
+	// 	);
+	// 	console.log('Matches found: ', matches);
+	// 	return matchesResponse;
+	// }
+	
 
-	async getMatchHistoryByUserId(userId: number): Promise<MatchEntity[]> {
+	async getMatchHistoryByUserId(userId: number): Promise<MatchResponse[]> {
 		// const matches = await this.matchRepository.find({ 
 		// 	where: [
 		// 		{ player1: { id: userId } },
@@ -171,11 +189,27 @@ export class MatchService {
 		const matches = await this.matchRepository.createQueryBuilder('match')
 		.where('match.player1Id = :userId OR match.player2Id = :userId', { userId })
 		.getMany();
-
+		const matchesResponse = matches.map(match =>
+			{
+				let result ="L";
+				if(match.winnerId == userId)
+					result = "W"
+				return new MatchResponse(
+					match.id,
+					match.profileName1,
+					match.profileName2,
+					match.player1Score,
+					match.player2Score,
+					match.winnerId,
+					result,
+					match.timeStamp
+				)
+			}
+		);
 		// const matches = await this.matchRepository.createQueryBuilder('match').getMany();
 			
-		console.log('Matches found for userId: ', userId);
+		//console.log('Matches found for userId: ', userId);
 		//console.log('Matches found: ', matches);
-		return matches;
+		return matchesResponse;
 	}
 }

@@ -9,11 +9,11 @@ export class MatchDto {
 	@IsNotEmpty()
 	player2Id: number;
 
-	// @IsString()
-	// profileName1: string;
+	@IsString()
+	profileName1: string;
 
-	// @IsString()
-	// profileName2: string;
+	@IsString()
+	profileName2: string;
 
 	@IsInt()
     player1Score: number;

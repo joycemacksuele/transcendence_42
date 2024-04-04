@@ -59,7 +59,6 @@ export class PonggameGateway
         currentGames.forEach((gamestate: GameState) => {
           this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
           if (gamestate.currentState == "End"){
-console.log("match is being processed");
               this.processMatch(gamestate); //send the match data to the database
               this.server.socketsLeave(gamestate.roomName);
               this.ponggameService.removeUserIdMatch(gamestate.player1loginname);
@@ -83,8 +82,11 @@ console.log("match is being processed");
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`[handleDisconnection] pong game client id ${client.id} disconnected`);
-    this.ponggameService.playerDisconnected(this._socketIdUserId.get(client.id));
+    const userId = this._socketIdUserId.get(client.id)
+    this.ponggameService.playerDisconnected(userId);
+    this._userIdSocketId.delete(userId);
+    this._socketIdUserId.delete(client.id);
+    this.emitOnlineStatuses();
   }
 
   @SubscribeMessage('identify')
