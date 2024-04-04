@@ -81,13 +81,13 @@ function drawNames(
   context.fillStyle = "white";
   context.textAlign = "right";
   context.fillText(
-    gameState.player1info,
+    gameState.player1profilename,
     center_canvas - 2 * fontSize,
     fontSize
   );
   context.textAlign = "left";
   context.fillText(
-    gameState.player2info,
+    gameState.player2profilename,
     center_canvas + 2 * fontSize,
     fontSize
   );

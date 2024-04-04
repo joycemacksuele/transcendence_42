@@ -1,7 +1,6 @@
 import {Injectable, Logger} from "@nestjs/common";
 import { GameLogic } from "./gamelogic";
 import { GameState } from "./dto/game-state.dto";
-import { UserRepository } from "src/user/user.repository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "src/user/user.entity";
 import { Repository } from "typeorm";
@@ -11,7 +10,6 @@ export class PonggameService {
   constructor(
 		@InjectRepository(UserEntity)
 		private readonly userRepository: Repository<UserEntity>
-		// private readonly userRepository: UserRepository
 	) {}
   private readonly logger = new Logger(PonggameService.name);
 
@@ -29,15 +27,10 @@ export class PonggameService {
   playerConnected(userId: string){
     const matchId = this.getMatchId(userId);
     const match =this._currentMatches.get(matchId);
-    console.log(`${match.currentState} check`);
     if(match.currentState == 'PrivateQueue')
         match.currentState = 'WaitingForInvited';
     else if (match.currentState == 'WaitingForInvited')
-    {
-        console.log(`${matchId} has been set to playing`);
         match.currentState = 'Playing';
-    }
-    console.log(`${match.currentState} check`);
   }
 
   playerDisconnected(userId: string) {
@@ -49,8 +42,8 @@ export class PonggameService {
     if (match.currentState == "Playing") {
       match.currentState = "End";
       match.stateMessage = "Opponent disconnected. You win be default";
-      console.log(`match info ${match.player1info} equal to ${userId}`);
-      if(match.player1info === userId)
+      console.log(`match info ${match.player1loginname} equal to ${userId}`);
+      if(match.player1loginname === userId)
       {
         match.winner = 2;
         console.log("player 2 is set to winnner");
@@ -65,11 +58,11 @@ export class PonggameService {
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
       else if (match.gameType == "Custom") this._queueCustomMatchId = "";
     }
-    else if (match.currentState == 'WaitingForInvited' && match.player1info == userId){
+    else if (match.currentState == 'WaitingForInvited' && match.player1loginname == userId){
         match.currentState = 'Disconnection';
         match.stateMessage = 'Opponent left before the game started';
     }
-    else if (match.currentState =="PrivateQueue" || (match.currentState == 'WaitingForInvited' && match.player2info == userId))
+    else if (match.currentState =="PrivateQueue" || (match.currentState == 'WaitingForInvited' && match.player2loginname == userId))
         return;
     console.log(`deleting ${userId} from matchesmap`);
     this._userMatch.delete(userId);
@@ -95,9 +88,9 @@ export class PonggameService {
     if (!this._currentMatches.has(matchId)) return;
     const currentMatch = this._currentMatches.get(matchId);
     if (currentMatch.gameType == "Custom") input *= -1;
-    if (currentMatch.player1info == userId) {
+    if (currentMatch.player1loginname == userId) {
       currentMatch.player1input = input;
-    } else if (currentMatch.player2info == userId) {
+    } else if (currentMatch.player2loginname == userId) {
       currentMatch.player2input = input;
     }
   }
@@ -110,11 +103,11 @@ export class PonggameService {
     return "";
   }
 
-  joinGame(userId: string, matchType: string): string {
+  joinGame(userId: string, profilename: string, matchType: string) : string {
     if (matchType == "Default" && this._queueDefaultMatchId == "") {
-      return this.createNewMatch(userId, "Default");
+      return this.createNewMatch(userId, profilename, "Default");
     } else if (matchType == "Custom" && this._queueCustomMatchId == "") {
-      return this.createNewMatch(userId, "Custom");
+      return this.createNewMatch(userId, profilename, "Custom");
     } else {
       const currentMatchId =
         matchType == "Default"
@@ -124,7 +117,8 @@ export class PonggameService {
         ? (this._queueDefaultMatchId = "")
         : (this._queueCustomMatchId = "");
       const currentGamestate = this._currentMatches.get(currentMatchId);
-      currentGamestate.player2info = userId;
+      currentGamestate.player2loginname = userId;
+      currentGamestate.player2profilename = profilename;
       currentGamestate.currentState = "Playing";
       this._userMatch.set(userId, currentMatchId);
       return currentMatchId;
@@ -134,13 +128,16 @@ export class PonggameService {
   //will create a new gamestate and register it to currentMatches
   //will register the user to userMatch
   //Add the matchId to the relevant queue
-  createNewMatch(userId: string, matchType: string): string {
+  createNewMatch(userId: string, profilename: string, matchType: string): string {
     const newMatch = this.getInitMatch(matchType);
     const currentMatchId = "match" + userId;
     newMatch.roomName = currentMatchId;
     newMatch.currentState = "Queue";
     newMatch.stateMessage = "Waiting for opponent...";
-    newMatch.player1info = userId;
+    // const player1 = await this.userRepository.findOne({ where: { loginName: userId } });
+    // newMatch.player1loginname = player1.profileName;
+    newMatch.player1profilename = profilename;
+    newMatch.player1loginname = userId;
     this._currentMatches.set(currentMatchId, newMatch);
     this._userMatch.set(userId, currentMatchId);
     if (matchType == "Default") this._queueDefaultMatchId = currentMatchId;
@@ -154,8 +151,8 @@ export class PonggameService {
     newMatch.roomName = currentMatchId;
     newMatch.currentState = "PrivateQueue";
     newMatch.stateMessage = "Waiting for " + userId2 + " to accept the invite";
-    newMatch.player1info = userId;
-    newMatch.player2info = userId2;
+    newMatch.player1loginname = userId;
+    newMatch.player2loginname = userId2;
     this._currentMatches.set(currentMatchId, newMatch);
     this._userMatch.set(userId, currentMatchId);
     this._userMatch.set(userId2, currentMatchId);
@@ -194,8 +191,10 @@ export class PonggameService {
       player2height: paddleHeight,
       player2width: 0.01,
       player2speed: 0.01,
-      player1info: "",
-      player2info: "",
+      player1loginname: "",
+      player2loginname: "",
+      player1profilename:"",
+      player2profilename:"",
       player1input: 0,
       player2input: 0,
       player1score: 0,
