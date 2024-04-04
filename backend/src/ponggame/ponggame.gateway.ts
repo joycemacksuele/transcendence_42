@@ -4,6 +4,7 @@ import {
   MessageBody,
   ConnectedSocket,
   OnGatewayConnection,
+  OnGatewayDisconnect,
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
@@ -31,7 +32,7 @@ import { Logger, UnauthorizedException} from "@nestjs/common";
 })
 
 export class PonggameGateway
-  implements OnGatewayConnection
+  implements OnGatewayConnection,OnGatewayDisconnect
 {
   private readonly logger = new Logger(PonggameGateway.name);
 
@@ -79,6 +80,11 @@ console.log("match is being processed");
   handleConnection(client: Socket) {
     client.data.gamepage = false;
     this.logger.log(`[handleConnection] pong game client id ${client.id} connected`);
+  }
+
+  handleDisconnect(client: Socket) {
+    this.logger.log(`[handleDisconnection] pong game client id ${client.id} disconnected`);
+    this.ponggameService.playerDisconnected(this._socketIdUserId.get(client.id));
   }
 
   @SubscribeMessage('identify')
@@ -139,8 +145,8 @@ console.log("match is being processed");
     this.ponggameService.playerDisconnected(
       this._socketIdUserId.get(client.id));
     this.logger.log(`User ${this._socketIdUserId.get(client.id)} left the game page`);
-
   }
+
   @SubscribeMessage('gamepage')
   gamepage(@ConnectedSocket() client: Socket){
     client.data.gamepage = true;
@@ -256,7 +262,6 @@ console.log("match is being processed");
       console.log("Status of playing: ", isPlaying);
       client.emit('responsePlayingStatus', { isPlaying })
     }
-
 
   // ADDED JAKA: single user's status
   @SubscribeMessage('requestOnlineStatus')
