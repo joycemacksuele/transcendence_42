@@ -13,12 +13,12 @@ interface UserProps {
 
 interface Match {
 	id: number;
-	player1Id: number;
-	player2Id: number;
 	profileName1: string;
 	profileName2: string;
 	player1Score: number;
 	player2Score: number;
+	winnerId: number;
+	result: string;
 	timeStamp: Date;
 }
 
@@ -112,7 +112,7 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 										{match.profileName1}-{match.profileName2}
 									</div>
 									<div className="score">
-										{match.player1Score}:{match.player2Score}
+										<b>{match.result}</b> {match.player1Score}:{match.player2Score}
 									</div>
 								</div>
 							</ListGroup.Item>

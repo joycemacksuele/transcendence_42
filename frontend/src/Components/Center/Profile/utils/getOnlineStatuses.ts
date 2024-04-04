@@ -49,11 +49,11 @@ export const getOnlineStatusUpdates = (
 		const wrappedApplyStatusUpdates =
 			(updates: string[]) => applyStatusUpdates(updates, usersRef, setUsers);
 
-			chatSocket.on('onlineStatusUpdates', wrappedApplyStatusUpdates);
-			chatSocket.on('connect_error', handleError);
-			chatSocket.on('disconnect', (reason) => {
-				console.error("There was a WebSocket disconnect error:", reason);
-			})
+		chatSocket.on('onlineStatusUpdates', wrappedApplyStatusUpdates);
+		chatSocket.on('connect_error', handleError);
+		chatSocket.on('disconnect', (reason) => {
+			console.error("There was a WebSocket disconnect error:", reason);
+		})
 
 		return (	// Return a cleanup function
 			() => {
