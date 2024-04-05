@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { useSelectedUser } from "../../Profile/utils/contextSelectedUserName.tsx";
 
 // Importing bootstrap and other modules
@@ -140,32 +140,35 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     //function to invite player
     function invitePlayer(invitedUser: string)
     {   
-        console.log("invite button pressed");
+        console.log("invite button pressed" + `${invitedUser}`);
+        console.log("test");
         chatSocket?.emit('requestUserStatus', invitedUser, 
             (response: string) => 
             {
                 console.log(`response: ${response}`);
                 if(response === "ingame")
                 {
-                    setShowMemberModal(false);
-                    setShowErrorModal(true);
+                  setShowMemberModal(false);
+                  setShowErrorModal(true);
                 }
                 else if (response == 'offline'){
-                    setShowMemberModal(false);
-                    setShowOfflineModal(true);
+                  setShowMemberModal(false);
+                  setShowOfflineModal(true);
                 }
                 else{
-                    console.log("player is online");
-                    chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:'Default'},
-                        () => {
-                            chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
-                                {
-                                    //window.location.replace("/main_page/game");
-                                    console.log("moving to gamepage");
-                                }
-                            );
-                        }
-                    );
+                  console.log("player is online");
+                  chatSocket.emit('invitePlayerToGame', invitedUser);
+                  navigate("/main_page/game");
+                    // chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:'Default'},
+                    //     () => {
+                    //         chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
+                    //             {
+                    //                 window.location.replace("/main_page/game");
+                    //                 console.log("moving to gamepage");
+                    //             }
+                    //         );
+                    //     }
+                    // );
                 }
             }
         );
@@ -263,7 +266,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                               variant="success"
                               onClick={()=>invitePlayer(clickedMemberIntraName)}
                             >
-                              Invite to play pongi!
+                              Invite to play pong!
                             </Button>
                             <Button
                               className="me-4 mb-3"

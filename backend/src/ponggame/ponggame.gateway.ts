@@ -236,6 +236,7 @@ console.log(`getting player profile name: ${player.profileImage}`);
     console.log(`invite for ${userId} received`);
     const invitedSocketId = this._userIdSocketId.get(userId);
     const inviteeName = this._socketIdUserId.get(client.id);
+    console.log(`socketId ${invitedSocketId} inviteeName ${inviteeName}`);
     this.server.to(invitedSocketId).emit("inviteMessage",inviteeName);
     return true;
   }
