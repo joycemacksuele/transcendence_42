@@ -43,6 +43,8 @@ function Game() {
       chatSocket.emit("playerinput", 1);
     } else if (event.code == "KeyW") {
       chatSocket.emit("playerinput", -1);
+    } else if (event.code == "KeyR") {
+      chatSocket.emit("resetgamepage");
     }
   }
 

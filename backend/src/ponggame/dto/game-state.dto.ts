@@ -3,6 +3,7 @@ export class GameState {
   gameType: string;
   currentState: string; //current states ("Selection, Playing, Queue, PrivateQueue, End, Disconnection")
   stateMessage: string;
+  stateMessage2: string;
   timer: number;
   winner: number;
   //ball info
