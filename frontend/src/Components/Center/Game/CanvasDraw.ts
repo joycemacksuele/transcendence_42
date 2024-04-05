@@ -142,6 +142,18 @@ function drawMessage(
   context.fillText(message, width / 2, height / 2);
 }
 
+function drawMessage2(
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  message: string
+) {
+  context.font = (0.02 * height).toString() + "px nimbus sans";
+  context.fillStyle = "white";
+  context.textAlign = "center";
+  context.fillText(message, width / 2, height / 2 + (0.05 * height));
+}
+
 export function drawScene(
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>,
   gameState: GameState | undefined
@@ -160,6 +172,7 @@ export function drawScene(
   const currentState = gameState.currentState;
   if (currentState == "Queue" || currentState =='Disconnection') {
     drawMessage(context, width, height, gameState.stateMessage);
+    drawMessage2(context, width, height, gameState.stateMessage2);
   } else if (currentState == "Playing") {
     if (gameState.timer > 0) {
       drawMessage(context, width, height, gameState.stateMessage);
@@ -169,6 +182,7 @@ export function drawScene(
     drawCurrentGameState(context, width, height, gameState);
   } else if (currentState == "End" || currentState == "PrivateQueue" || currentState =="WaitingForInvited") {
     drawMessage(context, width, height, gameState.stateMessage);
+    drawMessage2(context, width, height, gameState.stateMessage2);
     drawField(context, width, height);
     drawCurrentGameState(context, width, height, gameState);
   }

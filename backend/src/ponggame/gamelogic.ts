@@ -262,6 +262,7 @@ export class GameLogic {
           gameState.currentState = 'End';
           gameState.winner = 2;
           gameState.stateMessage = `${(gameState.player1profilename).toUpperCase()} LOST!!!`;
+          gameState.stateMessage2 = "Press r to go back to selection screen";
           return gameState;
         }
       } else if (gameState.ball_x > 1) {
@@ -270,6 +271,7 @@ export class GameLogic {
           gameState.currentState = 'End';
           gameState.winner = 1;
           gameState.stateMessage = `${(gameState.player2profilename).toUpperCase()} YOU LOST!!!`;
+          gameState.stateMessage2 = "Press r to go back to selection screen";
           return gameState;
         }
       }

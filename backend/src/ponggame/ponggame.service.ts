@@ -53,8 +53,8 @@ export class PonggameService {
       }
     } 
     else if (match.currentState == "Queue") {
-      match.currentState = "Disconnection";
-      match.stateMessage = "Opponent left before the game started";
+      match.currentState = "Reset";
+      match.stateMessage = "";
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
       else if (match.gameType == "Custom") this._queueCustomMatchId = "";
     }
@@ -68,9 +68,24 @@ export class PonggameService {
     this._userMatch.delete(userId);
   }
 
+  playerLeavesQueue(userId: string) : boolean{
+    console.log("calling playerLeavesQueue");
+    const matchId = this._userMatch.get(userId);
+    if (matchId == undefined) return true;
+    const match = this._currentMatches.get(matchId);
+
+    if (match == undefined || match.currentState != "Queue") return false;
+    match.currentState = "Reset";
+    match.stateMessage = "";
+    if (match.gameType == "Default") this._queueDefaultMatchId = "";
+    else if (match.gameType == "Custom") this._queueCustomMatchId = "";
+    this._userMatch.delete(userId);
+    return true;
+  }
+
   cleanUpMatches() {
     this._currentMatches.forEach((gameState: GameState, matchId: string) => {
-      if (gameState.currentState == "End" || gameState.currentState == "Disconnection") {
+      if (gameState.currentState == "End" || gameState.currentState == "Disconnection" || gameState.currentState == "Reset") {
         console.log(`deleting ${matchId}`);
         this._currentMatches.delete(matchId);
       }
@@ -134,8 +149,7 @@ export class PonggameService {
     newMatch.roomName = currentMatchId;
     newMatch.currentState = "Queue";
     newMatch.stateMessage = "Waiting for opponent...";
-    // const player1 = await this.userRepository.findOne({ where: { loginName: userId } });
-    // newMatch.player1loginname = player1.profileName;
+    newMatch.stateMessage2= "Press r to go back to selection screen";
     newMatch.player1profilename = profilename;
     newMatch.player1loginname = userId;
     this._currentMatches.set(currentMatchId, newMatch);
@@ -175,6 +189,7 @@ export class PonggameService {
       gameType: matchType,
       currentState: "Selection",
       stateMessage: "Waiting for opponent...",
+      stateMessage2: "Press r to go back to selection screen",
       timer: 100,
       winner: 0,
       ball_speed: ball_speed,

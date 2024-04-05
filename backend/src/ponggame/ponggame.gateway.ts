@@ -57,7 +57,8 @@ export class PonggameGateway
         ponggameService.updateCurrentMatches();
         const currentGames = ponggameService.getCurrentMatches();
         currentGames.forEach((gamestate: GameState) => {
-          this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
+          if( gamestate.currentState != "Reset")
+            this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
           if (gamestate.currentState == "End"){
               this.processMatch(gamestate); //send the match data to the database
               this.server.socketsLeave(gamestate.roomName);
@@ -65,6 +66,13 @@ export class PonggameGateway
               this.ponggameService.removeUserIdMatch(gamestate.player2loginname);
           }
           else if( gamestate.currentState == "Disconnection"){
+              this.server.socketsLeave(gamestate.roomName);
+              this.ponggameService.removeUserIdMatch(gamestate.player1loginname);
+              this.ponggameService.removeUserIdMatch(gamestate.player2loginname);
+          }
+          else if (gamestate.currentState == "Reset")
+          {
+              //this.server.to(gamestate.roomName).emit('stateUpdate', ponggameService.getInitMatch("Default"));
               this.server.socketsLeave(gamestate.roomName);
               this.ponggameService.removeUserIdMatch(gamestate.player1loginname);
               this.ponggameService.removeUserIdMatch(gamestate.player2loginname);
@@ -133,8 +141,6 @@ export class PonggameGateway
         throw new UnauthorizedException('No cookie found in the header, disconnecting');
       }
     } catch (error) {
-      // this.logger.error("something went wrong verifying the token");
-      // this.logger.error("Disconnecting the client socket");
       this.logger.error('[handleConnection] error: ' + error);
       client.emit("exceptionHandleConnection", new UnauthorizedException(error));
       client.disconnect();
@@ -149,6 +155,14 @@ export class PonggameGateway
     this.logger.log(`User ${this._socketIdUserId.get(client.id)} left the game page`);
   }
 
+  @SubscribeMessage('resetgamepage')
+  resetGamePage(@ConnectedSocket() client: Socket){
+    const shouldEmit = this.ponggameService.playerLeavesQueue(
+      this._socketIdUserId.get(client.id));
+    console.log("resetting gamepage");
+    if (shouldEmit)
+      client.emit("stateUpdate",this.ponggameService.getInitMatch("Default"));
+  }
   @SubscribeMessage('gamepage')
   gamepage(@ConnectedSocket() client: Socket){
     client.data.gamepage = true;
@@ -190,7 +204,8 @@ console.log(`getting player profile name: ${player.profileImage}`);
       this.ponggameService.updateUserInput(matchId, userId, input);
     }
   }
-
+ 
+  
   @SubscribeMessage('requestUserStatus')
   requestUserStatus(@MessageBody() userId: string): string {
     if (!this._userIdSocketId.has(userId))
