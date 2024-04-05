@@ -112,6 +112,10 @@ export class PonggameService {
 
   //get matchId if the user is already in a match else return emptystring
   getMatchId(userId: string): string {
+    this._userMatch.forEach((matchid, user) =>{
+      console.log(`${matchid} player ${user}`);
+    }
+    )
     if (this._userMatch.has(userId)) {
       return this._userMatch.get(userId);
     }
