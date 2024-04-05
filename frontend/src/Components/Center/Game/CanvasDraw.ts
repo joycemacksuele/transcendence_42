@@ -142,7 +142,7 @@ function drawMessage(
   context.fillText(message, width / 2, height / 2);
 }
 
-function drawMessage2(
+function drawMessageSubline(
   context: CanvasRenderingContext2D,
   width: number,
   height: number,
@@ -172,7 +172,7 @@ export function drawScene(
   const currentState = gameState.currentState;
   if (currentState == "Queue" || currentState =='Disconnection') {
     drawMessage(context, width, height, gameState.stateMessage);
-    drawMessage2(context, width, height, gameState.stateMessage2);
+    drawMessageSubline(context, width, height, gameState.stateMessage2);
   } else if (currentState == "Playing") {
     if (gameState.timer > 0) {
       drawMessage(context, width, height, gameState.stateMessage);
@@ -182,7 +182,7 @@ export function drawScene(
     drawCurrentGameState(context, width, height, gameState);
   } else if (currentState == "End" || currentState == "PrivateQueue" || currentState =="WaitingForInvited") {
     drawMessage(context, width, height, gameState.stateMessage);
-    drawMessage2(context, width, height, gameState.stateMessage2);
+    drawMessageSubline(context, width, height, gameState.stateMessage2);
     drawField(context, width, height);
     drawCurrentGameState(context, width, height, gameState);
   }
