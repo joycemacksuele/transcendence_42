@@ -288,16 +288,24 @@ export class ChatService {
     try {
       await this.chatRepository.getOneChat(chatId).then(async (foundChatEntityToLeave: NewChatEntity) => {
         const userToDelete = await this.userService.getUserByLoginName(intraName);
+
         // Now we have the entity to update the users' array
-        await this.chatRepository.deleteUserFromChat(foundChatEntityToLeave, userToDelete);
+        return await this.chatRepository.deleteUserFromChat(foundChatEntityToLeave, userToDelete).then(async (canProceed) => {
+          if (canProceed) {
 
-        // Now we can delete this user from the UsersCanChat entity
-        await this.usersCanChatRepository.deleteUserFromUsersCanChatEntity(foundChatEntityToLeave, userToDelete);
+            // Now we can delete this user as the creator if they are the creator
+            await this.chatRepository.deleteCreatorFromChat(foundChatEntityToLeave, userToDelete);
 
-        // Now we can delete this user from the Admin list
-        await this.chatRepository.deleteAdminFromChat(foundChatEntityToLeave, userToDelete);
+            // Now we can delete this user from the UsersCanChat entity
+            await this.usersCanChatRepository.deleteUserFromUsersCanChatEntity(foundChatEntityToLeave, userToDelete);
 
-        return true;
+            // Now we can delete this user from the Admin list
+            await this.chatRepository.deleteAdminFromChat(foundChatEntityToLeave, userToDelete);
+
+            return true;
+          }
+          return false;
+        });
       });
     } catch (err) {
       this.logger.error('[leaveChat] Could not delete user from chat exception: ' + err);
