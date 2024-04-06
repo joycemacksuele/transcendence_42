@@ -44,7 +44,7 @@ const MainComponent = () => {
   // jaka
   // const handleClickChat = (chat: ResponseNewChatDto | null, activeContentLeft: string) => {
   const handleClickChat = (chat: ResponseNewChatDto | undefined) => {
-    console.log('Handle Click Chat');
+    console.log('[Main] Handle Click Chat');
     setChatClicked(chat);
     if (chat != undefined) {
         if (activeContentLeft === 'recent')
@@ -52,7 +52,8 @@ const MainComponent = () => {
         else if (activeContentLeft === 'groups')
           setActiveId_Channels(chat.id);
     }
-    console.log('-- -- - - - -- - - activeChatID: ' + activeId_Chats + ', activeChannelID: ' + activeId_Channels);
+    console.log('         activeID_Chats: ' + activeId_Chats + ', activeChannelID: ' + activeId_Channels);
+    console.log('             activeChat: ' + chatClicked?.name);
   }
 
 
@@ -170,7 +171,7 @@ const MainComponent = () => {
     }
   }, [chatClicked]);
 
-  const handleClick = (content: null | string) => {
+  const handleClick = (content: string | null) => {
     setActiveContentLeft(content || "");
     setActiveButton(content || "");
     console.log('[Main] Clicked navigation - value in chatClicked: ' + chatClicked?.name + ', Content: ' + content);
@@ -221,21 +222,23 @@ const MainComponent = () => {
           <Row className="left-col-body justify-content-center flex-grow-1">
             {activeContentLeft === "recent" && (
               <MyChats setChatClicked={handleClickChat}
-                       activeChatId={activeId_Chats}      // jaka
+                       activeId_Chats={activeId_Chats}      // jaka
                        setMessages={setMessages}
               />
             //   <MyChats setChatClicked={setChatClicked} />
             )}
             {activeContentLeft === "groups" && (
               <Channels setChatClicked={handleClickChat}
-                        activeChatId={activeId_Channels}     // jaka
+                        activeId_Channels={activeId_Channels}     // jaka
                         setMessages={setMessages}
               />
             )}
           </Row>
           {/* NewChat Button - at the bottom, visible only wheb Group is active */}
           <Row className="left-col-bottom-buttons justify-content-center">
-            {activeContentLeft === "groups" && <NewGroupButton />}
+            {activeContentLeft === "groups" && <NewGroupButton setChatClicked={setChatClicked}
+                                                               setActiveId_Chats={setActiveId_Chats}
+                                                               handleClick={handleClick}/>}
           </Row>
         </Col>
 
@@ -313,9 +316,12 @@ const MainComponent = () => {
                     chatClicked={chatClicked}
                     handleClick={handleClick}
                     setChatClicked={setChatClicked}
-                    // setActiveButton={setActiveButton}
-                    setActiveContentLeft={setActiveContentLeft}
+                    // setActiveContentLeft={setActiveContentLeft}
                     setActiveId_Chats={setActiveId_Chats}
+                    setActiveId_Channels={setActiveId_Channels}
+                    // setActiveButton={setActiveButton}
+                    // activeId_Chats={activeId_Chats}
+                    // activeId_Channels={activeId_Channels}
                   />
                 )}
               </Row>

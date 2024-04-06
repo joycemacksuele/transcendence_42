@@ -4,7 +4,7 @@ import { Col, Image, Row, Button, Modal } from "react-bootstrap";
 import handleClickBlocking from "./blockUser.ts";
 import handleClickFollowing from "./followUser.ts";
 import getBlockedIds from "./getBlockedIds.ts";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { ChatType, RequestNewChatDto } from "../../Chat/Utils/ChatUtils.tsx";
 import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
 import MatchHistory from "../SubComponents/MatchHistory.tsx";
@@ -51,8 +51,8 @@ const DisplayOneUser: React.FC<{
   const isUserPlaying = GetPlayingStatus(loginName);
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
-
   const isUserOnline = useOnlineStatus(loginName);
+  const navigate = useNavigate();
 
   // if the current user is displayed, do not show the buttons
   useEffect(() => {
@@ -189,6 +189,10 @@ const DisplayOneUser: React.FC<{
       });
     }
     reconnectChatSocketIfNecessary();
+    console.log("JAKA USERdata.profileName: ", userData.profileName);
+    navigate('/main_page/chat', { 
+      state: { startedPrivateChatName: userData.profileName }
+    });
   };
 
   return (
@@ -254,15 +258,18 @@ const DisplayOneUser: React.FC<{
 
             <Row className="mb-5 user-buttons" style={buttonsVisible}>
               <Col>
-                <NavLink
-                  // eventKey="users"
-                  // onClick={ () => handleClick('profile') }
+                {/* <NavLink
                   to="/main_page/chat"
-                  // className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
                   onClick={handleClickPrivateChat}
                 >
                   <Button className="button_default">Private Chat</Button>
-                </NavLink>
+                </NavLink> */}
+
+                {/* JAKA: Changed the NavLink into a Button, to be able to send the profilename when navigating to /MyChats */}
+                <Button onClick={handleClickPrivateChat} className="button_default">Private Chat</Button>
+
+
+
               </Col>
               <Col>
                 {/* onclick EXPECTS A FUNCTION WITH AN ARGUMENT OF TYPE MouseEvent<HTMLButtonElement */}

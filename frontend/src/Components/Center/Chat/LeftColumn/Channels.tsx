@@ -12,12 +12,12 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 // Jaka
 type PropsHeader = {
     setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
-    activeChatId: number;
+    activeId_Channels: number;
     setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
 
-const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, setMessages }) => {
+const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeId_Channels, setMessages }) => {
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
   const [intraName, setIntraName] = useState<string | null>(null);
 
@@ -77,19 +77,23 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, setMess
 
   // jaka: To remember which Chat is selected in MyChats, when going from MyChats to Channels and back
     useEffect(() => {
-      console.log('jaka: setChatClicked() -> Channels')
+      console.log('jaka: Channels: setChatClicked():  ' + JSON.stringify(chatInfo));
       const activeChat:ResponseNewChatDto | undefined = 
           chatInfo.find((chat) =>
-              chat.id === activeChatId
+              chat.id === activeId_Channels
           );
       //console.log('            activeChat: ' + JSON.stringify(activeChat));
       // if (activeChat) {
           setChatClicked(activeChat);
       // }
-      if (activeChatId === -1) {
+      if (activeId_Channels === -1) {
         setMessages(null);
       }
-  }, [chatInfo, activeChatId]);
+  }, [chatInfo, activeId_Channels]);
+
+  // if (activeChatId === -1) {
+  //   setMessages(null);
+  // }
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
@@ -115,7 +119,7 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, setMess
                     <ListGroup.Item
                       as="li"
                       className={`chat-item
-                                 ${chat.id === activeChatId ? 'active' : ''}
+                                 ${chat.id === activeId_Channels ? 'active' : ''}
                                  justify-content-between align-items-start`}
                       variant="light"
                       onClick={() => setChatClicked(chat)}
