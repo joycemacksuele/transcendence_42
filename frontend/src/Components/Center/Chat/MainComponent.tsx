@@ -149,6 +149,7 @@ const MainComponent = () => {
       alertKey = 0;
       setShowExceptionModal(false);
       setErrorException([]);
+      chatSocket.removeAllListeners("inviteMessage");
     };
   }, []);
 

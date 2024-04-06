@@ -158,7 +158,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                 else{
                   console.log("player is online");
                   chatSocket.emit('invitePlayerToGame', invitedUser);
-                  navigate("/main_page/game");
+                  //navigate("/main_page/game");
                     // chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:'Default'},
                     //     () => {
                     //         chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
