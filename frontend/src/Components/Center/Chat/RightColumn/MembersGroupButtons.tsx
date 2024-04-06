@@ -20,17 +20,24 @@ type PropsHeader = {
     chatClicked: ResponseNewChatDto | undefined;
     handleClick: (content: string | null) => void;
     setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
-    // setActiveButton: (activeButton: string) => void;
-    setActiveContentLeft: (activeContentLeft: string) => void;
+    // setActiveContentLeft: (activeContentLeft: string) => void;
     setActiveId_Chats: (content: number) => void;
+    setActiveId_Channels: (content: number) => void;
+    // setActiveButton: (activeButton: string) => void;
+    // activeId_Chats: number;
+    // activeId_Channels: number;
 };
 
 const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, 
                                                       handleClick,      // jaka: maybe not all of these are needed, to test
                                                       setChatClicked,
+                                                    //   setActiveContentLeft,
+                                                      setActiveId_Chats,
+                                                      setActiveId_Channels,
                                                     //   setActiveButton,
-                                                      setActiveContentLeft,
-                                                      setActiveId_Chats
+                                                    //   activeId_Chats,
+                                                    //   activeId_Channels,
+
     }) => {
     if (chatClicked) {
         console.log("[MembersGroupButtons] chatClicked: ", chatClicked.name);
@@ -161,19 +168,23 @@ const joinGroupChat = () => {
     setChatPassword(null);
 
 
-    // Jaka: on Join it should jump fro Channels to MyChats, show chats content in middle col, and add user to right col
-    setActiveContentLeft('recent');
+    // Jaka: on JoinGroup it should jump from Channels to MyChats, show messages in middle col, and add user to right col
+    //          Also, set selected Chat, and deselect it in Channels
+    // setActiveContentLeft('recent');
+    // setActiveButton('recent');
     handleClick('recent');
-    if (chatClicked?.id)
+    if (chatClicked?.id) {
         setActiveId_Chats(chatClicked.id);
+        setActiveId_Channels(-1);
+    }
     // setActiveButton('recent');
 };
 
+// Jaka: When leaving a Chat, no Chat should be selected on MyChats
 const leaveGroupChat = () => {
     console.log("[MembersGroupButtons] Current user will leave the chat [", chatClicked?.name, "] id [", chatClicked?.id, "]");
     chatSocket.emit("leaveChat", { chatId: chatClicked?.id });
     setChatClicked(undefined);
-
     setActiveId_Chats(-1);
 };
 

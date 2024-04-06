@@ -9,8 +9,21 @@ import Stack from 'react-bootstrap/Stack';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { ResponseNewChatDto } from '../Utils/ChatUtils.tsx';
 
-const NewGroupButton = () => {
+// Jaka
+type PropsHeader = {
+    setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
+    setActiveId_Chats: (content: number) => void;
+    handleClick: (content: string | null) => void;
+    // setMessages: (messages: ResponseNewChatDto | null) => void;
+};
+
+// Jaka: To set the newly created group as the seleceted chat in MyChats, it needs to first create the chat, then 
+//         get the ID of the new chat and then set the activeChat and the activeChatId
+
+// const NewGroupButton = () => {
+const NewGroupButton: React.FC<PropsHeader> = ({ setChatClicked, setActiveId_Chats, handleClick }) => {
 
     let alertKey = 0;
     const [errorException, setErrorException] = useState<string[]>([]);
@@ -34,6 +47,22 @@ const NewGroupButton = () => {
         } else {
             setShowNewChatModal(false);
         }
+
+        // JAKA: Set the activeChat and activeChatID
+        //      get all chats
+        //      find the one matching new name
+        //      set the ActiveChat and the activeChatId
+        chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
+            const newChat: ResponseNewChatDto | undefined = allChats.find(
+                (chat) => chat.name === chatName
+            );
+            setChatClicked(newChat);
+            if (newChat?.id)
+                setActiveId_Chats(newChat.id);
+                // handleClick('recent');   // !!! This does not work properly, both MyChats and Channels become selected, the new Chat is not always shown ...
+            console.log('[NewGroupsButton] newChat": ' + JSON.stringify(newChat));
+        });
+
 
         alertKey = 0;
         setErrorException([]);

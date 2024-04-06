@@ -22,7 +22,7 @@ import Stack from "react-bootstrap/Stack";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
-import { CurrentUserContext, CurrUserData } from "../../Profile/utils/contextCurrentUser.tsx";
+// import { CurrentUserContext, CurrUserData } from "../../Profile/utils/contextCurrentUser.tsx";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | undefined;
@@ -40,19 +40,21 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages })
   ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
   // const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved to MainComponent
-  const [blockedids, setBlockedIds] = useState(null);
+  const [blockedIds, setBlockedIds] = useState<number[]>();
   const [message, setMessage] = useState("");
   const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] =
     useState("Write a message...");
-  const currUserData = useContext(CurrentUserContext) as CurrUserData;
+  //const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
   useEffect(() => {
     async function get_blocked_users() {
       try {
         const ret = await axiosInstance.get("/blockship/get-blocked-ids");
-        setBlockedIds(ret);
-        console.log("Blocked ids:", blockedids.data);
-      } catch (e) {}
+        setBlockedIds(ret.data);
+        console.log("Blocked ids:", blockedIds);
+      } catch (err) {
+        console.error('Error fetching the blocked IDs: ', err);
+      }
     }
     get_blocked_users();
     if (chatClicked) {
@@ -125,8 +127,8 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages })
               (message_: ResponseMessageChatDto, i: number) => (
                   <ListGroup.Item className="message-item" key={i}>
                     <div className="fw-bold">{message_.creator}</div>
-                    {!blockedids ||
-                    blockedids.data.indexOf(message_.creator_id) == -1
+                    {!blockedIds ||
+                    blockedIds.indexOf(message_.creator_id) == -1 // TODO: creator_id does not exist on message, should probably be added at the time when message is created
                       ? message_.message
                       : "This message is not displayed because you blocked the sender"}
                   </ListGroup.Item>

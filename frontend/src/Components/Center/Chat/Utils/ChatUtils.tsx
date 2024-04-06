@@ -8,6 +8,7 @@ export interface ResponseMessageChatDto {
     id: number;
     message: string;
     creator: string;
+    creator_id: number; // added jaka
 }
 
 // This is mapped to response-new-chat.dto.ts on the backend
