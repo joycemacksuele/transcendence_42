@@ -61,7 +61,7 @@ export class ChatGateway
       public readonly userService: UserService,
       public readonly authService : AuthService
   ) {
-    this.logger.log('Constructor');
+    // this.logger.log('Constructor');
   }
 
   @WebSocketServer()
@@ -69,7 +69,7 @@ export class ChatGateway
 
   async handleConnection(clientSocket: Socket) {
     try {
-      this.logger.log(`[handleConnection] chat client id ${clientSocket.id} connected`);
+    //   this.logger.log(`[handleConnection] chat client id ${clientSocket.id} connected`);
 
       // this.logger.log('[handleConnection] header: ', clientSocket.handshake.headers);
       if (clientSocket.handshake.headers.cookie) {
@@ -89,7 +89,7 @@ export class ChatGateway
 
           try {
             const payload = await this.authService.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
-            this.logger.log('[handleConnection] payload.username: ' + payload.username);
+            // this.logger.log('[handleConnection] payload.username: ' + payload.username);
             clientSocket.data.user = payload.username;
           } catch {
             throw new UnauthorizedException('Invalid token');
@@ -109,19 +109,19 @@ export class ChatGateway
   }
 
   handleDisconnect(clientSocket: Socket) {
-    this.logger.log(`[handleConnection] chat client id ${clientSocket.id} disconnected`);
+    // this.logger.log(`[handleConnection] chat client id ${clientSocket.id} disconnected`);
   }
 
   @SubscribeMessage('getChats')
   async getChats(@ConnectedSocket() clientSocket: Socket) {
-    this.logger.log('getChats -> clientSocket.id: ' + clientSocket.id);
+    // this.logger.log('getChats -> clientSocket.id: ' + clientSocket.id);
 
     try {
       this.chatService.getAllChats().then( (allChats) => {
         // If we could get the whole table from the database, emit it to the frontend
         // this.logger.log("Henk", allChats);
         clientSocket.emit("getChats", allChats);
-        this.logger.log('getChats -> all chats were emitted to the frontend');
+        // this.logger.log('getChats -> all chats were emitted to the frontend');
       });
     } catch (err) {
       this.logger.error('[getChats] error: ', err);

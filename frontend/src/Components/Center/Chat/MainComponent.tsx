@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate} from "react-router-dom";
 import MyChats from "./LeftColumn/MyChats.tsx";
 import Channels from "./LeftColumn/Channels.tsx";
 import NewGroupButton from "./LeftColumn/NewGroupButton.tsx";
@@ -30,6 +31,7 @@ import { Alert } from "react-bootstrap";
 const MainComponent = () => {
   const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | undefined>();
   const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved from Messages
+  const navigate = useNavigate();
   
   if (chatClicked) {
     console.log("[MainComponent] chatClicked: ", chatClicked.name );
@@ -74,7 +76,8 @@ const MainComponent = () => {
   const acceptInvite = () => {
     setShow(false);
     console.log("accepted");
-    window.location.replace("/main_page/game");
+    navigate("/main_page/game");
+    // window.location.replace("/main_page/game");
   };
 
   ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
@@ -97,13 +100,6 @@ const MainComponent = () => {
         );
       });
 
-      //invite button
-      chatSocket.on("inviteMessage", (message: string) => {
-        console.log(`received string from backend :${message}`);
-        setInvitee(message);
-        setShow(true);
-      });
-      //end invite button
 
       chatSocket.on("disconnect", (reason) => {
         if (reason === "io server disconnect") {
@@ -121,6 +117,14 @@ const MainComponent = () => {
         chatSocket.id
       );
     }
+    
+    //invite button
+    chatSocket.on("inviteMessage", (message: string) => {
+    console.log(`received string from backend :${message}`);
+    setInvitee(message);
+    setShow(true);
+    });
+    //end invite button
 
     chatSocket.on("exceptionDtoValidation", (error: string) => {
       if (error.length > 0) {
@@ -157,8 +161,6 @@ const MainComponent = () => {
   // recent or groups
   const [activeContentLeft, setActiveContentLeft] = useState<string>("recent");
   const [activeButton, setActiveButton] = useState("recent" || "");
-
-
 
   // Jaka: When Leaving/Deleting Group, the messages should dissapear,
   //        and Chat/Channel is de-selected  
@@ -264,7 +266,7 @@ const MainComponent = () => {
               activeKey="members"
               variant="underline"
               fill
-              // onSelect={(k) => handleClick(k)}
+              // onSelect={(k) => ha ndleClick(k)}
             >
               <Nav.Item>
                 {chatClicked?.type != ChatType.PRIVATE ? (
