@@ -91,8 +91,9 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
         console.error("Error fetching isFirstLogin status", error);
       }
     };
-    greetingIfFirstLogin();
+    greetingIfFirstLogin(); 
 
+    chatSocket.emit('identify');
     //invite button
     chatSocket.on("inviteMessage", (message: string) => {
         console.log(`received string from backend :${message}`);
