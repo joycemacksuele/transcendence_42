@@ -32,8 +32,14 @@ function GameSelection(props: { socket: Socket}) {
           </Button>
 
           <p></p>
+          <p><b>Classic</b></p>
           <p>
-            Press <b>W</b> and <b>S</b> for paddle movement
+            Press <b>W</b> (up) and <b>S</b> (down) for paddle movement
+          </p>
+          <p><b>Custom</b></p>
+          <p>
+            Press <b>W</b> (down) and <b>S</b> (up) for paddle movement<br/>
+            Shorter paddles
           </p>
           <p>First one to 3 wins</p>
         </div>

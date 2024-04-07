@@ -38,7 +38,7 @@ const MyStatistics: React.FC = () => {
           <Row className="m-2">Won: {currUser?.gamesWon}</Row>
           <Row className="m-2">Lost: {currUser?.gamesLost}</Row>
           <Row className="m-2">Games Played: {currUser?.gamesPlayed}</Row>
-          <Row className="m-2">Achivements: {currUser?.achievements}</Row>
+          <Row className="m-2">Achievements: {currUser?.achievements}</Row>
         </Col>
       )}
     </>
