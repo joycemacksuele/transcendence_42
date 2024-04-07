@@ -32,7 +32,6 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.getOne();
 
 			if (usersCanChatRow == undefined) {
-				// this.logger.log("[JOYCE inside if, will try to create/save a new usersCanChatEntity");
 				const usersCanChatEntity = new UsersCanChatEntity();
 				usersCanChatEntity.user = user;
 				usersCanChatEntity.chat = chatEntity;
@@ -83,6 +82,7 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 			if (usersCanChatRow != undefined) {
 				// this.logger.log("[deleteUserFromUsersCanChatEntity] usersCanChatRow: " + usersCanChatRow);
 				await this.delete(usersCanChatRow.id);
+				// await this.delete(usersCanChatRow);
 				return usersCanChatRow;
 			}
 		} catch (err) {
@@ -108,8 +108,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			return await this
 				.createQueryBuilder("new_chat")
 				.where('new_chat.id = :id', {id: chatId})
+				.leftJoinAndSelect("new_chat.creator", "creator")
 				.leftJoinAndSelect("new_chat.users", "user")
 				.leftJoinAndSelect("new_chat.admins", "admin")
+				.leftJoinAndSelect("new_chat.bannedUsers", "bannedUsers")
 				.getOne();
 		} catch (err) {
 			throw new Error('[getOneChat] err: ' + err);
@@ -126,14 +128,16 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		// this.logger.log('[getChat] NewChat type: ' + chat.type);
 
 		// ----------- get chat creator
-		const chatCreator = await this
+		await this
 			.createQueryBuilder("new_chat")
 			.select('user.loginName as "creator"')
 			.where('new_chat.id = :id', {id: chat.id})
 			.leftJoin("new_chat.creator","user")
-			.getRawOne();
-		responseDto.creator = chatCreator.creator;
-		// this.logger.log('[getChat] NewChat creator: ' + chatCreator.creator);
+			.getRawOne()
+			.then((chatCreator) => {
+				responseDto.creator = chatCreator.creator;
+				this.logger.log('[getChat] NewChat creator: ' + chatCreator.creator);
+			});
 
 		// ----------- get chat users list - intra name
 		await this
@@ -262,8 +266,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				.select('new_chat.id as "id", new_chat.name as "name", new_chat.type as "type", new_chat.password as "password", new_chat.creatorId as "creatorId"')
 				.where('new_chat.id = :id', {id: chatId})
 				.getRawOne();
-			// return this.getOneRowAndSaveAsDTO(chat);
-			return await this.getOneRowAndSaveAsDTO(chat); // jaka
+			return await this.getOneRowAndSaveAsDTO(chat);
 		} catch (err) {
 			throw new Error('[getOneChatDto] err: ' + err);
 		}
@@ -285,41 +288,80 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		}
 	}
 
+	private async getCreatorIdFromChat(chatId: number) : Promise<number> {
+		try {
+			return await this
+				.createQueryBuilder("new_chat")
+				.select('new_chat.creatorId as "creatorId"')
+				.where('new_chat.id = :id', {id: chatId})
+				.getRawOne()
+				.then((chat) => {
+					if (chat && chat.creatorId) {
+						return chat.creatorId;
+					}
+					return -1;
+				});
+		} catch (err) {
+			throw new Error('[getCreatorIdFromChat] err: ' + err);
+		}
+	}
+
+	public async deleteCreatorFromChat(foundChatEntityToLeave: NewChatEntity, userToDelete: UserEntity) {
+		try {
+			// Delete the user from the creatorId if sh/e is the creator
+			await this.getCreatorIdFromChat(foundChatEntityToLeave.id).then((creatorIdFromChat) => {
+				if (userToDelete.id == creatorIdFromChat) {
+
+					foundChatEntityToLeave.creator = null;
+					this.save(foundChatEntityToLeave).then(() => {
+						this.logger.log("[deleteCreatorFromChat] User " + creatorIdFromChat + " is not a creator anymore");
+					}).catch((error) => {
+						throw new Error('[deleteCreatorFromChat] err: ' + error);
+					});
+				}
+			});
+			return true
+		} catch (err) {
+			throw new Error('[deleteCreatorFromChat] err: ' + err);
+		}
+	}
+
 	public async deleteUserFromChat(foundChatEntityToLeave: NewChatEntity, userToDelete: UserEntity) {
 		try {
-			// this.logger.log("[deleteUserFromChat] foundChatEntityToLeave: " + foundChatEntityToLeave);
-			if (!foundChatEntityToLeave.users.toString()) {
+			if (!foundChatEntityToLeave.users || !foundChatEntityToLeave.users.toString()) {// I remember checking the size was still true for an empty array
 				// TODO DELETE FROM ChatMessageEntity is working?
 				await this.delete(foundChatEntityToLeave.id);
-				// this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". I was deleted!");
+				this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". It was deleted!");
 				return false;
 			} else {
 				// NewChat has users on it, try to see if the user to be deleted is in the array of users
-				const index = foundChatEntityToLeave.users.findIndex(user=> user.id === userToDelete.id)
+				const index = foundChatEntityToLeave.users.findIndex(user=> user.id == userToDelete.id)
 				if (index !== -1) {
 					// If user to be deleted was found in the array of users, delete s/he from it and save the entity
 					foundChatEntityToLeave.users.splice(index, 1);
 
-					// Also delete the user form the creatorId if sh/e is the creator
-					if (userToDelete.id == foundChatEntityToLeave.creator.id) {
-						foundChatEntityToLeave.creator = new UserEntity();
-					}
-
-					await this
-						.manager
-						.save(foundChatEntityToLeave);
-
-					// After deleting the correct user, if we don't have any other left, we can delete the chat
-					if (!foundChatEntityToLeave.users.toString()) {
+					// if we don't have any user left, we can delete the chat
+					if (!foundChatEntityToLeave.users || !foundChatEntityToLeave.users.toString()) {
 						// TODO DELETE FROM ChatMessageEntity is working?
-						await this.delete(foundChatEntityToLeave.id);
+						return await this.delete(foundChatEntityToLeave.id).then(() => {
+							this.logger.log("[deleteUserFromChat] Chat " + foundChatEntityToLeave.name + " has no users, so it was deleted");
+							return false;
+						}).catch((error) => {
+							throw new Error('[deleteUserFromChat] err: ' + error);
+						});
+					} else {
+						// Otherwise we can just save the entity with the updated users array
+						await this
+							.manager
+							.save(foundChatEntityToLeave);
+						return true;
 					}
+
 				} else {
 					// this.logger.log("[deleteUserFromChat] User " + userToDelete.loginName + " is not a member of the chat " + foundChatEntityToLeave.name);
 					return false;
 				}
 			}
-			return true
 		} catch (err) {
 			throw new Error('[deleteUserFromChat] err: ' + err);
 		}
@@ -361,7 +403,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			let chatAdmins = await this
 				.createQueryBuilder("new_chat")
 				.where('new_chat.id = :id', { id: chat.id })
-				.leftJoinAndSelect("new_chat.admins", "admin")// why admin and not user for the alias?
+				.leftJoinAndSelect("new_chat.admins", "admin")// TODO why admin and not user for the alias?
 				.getOne();
 			chatAdmins.admins.push(user);
 			await this
@@ -418,9 +460,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 
 	public async deleteAdminFromChat(foundEntityToEdit: NewChatEntity, userToDelete: UserEntity) {
 		try {
-			// this.logger.log("[deleteAdminFromChat] foundEntityToEdit: " + foundEntityToEdit);
-
-			// NewChat has users on it, try to see if the user to be deleted is in the array of users
+			// NewChat has users on it, try to see if the user to be deleted is in the array of admins
 			const index = foundEntityToEdit.admins.findIndex(user=> user.id === userToDelete.id)
 			if (index !== -1) {
 				// If user to be deleted was found in the array of admins, delete s/he from it and save the entity
@@ -428,16 +468,11 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				await this
 					.manager
 					.save(foundEntityToEdit);
+				return true
 			} else {
 				// this.logger.log("[deleteAdminFromChat] User " + userToDelete.loginName + " is not an admin of the chat " + foundEntityToEdit.name);
 				return false;
 			}
-
-			await this
-				.manager
-				.save(foundEntityToEdit);
-
-			return true
 		} catch (err) {
 			throw new Error('[deleteAdminFromChat] err: ' + err);
 		}
