@@ -24,6 +24,7 @@ function GameSelection(props: { socket: Socket}) {
   };
 
   useEffect(() => {
+    props.socket.emit('identify');
     //invite button
     props.socket.on("inviteMessage", (message: string) => {
       console.log(`received string from backend :${message}`);

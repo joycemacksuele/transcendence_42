@@ -28,7 +28,6 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
         );
       });
     }
-    chatSocket.emit('identify');
   },[]);
 
   useEffect(() => {

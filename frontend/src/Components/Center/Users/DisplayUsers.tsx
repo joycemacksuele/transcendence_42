@@ -88,6 +88,7 @@ const UsersList: React.FC = () => {
       // Set a flag in local storage to indicate dummies have been inserted
       localStorage.setItem("dummiesInserted", "true");
     }
+    chatSocket.emit('identify');
     //invite button
     chatSocket.on("inviteMessage", (message: string) => {
       console.log(`received string from backend :${message}`);

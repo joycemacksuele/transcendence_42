@@ -14,6 +14,7 @@ function Game() {
   useEffect(() => {
     
     chatSocket.on("stateUpdate", (newdata: GameState) => setGameState(newdata));
+    chatSocket.emit('identify');
     chatSocket.emit('gamepage');
 
     //add keylistener
