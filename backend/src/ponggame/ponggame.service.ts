@@ -239,7 +239,7 @@ console.log("currentstate :" + match.currentState);
         const matchId = this._userMatch.get(userId);
         const currentGamestate = this._currentMatches.get(matchId);
         currentGamestate.currentState= 'End';
-        currentGamestate.stateMessage= 'Player declined your invite';
+        currentGamestate.stateMessage= 'User declined your invite';
         this.removeUserIdMatch(userId);
     }
   }
