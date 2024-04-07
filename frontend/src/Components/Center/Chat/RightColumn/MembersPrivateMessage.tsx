@@ -1,6 +1,7 @@
 import { ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import React, { useEffect, useRef, useState } from "react";
-
+import { chatSocket } from "../Utils/ClientSocket.tsx";
+import { useNavigate} from "react-router-dom";
 // Importing bootstrap and other modules
 import Row from "react-bootstrap/Row";
 import Stack from "react-bootstrap/Stack";
@@ -22,6 +23,12 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [clickedMember, setClickedMember] = useState<string>();
 
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showOfflineModal, setShowOfflineModal] = useState(false);
+
+  const navigate = useNavigate();
+  const handleErrorClose = () => setShowErrorModal(false);
+  const handleOfflineShow = () => setShowOfflineModal(false);
   // jaka
   const memberImages = useFetchMemberImages(chatClicked?.usersIntraName);
 
@@ -54,7 +61,41 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
       chatClicked = null;
     };
   }, []);
-
+  ///////////////////////////////////////Invite Player
+    //function to invite player
+    function invitePlayer(invitedUser: string, type: string)
+    {   
+        console.log("invite button pressed" + `${invitedUser}`);
+        chatSocket?.emit('requestUserStatus', invitedUser, 
+            (response: string) => 
+            {
+                console.log(`response: ${response}`);
+                if(response === "ingame")
+                {
+                  setShowMemberModal(false);
+                  setShowErrorModal(true);
+                }
+                else if (response == 'offline'){
+                  setShowMemberModal(false);
+                  setShowOfflineModal(true);
+                }
+                else{
+                  console.log("player is online");
+                  chatSocket.emit('invitePlayerToGame', invitedUser);
+                  //navigate("/main_page/game");
+                    chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:type},
+                        () => {
+                            chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
+                                {
+                                    navigate("/main_page/game");
+                                }
+                            );
+                        }
+                    );
+                }
+            }
+        );
+    }
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
@@ -136,13 +177,20 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                         <Modal.Title>Member settings</Modal.Title>
                       </Modal.Header>
                       <Modal.Body>
-                        <Button
-                          href={import.meta.env.VITE_FRONTEND as string + "/main_page/game"}
-                          className="me-3"
-                          variant="success"
-                        >
-                          Invite to play pong!
-                        </Button>
+                      <Button
+                              className="me-4 mb-3"
+                              variant="success"
+                              onClick={()=>invitePlayer(clickedMember!, "Default")}
+                            >
+                              Invite to play pong (Classic)!
+                      </Button>
+                      <Button
+                              className="me-4 mb-3"
+                              variant="success"
+                              onClick={()=>invitePlayer(clickedMember!, "Custom")}
+                            >
+                              Invite to play pong (Custom)!
+                      </Button>
                         <Button
                           className="me-3"
                           href={import.meta.env.VITE_FRONTEND as string + "/main_page/users"}
@@ -153,6 +201,26 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                         </Button>
                       </Modal.Body>
                     </Modal>
+                    <Modal show={showErrorModal}>
+                            <Modal.Body>
+                                <p style={{textAlign:"center"}}>User is currently in a game.</p>
+                                <div style={{textAlign:"center"}}>
+                                <Button variant="primary" onClick={handleErrorClose}>
+                                Close
+                                </Button>
+                                </div>
+                            </Modal.Body>
+                        </Modal>
+                        <Modal show={showOfflineModal}>
+                            <Modal.Body>
+                                <p style={{textAlign:"center"}}>User currently is offline.</p>
+                                <div style={{textAlign:"center"}}>
+                                <Button variant="primary" onClick={handleOfflineShow}>
+                                    Close
+                                </Button>
+                                </div>
+                            </Modal.Body>
+                        </Modal>
                   </>
                 )}
               </ListGroup>

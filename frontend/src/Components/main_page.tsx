@@ -17,6 +17,17 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
   const [userData, setUserData] = useState<CurrUserData | null>(null);
 
   useEffect(() => {
+    if (!chatSocket.connected) {
+      chatSocket.connect();
+      chatSocket.on("connect", () => {
+        console.log(
+          "[Main_page] socket connected: ",
+          chatSocket.connected,
+          " -> socket id: ",
+          chatSocket.id
+        );
+      });
+    }
     chatSocket.emit('identify');
   },[]);
 
