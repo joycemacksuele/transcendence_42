@@ -163,6 +163,7 @@ export class PonggameGateway
     if (shouldEmit)
       client.emit("stateUpdate",this.ponggameService.getInitMatch("Default"));
   }
+
   @SubscribeMessage('gamepage')
   gamepage(@ConnectedSocket() client: Socket){
     client.data.gamepage = true;
@@ -226,18 +227,20 @@ console.log(`getting player profile name: ${player.profileImage}`);
   }
 
   @SubscribeMessage('createPrivateMatch')
-  createPrivateMatch(@MessageBody() data: {player1: string, player2: string, matchType: string}, @ConnectedSocket() client: Socket) : boolean{
-    this.ponggameService.createPrivateMatch(data.player1, data.player2, data.matchType);
+  async createPrivateMatch(@MessageBody() data: {player1: string, player2: string, matchType: string}, @ConnectedSocket() client: Socket) : Promise<boolean>{
+    const player1profile = (await this.userService.getUserByLoginName(data.player1)).profileName;
+    const player2profile = (await this.userService.getUserByLoginName(data.player2)).profileName;
+    this.ponggameService.createPrivateMatch(data.player1, data.player2,player1profile, player2profile,data.matchType);
     return true;
   }
 
   @SubscribeMessage('invitePlayerToGame')
-  invitePlayer(@MessageBody() userId: string, @ConnectedSocket() client: Socket): boolean{
+  async invitePlayer(@MessageBody() userId: string, @ConnectedSocket() client: Socket): Promise<boolean>{
     console.log(`invite for ${userId} received`);
-    const invitedSocketId = this._userIdSocketId.get(userId);
     const inviteeName = this._socketIdUserId.get(client.id);
-    console.log(`socketId ${invitedSocketId} inviteeName ${inviteeName}`);
-    this.server.to(invitedSocketId).emit("inviteMessage",inviteeName);
+    const profileName = (await this.userService.getUserByLoginName(inviteeName)).profileName;
+    const invitedSocketId = this._userIdSocketId.get(userId);
+    this.server.to(invitedSocketId).emit("inviteMessage",profileName);
     return true;
   }
 
@@ -268,6 +271,16 @@ console.log(`getting player profile name: ${player.profileImage}`);
     } catch(e){
         this.logger.log("Error: something went wrong with entering match in to the database");
     }
+  }
+
+  //TEST FUNCTION
+  @SubscribeMessage('printoutconnections')
+  printoutConnections(@ConnectedSocket() client: Socket)
+    {
+    console.log(">>>>>>>>>>>>Display connections<<<<<<<<<<<");
+    this._socketIdUserId.forEach((userId, socketId)=> {
+        console.log(`userId ${userId} socketId ${socketId}`);
+    });
   }
 
   // ADDED JAKA /////////////////////////////////////

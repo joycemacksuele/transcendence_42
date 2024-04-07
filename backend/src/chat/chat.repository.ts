@@ -148,10 +148,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				});
 				
 				if (usersIntraName.toString()) {
-					this.logger.log('[getChat] Users in the chat ' + chat.name + ',  (Intra Name): ' + usersIntraName.toString());
+					// this.logger.log('[getChat] Users in the chat ' + chat.name + ',  (Intra Name): ' + usersIntraName.toString());
 					responseDto.usersIntraName = usersIntraName;
 				} else {
-					this.logger.log('[getChat] No users in the chat: ' + chat.name);
+					// this.logger.log('[getChat] No users in the chat: ' + chat.name);
 				}
 			});
 

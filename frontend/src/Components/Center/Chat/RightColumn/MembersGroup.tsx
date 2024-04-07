@@ -35,9 +35,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showOfflineModal, setShowOfflineModal] = useState(false);
   
-  const navigate = useNavigate();
   const { setSelectedLoginName } = useSelectedUser();
-
+  
+  const navigate = useNavigate();
   const handleErrorClose = () => setShowErrorModal(false);
   const handleOfflineShow = () => setShowOfflineModal(false);
 
@@ -141,7 +141,6 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
     function invitePlayer(invitedUser: string)
     {   
         console.log("invite button pressed" + `${invitedUser}`);
-        console.log("test");
         chatSocket?.emit('requestUserStatus', invitedUser, 
             (response: string) => 
             {
@@ -159,16 +158,17 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                   console.log("player is online");
                   chatSocket.emit('invitePlayerToGame', invitedUser);
                   //navigate("/main_page/game");
-                    // chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:'Default'},
-                    //     () => {
-                    //         chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
-                    //             {
-                    //                 window.location.replace("/main_page/game");
-                    //                 console.log("moving to gamepage");
-                    //             }
-                    //         );
-                    //     }
-                    // );
+                    chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:'Default'},
+                        () => {
+                            chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
+                                {
+                                    navigate("/main_page/game");
+                                    // window.location.replace("/main_page/game");
+                                    console.log("moving to gamepage");
+                                }
+                            );
+                        }
+                    );
                 }
             }
         );

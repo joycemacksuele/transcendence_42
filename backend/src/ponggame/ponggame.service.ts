@@ -73,14 +73,17 @@ export class PonggameService {
     const matchId = this._userMatch.get(userId);
     if (matchId == undefined) return true;
     const match = this._currentMatches.get(matchId);
-
-    if (match == undefined || match.currentState != "Queue") return false;
-    match.currentState = "Reset";
-    match.stateMessage = "";
-    if (match.gameType == "Default") this._queueDefaultMatchId = "";
-    else if (match.gameType == "Custom") this._queueCustomMatchId = "";
-    this._userMatch.delete(userId);
-    return true;
+console.log("currentstate :" + match.currentState);
+    if (match.currentState == "Queue" || match.currentState == "WaitingForInvited")
+    { 
+        match.currentState = "Reset";
+        match.stateMessage = "";
+        if (match.gameType == "Default") this._queueDefaultMatchId = "";
+        else if (match.gameType == "Custom") this._queueCustomMatchId = "";
+        this._userMatch.delete(userId);
+        return true;
+    }
+    return false;
   }
 
   cleanUpMatches() {
@@ -163,14 +166,16 @@ export class PonggameService {
     return currentMatchId;
   }
 
-  createPrivateMatch(userId: string, userId2: string, matchType: string){
+  createPrivateMatch(userId: string, userId2: string, user1profile: string, user2profile: string, matchType: string){
     const newMatch = this.getInitMatch(matchType);
     const currentMatchId= "match" + userId;
     newMatch.roomName = currentMatchId;
     newMatch.currentState = "PrivateQueue";
-    newMatch.stateMessage = "Waiting for " + userId2 + " to accept the invite";
+    newMatch.stateMessage = "Waiting for user to accept the invite";
     newMatch.player1loginname = userId;
     newMatch.player2loginname = userId2;
+    newMatch.player1profilename = user1profile;
+    newMatch.player2profilename = user2profile;
     this._currentMatches.set(currentMatchId, newMatch);
     this._userMatch.set(userId, currentMatchId);
     this._userMatch.set(userId2, currentMatchId);
