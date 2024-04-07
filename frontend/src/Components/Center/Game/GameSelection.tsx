@@ -1,8 +1,43 @@
+import { useEffect, useState } from "react";
+import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { Socket } from "socket.io-client";
 import "./Button.css";
 
 function GameSelection(props: { socket: Socket}) {
+  //invite button useStates
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [invitee, setInvitee] = useState("Unknown user");
+
+  //notify backend that the user declined
+  const declineInvite = () => {
+    props.socket.emit("declineInvite");
+    setShowInviteModal(false);
+    console.log("declined");
+  };
+
+  //move user to game page
+  const acceptInvite = () => {
+    setShowInviteModal(false);
+    console.log("accepted");
+    props.socket.emit('gamepage');
+  };
+
+  useEffect(() => {
+    //invite button
+    props.socket.on("inviteMessage", (message: string) => {
+      console.log(`received string from backend :${message}`);
+      setInvitee(message);
+      setShowInviteModal(true);
+      });
+    //end invite button
+    return () => {
+      props.socket.removeAllListeners("inviteMessage");
+    }
+  },[])
+
+
+
   function joinGame(type: string) {
     props.socket.emit("joinGame", type);
   }
@@ -44,8 +79,24 @@ function GameSelection(props: { socket: Socket}) {
           <p>First one to 3 wins</p>
         </div>
       </div>
+      
+      <Modal show={showInviteModal}>
+        <Modal.Body>
+        <p style={{textAlign:"center"}}>{invitee} wants to invite you for a game</p>
+        <div style={{textAlign:"center"}}>
+            <Button style={{margin:"5px"}}variant="secondary" onClick={acceptInvite}>
+                Accept invite
+            </Button>
+            <Button variant="primary" onClick={declineInvite}>
+                Reject invite
+            </Button>
+        </div>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
 
 export default GameSelection;
+
+

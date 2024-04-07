@@ -90,6 +90,7 @@ export class PonggameGateway
   }
 
   handleDisconnect(client: Socket) {
+    console.log("connection has disconnected");
     const userId = this._socketIdUserId.get(client.id)
     this.ponggameService.playerDisconnected(userId);
     this._userIdSocketId.delete(userId);
@@ -192,7 +193,7 @@ export class PonggameGateway
   ) {
     const userId = this._socketIdUserId.get(client.id);
     const player = await this.userService.getUserByLoginName(userId);
-console.log(`getting player profile name: ${player.profileImage}`);
+console.log(`getting player profile name: ${player.profileName}`);
     const matchId= this.ponggameService.joinGame(userId, player.profileName, type);
     client.join(matchId);
   }

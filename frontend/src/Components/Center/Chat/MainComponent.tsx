@@ -31,7 +31,7 @@ import { Alert } from "react-bootstrap";
 const MainComponent = () => {
   const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | undefined>();
   const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved from Messages
-  const navigate = useNavigate();
+  const navigate = useNavigate(); //used for invitebutton
   
   if (chatClicked) {
     console.log("[MainComponent] chatClicked: ", chatClicked.name );
@@ -62,22 +62,22 @@ const MainComponent = () => {
   const [errorException, setErrorException] = useState<string[]>([]);
   const [showExceptionModal, setShowExceptionModal] = useState(false);
 
-  //
-  const [show, setShow] = useState(false);
+  //invite button useStates
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitee, setInvitee] = useState("Unknown user");
 
   //notify backend that the user declined
   const declineInvite = () => {
     chatSocket?.emit("declineInvite");
-    setShow(false);
+    setShowInviteModal(false);
     console.log("declined");
   };
+
   //move user to game page
   const acceptInvite = () => {
-    setShow(false);
+    setShowInviteModal(false);
     console.log("accepted");
     navigate("/main_page/game");
-    // window.location.replace("/main_page/game");
   };
 
   ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
@@ -122,7 +122,7 @@ const MainComponent = () => {
     chatSocket.on("inviteMessage", (message: string) => {
     console.log(`received string from backend :${message}`);
     setInvitee(message);
-    setShow(true);
+    setShowInviteModal(true);
     });
     //end invite button
 
@@ -358,17 +358,20 @@ const MainComponent = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Modal show={show}>
+      <Modal show={showInviteModal}>
         <Modal.Body>
-          <p>{invitee} wants to invite you for a game</p>
-          <Button variant="secondary" onClick={acceptInvite}>
-            Accept invite
-          </Button>
-          <Button variant="primary" onClick={declineInvite}>
-            Reject invite
-          </Button>
+        <p style={{textAlign:"center"}}>{invitee} wants to invite you for a game</p>
+        <div style={{textAlign:"center"}}>
+            <Button style={{margin:"5px"}}variant="secondary" onClick={acceptInvite}>
+                Accept invite
+            </Button>
+            <Button variant="primary" onClick={declineInvite}>
+                Reject invite
+            </Button>
+        </div>
         </Modal.Body>
       </Modal>
+        
       {/* </div> */}
     </Container>
   );

@@ -75,25 +75,31 @@ export class MatchService {
 	}
 
 	private async updateAchievements(player1: UserEntity, player2: UserEntity, winnerId: number ) : Promise<void> {
-		if (player1.id === winnerId) {
-			if (player1.gamesWon == 1)
-				player1.achievements = 'Happy Day';
-			if (player1.gamesWon == 2)
-				player1.achievements = 'Stardoom Devotion';
-			if (player1.gamesWon >= 3)
-				player1.achievements = 'Zen';
-		}
-		else {
-			if (player2.gamesWon == 1)
-				player2.achievements = 'Happy Day';
-			if (player2.gamesWon == 2)
-				player2.achievements = 'Stardoom Devotion';
-			if (player2.gamesWon >= 3)
-				player2.achievements = 'Zen';
-		}
+		
+        this.addAchievements(player1);
+        this.addAchievements(player2);
 		await this.userRepository.save(player1);
         await this.userRepository.save(player2);
 	}
+
+    private addAchievements(player: UserEntity) {
+        if (player.gamesPlayed == 1)
+            player.achievements += ", Player"
+        else if (player.gamesPlayed == 5)
+            player.achievements += ", Veteran"
+        if (player.gamesWon == 1 && !player.achievements.includes("Happy Day"))
+            player.achievements += ', Happy Day';
+        else if (player.gamesWon == 2 && !player.achievements.includes("Stardoom Devotion"))
+            player.achievements += ', Stardoom Devotion';
+        else if (player.gamesWon == 3 && !player.achievements.includes("Zen"))
+            player.achievements += ', Zen';
+        if (player.gamesLost == 1 && !player.achievements.includes("Happens"))
+            player.achievements += ', Happens';
+        else if (player.gamesLost == 2 && !player.achievements.includes("Unlucky"))
+            player.achievements += ', Unlucky';
+        else if (player.gamesLost == 3 && !player.achievements.includes("Get Better"))
+            player.achievements += ', Get Better';
+    }
 
 
 	private async updatePlayerStats(player1: UserEntity, player2: UserEntity, winnerId: number): Promise<void> {
