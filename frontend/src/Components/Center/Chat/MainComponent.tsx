@@ -29,34 +29,44 @@ import Nav from "react-bootstrap/Nav";
 import { Alert } from "react-bootstrap";
 
 const MainComponent = () => {
-  const [chatClicked, setChatClicked] = useState<ResponseNewChatDto | undefined>();
+  const [chatClicked, setChatClicked] = useState<
+    ResponseNewChatDto | undefined
+  >();
   const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved from Messages
+  const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]); // jaka, moved from Chats
   const navigate = useNavigate(); //used for invitebutton
-  
+
   if (chatClicked) {
-    console.log("[MainComponent] chatClicked: ", chatClicked.name );
+    console.log("[MainComponent] chatClicked: ", chatClicked.name);
   }
 
   // jaka:  To keep track of which Chat is selected in MyChats or Channels, when
-  //        switching between MyChats to Channels  
+  //        switching between MyChats to Channels
   const [activeId_Chats, setActiveId_Chats] = useState<number>(-1);
   const [activeId_Channels, setActiveId_Channels] = useState<number>(-1);
 
-  
   // jaka
-  // const handleClickChat = (chat: ResponseNewChatDto | null, activeContentLeft: string) => {
-  const handleClickChat = (chat: ResponseNewChatDto | undefined) => {
-    console.log('Handle Click Chat');
-    setChatClicked(chat);
-    if (chat != undefined) {
-        if (activeContentLeft === 'recent')
-          setActiveId_Chats(chat.id);
-        else if (activeContentLeft === 'groups')
-          setActiveId_Channels(chat.id);
+  const handleClickOnChat = (chat: ResponseNewChatDto | undefined) => {
+    if (chat) {
+      console.log("[Main] handleClickOnChat");
+      const chatId = chat.id;
+      chatSocket.emit("getOneChatDto", { chatId });
+      chatSocket.on("oneChat", (oneChat) => {
+        setChatClicked(oneChat);
+        chatSocket.off("oneChat"); // !! remove listener always, to avoied leaks
+      });
+      chatSocket.on('chatError', (error) => {
+        console.error('Failed to fetch chat details:', error);
+        chatSocket.off('chatError');
+      });
+      if (activeContentLeft === "recent")
+        setActiveId_Chats(chat.id);
+      else if (activeContentLeft === "groups")
+        setActiveId_Channels(chat.id);
+      console.log("             activeChat: " + chatClicked?.name);
+      console.log("         activeID_Chats: " + activeId_Chats + ", activeChannelID: " + activeId_Channels);
     }
-    console.log('-- -- - - - -- - - activeChatID: ' + activeId_Chats + ', activeChannelID: ' + activeId_Channels);
-  }
-
+  };
 
   let alertKey = 0;
   const [errorException, setErrorException] = useState<string[]>([]);
@@ -160,12 +170,14 @@ const MainComponent = () => {
   ////////////////////////////////////////////////////////////////////// HANDLE RECENT vs GROUPS TABS
   // recent or groups
   const [activeContentLeft, setActiveContentLeft] = useState<string>("recent");
-  const [activeButton, setActiveButton] = useState("recent" || "");
+  const [activeTabLeft, setActiveTabLeft] = useState("recent" || "");
 
   // Jaka: When Leaving/Deleting Group, the messages should dissapear,
-  //        and Chat/Channel is de-selected  
+  //        and Chat/Channel is de-selected
   useEffect(() => {
-    console.log('[Main, useEffect], chatClicked just changed: ' + chatClicked?.name);
+    console.log(
+      "[Main, useEffect], chatClicked just changed: " + chatClicked?.name
+    );
     if (chatClicked === null) {
       setActiveId_Chats(-1);
       setActiveId_Channels(-1);
@@ -173,10 +185,15 @@ const MainComponent = () => {
     }
   }, [chatClicked]);
 
-  const handleClick = (content: null | string) => {
+  const handleActiveContentLeft = (content: string | null) => {
     setActiveContentLeft(content || "");
-    setActiveButton(content || "");
-    console.log('[Main] Clicked navigation - value in chatClicked: ' + chatClicked?.name + ', Content: ' + content);
+    setActiveTabLeft(content || "");
+    console.log(
+      "[Main] Clicked navigation - value in chatClicked: " +
+        chatClicked?.name +
+        ", Content: " +
+        content
+    );
   };
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
@@ -192,16 +209,16 @@ const MainComponent = () => {
           <Row className="">
             <Nav
               className="border-bottom p-0"
-              activeKey={activeButton}
+              activeKey={activeTabLeft}
               variant="underline"
               fill
-              onSelect={(k) => handleClick(k)}
+              onSelect={(k) => handleActiveContentLeft(k)}
             >
               <Nav.Item>
                 <Nav.Link
                   eventKey="recent"
                   className={
-                    activeButton === "recent" ? "nav-link active" : "nav-link"
+                    activeTabLeft === "recent" ? "nav-link active" : "nav-link"
                   }
                 >
                   My chats
@@ -211,7 +228,7 @@ const MainComponent = () => {
                 <Nav.Link
                   eventKey="groups"
                   className={
-                    activeButton === "groups" ? "nav-link active" : "nav-link"
+                    activeTabLeft === "groups" ? "nav-link active" : "nav-link"
                   }
                 >
                   Channels
@@ -223,22 +240,32 @@ const MainComponent = () => {
           {/* Recent or Group body */}
           <Row className="left-col-body justify-content-center flex-grow-1">
             {activeContentLeft === "recent" && (
-              <MyChats setChatClicked={handleClickChat}
-                       activeChatId={activeId_Chats}      // jaka
-                       setMessages={setMessages}
+              <MyChats
+                chatInfo={chatInfo}
+                setChatInfo={setChatInfo}
+                handleClickOnChat={handleClickOnChat}
+                activeId_Chats={activeId_Chats} // jaka
+                setMessages={setMessages}
               />
-            //   <MyChats setChatClicked={setChatClicked} />
+              //   <MyChats setChatClicked={setChatClicked} />
             )}
             {activeContentLeft === "groups" && (
-              <Channels setChatClicked={handleClickChat}
-                        activeChatId={activeId_Channels}     // jaka
-                        setMessages={setMessages}
+              <Channels
+                handleClickOnChat={handleClickOnChat}
+                activeId_Channels={activeId_Channels} // jaka
+                setMessages={setMessages}
               />
             )}
           </Row>
           {/* NewChat Button - at the bottom, visible only wheb Group is active */}
           <Row className="left-col-bottom-buttons justify-content-center">
-            {activeContentLeft === "groups" && <NewGroupButton />}
+            {activeContentLeft === "groups" && (
+              <NewGroupButton
+                setChatClicked={setChatClicked}
+                setActiveId_Chats={setActiveId_Chats}
+                handleActiveContentLeft={handleActiveContentLeft}
+              />
+            )}
           </Row>
         </Col>
 
@@ -249,7 +276,11 @@ const MainComponent = () => {
           md={5}
           className="middle-col bg-light flex-column mx-4 mt-5"
         >
-          <Messages chatClicked={chatClicked} messages={messages} setMessages={setMessages}/>
+          <Messages
+            chatClicked={chatClicked}
+            messages={messages}
+            setMessages={setMessages}
+          />
         </Col>
 
         {/* Members column */}
@@ -305,6 +336,7 @@ const MainComponent = () => {
                   <MembersPrivateMessageButtons
                     chatClicked={chatClicked}
                     setChatClicked={setChatClicked}
+                    setMessages={setMessages}
                   />
                 )}
               </Row>
@@ -314,11 +346,14 @@ const MainComponent = () => {
                 {chatClicked?.type != ChatType.PRIVATE && (
                   <MembersGroupButtons
                     chatClicked={chatClicked}
-                    handleClick={handleClick}
+                    handleActiveContentLeft={handleActiveContentLeft}
                     setChatClicked={setChatClicked}
-                    // setActiveButton={setActiveButton}
-                    setActiveContentLeft={setActiveContentLeft}
+                    // setActiveContentLeft={setActiveContentLeft}
                     setActiveId_Chats={setActiveId_Chats}
+                    setActiveId_Channels={setActiveId_Channels}
+                    // setActiveButton={setActiveButton}
+                    // activeId_Chats={activeId_Chats}
+                    // activeId_Channels={activeId_Channels}
                   />
                 )}
               </Row>

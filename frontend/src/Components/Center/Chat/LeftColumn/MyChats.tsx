@@ -1,4 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
+import { useLocation } from "react-router-dom";
 import { ChatType, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
 
@@ -11,20 +12,47 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 // Jaka
 type PropsHeader = {
-  setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
-  activeChatId: number;
+  chatInfo: ResponseNewChatDto[];
+  setChatInfo: (allChats: ResponseNewChatDto[]) => void;
+  handleClickOnChat: (chatClicked: ResponseNewChatDto | undefined) => void;
+  activeId_Chats: number;
   setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
 const MyChats: React.FC<PropsHeader> = ({
-  setChatClicked,
-  activeChatId,
+  chatInfo,
+  setChatInfo,
+  handleClickOnChat,
+  activeId_Chats,
   setMessages,
 }) => {
-  const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
+  // const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]); // jaka, moved to Main chat
   const [intraName, setIntraName] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [chatsExist, setChatsExist] = useState<boolean>(false);
+
+  // jaka: After clicking Privat Chat on Users Profile, it sends here the user's Profile Name
+  //        via the navigate( state ), which is then accessible in location()
+  const location = useLocation();
+  const [startedPrivateChatName, setStartedPrivateChatName] =
+    useState<string>("");
+  console.log("[MyChats] Location state on start:", location.state);
+
+  // useEffect(() => {
+  //   setStartedPrivateChatName(location.state);
+  //   // find chat by profileName in the chatInfo
+  //   const privateChatId: number = chatInfo.find(
+  //     (chat) => {
+  //       if (chat.name === startedPrivateChatName)
+  //         return chat.id;
+  //     }
+  //   );
+  //   // find the corresponding chatID
+  //   // set the ActiveChatId
+  // }, [location.state]);
+
+  // // const { startedPrivateChatName } = location.state || {};
+  // console.log("startedPrivateChatName:", startedPrivateChatName);
 
   const getIntraName = async () => {
     return await axiosInstance
@@ -89,41 +117,42 @@ const MyChats: React.FC<PropsHeader> = ({
       "[MyChats] inside useEffect -> socket connected? ",
       chatSocket.connected
     );
+    const handleGetAllChats = (allChats: ResponseNewChatDto[]) => {
+      setChatInfo(allChats);
+    };
     console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
     chatSocket.emit("getChats");
-    chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
-      //console.log("[lllllllllllllllll] allChats", allChats);
-      setChatInfo(allChats);      
-    });
+    chatSocket.on("getChats", handleGetAllChats);
     return () => {
       console.log(
         "[MyChats] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
       );
+      chatSocket.off("getChats", handleGetAllChats); // Remove the event listener
     };
   }, []);
 
   // MyChat must remember which Chat is selected when going from MyChats to Channels and back
   useEffect(() => {
-    // console.log("[MyChats]            chatInfo: " + JSON.stringify(chatInfo));
+    console.log(
+      "[MyChats]      AllChats / ChatInfo: " + JSON.stringify(chatInfo)
+    );
     const activeChat: ResponseNewChatDto | undefined = chatInfo.find(
-      (chat) => chat.id === activeChatId
+      (chat) => chat.id === activeId_Chats
     );
     //console.log('            activeChat: ' + JSON.stringify(activeChat));
-    setChatClicked(activeChat);
-    if (activeChatId === -1)
-      setMessages(null);
-  }, [chatInfo, activeChatId]);
+    handleClickOnChat(activeChat);
+    if (activeId_Chats === -1) setMessages(null);
+  }, [chatInfo, activeId_Chats]);
 
-
-  // If curr. user is not a member of any chat, display just a message 'Not a member ...'
-  useEffect(() => {
-    const myChatsExist = chatInfo.some( (chat) => {
-      if (chat.usersIntraName && intraName)
-        return chat.usersIntraName.includes(intraName);        
-    });
-    setChatsExist(myChatsExist);
-    // console.log("[MYCHATS] chatsExist: ", chatsExist);
-  }, [chatInfo])
+  // If curr. user is not a member of any chat, display just info message 'Not a member ...'
+  // useEffect(() => {
+  //   const res = chatInfo.some( (chat) => {
+  //     if (chat.usersIntraName && intraName)
+  //       return chat.usersIntraName.includes(intraName);
+  //   });
+  //   setChatsExist(res);
+  //   // console.log("[MYCHATS] chatsExist: ", chatsExist);
+  // }, [chatInfo])
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
@@ -131,9 +160,9 @@ const MyChats: React.FC<PropsHeader> = ({
       {/* Recent chats row */}
       <Row className="">
         <Stack gap={2}>
-          {/*{chatInfo.length === 0 ? (*/}
-          {!chatsExist ? (
-            <span className="pt-5">You are not a member of any chat yet.</span>
+          {/* {!chatsExist ? (    This causes arbitrary behaviour, beter remove it */}
+          {chatInfo.length === 0 ? (
+            <span className="pt-5">You are not a member of any chat yet.</span> // move to the map(), check inside the map if I am a member of any chat ....
           ) : (
             chatInfo.map((chat: ResponseNewChatDto) => (
               <Fragment key={chat.id}>
@@ -147,11 +176,13 @@ const MyChats: React.FC<PropsHeader> = ({
                       <ListGroup.Item
                         as="li"
                         className={`chat-item
-                                    ${chat.id === activeChatId ? "active" : ""}
+                                    ${
+                                      chat.id === activeId_Chats ? "active" : ""
+                                    }
                                     justify-content-between align-items-start`}
                         variant="light"
                         // onClick={() => setChatClicked(chat, activeContentLeft)}
-                        onClick={() => setChatClicked(chat)}
+                        onClick={() => handleClickOnChat(chat)}
                       >
                         {chat.type == ChatType.PRIVATE && (
                           <Image

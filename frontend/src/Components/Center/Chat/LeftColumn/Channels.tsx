@@ -11,13 +11,16 @@ import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 // Jaka
 type PropsHeader = {
-    setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
-    activeChatId: number;
-    setMessages: (messages: ResponseNewChatDto | null) => void;
+  handleClickOnChat: (chatClicked: ResponseNewChatDto | undefined) => void;
+  activeId_Channels: number;
+  setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
-
-const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, setMessages }) => {
+const Channels: React.FC<PropsHeader> = ({
+  handleClickOnChat,
+  activeId_Channels,
+  setMessages,
+}) => {
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]);
   const [intraName, setIntraName] = useState<string | null>(null);
 
@@ -74,22 +77,26 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, setMess
     };
   }, []);
 
-
   // jaka: To remember which Chat is selected in MyChats, when going from MyChats to Channels and back
-    useEffect(() => {
-      console.log('jaka: setChatClicked() -> Channels')
-      const activeChat:ResponseNewChatDto | undefined = 
-          chatInfo.find((chat) =>
-              chat.id === activeChatId
-          );
-      //console.log('            activeChat: ' + JSON.stringify(activeChat));
-      // if (activeChat) {
-          setChatClicked(activeChat);
-      // }
-      if (activeChatId === -1) {
-        setMessages(null);
-      }
-  }, [chatInfo, activeChatId]);
+  useEffect(() => {
+    console.log(
+      "jaka: Channels: setChatClicked():  " + JSON.stringify(chatInfo)
+    );
+    const activeChat: ResponseNewChatDto | undefined = chatInfo.find(
+      (chat) => chat.id === activeId_Channels
+    );
+    //console.log('            activeChat: ' + JSON.stringify(activeChat));
+    // if (activeChat) {
+    handleClickOnChat(activeChat);
+    // }
+    if (activeId_Channels === -1) {
+      setMessages(null);
+    }
+  }, [chatInfo, activeId_Channels]);
+
+  // if (activeChatId === -1) {
+  //   setMessages(null);
+  // }
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
@@ -101,10 +108,10 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, setMess
             <Fragment key={chat.id}>
               {/* If current user is not a member of the chat (i.e. is not in the members array) */}
               {/* And chat is not private  (i.e. is a public or protected group) */}
-              {(intraName &&
+              {intraName &&
                 chat.usersIntraName &&
                 chat.usersIntraName.indexOf(intraName) == -1 &&
-                chat.type != ChatType.PRIVATE) && (
+                chat.type != ChatType.PRIVATE && (
                   <ListGroup
                     // key={"Channels-" + i.toString()}
                     // key={"Chat" + chat.id}
@@ -115,10 +122,12 @@ const Channels: React.FC<PropsHeader> = ({ setChatClicked, activeChatId, setMess
                     <ListGroup.Item
                       as="li"
                       className={`chat-item
-                                 ${chat.id === activeChatId ? 'active' : ''}
+                                 ${
+                                   chat.id === activeId_Channels ? "active" : ""
+                                 }
                                  justify-content-between align-items-start`}
                       variant="light"
-                      onClick={() => setChatClicked(chat)}
+                      onClick={() => handleClickOnChat(chat)}
                     >
                       {chat.type == ChatType.PUBLIC && (
                         <Image

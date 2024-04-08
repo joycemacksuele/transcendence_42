@@ -392,4 +392,25 @@ export class ChatGateway
     // this.ws_server.emit('new_chat', ret);
     // return ret; if needed
   }
+
+
+  // added jaka:
+  @SubscribeMessage('getOneChatDto')
+  async handleGetOneChat(
+    @MessageBody() data: { chatId: number },
+    @ConnectedSocket() clientSocket: Socket)
+  {
+    this.logger.log('Fetching just one chat, by ID ' + data.chatId);
+    try {
+      const oneChat: ResponseNewChatDto = await this.chatRepository.getOneChatDto(data.chatId);
+      this.logger.log('         fetched oneChat.name: ' + oneChat.name);
+      // this.logger.log('         fetched oneChat.messages: ' + oneChat.messages);
+      // this.logger.log('         fetched oneChat.users: ' + JSON.stringify(oneChat.usersIntraName));
+      clientSocket.emit('oneChat', oneChat);
+    } catch (error) {
+      this.logger.error('Error fetching one chat', error);
+      clientSocket.emit('chatError', { message: 'Failed to fetch oneChat details.' });
+    }
+  }
+
 }
