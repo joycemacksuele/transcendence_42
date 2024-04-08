@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { useSelectedUser } from "../../Profile/utils/contextSelectedUserName.tsx";
 
 // Importing bootstrap and other modules
@@ -35,9 +35,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showOfflineModal, setShowOfflineModal] = useState(false);
   
-  const navigate = useNavigate();
   const { setSelectedLoginName } = useSelectedUser();
-
+  
+  const navigate = useNavigate();
   const handleErrorClose = () => setShowErrorModal(false);
   const handleOfflineShow = () => setShowOfflineModal(false);
 
@@ -46,7 +46,6 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
   
   const goToUserProfile = (loginName: string) => {
     setSelectedLoginName(loginName);
-    // navigate(`/main_page/users/${loginName}`);
     navigate(`/main_page/users`);
   };
 
@@ -138,29 +137,31 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
 
   ///////////////////////////////////////Invite Player
     //function to invite player
-    function invitePlayer(invitedUser: string)
+    function invitePlayer(invitedUser: string, type: string)
     {   
-        console.log("invite button pressed");
+        console.log("invite button pressed" + `${invitedUser}`);
         chatSocket?.emit('requestUserStatus', invitedUser, 
             (response: string) => 
             {
                 console.log(`response: ${response}`);
                 if(response === "ingame")
                 {
-                    setShowMemberModal(false);
-                    setShowErrorModal(true);
+                  setShowMemberModal(false);
+                  setShowErrorModal(true);
                 }
                 else if (response == 'offline'){
-                    setShowMemberModal(false);
-                    setShowOfflineModal(true);
+                  setShowMemberModal(false);
+                  setShowOfflineModal(true);
                 }
                 else{
-                    console.log("player is online");
-                    chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:'Default'},
+                  console.log("player is online");
+                  chatSocket.emit('invitePlayerToGame', invitedUser);
+                  //navigate("/main_page/game");
+                    chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:type},
                         () => {
                             chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
                                 {
-                                    window.location.replace("/main_page/game");
+                                    navigate("/main_page/game");
                                 }
                             );
                         }
@@ -260,9 +261,16 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             <Button
                               className="me-4 mb-3"
                               variant="success"
-                              onClick={()=>invitePlayer(clickedMemberIntraName)}
+                              onClick={()=>invitePlayer(clickedMemberIntraName, "Default")}
                             >
-                              Invite to play pong!
+                              Invite to play pong (Classic)!
+                            </Button>
+                            <Button
+                              className="me-4 mb-3"
+                              variant="success"
+                              onClick={()=>invitePlayer(clickedMemberIntraName, "Custom")}
+                            >
+                              Invite to play pong (Custom)!
                             </Button>
                             <Button
                               className="me-4 mb-3"
@@ -343,18 +351,22 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                         </Modal>
                         <Modal show={showErrorModal}>
                             <Modal.Body>
-                                Player you want to invite is currently in a game. 
-                            <Button variant="primary" onClick={handleErrorClose}>
+                                <p style={{textAlign:"center"}}>User is currently in a game.</p>
+                                <div style={{textAlign:"center"}}>
+                                <Button variant="primary" onClick={handleErrorClose}>
                                 Close
-                            </Button>
+                                </Button>
+                                </div>
                             </Modal.Body>
                         </Modal>
                         <Modal show={showOfflineModal}>
                             <Modal.Body>
-                                User you want to invite is offline.
+                                <p style={{textAlign:"center"}}>User currently is offline.</p>
+                                <div style={{textAlign:"center"}}>
                                 <Button variant="primary" onClick={handleOfflineShow}>
                                     Close
                                 </Button>
+                                </div>
                             </Modal.Body>
                         </Modal>
                       </>

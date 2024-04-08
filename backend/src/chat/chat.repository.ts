@@ -19,7 +19,7 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 		private readonly userService: UserService
 	) {
 		super(UsersCanChatEntity, dataSource.createEntityManager());
-		this.logger.log('constructor');
+		//this.logger.log('constructor');
 	}
 
 	public async addNewUserToUsersCanChatEntity(chatEntity: NewChatEntity, user: UserEntity) {
@@ -58,10 +58,10 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.getOne();
 
 			if (usersCanChatRow != undefined) {
-				this.logger.log("[updateMutedTimeStamp] usersCanChatRow: " + usersCanChatRow);
+				// this.logger.log("[updateMutedTimeStamp] usersCanChatRow: " + usersCanChatRow);
 
 				usersCanChatRow.timeStamp = (new Date().getTime() + 120000).toString();// 2 min to get un-muted
-				this.logger.log("[updateMutedTimeStamp]: User " + user.loginName + " will be muted for 2 min. New timestamp: " + usersCanChatRow.timeStamp);
+				// this.logger.log("[updateMutedTimeStamp]: User " + user.loginName + " will be muted for 2 min. New timestamp: " + usersCanChatRow.timeStamp);
 				await this
 					.manager
 					.save(usersCanChatRow)
@@ -80,7 +80,7 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 				.leftJoin("users_can_chat.user", "user")
 				.getOne();
 			if (usersCanChatRow != undefined) {
-				this.logger.log("[deleteUserFromUsersCanChatEntity] usersCanChatRow: " + usersCanChatRow);
+				// this.logger.log("[deleteUserFromUsersCanChatEntity] usersCanChatRow: " + usersCanChatRow);
 				await this.delete(usersCanChatRow.id);
 				// await this.delete(usersCanChatRow);
 				return usersCanChatRow;
@@ -100,7 +100,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		private readonly userService: UserService
 	) {
 		super(NewChatEntity, dataSource.createEntityManager());
-		this.logger.log('constructor');
+		// this.logger.log('constructor');
 	}
 
 	public async getOneChat(chatId: number) {
@@ -121,11 +121,11 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	private async getOneRowAndSaveAsDTO(chat: NewChatEntity) {
 		const responseDto: ResponseNewChatDto = new ResponseNewChatDto();
 		responseDto.id = chat.id;
-		this.logger.log('[getChat] NewChat id: ' + chat.id);
+		// this.logger.log('[getChat] NewChat id: ' + chat.id);
 		responseDto.name = chat.name;
-		this.logger.log('[getChat] NewChat name: ' + chat.name);
+		// this.logger.log('[getChat] NewChat name: ' + chat.name);
 		responseDto.type = chat.type;
-		this.logger.log('[getChat] NewChat type: ' + chat.type);
+		// this.logger.log('[getChat] NewChat type: ' + chat.type);
 
 		// ----------- get chat creator
 		await this
@@ -152,10 +152,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				});
 				
 				if (usersIntraName.toString()) {
-					this.logger.log('[getChat] Users in the chat ' + chat.name + ',  (Intra Name): ' + usersIntraName.toString());
+					// this.logger.log('[getChat] Users in the chat ' + chat.name + ',  (Intra Name): ' + usersIntraName.toString());
 					responseDto.usersIntraName = usersIntraName;
 				} else {
-					this.logger.log('[getChat] No users in the chat: ' + chat.name);
+					// this.logger.log('[getChat] No users in the chat: ' + chat.name);
 				}
 			});
 
@@ -170,10 +170,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			return usersList.users;
 		});
 		if (users.toString()) {
-			this.logger.log('[getChat] Users in the chat (Profile Name): ' + users.toString());
+			// this.logger.log('[getChat] Users in the chat (Profile Name): ' + users.toString());
 			responseDto.usersProfileName = users;
 		} else {
-			this.logger.log('[getChat] No users in the chat: ' + chat.name);
+			// this.logger.log('[getChat] No users in the chat: ' + chat.name);
 		}
 
 		// ----------- get chat admin list
@@ -186,7 +186,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		responseDto.admins = chatAdmins.map((adminsList) => {
 			return adminsList.admins;
 		});
-		this.logger.log('[getChat] Admins in the chat: ' + responseDto.admins);
+		// this.logger.log('[getChat] Admins in the chat: ' + responseDto.admins);
 
 		// ----------- get chat muted users list
 		const usersCanChatRows = await this
@@ -199,7 +199,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			// All users in the UsersCanChatEntity that have a time stamp in the future are muted
 			if (usersCanChatRow.timeStamp > new Date().getTime()) {
 				return this.userService.getUserById(usersCanChatRow.userId).then((user) => {
-					this.logger.log("[getChat] Muted users in the chat: " + user.loginName);
+					// this.logger.log("[getChat] Muted users in the chat: " + user.loginName);
 					return user.loginName;
 				}).catch((error) => {
 					// return [];
@@ -216,13 +216,13 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.bannedUsers", "user")
 			.getRawMany();
 		responseDto.bannedUsers = chatBannedUsers.map((bannedUsersList) => {
-			this.logger.log("[getChat] Banned users in the chat: " + bannedUsersList.bannedUsers);
+			// this.logger.log("[getChat] Banned users in the chat: " + bannedUsersList.bannedUsers);
 			return bannedUsersList.bannedUsers;
 		});
 		if (responseDto.bannedUsers.toString()) {
-			this.logger.log('[getChat] Banned users in the chat: ' + responseDto.bannedUsers.toString());
+			// this.logger.log('[getChat] Banned users in the chat: ' + responseDto.bannedUsers.toString());
 		} else {
-			this.logger.log('[getChat] No banned users in the chat: ' + chat.name);
+			// this.logger.log('[getChat] No banned users in the chat: ' + chat.name);
 		}
 
 		// ----------- get chat messages
@@ -237,7 +237,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
 			responseDto_inner.id = messagesList.id;
 			responseDto_inner.message = messagesList.message;
-			this.logger.log("[getChat] NewChat message(s): " + messagesList.message);
+			// this.logger.log("[getChat] NewChat message(s): " + messagesList.message);
 			try {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
@@ -247,10 +247,10 @@ export class ChatRepository extends Repository<NewChatEntity> {
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;
 				responseDto_inner.creator_id = messageCreator.userId;
-				this.logger.log("[getChat] NewChat message sender: " + messageCreator.loginName);
+				// this.logger.log("[getChat] NewChat message sender: " + messageCreator.loginName);
 				return responseDto_inner;
 			} catch (err) {
-				this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
+				// this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
 				// throw new Error('[getChat] err: ' + err);// TODO ERROR: err: TypeError: Cannot read properties of undefined (reading 'loginName')
 			}
 		}));
@@ -358,7 +358,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 					}
 
 				} else {
-					this.logger.log("[deleteUserFromChat] User " + userToDelete.loginName + " is not a member of the chat " + foundChatEntityToLeave.name);
+					// this.logger.log("[deleteUserFromChat] User " + userToDelete.loginName + " is not a member of the chat " + foundChatEntityToLeave.name);
 					return false;
 				}
 			}
@@ -378,14 +378,14 @@ export class ChatRepository extends Repository<NewChatEntity> {
 
 			if (chatToJoin != null) {
 				chatToJoin.users.push(user);
-				this.logger.log("[joinChat] new Users list ", chatToJoin.users);
+				// this.logger.log("[joinChat] new Users list ", chatToJoin.users);
 			}
 
 			// Add user to the usersCanChatEntity (before saving the chat entity):
 			this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatToJoin, user).then(r => {
 				if (r) {
-					this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity id ' + r.id +
-						' created for the user ' + user.loginName + " and chat id: " + chat.id);
+					// this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity id ' + r.id +
+						// ' created for the user ' + user.loginName + " and chat id: " + chat.id);
 				}
 			});
 
@@ -434,11 +434,11 @@ export class ChatRepository extends Repository<NewChatEntity> {
 
 	public async editPasswordFromChat(foundEntityToEdit: NewChatEntity, chatPassword: string) {
 		try {
-			this.logger.log("[editPasswordFromChat] foundEntityToEdit: " + foundEntityToEdit);
+			// this.logger.log("[editPasswordFromChat] foundEntityToEdit: " + foundEntityToEdit);
 			if (foundEntityToEdit.type == ChatType.PROTECTED) {
 				if (chatPassword != null) {
 					const password = bcryptjs.hashSync(chatPassword, 10);
-						this.logger.log('[editPasswordFromChat] hashed password: ', password);
+						// this.logger.log('[editPasswordFromChat] hashed password: ', password);
 					foundEntityToEdit.password = password;
 					if (password == undefined) {
 						throw new Error('[editPasswordFromChat] Password was not hashed');
@@ -470,7 +470,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 					.save(foundEntityToEdit);
 				return true
 			} else {
-				this.logger.log("[deleteAdminFromChat] User " + userToDelete.loginName + " is not an admin of the chat " + foundEntityToEdit.name);
+				// this.logger.log("[deleteAdminFromChat] User " + userToDelete.loginName + " is not an admin of the chat " + foundEntityToEdit.name);
 				return false;
 			}
 		} catch (err) {
@@ -480,7 +480,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 
 	public async deletePasswordFromChat(foundEntityToEdit: NewChatEntity) {
 		try {
-			this.logger.log("[deletePasswordFromChat] foundEntityToEdit: " + foundEntityToEdit);
+			// this.logger.log("[deletePasswordFromChat] foundEntityToEdit: " + foundEntityToEdit);
 			if (foundEntityToEdit.type == ChatType.PROTECTED) {
 				// If password is deleted we want to set the chat type to PUBLIC
 				foundEntityToEdit.password = null;

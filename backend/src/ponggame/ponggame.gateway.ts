@@ -19,7 +19,7 @@ import { MatchDto } from "src/matches/match.dto";
 
 //for testing
 import { MatchEntity } from "src/matches/match.entity";
-import {Logger, UnauthorizedException} from "@nestjs/common";
+import { Logger, UnauthorizedException} from "@nestjs/common";
 
 @WebSocketGateway({
   cors: {
@@ -30,8 +30,9 @@ import {Logger, UnauthorizedException} from "@nestjs/common";
     // credentials: true,
   },
 })
+
 export class PonggameGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
+  implements OnGatewayConnection,OnGatewayDisconnect
 {
   private readonly logger = new Logger(PonggameGateway.name);
 
@@ -56,18 +57,25 @@ export class PonggameGateway
         ponggameService.updateCurrentMatches();
         const currentGames = ponggameService.getCurrentMatches();
         currentGames.forEach((gamestate: GameState) => {
-          this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
+          if( gamestate.currentState != "Reset")
+            this.server.to(gamestate.roomName).emit('stateUpdate', gamestate);
           if (gamestate.currentState == "End"){
-console.log("match is being processed");
               this.processMatch(gamestate); //send the match data to the database
               this.server.socketsLeave(gamestate.roomName);
-              this.ponggameService.removeUserIdMatch(gamestate.player1info);
-              this.ponggameService.removeUserIdMatch(gamestate.player2info);
+              this.ponggameService.removeUserIdMatch(gamestate.player1loginname);
+              this.ponggameService.removeUserIdMatch(gamestate.player2loginname);
           }
           else if( gamestate.currentState == "Disconnection"){
               this.server.socketsLeave(gamestate.roomName);
-              this.ponggameService.removeUserIdMatch(gamestate.player1info);
-              this.ponggameService.removeUserIdMatch(gamestate.player2info);
+              this.ponggameService.removeUserIdMatch(gamestate.player1loginname);
+              this.ponggameService.removeUserIdMatch(gamestate.player2loginname);
+          }
+          else if (gamestate.currentState == "Reset")
+          {
+              //this.server.to(gamestate.roomName).emit('stateUpdate', ponggameService.getInitMatch("Default"));
+              this.server.socketsLeave(gamestate.roomName);
+              this.ponggameService.removeUserIdMatch(gamestate.player1loginname);
+              this.ponggameService.removeUserIdMatch(gamestate.player2loginname);
           }
         });
         ponggameService.cleanUpMatches();
@@ -76,9 +84,25 @@ console.log("match is being processed");
     }, 13);
   }
 
-  async handleConnection(client: Socket) {
+  handleConnection(client: Socket) {
+    client.data.gamepage = false;
+    this.logger.log(`[handleConnection] pong game client id ${client.id} connected`);
+  }
+
+  handleDisconnect(client: Socket) {
+    console.log("connection has disconnected");
+    const userId = this._socketIdUserId.get(client.id)
+    this.ponggameService.playerDisconnected(userId);
+    this._userIdSocketId.delete(userId);
+    this._socketIdUserId.delete(client.id);
+    this.emitOnlineStatuses();
+  }
+
+  @SubscribeMessage('identify')
+  async identifysocket(@ConnectedSocket() client: Socket)
+  {
+    this.logger.log('identify called'); 
     try {
-      this.logger.log(`[handleConnection] pong game client id ${client.id} connected`);
 
       if (client.handshake.headers.cookie) {
         const token_key_value = client.handshake.headers.cookie;
@@ -108,22 +132,6 @@ console.log("match is being processed");
             // added Jaka:
             this.emitOnlineStatuses();
 
-            const matchId = this.ponggameService.getMatchId(userId);
-            // this.logger.log(`UserId found : ${userId}`);
-            if (matchId) {
-              this.logger.log(`Match Id ${matchId}`);
-            }
-            if (matchId == "") {
-              //if not get the selection screen
-              client.emit(
-                  "stateUpdate",
-                  this.ponggameService.getInitMatch("Default")
-              );
-            } else {
-              // if part of a game then join the match
-              client.join(matchId);
-            }
-
           } catch {
             throw new UnauthorizedException('Invalid token');
           }
@@ -134,33 +142,59 @@ console.log("match is being processed");
         throw new UnauthorizedException('No cookie found in the header, disconnecting');
       }
     } catch (error) {
-      // this.logger.error("something went wrong verifying the token");
-      // this.logger.error("Disconnecting the client socket");
       this.logger.error('[handleConnection] error: ' + error);
       client.emit("exceptionHandleConnection", new UnauthorizedException(error));
       client.disconnect();
     }
   }
 
-  handleDisconnect(client: Socket) {
-    this.logger.log(`[handleDisconnect] pong game client id ${client.id} disconnected`);
+  @SubscribeMessage('leavingGamepage')
+  leavingGamePage(@ConnectedSocket() client: Socket){
+    client.data.gamepage = false;
     this.ponggameService.playerDisconnected(
-      this._socketIdUserId.get(client.id),
-    );
-    this._userIdSocketId.delete(this._socketIdUserId.get(client.id));
-    this._socketIdUserId.delete(client.id);
-
-    // Added Jaka:
-    this.emitOnlineStatuses();
+      this._socketIdUserId.get(client.id));
+    this.logger.log(`User ${this._socketIdUserId.get(client.id)} left the game page`);
   }
 
-@SubscribeMessage('joinGame')
-  joinGame(
+  @SubscribeMessage('resetgamepage')
+  resetGamePage(@ConnectedSocket() client: Socket){
+    const shouldEmit = this.ponggameService.playerLeavesQueue(
+      this._socketIdUserId.get(client.id));
+    console.log("resetting gamepage");
+    if (shouldEmit)
+      client.emit("stateUpdate",this.ponggameService.getInitMatch("Default"));
+  }
+
+  @SubscribeMessage('gamepage')
+  gamepage(@ConnectedSocket() client: Socket){
+    client.data.gamepage = true;
+    const userId = this._socketIdUserId.get(client.id);
+      
+    const matchId = this.ponggameService.getMatchId(userId);
+      this.logger.log(`UserId found : ${userId}`);
+      this.logger.log(`Match Id ${matchId}`);
+      if (matchId == "") {
+        //if not get the selection screen
+        client.emit(
+          "stateUpdate",
+          this.ponggameService.getInitMatch("Default")
+        );
+      } else {
+        //if part of a game then join the match
+        this.ponggameService.playerConnected(userId);
+        client.join(matchId);
+      }
+  }
+
+  @SubscribeMessage('joinGame')
+  async joinGame(
     @ConnectedSocket() client: Socket,
     @MessageBody() type: string
   ) {
     const userId = this._socketIdUserId.get(client.id);
-    const matchId= this.ponggameService.joinGame(userId, type);
+    const player = await this.userService.getUserByLoginName(userId);
+console.log(`getting player profile name: ${player.profileName}`);
+    const matchId= this.ponggameService.joinGame(userId, player.profileName, type);
     client.join(matchId);
   }
 
@@ -172,6 +206,8 @@ console.log("match is being processed");
       this.ponggameService.updateUserInput(matchId, userId, input);
     }
   }
+ 
+  
   @SubscribeMessage('requestUserStatus')
   requestUserStatus(@MessageBody() userId: string): string {
     if (!this._userIdSocketId.has(userId))
@@ -182,7 +218,7 @@ console.log("match is being processed");
     return "online";
   }
 
-@SubscribeMessage('requestPlayerPartOfGame')
+  @SubscribeMessage('requestPlayerPartOfGame')
   requestPlayerPartOfGame(@MessageBody() userId: string, @ConnectedSocket() client: Socket){
     let partOfMatch : boolean = false;
     if (this.ponggameService.getMatchId(userId) != ""){
@@ -192,17 +228,20 @@ console.log("match is being processed");
   }
 
   @SubscribeMessage('createPrivateMatch')
-  createPrivateMatch(@MessageBody() data: {player1: string, player2: string, matchType: string}, @ConnectedSocket() client: Socket) : boolean{
-    this.ponggameService.createPrivateMatch(data.player1, data.player2, data.matchType);
+  async createPrivateMatch(@MessageBody() data: {player1: string, player2: string, matchType: string}, @ConnectedSocket() client: Socket) : Promise<boolean>{
+    const player1profile = (await this.userService.getUserByLoginName(data.player1)).profileName;
+    const player2profile = (await this.userService.getUserByLoginName(data.player2)).profileName;
+    this.ponggameService.createPrivateMatch(data.player1, data.player2,player1profile, player2profile,data.matchType);
     return true;
   }
 
   @SubscribeMessage('invitePlayerToGame')
-  invitePlayer(@MessageBody() userId: string, @ConnectedSocket() client: Socket): boolean{
+  async invitePlayer(@MessageBody() userId: string, @ConnectedSocket() client: Socket): Promise<boolean>{
     console.log(`invite for ${userId} received`);
-    const invitedSocketId = this._userIdSocketId.get(userId);
     const inviteeName = this._socketIdUserId.get(client.id);
-    this.server.to(invitedSocketId).emit("inviteMessage",inviteeName);
+    const profileName = (await this.userService.getUserByLoginName(inviteeName)).profileName;
+    const invitedSocketId = this._userIdSocketId.get(userId);
+    this.server.to(invitedSocketId).emit("inviteMessage",profileName);
     return true;
   }
 
@@ -212,32 +251,10 @@ console.log("match is being processed");
     this.ponggameService.declineInvite(userId);
   }
 
-
-//test function
-@SubscribeMessage('testMatchDb')
-  async testingMatchCreation(){
-    const player1: UserEntity = await this.userService.getUserByLoginName("hman");
-    this.logger.log("playerid is " + player1.id + " |");
-    const player2: UserEntity = await this.userService.getUserByLoginName("dummy2");
-    this.logger.log("dummy playerid is " + player2.id + "|");
-    const match: MatchDto = new MatchDto();
-    match.player1Id = player1.id;
-    match.player2Id = player2.id;
-    match.player1Score= 3;
-    match.player2Score= 1;
-    match.winnerId = player1.id;
-    match.timeStamp = new Date();
-    try{
-      await this.matchService.createMatch(match);
-    } catch (e){
-      this.logger.log("Error: something went wrong with entering match into the database");
-    }
-  }
-
   //save the match data to the database
   async processMatch(gamestate : GameState){
-    const player1 : UserEntity = await this.userService.getUserByLoginName(gamestate.player1info);
-    const player2 : UserEntity = await this.userService.getUserByLoginName(gamestate.player2info);
+    const player1 : UserEntity = await this.userService.getUserByLoginName(gamestate.player1loginname);
+    const player2 : UserEntity = await this.userService.getUserByLoginName(gamestate.player2loginname);
     const match : MatchDto = new MatchDto();
     match.player1Id = player1.id;
     match.player2Id = player2.id;
@@ -257,29 +274,16 @@ console.log("match is being processed");
     }
   }
 
-  //test function
-  print_out_socketId() {
-    this.logger.log('\ncurrent log');
-    this._socketIdUserId.forEach((value, key) => {
-      this.logger.log(`Socket id ${key} userID ${value}`);
+  //TEST FUNCTION
+  @SubscribeMessage('printoutconnections')
+  printoutConnections(@ConnectedSocket() client: Socket)
+    {
+    console.log(">>>>>>>>>>>>Display connections<<<<<<<<<<<");
+    this._socketIdUserId.forEach((userId, socketId)=> {
+        console.log(`userId ${userId} socketId ${socketId}`);
     });
-    this.logger.log('\n');
+  }
 
-    this._userIdSocketId.forEach((value, key) => {
-      this.logger.log(`user id ${key} client id ${value}`);
-    });
-    this.logger.log('\n');
-  }
-  
-  //test function
-  async print_out_matches(userId: number){
-    const matchHistory: MatchEntity[] = await this.matchService.getMatchHistoryByUserId(userId);
-    matchHistory.forEach((match) =>{
-        this.logger.log(` match id ${match.id}\n player 1 ${match.player1} and player 2 ${match.player2} \n Score ${match.player1Score} - ${match.player2Score} \n WinnerId ${match.winnerId}\n`);
-    });
-  }
-  
-  
   // ADDED JAKA /////////////////////////////////////
   //  If possible, here I would like to check all currently played matches and check if this
   //  username/userId is in any of current matches 
@@ -292,7 +296,6 @@ console.log("match is being processed");
       console.log("Status of playing: ", isPlaying);
       client.emit('responsePlayingStatus', { isPlaying })
     }
-
 
   // ADDED JAKA: single user's status
   @SubscribeMessage('requestOnlineStatus')

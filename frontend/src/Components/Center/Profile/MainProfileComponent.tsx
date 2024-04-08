@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate} from "react-router-dom";
 import ImageUpload from "./SubComponents/changeUserImage";
 import ButtonTfa from "./SubComponents/TFAbutton";
 import FriendsList from "./SubComponents/DisplayFriends";
@@ -8,7 +9,9 @@ import MatchHistory from "./SubComponents/MatchHistory";
 import ChangeTheme from "./SubComponents/ChangeTheme";
 import { CurrUserData } from "./utils/contextCurrentUser";
 import { CustomSpinner } from "../../Other/Spinner";
-
+import { chatSocket } from "../Chat/Utils/ClientSocket";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 // Importing bootstrap and other modules
 import { Container, Row, Col } from "react-bootstrap";
 import DisplayOneUser from "./DisplayOneUser/DisplayOneUser";
@@ -49,6 +52,25 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
   const [showMatchHistory, setShowMatchHistory] = useState(false);
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   // const [isFirstLogin, setIsFirstLogin] = useState<boolean>(true);
+  const navigate = useNavigate(); //used for invitebutton
+
+  //invite button useStates
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [invitee, setInvitee] = useState("Unknown user");
+
+    //notify backend that the user declined
+  const declineInvite = () => {
+    chatSocket?.emit("declineInvite");
+    setShowInviteModal(false);
+    console.log("declined");
+  };
+
+  //move user to game page
+  const acceptInvite = () => {
+    setShowInviteModal(false);
+    console.log("accepted");
+    navigate("/main_page/game");
+  };
 
   const handleClickOnUser = (loginName: string) => {
     setSelectedUser(loginName);
@@ -69,7 +91,20 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
         console.error("Error fetching isFirstLogin status", error);
       }
     };
-    greetingIfFirstLogin();
+    greetingIfFirstLogin(); 
+
+    chatSocket.emit('identify');
+    //invite button
+    chatSocket.on("inviteMessage", (message: string) => {
+        console.log(`received string from backend :${message}`);
+        setInvitee(message);
+        setShowInviteModal(true);
+        });
+        //end invite button
+
+    return () => {
+        chatSocket.removeAllListeners("inviteMessage");
+    }
   }, []);
 
   // Update the game ranks of all users (otherwise it put the users with zero
@@ -158,6 +193,20 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
       {showWelcomeMessage && (
         <WelcomeMessage onClose={() => setShowWelcomeMessage(false)} />
       )}
+
+      <Modal show={showInviteModal}>
+        <Modal.Body>
+        <p style={{textAlign:"center"}}>{invitee} wants to invite you for a game</p>
+        <div style={{textAlign:"center"}}>
+            <Button style={{margin:"5px"}}variant="secondary" onClick={acceptInvite}>
+                Accept invite
+            </Button>
+            <Button variant="primary" onClick={declineInvite}>
+                Reject invite
+            </Button>
+        </div>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };

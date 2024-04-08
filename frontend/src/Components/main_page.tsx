@@ -5,6 +5,7 @@ import { CurrUserData } from "./Center/Profile/utils/contextCurrentUser.tsx";
 import { checkIfUserExistsInDB } from "./Center/Profile/utils/checkIfUserExistsInDB.tsx";
 import { Container } from "react-bootstrap";
 import { CustomSpinner } from "./Other/Spinner.tsx";
+import { chatSocket } from "./Center/Chat/Utils/ClientSocket.tsx";
 
 interface ContextProps {
   updateContext: (updateUserData: CurrUserData) => void;
@@ -14,6 +15,20 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
   console.log(" -------- MAIN PAGE: ---------");
 
   const [userData, setUserData] = useState<CurrUserData | null>(null);
+
+  useEffect(() => {
+    if (!chatSocket.connected) {
+      chatSocket.connect();
+      chatSocket.on("connect", () => {
+        console.log(
+          "[Main_page] socket connected: ",
+          chatSocket.connected,
+          " -> socket id: ",
+          chatSocket.id
+        );
+      });
+    }
+  },[]);
 
   useEffect(() => {
     const fetchUserData = async () => {

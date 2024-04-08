@@ -60,7 +60,7 @@ export class UserEntity {
 	@Column({default: 0})
 	gamesLost: number;
 
-	@Column({default: 'Lazy Lamb'})
+	@Column({default: 'Newbee'})
 	achievements: string;
 
 	@Column()

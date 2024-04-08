@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate} from "react-router-dom";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
@@ -6,6 +7,9 @@ import { deleteDummies } from "../../Test/deleteDummyUsers";
 import DisplayOneUser from "../Profile/DisplayOneUser/DisplayOneUser";
 import { useSelectedUser } from "../Profile/utils/contextSelectedUserName";
 import { getOnlineStatusUpdates } from "../Profile/utils/getOnlineStatuses";
+import { chatSocket } from "../Chat/Utils/ClientSocket";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 // import axios from "axios";
 // import '../../../css/Profile-users-list.css'
 
@@ -34,7 +38,7 @@ const UsersList: React.FC = () => {
   const displayList = true;
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [showMatchHistory, setShowMatchHistory] = useState(false);
-
+  const navigate = useNavigate(); //used for invitebutton
   // console.log('USERS LIST');
 
   // The 'users' need to be used in a Referrence (useRef), in order to re-render each time
@@ -44,6 +48,24 @@ const UsersList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [hasFetchedUsers, setHasFetchedUsers] = useState(false);
   const usersRef = useRef<User[]>(users);
+
+  //invite button useStates
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [invitee, setInvitee] = useState("Unknown user");
+
+  //notify backend that the user declined
+  const declineInvite = () => {
+    chatSocket?.emit("declineInvite");
+    setShowInviteModal(false);
+    console.log("declined");
+  };
+
+  //move user to game page
+  const acceptInvite = () => {
+    setShowInviteModal(false);
+    console.log("accepted");
+    navigate("/main_page/game");
+  };
 
   useEffect(() => {
     usersRef.current = users;
@@ -65,6 +87,18 @@ const UsersList: React.FC = () => {
 
       // Set a flag in local storage to indicate dummies have been inserted
       localStorage.setItem("dummiesInserted", "true");
+    }
+    chatSocket.emit('identify');
+    //invite button
+    chatSocket.on("inviteMessage", (message: string) => {
+      console.log(`received string from backend :${message}`);
+      setInvitee(message);
+      setShowInviteModal(true);
+    });
+    //end invite button
+
+    return () => {
+      chatSocket.removeAllListeners("inviteMessage");
     }
   }, []);
 
@@ -208,6 +242,19 @@ const UsersList: React.FC = () => {
           </button>
         </Col>
       </Row>
+      <Modal show={showInviteModal}>
+        <Modal.Body>
+        <p style={{textAlign:"center"}}>{invitee} wants to invite you for a game</p>
+        <div style={{textAlign:"center"}}>
+            <Button style={{margin:"5px"}}variant="secondary" onClick={acceptInvite}>
+                Accept invite
+            </Button>
+            <Button variant="primary" onClick={declineInvite}>
+                Reject invite
+            </Button>
+        </div>
+        </Modal.Body>
+      </Modal>
       {/* </div> */}
     </Container>
   );
