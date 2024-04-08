@@ -272,6 +272,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             >
                               Invite to play pong (Custom)!
                             </Button>
+                            <br></br>
                             <Button
                               className="me-4 mb-3"
                               value={clickedMemberIntraName}

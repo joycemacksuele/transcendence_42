@@ -367,6 +367,43 @@ export class ChatRepository extends Repository<NewChatEntity> {
 		}
 	}
 
+	public async addUsersToChat(newUsers: string[], chat: NewChatEntity) {
+		try {
+			return await this
+				.createQueryBuilder("new_chat")
+				.where('new_chat.id = :id', { id: chat.id })
+				.leftJoinAndSelect("new_chat.users", "user")
+				.leftJoinAndSelect("new_chat.usersCanChat", "users_can_chat")
+				.getOne()
+				.then(async (chatToJoin) => {
+
+					newUsers.map(async (newUserName) => {
+						// this.logger.error('[addUsers] New user to be added to chat: ' + newUserName);
+						await this.userService.getUserByLoginName(newUserName).then(async (newUser) => {
+							// Now we have the entity to update the users' array
+							chatToJoin.users.push(newUser);
+
+							// Add user to the usersCanChatEntity (before saving the chat entity):
+							await this.usersCanChatRepository.addNewUserToUsersCanChatEntity(chatToJoin, newUser).then(r => {
+								if (r) {
+									// this.logger.log('[joinChat][addNewUserToUsersCanChatEntity] UsersCanChatEntity id ' + r.id +
+									// 	' created for the user ' + user.loginName + " and chat id: " + chat.id);
+								}
+							});
+						});
+					});
+
+					await this.save(chatToJoin)
+
+					// this.logger.error("[joinChat] new Users list ", chatToJoin.users);
+
+					return chatToJoin;
+				});
+		} catch (err) {
+			throw new Error('[joinChat] err: ' + err);
+		}
+	}
+
 	public async joinChat(user: UserEntity, chat: NewChatEntity) {
 		try {
 			let chatToJoin = await this

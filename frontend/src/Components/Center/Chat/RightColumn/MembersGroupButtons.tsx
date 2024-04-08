@@ -11,7 +11,6 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 import {Alert} from "react-bootstrap";
-import { unescape } from "querystring";
 
 // the creator can kick, ban, mute anyone on the group (even admins)
 // the admin can kick, ban, mute others on the group (besides the creator)
