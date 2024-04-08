@@ -1,9 +1,16 @@
 import {Injectable, Logger} from "@nestjs/common";
 import { GameLogic } from "./gamelogic";
 import { GameState } from "./dto/game-state.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UserEntity } from "src/user/user.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class PonggameService {
+  constructor(
+		@InjectRepository(UserEntity)
+		private readonly userRepository: Repository<UserEntity>
+	) {}
   private readonly logger = new Logger(PonggameService.name);
 
   private _currentMatches: Map<string, GameState> = new Map(); //string represent the matchId
@@ -20,15 +27,10 @@ export class PonggameService {
   playerConnected(userId: string){
     const matchId = this.getMatchId(userId);
     const match =this._currentMatches.get(matchId);
-    console.log(`${match.currentState} check`);
     if(match.currentState == 'PrivateQueue')
         match.currentState = 'WaitingForInvited';
     else if (match.currentState == 'WaitingForInvited')
-    {
-        console.log(`${matchId} has been set to playing`);
         match.currentState = 'Playing';
-    }
-    console.log(`${match.currentState} check`);
   }
 
   playerDisconnected(userId: string) {
@@ -40,8 +42,8 @@ export class PonggameService {
     if (match.currentState == "Playing") {
       match.currentState = "End";
       match.stateMessage = "Opponent disconnected. You win be default";
-      console.log(`match info ${match.player1info} equal to ${userId}`);
-      if(match.player1info === userId)
+      console.log(`match info ${match.player1loginname} equal to ${userId}`);
+      if(match.player1loginname === userId)
       {
         match.winner = 2;
         console.log("player 2 is set to winnner");
@@ -49,26 +51,44 @@ export class PonggameService {
         match.winner = 1;
         console.log("player 1 is set to winner");
       }
-
-    } else if (match != undefined && match.currentState == "Queue") {
-      match.currentState = "Disconnection";
-      match.stateMessage = "Opponent left before the game started";
+    } 
+    else if (match.currentState == "Queue") {
+      match.currentState = "Reset";
+      match.stateMessage = "";
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
       else if (match.gameType == "Custom") this._queueCustomMatchId = "";
     }
-    else if (match.currentState == 'WaitingForInvited' && match.player1info == userId){
+    else if (match.currentState == 'WaitingForInvited' && match.player1loginname == userId){
         match.currentState = 'Disconnection';
         match.stateMessage = 'Opponent left before the game started';
     }
-    else if (match.currentState =="PrivateQueue" || (match.currentState == 'WaitingForInvited' && match.player2info == userId))
+    else if (match.currentState =="PrivateQueue" || (match.currentState == 'WaitingForInvited' && match.player2loginname == userId))
         return;
     console.log(`deleting ${userId} from matchesmap`);
     this._userMatch.delete(userId);
   }
 
+  playerLeavesQueue(userId: string) : boolean{
+    console.log("calling playerLeavesQueue");
+    const matchId = this._userMatch.get(userId);
+    if (matchId == undefined) return true;
+    const match = this._currentMatches.get(matchId);
+console.log("currentstate :" + match.currentState);
+    if (match.currentState == "Queue" || match.currentState == "WaitingForInvited")
+    { 
+        match.currentState = "Reset";
+        match.stateMessage = "";
+        if (match.gameType == "Default") this._queueDefaultMatchId = "";
+        else if (match.gameType == "Custom") this._queueCustomMatchId = "";
+        this._userMatch.delete(userId);
+        return true;
+    }
+    return false;
+  }
+
   cleanUpMatches() {
     this._currentMatches.forEach((gameState: GameState, matchId: string) => {
-      if (gameState.currentState == "End" || gameState.currentState == "Disconnection") {
+      if (gameState.currentState == "End" || gameState.currentState == "Disconnection" || gameState.currentState == "Reset") {
         console.log(`deleting ${matchId}`);
         this._currentMatches.delete(matchId);
       }
@@ -86,26 +106,30 @@ export class PonggameService {
     if (!this._currentMatches.has(matchId)) return;
     const currentMatch = this._currentMatches.get(matchId);
     if (currentMatch.gameType == "Custom") input *= -1;
-    if (currentMatch.player1info == userId) {
+    if (currentMatch.player1loginname == userId) {
       currentMatch.player1input = input;
-    } else if (currentMatch.player2info == userId) {
+    } else if (currentMatch.player2loginname == userId) {
       currentMatch.player2input = input;
     }
   }
 
   //get matchId if the user is already in a match else return emptystring
   getMatchId(userId: string): string {
+    this._userMatch.forEach((matchid, user) =>{
+      console.log(`${matchid} player ${user}`);
+    }
+    )
     if (this._userMatch.has(userId)) {
       return this._userMatch.get(userId);
     }
     return "";
   }
 
-  joinGame(userId: string, matchType: string): string {
+  joinGame(userId: string, profilename: string, matchType: string) : string {
     if (matchType == "Default" && this._queueDefaultMatchId == "") {
-      return this.createNewMatch(userId, "Default");
+      return this.createNewMatch(userId, profilename, "Default");
     } else if (matchType == "Custom" && this._queueCustomMatchId == "") {
-      return this.createNewMatch(userId, "Custom");
+      return this.createNewMatch(userId, profilename, "Custom");
     } else {
       const currentMatchId =
         matchType == "Default"
@@ -115,7 +139,8 @@ export class PonggameService {
         ? (this._queueDefaultMatchId = "")
         : (this._queueCustomMatchId = "");
       const currentGamestate = this._currentMatches.get(currentMatchId);
-      currentGamestate.player2info = userId;
+      currentGamestate.player2loginname = userId;
+      currentGamestate.player2profilename = profilename;
       currentGamestate.currentState = "Playing";
       this._userMatch.set(userId, currentMatchId);
       return currentMatchId;
@@ -125,13 +150,15 @@ export class PonggameService {
   //will create a new gamestate and register it to currentMatches
   //will register the user to userMatch
   //Add the matchId to the relevant queue
-  createNewMatch(userId: string, matchType: string): string {
+  createNewMatch(userId: string, profilename: string, matchType: string): string {
     const newMatch = this.getInitMatch(matchType);
     const currentMatchId = "match" + userId;
     newMatch.roomName = currentMatchId;
     newMatch.currentState = "Queue";
     newMatch.stateMessage = "Waiting for opponent...";
-    newMatch.player1info = userId;
+    newMatch.stateMessage2= "Press r to go back to selection screen";
+    newMatch.player1profilename = profilename;
+    newMatch.player1loginname = userId;
     this._currentMatches.set(currentMatchId, newMatch);
     this._userMatch.set(userId, currentMatchId);
     if (matchType == "Default") this._queueDefaultMatchId = currentMatchId;
@@ -139,14 +166,16 @@ export class PonggameService {
     return currentMatchId;
   }
 
-  createPrivateMatch(userId: string, userId2: string, matchType: string){
+  createPrivateMatch(userId: string, userId2: string, user1profile: string, user2profile: string, matchType: string){
     const newMatch = this.getInitMatch(matchType);
     const currentMatchId= "match" + userId;
     newMatch.roomName = currentMatchId;
     newMatch.currentState = "PrivateQueue";
-    newMatch.stateMessage = "Waiting for " + userId2 + " to accept the invite";
-    newMatch.player1info = userId;
-    newMatch.player2info = userId2;
+    newMatch.stateMessage = "Waiting for user to accept the invite";
+    newMatch.player1loginname = userId;
+    newMatch.player2loginname = userId2;
+    newMatch.player1profilename = user1profile;
+    newMatch.player2profilename = user2profile;
     this._currentMatches.set(currentMatchId, newMatch);
     this._userMatch.set(userId, currentMatchId);
     this._userMatch.set(userId2, currentMatchId);
@@ -169,6 +198,7 @@ export class PonggameService {
       gameType: matchType,
       currentState: "Selection",
       stateMessage: "Waiting for opponent...",
+      stateMessage2: "Press r to go back to selection screen",
       timer: 100,
       winner: 0,
       ball_speed: ball_speed,
@@ -185,8 +215,10 @@ export class PonggameService {
       player2height: paddleHeight,
       player2width: 0.01,
       player2speed: 0.01,
-      player1info: "",
-      player2info: "",
+      player1loginname: "",
+      player2loginname: "",
+      player1profilename:"",
+      player2profilename:"",
       player1input: 0,
       player2input: 0,
       player1score: 0,
@@ -207,7 +239,7 @@ export class PonggameService {
         const matchId = this._userMatch.get(userId);
         const currentGamestate = this._currentMatches.get(matchId);
         currentGamestate.currentState= 'End';
-        currentGamestate.stateMessage= 'Player declined your invite';
+        currentGamestate.stateMessage= 'User declined your invite';
         this.removeUserIdMatch(userId);
     }
   }

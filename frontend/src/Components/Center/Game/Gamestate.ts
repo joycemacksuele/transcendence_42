@@ -3,6 +3,7 @@ export interface GameState {
   gameType: string;
   currentState: string; //current states ("Selection, Playing, Queue, PrivateQueue, End, Disconnection")
   stateMessage: string;
+  stateMessage2: string;
   timer: number;
   winner: number;
   //ball info
@@ -24,8 +25,10 @@ export interface GameState {
   player2speed: number;
 
   //player connectioni info
-  player1info: string; //player 1 info
-  player2info: string; //player 2 info
+  player1loginname: string; //player 1 login name
+  player2loginname: string; //player 2 login name
+  player1profilename: string; //player 1 profile name
+  player2profilename: string; //player 2 profile name
   //playerinput
   player1input: number; //-1 for up , 0 for no input, 1 for down
   player2input: number;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate} from "react-router-dom";
 import MyChats from "./LeftColumn/MyChats.tsx";
 import Channels from "./LeftColumn/Channels.tsx";
 import NewGroupButton from "./LeftColumn/NewGroupButton.tsx";
@@ -33,6 +34,7 @@ const MainComponent = () => {
   >();
   const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved from Messages
   const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]); // jaka, moved from Chats
+  const navigate = useNavigate(); //used for invitebutton
 
   if (chatClicked) {
     console.log("[MainComponent] chatClicked: ", chatClicked.name);
@@ -70,21 +72,22 @@ const MainComponent = () => {
   const [errorException, setErrorException] = useState<string[]>([]);
   const [showExceptionModal, setShowExceptionModal] = useState(false);
 
-  //
-  const [show, setShow] = useState(false);
+  //invite button useStates
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitee, setInvitee] = useState("Unknown user");
 
   //notify backend that the user declined
   const declineInvite = () => {
     chatSocket?.emit("declineInvite");
-    setShow(false);
+    setShowInviteModal(false);
     console.log("declined");
   };
+
   //move user to game page
   const acceptInvite = () => {
-    setShow(false);
+    setShowInviteModal(false);
     console.log("accepted");
-    window.location.replace("/main_page/game");
+    navigate("/main_page/game");
   };
 
   ////////////////////////////////////////////////////////////////////// CREATE/CONNECT/DISCONNECT SOCKET
@@ -107,13 +110,6 @@ const MainComponent = () => {
         );
       });
 
-      //invite button
-      chatSocket.on("inviteMessage", (message: string) => {
-        console.log(`received string from backend :${message}`);
-        setInvitee(message);
-        setShow(true);
-      });
-      //end invite button
 
       chatSocket.on("disconnect", (reason) => {
         if (reason === "io server disconnect") {
@@ -131,6 +127,14 @@ const MainComponent = () => {
         chatSocket.id
       );
     }
+    chatSocket.emit('identify');
+    //invite button
+    chatSocket.on("inviteMessage", (message: string) => {
+    console.log(`received string from backend :${message}`);
+    setInvitee(message);
+    setShowInviteModal(true);
+    });
+    //end invite button
 
     chatSocket.on("exceptionDtoValidation", (error: string) => {
       if (error.length > 0) {
@@ -159,6 +163,7 @@ const MainComponent = () => {
       alertKey = 0;
       setShowExceptionModal(false);
       setErrorException([]);
+      chatSocket.removeAllListeners("inviteMessage");
     };
   }, []);
 
@@ -292,7 +297,7 @@ const MainComponent = () => {
               activeKey="members"
               variant="underline"
               fill
-              // onSelect={(k) => handleClick(k)}
+              // onSelect={(k) => ha ndleClick(k)}
             >
               <Nav.Item>
                 {chatClicked?.type != ChatType.PRIVATE ? (
@@ -388,17 +393,20 @@ const MainComponent = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Modal show={show}>
+      <Modal show={showInviteModal}>
         <Modal.Body>
-          <p>{invitee} wants to invite you for a game</p>
-          <Button variant="secondary" onClick={acceptInvite}>
-            Accept invite
-          </Button>
-          <Button variant="primary" onClick={declineInvite}>
-            Reject invite
-          </Button>
+        <p style={{textAlign:"center"}}>{invitee} wants to invite you for a game</p>
+        <div style={{textAlign:"center"}}>
+            <Button style={{margin:"5px"}}variant="secondary" onClick={acceptInvite}>
+                Accept invite
+            </Button>
+            <Button variant="primary" onClick={declineInvite}>
+                Reject invite
+            </Button>
+        </div>
         </Modal.Body>
       </Modal>
+        
       {/* </div> */}
     </Container>
   );

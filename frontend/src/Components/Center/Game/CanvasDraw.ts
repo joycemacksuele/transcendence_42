@@ -81,13 +81,13 @@ function drawNames(
   context.fillStyle = "white";
   context.textAlign = "right";
   context.fillText(
-    gameState.player1info,
+    gameState.player1profilename,
     center_canvas - 2 * fontSize,
     fontSize
   );
   context.textAlign = "left";
   context.fillText(
-    gameState.player2info,
+    gameState.player2profilename,
     center_canvas + 2 * fontSize,
     fontSize
   );
@@ -105,12 +105,6 @@ function drawCurrentGameState(
   drawPaddles(context, width, height, gameState);
   drawScores(context, width, height, gameState);
   drawNames(context, width, height, gameState);
-  console.log(
-    "scores " +
-      gameState.player1score.toString() +
-      " " +
-      gameState.player2score.toString()
-  );
 }
 
 function drawField(
@@ -146,7 +140,18 @@ function drawMessage(
   context.fillStyle = "white";
   context.textAlign = "center";
   context.fillText(message, width / 2, height / 2);
-  console.log("drawing text" + (0.05 * height).toString());
+}
+
+function drawMessageSubline(
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  message: string
+) {
+  context.font = (0.02 * height).toString() + "px nimbus sans";
+  context.fillStyle = "white";
+  context.textAlign = "center";
+  context.fillText(message, width / 2, height / 2 + (0.05 * height));
 }
 
 export function drawScene(
@@ -167,6 +172,7 @@ export function drawScene(
   const currentState = gameState.currentState;
   if (currentState == "Queue" || currentState =='Disconnection') {
     drawMessage(context, width, height, gameState.stateMessage);
+    drawMessageSubline(context, width, height, gameState.stateMessage2);
   } else if (currentState == "Playing") {
     if (gameState.timer > 0) {
       drawMessage(context, width, height, gameState.stateMessage);
@@ -176,10 +182,8 @@ export function drawScene(
     drawCurrentGameState(context, width, height, gameState);
   } else if (currentState == "End" || currentState == "PrivateQueue" || currentState =="WaitingForInvited") {
     drawMessage(context, width, height, gameState.stateMessage);
+    drawMessageSubline(context, width, height, gameState.stateMessage2);
     drawField(context, width, height);
     drawCurrentGameState(context, width, height, gameState);
-  }
-  else {
-    console.log("test" + currentState);
   }
 }
