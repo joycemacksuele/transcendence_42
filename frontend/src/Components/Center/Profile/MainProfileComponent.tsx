@@ -101,9 +101,15 @@ const UserProfilePage: React.FC<ContextProps> = ({ updateContext }) => {
         setShowInviteModal(true);
         });
         //end invite button
-
+    const handleBeforeUnload = () => {
+        console.log("unloading");
+        chatSocket?.emit("declineInvite");
+    };     
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
     return () => {
         chatSocket.removeAllListeners("inviteMessage");
+        window.removeEventListener('beforeunload', handleBeforeUnload);
     }
   }, []);
 
