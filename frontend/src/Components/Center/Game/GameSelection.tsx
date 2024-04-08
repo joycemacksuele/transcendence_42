@@ -32,8 +32,14 @@ function GameSelection(props: { socket: Socket}) {
       setShowInviteModal(true);
       });
     //end invite button
+    const handleBeforeUnload = () => {
+        console.log("unloading");
+        props.socket.emit("declineInvite");
+    };     
+    window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       props.socket.removeAllListeners("inviteMessage");
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     }
   },[])
 

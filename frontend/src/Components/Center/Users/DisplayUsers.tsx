@@ -97,8 +97,15 @@ const UsersList: React.FC = () => {
     });
     //end invite button
 
+    const handleBeforeUnload = () => {
+        console.log("unloading");
+        chatSocket?.emit("declineInvite");
+    };     
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     return () => {
       chatSocket.removeAllListeners("inviteMessage");
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     }
   }, []);
 

@@ -148,7 +148,11 @@ const MainComponent = () => {
         setShowExceptionModal(true);
       }
     });
-
+    const handleBeforeUnload = () => {
+        console.log("unloading");
+        chatSocket?.emit("declineInvite");
+    };     
+    window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       console.log(
         "[MainComponent] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
@@ -164,6 +168,7 @@ const MainComponent = () => {
       setShowExceptionModal(false);
       setErrorException([]);
       chatSocket.removeAllListeners("inviteMessage");
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
 
