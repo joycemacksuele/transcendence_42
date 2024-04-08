@@ -15,7 +15,7 @@ import { ResponseNewChatDto } from '../Utils/ChatUtils.tsx';
 type PropsHeader = {
     setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
     setActiveId_Chats: (content: number) => void;
-    handleClick: (content: string | null) => void;
+    handleActiveContentLeft: (content: string | null) => void;
     // setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
@@ -23,7 +23,9 @@ type PropsHeader = {
 //         get the ID of the new chat and then set the activeChat and the activeChatId
 
 // const NewGroupButton = () => {
-const NewGroupButton: React.FC<PropsHeader> = ({ setChatClicked, setActiveId_Chats, handleClick }) => {
+const NewGroupButton: React.FC<PropsHeader> = ({setChatClicked,
+                                                setActiveId_Chats,
+                                                handleActiveContentLeft }) => {
 
     let alertKey = 0;
     const [errorException, setErrorException] = useState<string[]>([]);
@@ -59,7 +61,7 @@ const NewGroupButton: React.FC<PropsHeader> = ({ setChatClicked, setActiveId_Cha
             setChatClicked(newChat);
             if (newChat?.id)
                 setActiveId_Chats(newChat.id);
-                // handleClick('recent');   // !!! This does not work properly, both MyChats and Channels become selected, the new Chat is not always shown ...
+                // handleActiveContentLeft('recent');   // !!! This does not work properly, both MyChats and Channels become selected, the new Chat is not always shown ...
             console.log('[NewGroupsButton] newChat": ' + JSON.stringify(newChat));
         });
 
