@@ -18,7 +18,7 @@ import { unescape } from "querystring";
 
 type PropsHeader = {
     chatClicked: ResponseNewChatDto | undefined;
-    handleClick: (content: string | null) => void;
+    handleActiveContentLeft: (content: string | null) => void;
     setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
     // setActiveContentLeft: (activeContentLeft: string) => void;
     setActiveId_Chats: (content: number) => void;
@@ -29,7 +29,7 @@ type PropsHeader = {
 };
 
 const MembersGroupButtons: React.FC<PropsHeader> = ({ chatClicked, 
-                                                      handleClick,      // jaka: maybe not all of these are needed, to test
+                                                      handleActiveContentLeft,      // jaka: maybe not all of these are needed, to test
                                                       setChatClicked,
                                                     //   setActiveContentLeft,
                                                       setActiveId_Chats,
@@ -172,7 +172,7 @@ const joinGroupChat = () => {
     //          Also, set selected Chat, and deselect it in Channels
     // setActiveContentLeft('recent');
     // setActiveButton('recent');
-    handleClick('recent');
+    handleActiveContentLeft('recent');
     if (chatClicked?.id) {
         setActiveId_Chats(chatClicked.id);
         setActiveId_Channels(-1);
