@@ -365,7 +365,7 @@ export class ChatGateway
         this.logger.log('deletePassword -> getChats -> all chats were emitted to the frontend');
       });
     }).catch((err) => {
-      this.logger.error('[deletePassword] Could edit chat\'s password -> err: ' + err.message);
+      this.logger.error('deletePassword Could edit chat\'s password -> err: ' + err.message);
       clientSocket.emit("exceptionEditPassword", err.message);
     });
   }
@@ -396,10 +396,7 @@ export class ChatGateway
 
   // added jaka:
   @SubscribeMessage('getOneChatDto')
-  async handleGetOneChat(
-    @MessageBody() data: { chatId: number },
-    @ConnectedSocket() clientSocket: Socket)
-  {
+  async handleGetOneChat(@MessageBody() data: { chatId: number }, @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('Fetching just one chat, by ID ' + data.chatId);
     try {
       const oneChat: ResponseNewChatDto = await this.chatRepository.getOneChatDto(data.chatId);

@@ -140,7 +140,9 @@ export class ChatService {
       const foundUser: UserEntity = await this.userService.getUserByLoginName(intraName);
       // this.logger.log('[saveNewUserToChat] new users list: ' + foundEntityToJoin.users);
       await this.chatRepository.joinChat(foundUser, foundEntityToJoin).then(r => {
-        this.logger.log('[saveNewUserToChat] joined chat -> chatId should match: ' + chatId + " = " + r.id);
+        if (r.id) {
+          this.logger.log('[saveNewUserToChat] joined chat -> chatId should match: ' + chatId + " = " + r.id);
+        }
       });
       return true;
     } catch (err) {
@@ -270,11 +272,7 @@ export class ChatService {
   async addUsers(chatId: number, newUsers: string[])  {
     try {
       await this.chatRepository.getOneChat(chatId).then(async (foundChatEntityToAdd: NewChatEntity) => {
-        newUsers.map(async (newUser) => {
-          const userEntity = await this.userService.getUserByLoginName(newUser);
-          // Now we have the entity to update the users' array
-          await this.chatRepository.joinChat(userEntity, foundChatEntityToAdd);
-        });
+        await this.chatRepository.addUsersToChat(newUsers, foundChatEntityToAdd);
       });
     } catch (err) {
       this.logger.error('[addUsers] Could not add users to chat exception: ' + err);

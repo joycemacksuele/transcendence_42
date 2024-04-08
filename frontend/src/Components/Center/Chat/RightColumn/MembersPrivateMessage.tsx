@@ -167,7 +167,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                 {intraName !== clickedMember && (
                   <>
                     <Modal
-                      // size="sm"
+                      size="lg"
                       show={showMemberModal}
                       onHide={() => {
                         setShowMemberModal(false);
@@ -191,36 +191,37 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                             >
                               Invite to play pong (Custom)!
                       </Button>
-                        <Button
-                          className="me-3"
-                          href={import.meta.env.VITE_FRONTEND as string + "/main_page/users"}
-                          variant="primary"
-                          // onClick={ () => setShow(false)}
-                        >
-                          Go to profile
-                        </Button>
-                      </Modal.Body>
+                      <br></br>
+                      <Button
+                        className="me-3"
+                        href={import.meta.env.VITE_FRONTEND as string + "/main_page/users"}
+                        variant="primary"
+                        // onClick={ () => setShow(false)}
+                      >
+                        Go to profile
+                      </Button>
+                    </Modal.Body>
                     </Modal>
                     <Modal show={showErrorModal}>
-                            <Modal.Body>
-                                <p style={{textAlign:"center"}}>User is currently in a game.</p>
-                                <div style={{textAlign:"center"}}>
-                                <Button variant="primary" onClick={handleErrorClose}>
-                                Close
-                                </Button>
-                                </div>
-                            </Modal.Body>
-                        </Modal>
-                        <Modal show={showOfflineModal}>
-                            <Modal.Body>
-                                <p style={{textAlign:"center"}}>User currently is offline.</p>
-                                <div style={{textAlign:"center"}}>
-                                <Button variant="primary" onClick={handleOfflineShow}>
-                                    Close
-                                </Button>
-                                </div>
-                            </Modal.Body>
-                        </Modal>
+                      <Modal.Body>
+                          <p style={{textAlign:"center"}}>User is currently in a game.</p>
+                          <div style={{textAlign:"center"}}>
+                          <Button variant="primary" onClick={handleErrorClose}>
+                          Close
+                          </Button>
+                          </div>
+                      </Modal.Body>
+                    </Modal>
+                    <Modal show={showOfflineModal}>
+                      <Modal.Body>
+                          <p style={{textAlign:"center"}}>User currently is offline.</p>
+                          <div style={{textAlign:"center"}}>
+                          <Button variant="primary" onClick={handleOfflineShow}>
+                              Close
+                          </Button>
+                          </div>
+                      </Modal.Body>
+                    </Modal>
                   </>
                 )}
               </ListGroup>
