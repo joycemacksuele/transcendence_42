@@ -191,6 +191,13 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                             >
                               Invite to play pong (Custom)!
                       </Button>
+                      <Button
+                              className="me-4 mb-3"
+                              variant="success"
+                              onClick={()=>invitePlayer(clickedMember!, "Shimmer")}
+                            >
+                              Invite to play pong (Shimmer)!
+                            </Button>
                       <br></br>
                       <Button
                         className="me-3"

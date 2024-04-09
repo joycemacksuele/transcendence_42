@@ -17,7 +17,7 @@ export class PonggameService {
   private _userMatch: Map<string, string> = new Map(); //keeps track of which match the current user is currently part of.
   private _queueDefaultMatchId: string = "";
   private _queueCustomMatchId: string = "";
-
+  private _queueShimmerMatchId: string = "";
   private _gameLogic: GameLogic = new GameLogic();
 
   getCurrentMatches(): Map<string, GameState> {
@@ -57,6 +57,7 @@ export class PonggameService {
       match.stateMessage = "";
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
       else if (match.gameType == "Custom") this._queueCustomMatchId = "";
+      else if (match.gameType == "Shimmer") this._queueCustomMatchId = "";
     }
     else if (match.currentState == 'WaitingForInvited' && match.player1loginname == userId){
         match.currentState = 'Disconnection';
@@ -80,6 +81,7 @@ console.log("currentstate :" + match.currentState);
         match.stateMessage = "";
         if (match.gameType == "Default") this._queueDefaultMatchId = "";
         else if (match.gameType == "Custom") this._queueCustomMatchId = "";
+        else if (match.gameType == "Shimmer") this._queueShimmerMatchId = "";
         this._userMatch.delete(userId);
         return true;
     }
@@ -130,14 +132,28 @@ console.log("currentstate :" + match.currentState);
       return this.createNewMatch(userId, profilename, "Default");
     } else if (matchType == "Custom" && this._queueCustomMatchId == "") {
       return this.createNewMatch(userId, profilename, "Custom");
+    } else if (matchType == "Shimmer" && this._queueShimmerMatchId == "") {
+      return this.createNewMatch(userId, profilename, "Shimmer");
     } else {
-      const currentMatchId =
-        matchType == "Default"
-          ? this._queueDefaultMatchId
-          : this._queueCustomMatchId;
-      matchType == "Default"
-        ? (this._queueDefaultMatchId = "")
-        : (this._queueCustomMatchId = "");
+
+    //   const currentMatchId =
+    //     matchType == "Default"
+    //       ? this._queueDefaultMatchId
+    //       : this._queueCustomMatchId;
+    //   matchType == "Default"
+    //     ? (this._queueDefaultMatchId = "")
+    //     : (this._queueCustomMatchId = "");
+      let currentMatchId = "";
+      if (matchType == "Default") {
+         currentMatchId = this._queueDefaultMatchId;
+         this._queueDefaultMatchId = "";
+      } else if (matchType == "Custom") {
+         currentMatchId = this._queueCustomMatchId;
+         this._queueCustomMatchId = "";
+      } else if (matchType == "Shimmer") {
+         currentMatchId = this._queueShimmerMatchId;
+         this._queueShimmerMatchId = "";
+      }
       const currentGamestate = this._currentMatches.get(currentMatchId);
       currentGamestate.player2loginname = userId;
       currentGamestate.player2profilename = profilename;
@@ -163,6 +179,7 @@ console.log("currentstate :" + match.currentState);
     this._userMatch.set(userId, currentMatchId);
     if (matchType == "Default") this._queueDefaultMatchId = currentMatchId;
     else if (matchType == "Custom") this._queueCustomMatchId = currentMatchId;
+    else if (matchType == "Shimmer") this._queueShimmerMatchId = currentMatchId;
     return currentMatchId;
   }
 
@@ -186,13 +203,15 @@ console.log("currentstate :" + match.currentState);
     const starting_angle = 180;
     const starting_angle_radians = (starting_angle * Math.PI) / 180;
     const ball_speed = 0.009;
-
+    let invisibletimer = 0;
     let paddleHeight = 0.2;
 
     if (matchType == "Custom") {
       paddleHeight = 0.1;
     }
-
+    else if(matchType == "Shimmer"){
+        invisibletimer = 100;
+    }
     const state: GameState = {
       roomName: "default",
       gameType: matchType,
@@ -200,6 +219,8 @@ console.log("currentstate :" + match.currentState);
       stateMessage: "Waiting for opponent...",
       stateMessage2: "Press r to go back to selection screen",
       timer: 100,
+      invisibletimer: invisibletimer,
+      invisibletoggle: false,
       winner: 0,
       ball_speed: ball_speed,
       ball_x_speed: 0,
