@@ -79,13 +79,9 @@ const Channels: React.FC<PropsHeader> = ({
 
   // jaka: To remember which Chat is selected in MyChats, when going from MyChats to Channels and back
   useEffect(() => {
-    console.log(
-      "jaka: Channels: setChatClicked():  " + JSON.stringify(chatInfo)
-    );
     const activeChat: ResponseNewChatDto | undefined = chatInfo.find(
       (chat) => chat.id === activeId_Channels
     );
-    //console.log('            activeChat: ' + JSON.stringify(activeChat));
     // if (activeChat) {
     handleClickOnChat(activeChat);
     // }
