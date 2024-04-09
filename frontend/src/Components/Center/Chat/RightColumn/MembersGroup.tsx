@@ -176,7 +176,8 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
       {/* Members row */}
       <Row className="members-col-members flex-grow-1">
         <Stack gap={2}>
-          {chatClicked?.usersIntraName &&
+          { chatClicked?.usersIntraName &&
+            chatClicked?.type != 2 &&
             chatClicked?.usersIntraName.map((memberIntraName: string, i: number) => (
                 <ListGroup key={i} variant="flush">
                   <ListGroup.Item
