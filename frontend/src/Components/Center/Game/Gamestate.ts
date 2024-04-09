@@ -5,6 +5,8 @@ export interface GameState {
   stateMessage: string;
   stateMessage2: string;
   timer: number;
+  invisibletimer: number;
+  invisibletoggle: boolean;
   winner: number;
   //ball info
   //for now assume the ball goes 45 degrees always

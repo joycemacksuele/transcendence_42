@@ -73,6 +73,13 @@ function GameSelection(props: { socket: Socket}) {
             Custom Game
           </Button>
 
+          <Button
+            variant="dark"
+            className="button_default"
+            onClick={() => joinGame("Shimmer")}
+          >
+            Shimmer
+          </Button>
           <p></p>
           <p><b>Classic</b></p>
           <p>
@@ -83,7 +90,12 @@ function GameSelection(props: { socket: Socket}) {
             Press <b>W</b> (down) and <b>S</b> (up) for paddle movement<br/>
             Shorter paddles
           </p>
-          <p>First one to 3 wins</p>
+          <p><b>Shimmer</b></p>
+          <p>
+            Press <b>W</b> (up) and <b>S</b> (down) for paddle movement<br/>
+            Ball goes invisible from time to time
+          </p>
+          <p><b>First one to 11 wins</b></p>
         </div>
       </div>
       

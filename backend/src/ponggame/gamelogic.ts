@@ -1,6 +1,7 @@
 import { GameState } from './dto/game-state.dto';
 
-const MAX_GAME_SCORE = 1;
+// const MAX_GAME_SCORE = 3;
+const MAX_GAME_SCORE = 11;
 
 interface object_dims {
   x: number;
@@ -239,6 +240,15 @@ export class GameLogic {
       return this.countdownState(gameState);
     }
 
+    if(gameState.gameType == "Shimmer"){
+        gameState.invisibletimer = gameState.invisibletimer <= 1 ? 0 : --gameState.invisibletimer;
+        if(gameState.invisibletimer == 0) 
+        {
+            gameState.invisibletoggle = !gameState.invisibletoggle;
+            gameState.invisibletimer = 40;
+        }
+    }
+
     //update player1 position
     gameState.player1pos =
       gameState.player1pos + gameState.player1input * gameState.player1speed;
@@ -285,6 +295,7 @@ export class GameLogic {
       gameState.player1pos = 0.5;
       gameState.player2pos = 0.5;
       gameState.timer = 100;
+      gameState.invisibletimer = 100;
     }
     return gameState;
   }

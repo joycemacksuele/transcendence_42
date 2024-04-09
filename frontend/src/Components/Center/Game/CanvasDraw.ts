@@ -6,9 +6,14 @@ function drawBall(
   height: number,
   gameState: GameState
 ) {
+  let ballcolor = "white";
+  if(gameState.gameType == "Shimmer" && gameState.invisibletoggle){
+    console.log("change color");
+    ballcolor = "black";
+  }
   //draw ball
   const ball_half_size = (gameState.ball_size * height) / 2;
-  context.fillStyle = "white";
+  context.fillStyle = ballcolor;
   context.fillRect(
     gameState.ball_x * width - ball_half_size,
     gameState.ball_y * height - ball_half_size,
