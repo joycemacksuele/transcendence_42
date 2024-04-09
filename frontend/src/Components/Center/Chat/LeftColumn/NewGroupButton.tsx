@@ -15,18 +15,17 @@ import { ResponseNewChatDto } from '../Utils/ChatUtils.tsx';
 type PropsHeader = {
     setChatClicked: (chatClicked: ResponseNewChatDto | undefined) => void;
     setActiveId_Chats: (content: number) => void;
-    handleActiveContentLeft: (content: string | null) => void;
-    // setMessages: (messages: ResponseNewChatDto | null) => void;
+    setActiveContentLeft: (content: string) => void;
+    setActiveTabLeft: (content: string) => void;
 };
 
-// Jaka: To set the newly created group as the seleceted chat in MyChats, it needs to first create the chat, then 
+// Jaka: To set the newly created group as the selected chat in MyChats, it needs to first create the chat, then 
 //         get the ID of the new chat and then set the activeChat and the activeChatId
 
-// const NewGroupButton = () => {
 const NewGroupButton: React.FC<PropsHeader> = ({setChatClicked,
                                                 setActiveId_Chats,
-                                                handleActiveContentLeft }) => {
-
+                                                setActiveContentLeft,
+                                                setActiveTabLeft }) => {
     let alertKey = 0;
     const [errorException, setErrorException] = useState<string[]>([]);
     const [showNewChatModal, setShowNewChatModal] = useState(false);
@@ -50,18 +49,19 @@ const NewGroupButton: React.FC<PropsHeader> = ({setChatClicked,
             setShowNewChatModal(false);
         }
 
-        // JAKA: Set the activeChat and activeChatID
-        //      get all chats
-        //      find the one matching new name
-        //      set the ActiveChat and the activeChatId
+        // JAKA: Set the activeChat and activeChatID, get all chats,
+        //       find the one matching new name, set the ActiveChat and the activeChatId
         chatSocket.on("getChats", (allChats: ResponseNewChatDto[]) => {
             const newChat: ResponseNewChatDto | undefined = allChats.find(
                 (chat) => chat.name === chatName
             );
             setChatClicked(newChat);
-            if (newChat?.id)
+            if (newChat?.id) {
                 setActiveId_Chats(newChat.id);
-                // handleActiveContentLeft('recent');   // !!! This does not work properly, both MyChats and Channels become selected, the new Chat is not always shown ...
+                setActiveTabLeft('recent');
+                setActiveContentLeft('recent');
+            }
+            chatSocket.off("getChats"); // Remove the listener !!
             console.log('[NewGroupsButton] newChat": ' + JSON.stringify(newChat));
         });
 
