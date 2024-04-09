@@ -26,10 +26,9 @@ const MyChats: React.FC<PropsHeader> = ({
   activeId_Chats,
   setMessages,
 }) => {
-  // const [chatInfo, setChatInfo] = useState<ResponseNewChatDto[]>([]); // jaka, moved to Main chat
   const [intraName, setIntraName] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
-  const [chatsExist, setChatsExist] = useState<boolean>(false);
+  // const [chatsExist, setChatsExist] = useState<boolean>(false);
 
   // jaka: After clicking Privat Chat on Users Profile, it sends here the user's Profile Name
   //        via the navigate( state ), which is then accessible in location()
@@ -133,9 +132,7 @@ const MyChats: React.FC<PropsHeader> = ({
 
   // MyChat must remember which Chat is selected when going from MyChats to Channels and back
   useEffect(() => {
-    console.log(
-      "[MyChats]      AllChats / ChatInfo: " + JSON.stringify(chatInfo)
-    );
+    // console.log( "[MyChats]      AllChats / ChatInfo: " + JSON.stringify(chatInfo));
     const activeChat: ResponseNewChatDto | undefined = chatInfo.find(
       (chat) => chat.id === activeId_Chats
     );
@@ -160,9 +157,9 @@ const MyChats: React.FC<PropsHeader> = ({
       {/* Recent chats row */}
       <Row className="">
         <Stack gap={2}>
-          {/* {!chatsExist ? (    This causes arbitrary behaviour, beter remove it */}
+          {/* {!chatsExist ? (    // Not used for now */}
           {chatInfo.length === 0 ? (
-            <span className="pt-5">You are not a member of any chat yet.</span> // move to the map(), check inside the map if I am a member of any chat ....
+            <span className="pt-5">You are not a member of any chat yet.</span>
           ) : (
             chatInfo.map((chat: ResponseNewChatDto) => (
               <Fragment key={chat.id}>
@@ -181,7 +178,6 @@ const MyChats: React.FC<PropsHeader> = ({
                                     }
                                     justify-content-between align-items-start`}
                         variant="light"
-                        // onClick={() => setChatClicked(chat, activeContentLeft)}
                         onClick={() => handleClickOnChat(chat)}
                       >
                         {chat.type == ChatType.PRIVATE && (

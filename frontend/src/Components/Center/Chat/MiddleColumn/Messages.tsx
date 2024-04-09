@@ -1,19 +1,15 @@
-import { useState, useContext, useEffect, useRef } from "react";
-import {
-  ResponseMessageChatDto,
-  ResponseNewChatDto,
-} from "../Utils/ChatUtils.tsx";
+import { useState, useEffect, useRef } from "react";
+import { ResponseMessageChatDto, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
 // Stylesheets: Because React-Bootstrap doesn't depend on a very precise version of Bootstrap, we don't
 // ship with any included CSS. However, some stylesheet is required to use these components:
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import "bootstrap/dist/js/bootstrap.min.js";
-// Put a	ny other imports below so that CSS from your
-// components takes precedence over default styles.
+// Put any other imports below so that CSS from your
+//    components takes precedence over default styles.
 
 import "../../../../css/Chat.css";
-// import avatarImage from '../../../images/avatar_default.png'
 
 // Importing bootstrap and other modules
 import Form from "react-bootstrap/Form";
@@ -22,15 +18,15 @@ import Stack from "react-bootstrap/Stack";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
-// import { CurrentUserContext, CurrUserData } from "../../Profile/utils/contextCurrentUser.tsx";
 
 type PropsHeader = {
+  activeContentLeft: string;
   chatClicked: ResponseNewChatDto | undefined;
   messages: ResponseNewChatDto | null;
   setMessages: (messages: ResponseNewChatDto | null) => void;
 };
 
-const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages }) => {
+const Messages: React.FC<PropsHeader> = ({ activeContentLeft, chatClicked, messages, setMessages }) => {
   if (chatClicked) {
     console.log("[Messages] chatClicked: " + chatClicked.name);
   } else {
@@ -39,12 +35,10 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages })
 
   ////////////////////////////////////////////////////////////////////// SEND MESSAGE
 
-  // const [messages, setMessages] = useState<ResponseNewChatDto | null>(null); // jaka, moved to MainComponent
   const [blockedIds, setBlockedIds] = useState<number[]>();
   const [message, setMessage] = useState("");
   const [messageBoxPlaceHolder, setMessageBoxPlaceHolder] =
     useState("Write a message...");
-  //const currUserData = useContext(CurrentUserContext) as CurrUserData;
 
   useEffect(() => {
     async function get_blocked_users() {
@@ -122,7 +116,9 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages })
       <Row className="row-all-messages">
         {/*    key={i++}>*/}
         <ListGroup>
-          {messages && messages.messages && messages.messages[0] != null ? (
+          { messages && messages.messages &&
+            messages.messages[0] != null &&
+            activeContentLeft === 'recent' ? (
             messages.messages.map(
               (message_: ResponseMessageChatDto, i: number) => (
                   <ListGroup.Item className="message-item" key={i}>
@@ -135,12 +131,15 @@ const Messages: React.FC<PropsHeader> = ({ chatClicked, messages, setMessages })
               )
             )
           ) : (
-            <div style={{padding: '1em'}}> No messages yet! </div>
+            activeContentLeft === 'recent' ?
+            <div style={{padding: '2em'}}> No messages yet! </div>
+              :
+            <div style={{padding: '2em'}}> You are not a member of this chat. </div>
           )}
         </ListGroup>
 
         {/* Added Jaka: Invisible div that jumps to the bottom,
-        to always see the last message */}
+            to always see the last message */}
         <div ref={lastMessagePositionRef} />
       </Row>
       <Row className="row-write-and-send">

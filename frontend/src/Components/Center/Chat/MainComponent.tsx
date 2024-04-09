@@ -53,7 +53,7 @@ const MainComponent = () => {
       chatSocket.emit("getOneChatDto", { chatId });
       chatSocket.on("oneChat", (oneChat) => {
         setChatClicked(oneChat);
-        chatSocket.off("oneChat"); // !! remove listener always, to avoied leaks
+        chatSocket.off("oneChat"); // !! remove listener always, to avoid leaks
       });
       chatSocket.on('chatError', (error) => {
         console.error('Failed to fetch chat details:', error);
@@ -194,10 +194,8 @@ const MainComponent = () => {
     setActiveContentLeft(content || "");
     setActiveTabLeft(content || "");
     console.log(
-      "[Main] Clicked navigation - value in chatClicked: " +
-        chatClicked?.name +
-        ", Content: " +
-        content
+      "[Main] Clicked navigation - value in chatClicked: "+chatClicked?.name +
+      ", Content: " + content
     );
   };
 
@@ -225,6 +223,7 @@ const MainComponent = () => {
                   className={
                     activeTabLeft === "recent" ? "nav-link active" : "nav-link"
                   }
+                  // onClick={() => { setActiveContentLeft('recent'); setActiveTabLeft('recent'); }}
                 >
                   My chats
                 </Nav.Link>
@@ -235,6 +234,7 @@ const MainComponent = () => {
                   className={
                     activeTabLeft === "groups" ? "nav-link active" : "nav-link"
                   }
+                  // onClick={() => { setActiveContentLeft('groups'); setActiveTabLeft('groups'); }}
                 >
                   Channels
                 </Nav.Link>
@@ -268,7 +268,8 @@ const MainComponent = () => {
               <NewGroupButton
                 setChatClicked={setChatClicked}
                 setActiveId_Chats={setActiveId_Chats}
-                handleActiveContentLeft={handleActiveContentLeft}
+                setActiveContentLeft={setActiveContentLeft}
+                setActiveTabLeft={setActiveTabLeft}
               />
             )}
           </Row>
@@ -282,6 +283,7 @@ const MainComponent = () => {
           className="middle-col bg-light flex-column mx-4 mt-5"
         >
           <Messages
+          activeContentLeft={activeContentLeft}
             chatClicked={chatClicked}
             messages={messages}
             setMessages={setMessages}
