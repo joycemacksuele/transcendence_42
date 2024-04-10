@@ -269,9 +269,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
                             <Button
                               className="me-4 mb-3"
                               variant="success"
-                              onClick={()=>invitePlayer(clickedMemberIntraName, "Custom")}
+                              onClick={()=>invitePlayer(clickedMemberIntraName, "Reversi")}
                             >
-                              Invite to play pong (Custom)!
+                              Invite to play pong (Reversi)!
                             </Button>
                             <Button
                               className="me-4 mb-3"
