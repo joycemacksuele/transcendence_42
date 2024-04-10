@@ -173,35 +173,35 @@ export class GameLogic {
 
     //check if paddle is hit
     const paddlehit = this.insectPaddles(gs, ballpos);
-    //console.log('paddlehit ' + paddlehit);
+    //consoledd.log('paddlehit ' + paddlehit);
     if (paddlehit != CollisionSide.NO_COLLISION) {
-      //   console.log('collision occured');
+      //   consddole.log('collision occured');
       if (
         paddlehit == CollisionSide.LEFT_SIDE ||
         paddlehit == CollisionSide.RIGHT_SIDE
       ) {
-        //  console.log(' a side was hit');
+        //  consoldde.log(' a side was hit');
         gs = this.newAngle(gs, paddlehit, ballpos);
       } else if (paddlehit == CollisionSide.TOP_LEFT_PADDLE) {
-        //   console.log(' left top hit');
+        //   consddole.log(' left top hit');
         const top_y_paddle = gs.player1pos - gs.player1height / 2;
         gs.ball_y = top_y_paddle - (ballpos.y - top_y_paddle);
         gs.ball_y_speed = -gs.ball_y_speed;
         gs.ball_x = ballpos.x;
       } else if (paddlehit == CollisionSide.BOTTOM_LEFT_PADDLE) {
-        // console.log('left bot hit');
+        // consddole.log('left bot hit');
         const bot_y_paddle = gs.player1pos + gs.player1height / 2;
         gs.ball_y = bot_y_paddle + (bot_y_paddle - ballpos.y);
         gs.ball_y_speed = -gs.ball_y_speed;
         gs.ball_x = ballpos.x;
       } else if (paddlehit == CollisionSide.TOP_RIGHT_PADDLE) {
-        // console.log('right top hit');
+        // consoldde.log('right top hit');
         const top_y_paddle = gs.player2pos - gs.player2height / 2;
         gs.ball_y = top_y_paddle - (ballpos.y - top_y_paddle);
         gs.ball_y_speed = -gs.ball_y_speed;
         gs.ball_x - ballpos.x;
       } else if (paddlehit == CollisionSide.BOTTOM_RIGHT_PADDLE) {
-        // console.log('right bot hit');
+        // consoledd.log('right bot hit');
         const bot_y_paddle = gs.player2pos + gs.player2height / 2;
         gs.ball_y = bot_y_paddle + (bot_y_paddle - ballpos.y);
         gs.ball_y_speed = -gs.ball_y_speed;
@@ -296,6 +296,7 @@ export class GameLogic {
       gameState.player2pos = 0.5;
       gameState.timer = 100;
       gameState.invisibletimer = 100;
+      gameState.invisibletoggle = false;
     }
     return gameState;
   }

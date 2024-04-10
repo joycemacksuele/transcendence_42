@@ -13,13 +13,11 @@ function GameSelection(props: { socket: Socket}) {
   const declineInvite = () => {
     props.socket.emit("declineInvite");
     setShowInviteModal(false);
-    console.log("declined");
   };
 
   //move user to game page
   const acceptInvite = () => {
     setShowInviteModal(false);
-    console.log("accepted");
     props.socket.emit('gamepage');
   };
 
@@ -27,13 +25,11 @@ function GameSelection(props: { socket: Socket}) {
     props.socket.emit('identify');
     //invite button
     props.socket.on("inviteMessage", (message: string) => {
-      console.log(`received string from backend :${message}`);
       setInvitee(message);
       setShowInviteModal(true);
       });
     //end invite button
     const handleBeforeUnload = () => {
-        console.log("unloading");
         props.socket.emit("declineInvite");
     };     
     window.addEventListener('beforeunload', handleBeforeUnload);
