@@ -42,14 +42,11 @@ export class PonggameService {
     if (match.currentState == "Playing") {
       match.currentState = "End";
       match.stateMessage = "Opponent disconnected. You win be default";
-      console.log(`match info ${match.player1loginname} equal to ${userId}`);
       if(match.player1loginname === userId)
       {
         match.winner = 2;
-        console.log("player 2 is set to winnner");
       } else {
         match.winner = 1;
-        console.log("player 1 is set to winner");
       }
     } 
     else if (match.currentState == "Queue") {
@@ -65,16 +62,13 @@ export class PonggameService {
     }
     else if (match.currentState =="PrivateQueue" || (match.currentState == 'WaitingForInvited' && match.player2loginname == userId))
         return;
-    console.log(`deleting ${userId} from matchesmap`);
     this._userMatch.delete(userId);
   }
 
   playerLeavesQueue(userId: string) : boolean{
-    console.log("calling playerLeavesQueue");
     const matchId = this._userMatch.get(userId);
     if (matchId == undefined) return true;
     const match = this._currentMatches.get(matchId);
-console.log("currentstate :" + match.currentState);
     if (match.currentState == "Queue" || match.currentState == "WaitingForInvited")
     { 
         match.currentState = "Reset";
@@ -91,7 +85,6 @@ console.log("currentstate :" + match.currentState);
   cleanUpMatches() {
     this._currentMatches.forEach((gameState: GameState, matchId: string) => {
       if (gameState.currentState == "End" || gameState.currentState == "Disconnection" || gameState.currentState == "Reset") {
-        console.log(`deleting ${matchId}`);
         this._currentMatches.delete(matchId);
       }
     });
@@ -117,10 +110,6 @@ console.log("currentstate :" + match.currentState);
 
   //get matchId if the user is already in a match else return emptystring
   getMatchId(userId: string): string {
-    this._userMatch.forEach((matchid, user) =>{
-      console.log(`${matchid} player ${user}`);
-    }
-    )
     if (this._userMatch.has(userId)) {
       return this._userMatch.get(userId);
     }
@@ -263,14 +252,6 @@ console.log("currentstate :" + match.currentState);
         currentGamestate.stateMessage= 'User declined your invite';
         this.removeUserIdMatch(userId);
     }
-  }
-
-  test_display_userMatch() {
-    this.logger.log("\nuser match log");
-    this._userMatch.forEach((matchId: string, userId: string) => {
-      this.logger.log("user : " + userId + " is part of " + matchId);
-    });
-    this.logger.log("\n");
   }
 
   // ADDED JAKA //////////////////////////////////////////////
