@@ -16,7 +16,7 @@ export class PonggameService {
   private _currentMatches: Map<string, GameState> = new Map(); //string represent the matchId
   private _userMatch: Map<string, string> = new Map(); //keeps track of which match the current user is currently part of.
   private _queueDefaultMatchId: string = "";
-  private _queueCustomMatchId: string = "";
+  private _queueReversiMatchId: string = "";
   private _queueShimmerMatchId: string = "";
   private _gameLogic: GameLogic = new GameLogic();
 
@@ -53,8 +53,8 @@ export class PonggameService {
       match.currentState = "Reset";
       match.stateMessage = "";
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
-      else if (match.gameType == "Custom") this._queueCustomMatchId = "";
-      else if (match.gameType == "Shimmer") this._queueCustomMatchId = "";
+      else if (match.gameType == "Reversi") this._queueReversiMatchId = "";
+      else if (match.gameType == "Shimmer") this._queueShimmerMatchId = "";
     }
     else if (match.currentState == 'WaitingForInvited' && match.player1loginname == userId){
         match.currentState = 'Disconnection';
@@ -74,7 +74,7 @@ export class PonggameService {
         match.currentState = "Reset";
         match.stateMessage = "";
         if (match.gameType == "Default") this._queueDefaultMatchId = "";
-        else if (match.gameType == "Custom") this._queueCustomMatchId = "";
+        else if (match.gameType == "Reversi") this._queueReversiMatchId = "";
         else if (match.gameType == "Shimmer") this._queueShimmerMatchId = "";
         this._userMatch.delete(userId);
         return true;
@@ -100,7 +100,7 @@ export class PonggameService {
   updateUserInput(matchId: string, userId: string, input: number) {
     if (!this._currentMatches.has(matchId)) return;
     const currentMatch = this._currentMatches.get(matchId);
-    if (currentMatch.gameType == "Custom") input *= -1;
+    if (currentMatch.gameType == "Reversi") input *= -1;
     if (currentMatch.player1loginname == userId) {
       currentMatch.player1input = input;
     } else if (currentMatch.player2loginname == userId) {
@@ -119,26 +119,19 @@ export class PonggameService {
   joinGame(userId: string, profilename: string, matchType: string) : string {
     if (matchType == "Default" && this._queueDefaultMatchId == "") {
       return this.createNewMatch(userId, profilename, "Default");
-    } else if (matchType == "Custom" && this._queueCustomMatchId == "") {
-      return this.createNewMatch(userId, profilename, "Custom");
+    } else if (matchType == "Reversi" && this._queueReversiMatchId == "") {
+      return this.createNewMatch(userId, profilename, "Reversi");
     } else if (matchType == "Shimmer" && this._queueShimmerMatchId == "") {
       return this.createNewMatch(userId, profilename, "Shimmer");
     } else {
 
-    //   const currentMatchId =
-    //     matchType == "Default"
-    //       ? this._queueDefaultMatchId
-    //       : this._queueCustomMatchId;
-    //   matchType == "Default"
-    //     ? (this._queueDefaultMatchId = "")
-    //     : (this._queueCustomMatchId = "");
       let currentMatchId = "";
       if (matchType == "Default") {
          currentMatchId = this._queueDefaultMatchId;
          this._queueDefaultMatchId = "";
-      } else if (matchType == "Custom") {
-         currentMatchId = this._queueCustomMatchId;
-         this._queueCustomMatchId = "";
+      } else if (matchType == "Reversi") {
+         currentMatchId = this._queueReversiMatchId;
+         this._queueReversiMatchId = "";
       } else if (matchType == "Shimmer") {
          currentMatchId = this._queueShimmerMatchId;
          this._queueShimmerMatchId = "";
@@ -167,7 +160,7 @@ export class PonggameService {
     this._currentMatches.set(currentMatchId, newMatch);
     this._userMatch.set(userId, currentMatchId);
     if (matchType == "Default") this._queueDefaultMatchId = currentMatchId;
-    else if (matchType == "Custom") this._queueCustomMatchId = currentMatchId;
+    else if (matchType == "Reversi") this._queueReversiMatchId = currentMatchId;
     else if (matchType == "Shimmer") this._queueShimmerMatchId = currentMatchId;
     return currentMatchId;
   }
@@ -195,7 +188,7 @@ export class PonggameService {
     let invisibletimer = 0;
     let paddleHeight = 0.2;
 
-    if (matchType == "Custom") {
+    if (matchType == "Reversi") {
       paddleHeight = 0.1;
     }
     else if(matchType == "Shimmer"){

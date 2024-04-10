@@ -64,9 +64,9 @@ function GameSelection(props: { socket: Socket}) {
           <Button
             variant="dark"
             className="button_default"
-            onClick={() => joinGame("Custom")}
+            onClick={() => joinGame("Reversi")}
           >
-            Custom Game
+            Reversi Game
           </Button>
 
           <Button
@@ -74,14 +74,14 @@ function GameSelection(props: { socket: Socket}) {
             className="button_default"
             onClick={() => joinGame("Shimmer")}
           >
-            Shimmer
+            Shimmer Game
           </Button>
           <p></p>
           <p><b>Classic</b></p>
           <p>
             Press <b>W</b> (up) and <b>S</b> (down) for paddle movement
           </p>
-          <p><b>Custom</b></p>
+          <p><b>Reversi</b></p>
           <p>
             Press <b>W</b> (down) and <b>S</b> (up) for paddle movement<br/>
             Shorter paddles

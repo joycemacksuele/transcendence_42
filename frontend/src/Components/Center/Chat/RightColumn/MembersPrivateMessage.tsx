@@ -187,9 +187,9 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       <Button
                               className="me-4 mb-3"
                               variant="success"
-                              onClick={()=>invitePlayer(clickedMember!, "Custom")}
+                              onClick={()=>invitePlayer(clickedMember!, "Reversi")}
                             >
-                              Invite to play pong (Custom)!
+                              Invite to play pong (Reversi)!
                       </Button>
                       <Button
                               className="me-4 mb-3"
