@@ -5,15 +5,14 @@
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import { DataSource } from "typeorm";
-// import { ConfigModule } from '@nestjs/config';
-// import { AuthGuard } from './auth/guards/auth.guard';
-// import { UnauthorizedExceptionFilter } from './auth/guards/auth.exception.filter';
 import cookieParser from 'cookie-parser';
 import * as express from 'express';
 import {Logger, ValidationPipe} from '@nestjs/common'
+// import { DataSource } from "typeorm";
+// import { ConfigModule } from '@nestjs/config';
+// import { UnauthorizedExceptionFilter } from './auth/guards/auth.exception.filter';
+// import mysql, { ConnectionOptions } from 'mysql2';
 
-import mysql, { ConnectionOptions } from 'mysql2';
 
 async function main() {
   let logger = new Logger(main.name);
@@ -64,13 +63,13 @@ async function main() {
   // will run on a different port, so it's good to add all other origin ports running (i.e.: that will
   // try to access/send requests to the backend) as a Cors option).
   app.enableCors({
-    // origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432'],
-    // origin: [`${process.env.FRONTEND}`, `${process.env.BACKEND}`, `${process.env.DATABASE}`],
     origin: [`${process.env.FRONTEND}`, `${process.env.DATABASE}`],
     methods: ['GET', 'POST', 'DELETE'],   // add 'HEAD', 'PUT', 'PATCH', 'POST', 'OPTIONS' ?
     credentials: true,
   });
   
+  // origin: ['http://localhost:3000','http://localhost:3001', 'http://localhost:5432'],
+  // origin: [`${process.env.FRONTEND}`, `${process.env.BACKEND}`, `${process.env.DATABASE}`],
   
   // // mysql - for sql injections
   // // ---------------------------------------------------------------

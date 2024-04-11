@@ -1,5 +1,5 @@
-import {Logger, Module} from '@nestjs/common'
-import { MailerModule, MailerService } from '@nestjs-modules/mailer';
+import { Logger, Module } from '@nestjs/common'
+import { MailerModule } from '@nestjs-modules/mailer';
 import { TwoFactorAuthController } from './2fa.controller';
 import { TwoFactorAuthService } from './2fa.service';
 import { AuthService } from '../auth.service';
