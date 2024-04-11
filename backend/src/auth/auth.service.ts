@@ -170,9 +170,9 @@ export class AuthService {
 		this.logger.log('Set-Cookie token: ' + token);
 		const cookieAttributes = {
 			httpOnly: true,
-			//	secure: true,
+			secure: true,
 			path: '/',
-			//	sameSite: 'none',
+			sameSite: 'Strict',
 		};
 
 		// Variant B)
@@ -272,8 +272,9 @@ export class AuthService {
 			let replaceToken = newToken;
 			const cookieAttributes = {
 				httpOnly: true,
+				secure: true,
 				path: '/',
-				sameSite: 'none',
+				sameSite: 'Strict',
 			};
 			let cookieToken = `token=${replaceToken};`;
 			for (let attribute in cookieAttributes) {
