@@ -33,37 +33,29 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // console.log('   UseEffect: Check if user is in DB: ');
         const response = await checkIfUserExistsInDB();
         if (response && response.user) {
-          // console.log('      Context will be updated ...');
           setUserData({
             loginName: response.user.loginName,
             profileName: response.user.profileName,
             profileImage: response.user.profileImage,
           });
           // Update Local Storage:
-          localStorage.setItem("profileName", response.user.profileName || ""); // jaka, maybe not needed
-          localStorage.setItem(
-            "profileImage",
-            response.user.profileImage || ""
-          );
-          //updateContext(response.user); // todo: check if ok
+          localStorage.setItem("profileName", response.user.profileName || "");
+          localStorage.setItem("profileImage", response.user.profileImage || "");
+          //updateContext(response.user);
           console.log("Current user context updated: " + userData?.loginName);
-          if (userData !== null) updateContext(userData);
-          //   const { loginName } = useContext(CurrentUserContext);
-          console.log("Current user context updated: " + userData?.loginName);
-          console.log(
-            "Current user context updated: " + response.user.loginName
-          );
+          if (userData !== null)
+            updateContext(userData);
+          // const { loginName } = useContext(CurrentUserContext);
+          // console.log("Current user context updated: " + userData?.loginName);
+          // console.log("Current user context updated: " + response.user.loginName);
         }
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.error("Detailed error:", error);
         }
-        console.error(
-          "Error checking if user exists in DB. Please try again later."
-        );
+        console.error("Error checking if user exists in DB. Please try again later.");
       }
     };
     fetchUserData();
@@ -72,7 +64,8 @@ const MainPage: React.FC<ContextProps> = ({ updateContext }) => {
 
   if (!userData) {
     return (
-      <Container className='d-flex justify-content-center align-items-center' style={{ width: "100vw", height: "100vh" }}>
+      <Container  className='d-flex justify-content-center align-items-center'
+                  style={{ width: "100vw", height: "100vh" }}>
         <CustomSpinner />
       </Container>
     );

@@ -127,6 +127,7 @@ const NewGroupButton: React.FC<PropsHeader> = ({setChatClicked,
                         </Modal.Header>
                         <Modal.Body>
                             <Form>
+                                
                                 {/* Group Type */}
                                 <Form.Group className="mb-3">
                                     <Form.Select
@@ -154,6 +155,12 @@ const NewGroupButton: React.FC<PropsHeader> = ({setChatClicked,
                                         placeholder="Group name"
                                         autoFocus
                                         onChange={event => setChatName(event.target.value)}
+                                        onKeyDown={(event) => {         // Send msg on Enter, new line on Shift + Enter
+                                            if (event.key === 'Enter' && !event.shiftKey) {
+                                                event.preventDefault(); // Prevent making a newline on Enter
+                                                createGroupChat();
+                                            }
+                                        }}
                                     />
                                 </Form.Group>
 

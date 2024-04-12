@@ -19,9 +19,10 @@ import useFetchMemberImages from "../Utils/useFetchMemberImages.ts";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | undefined;
+  activeContentLeft: string;
 };
 
-const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
+const MembersGroup: React.FC<PropsHeader> = ({ chatClicked, activeContentLeft }) => {
   if (chatClicked) {
     console.log("[MembersGroup] chatClicked: ", chatClicked.name);
   }
