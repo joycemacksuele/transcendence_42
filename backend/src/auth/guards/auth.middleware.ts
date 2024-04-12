@@ -97,7 +97,7 @@ export class AuthMiddleware implements NestMiddleware {
                 let replaceToken = await this.authService.signToken(player);
                 const cookieAttributes = {
 		        	httpOnly: true,
-                    secure: true,
+                //    secure: true,
 		        	path: '/',
 			        sameSite: 'Strict',
 		        };
