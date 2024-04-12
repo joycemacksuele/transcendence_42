@@ -83,7 +83,7 @@ export class AuthService {
 			intraId: +id,
 			email: email,
 			onlineStatus: false,		// at logout change to 'false'
-			hashedSecret: hash,         // might not be necessary and might need to be removed 
+//			hashedSecret: hash,         // might not be necessary and might need to be removed 
 			refreshToken: 'default',
 			tfaEnabled: true,
 			tfaCode: 'default',
@@ -170,9 +170,9 @@ export class AuthService {
 		this.logger.log('Set-Cookie token: ' + token);
 		const cookieAttributes = {
 			httpOnly: true,
-			//	secure: true,
+		//	secure: true,
 			path: '/',
-			//	sameSite: 'none',
+			sameSite: 'Strict',
 		};
 
 		// Variant B)
@@ -272,8 +272,9 @@ export class AuthService {
 			let replaceToken = newToken;
 			const cookieAttributes = {
 				httpOnly: true,
+			//	secure: true,
 				path: '/',
-				sameSite: 'none',
+				sameSite: 'Strict',
 			};
 			let cookieToken = `token=${replaceToken};`;
 			for (let attribute in cookieAttributes) {
@@ -326,6 +327,7 @@ export class AuthService {
         //DISABLE LOGGER
 		    //this.logger.log('extract token from header()');
 
+//	console.log(request);
         cookie = request.get('Cookie');
         if (!cookie)
             return undefined;

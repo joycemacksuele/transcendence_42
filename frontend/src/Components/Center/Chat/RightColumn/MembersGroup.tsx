@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
-import { ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
-import { chatSocket } from "../Utils/ClientSocket.tsx";
-import { useNavigate} from "react-router-dom";
-import { useSelectedUser } from "../../Profile/utils/contextSelectedUserName.tsx";
+import React, {useEffect, useRef, useState} from "react";
+import {ChatType, ResponseNewChatDto} from "../Utils/ChatUtils.tsx";
+import {chatSocket} from "../Utils/ClientSocket.tsx";
+import {useNavigate} from "react-router-dom";
+import {useSelectedUser} from "../../Profile/utils/contextSelectedUserName.tsx";
 
 // Importing bootstrap and other modules
 import Row from "react-bootstrap/Row";
@@ -137,50 +137,51 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked, activeContentLeft })
 
 
   ///////////////////////////////////////Invite Player
-    //function to invite player
-    function invitePlayer(invitedUser: string, type: string)
-    {   
-        console.log("invite button pressed" + `${invitedUser}`);
-        chatSocket?.emit('requestUserStatus', invitedUser, 
-            (response: string) => 
-            {
-                console.log(`response: ${response}`);
-                if(response === "ingame")
-                {
-                  setShowMemberModal(false);
-                  setShowErrorModal(true);
-                }
-                else if (response == 'offline'){
-                  setShowMemberModal(false);
-                  setShowOfflineModal(true);
-                }
-                else{
-                  console.log("player is online");
-                  chatSocket.emit('invitePlayerToGame', invitedUser);
+  //function to invite player
+  function invitePlayer(invitedUser: string, type: string) {
+      console.log("invite button pressed" + `${invitedUser}`);
+      chatSocket?.emit('requestUserStatus', invitedUser,
+          (response: string) =>
+          {
+              console.log(`response: ${response}`);
+              if(response === "ingame")
+              {
+                setShowMemberModal(false);
+                setShowErrorModal(true);
+              }
+              else if (response == 'offline'){
+                setShowMemberModal(false);
+                setShowOfflineModal(true);
+              }
+              else{
+                console.log("player is online");
+                chatSocket.emit('invitePlayerToGame', invitedUser);
                   //navigate("/main_page/game");
-                    chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:type},
-                        () => {
-                            chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
-                                {
-                                    navigate("/main_page/game");
-                                }
-                            );
-                        }
-                    );
-                }
-            }
-        );
-    }
+                  chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:type},
+                      () => {
+                          chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
+                              {
+                                  navigate("/main_page/game");
+                              }
+                          );
+                      }
+                  );
+              }
+          }
+      );
+  }
+
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
     <>
       {/* Members row */}
       <Row className="members-col-members flex-grow-1">
         <Stack gap={2}>
-          { chatClicked?.usersIntraName &&  // In MyChats always show members, in Channels only show for Public, not for Protected
-            (activeContentLeft === 'recent' || (activeContentLeft === 'groups' && chatClicked?.type != 2))
-            &&
-            chatClicked?.usersIntraName.map((memberIntraName: string, i: number) => (
+          {(chatClicked?.usersIntraName &&
+            ((chatClicked?.type == ChatType.PROTECTED &&
+              (intraName && chatClicked?.usersIntraName.indexOf(intraName)) != -1) ||
+              (chatClicked?.type != ChatType.PROTECTED))) ? (
+                chatClicked?.usersIntraName.map((memberIntraName: string, i: number) => (
                 <ListGroup key={i} variant="flush">
                   <ListGroup.Item
                     ref={inputRef}
@@ -271,9 +272,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked, activeContentLeft })
                             <Button
                               className="me-4 mb-3"
                               variant="success"
-                              onClick={()=>invitePlayer(clickedMemberIntraName, "Custom")}
+                              onClick={()=>invitePlayer(clickedMemberIntraName, "Reversi")}
                             >
-                              Invite to play pong (Custom)!
+                              Invite to play pong (Reversi)!
                             </Button>
                             <Button
                               className="me-4 mb-3"
@@ -383,8 +384,7 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked, activeContentLeft })
                       </>
                     )}
                 </ListGroup>
-              )
-            )}
+              ))) : (<>You are not a member of this chat.</>)}
         </Stack>
       </Row>
     </>

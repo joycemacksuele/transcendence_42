@@ -13,13 +13,11 @@ function GameSelection(props: { socket: Socket}) {
   const declineInvite = () => {
     props.socket.emit("declineInvite");
     setShowInviteModal(false);
-    console.log("declined");
   };
 
   //move user to game page
   const acceptInvite = () => {
     setShowInviteModal(false);
-    console.log("accepted");
     props.socket.emit('gamepage');
   };
 
@@ -27,13 +25,11 @@ function GameSelection(props: { socket: Socket}) {
     props.socket.emit('identify');
     //invite button
     props.socket.on("inviteMessage", (message: string) => {
-      console.log(`received string from backend :${message}`);
       setInvitee(message);
       setShowInviteModal(true);
       });
     //end invite button
     const handleBeforeUnload = () => {
-        console.log("unloading");
         props.socket.emit("declineInvite");
     };     
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -68,9 +64,9 @@ function GameSelection(props: { socket: Socket}) {
           <Button
             variant="dark"
             className="button_default"
-            onClick={() => joinGame("Custom")}
+            onClick={() => joinGame("Reversi")}
           >
-            Custom Game
+            Reversi Game
           </Button>
 
           <Button
@@ -78,14 +74,14 @@ function GameSelection(props: { socket: Socket}) {
             className="button_default"
             onClick={() => joinGame("Shimmer")}
           >
-            Shimmer
+            Shimmer Game
           </Button>
           <p></p>
           <p><b>Classic</b></p>
           <p>
             Press <b>W</b> (up) and <b>S</b> (down) for paddle movement
           </p>
-          <p><b>Custom</b></p>
+          <p><b>Reversi</b></p>
           <p>
             Press <b>W</b> (down) and <b>S</b> (up) for paddle movement<br/>
             Shorter paddles

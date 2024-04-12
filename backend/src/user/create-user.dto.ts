@@ -29,10 +29,11 @@ export class CreateUserDto {
 
   onlineStatus: boolean;
   
+/*
   @IsNotEmpty({ message: 'Required' })
   @IsString()
   hashedSecret: string;
-  
+  */
   @IsString()
   refreshToken: string;
 

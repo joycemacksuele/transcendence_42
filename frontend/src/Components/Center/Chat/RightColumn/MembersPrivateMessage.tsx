@@ -70,41 +70,41 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
       chatClicked = null;
     };
   }, []);
+
   ///////////////////////////////////////Invite Player
-    //function to invite player
-    function invitePlayer(invitedUser: string, type: string)
-    {   
-        console.log("invite button pressed" + `${invitedUser}`);
-        chatSocket?.emit('requestUserStatus', invitedUser, 
-            (response: string) => 
-            {
-                console.log(`response: ${response}`);
-                if(response === "ingame")
-                {
-                  setShowMemberModal(false);
-                  setShowErrorModal(true);
-                }
-                else if (response == 'offline'){
-                  setShowMemberModal(false);
-                  setShowOfflineModal(true);
-                }
-                else{
-                  console.log("player is online");
-                  chatSocket.emit('invitePlayerToGame', invitedUser);
-                  //navigate("/main_page/game");
-                    chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:type},
-                        () => {
-                            chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
-                                {
-                                    navigate("/main_page/game");
-                                }
-                            );
-                        }
-                    );
-                }
-            }
-        );
-    }
+  //function to invite player
+  function invitePlayer(invitedUser: string, type: string) {
+      console.log("invite button pressed" + `${invitedUser}`);
+      chatSocket?.emit('requestUserStatus', invitedUser,
+          (response: string) =>
+          {
+              console.log(`response: ${response}`);
+              if(response === "ingame")
+              {
+                setShowMemberModal(false);
+                setShowErrorModal(true);
+              }
+              else if (response == 'offline'){
+                setShowMemberModal(false);
+                setShowOfflineModal(true);
+              }
+              else{
+                console.log("player is online");
+                chatSocket.emit('invitePlayerToGame', invitedUser);
+                //navigate("/main_page/game");
+                  chatSocket?.emit('createPrivateMatch', {player1: intraName, player2: invitedUser ,matchType:type},
+                      () => {
+                          chatSocket?.emit('invitePlayerToGame', invitedUser, () =>
+                              {
+                                  navigate("/main_page/game");
+                              }
+                          );
+                      }
+                  );
+              }
+          }
+      );
+  }
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
@@ -196,9 +196,9 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       <Button
                               className="me-4 mb-3"
                               variant="success"
-                              onClick={()=>invitePlayer(clickedMember!, "Custom")}
+                              onClick={()=>invitePlayer(clickedMember!, "Reversi")}
                             >
-                              Invite to play pong (Custom)!
+                              Invite to play pong (Reversi)!
                       </Button>
                       <Button
                               className="me-4 mb-3"
