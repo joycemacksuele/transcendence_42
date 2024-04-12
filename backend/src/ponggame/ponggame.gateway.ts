@@ -86,11 +86,9 @@ export class PonggameGateway
 
   handleConnection(client: Socket) {
     client.data.gamepage = false;
-    this.logger.log(`[handleConnection] pong game client id ${client.id} connected`);
   }
 
   handleDisconnect(client: Socket) {
-    console.log("connection has disconnected");
     const userId = this._socketIdUserId.get(client.id)
     this.ponggameService.playerDisconnected(userId);
     this._userIdSocketId.delete(userId);
@@ -101,12 +99,10 @@ export class PonggameGateway
   @SubscribeMessage('identify')
   async identifysocket(@ConnectedSocket() client: Socket)
   {
-    this.logger.log('identify called'); 
     try {
 
       if (client.handshake.headers.cookie) {
         const token_key_value = client.handshake.headers.cookie;
-        // this.logger.log('[handleConnection] token found in the header: ' + token_key_value);
         if (token_key_value.includes("token")) {
           const token_index_start= token_key_value.indexOf("token");
           const token_index_end_global = token_key_value.length;
@@ -117,11 +113,9 @@ export class PonggameGateway
           }
           const token_key_value_2 = from_token_to_end.substring(0, token_index_end_local);
           const token = token_key_value_2.split('=')[1];
-          // this.logger.log('[handleConnection] token: ' + token);
 
           try {
             const payload = await this.authService.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET});
-            this.logger.log('[handleConnection] payload.username: ' + payload.username);
             client.data.user = payload.username;
 
             const userId = payload.username;
@@ -142,7 +136,6 @@ export class PonggameGateway
         throw new UnauthorizedException('No cookie found in the header, disconnecting');
       }
     } catch (error) {
-      this.logger.error('[handleConnection] error: ' + error);
       client.emit("exceptionHandleConnection", new UnauthorizedException(error));
       client.disconnect();
     }
@@ -153,14 +146,12 @@ export class PonggameGateway
     client.data.gamepage = false;
     this.ponggameService.playerDisconnected(
       this._socketIdUserId.get(client.id));
-    this.logger.log(`User ${this._socketIdUserId.get(client.id)} left the game page`);
   }
 
   @SubscribeMessage('resetgamepage')
   resetGamePage(@ConnectedSocket() client: Socket){
     const shouldEmit = this.ponggameService.playerLeavesQueue(
       this._socketIdUserId.get(client.id));
-    console.log("resetting gamepage");
     if (shouldEmit)
       client.emit("stateUpdate",this.ponggameService.getInitMatch("Default"));
   }
@@ -171,8 +162,6 @@ export class PonggameGateway
     const userId = this._socketIdUserId.get(client.id);
       
     const matchId = this.ponggameService.getMatchId(userId);
-      this.logger.log(`UserId found : ${userId}`);
-      this.logger.log(`Match Id ${matchId}`);
       if (matchId == "") {
         //if not get the selection screen
         client.emit(
@@ -193,7 +182,6 @@ export class PonggameGateway
   ) {
     const userId = this._socketIdUserId.get(client.id);
     const player = await this.userService.getUserByLoginName(userId);
-console.log(`getting player profile name: ${player.profileName}`);
     const matchId= this.ponggameService.joinGame(userId, player.profileName, type);
     client.join(matchId);
   }
@@ -237,7 +225,6 @@ console.log(`getting player profile name: ${player.profileName}`);
 
   @SubscribeMessage('invitePlayerToGame')
   async invitePlayer(@MessageBody() userId: string, @ConnectedSocket() client: Socket): Promise<boolean>{
-    console.log(`invite for ${userId} received`);
     const inviteeName = this._socketIdUserId.get(client.id);
     const profileName = (await this.userService.getUserByLoginName(inviteeName)).profileName;
     const invitedSocketId = this._userIdSocketId.get(userId);
@@ -266,22 +253,11 @@ console.log(`getting player profile name: ${player.profileName}`);
         match.winnerId = player2.id;
 
     match.timeStamp = new Date();
-    this.logger.log("player ids :" + player1.id + " " + player2.id);
     try {
         await this.matchService.createMatch(match);
     } catch(e){
         this.logger.log("Error: something went wrong with entering match in to the database");
     }
-  }
-
-  //TEST FUNCTION
-  @SubscribeMessage('printoutconnections')
-  printoutConnections(@ConnectedSocket() client: Socket)
-    {
-    console.log(">>>>>>>>>>>>Display connections<<<<<<<<<<<");
-    this._socketIdUserId.forEach((userId, socketId)=> {
-        console.log(`userId ${userId} socketId ${socketId}`);
-    });
   }
 
   // ADDED JAKA /////////////////////////////////////
@@ -293,7 +269,6 @@ console.log(`getting player profile name: ${player.profileName}`);
     @ConnectedSocket() client: Socket) {
       const matchId = this.ponggameService.getMatchId(loginName);
       const isPlaying = matchId ? true : false;
-      console.log("Status of playing: ", isPlaying);
       client.emit('responsePlayingStatus', { isPlaying })
     }
 

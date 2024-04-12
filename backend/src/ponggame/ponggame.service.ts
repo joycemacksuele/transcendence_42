@@ -16,7 +16,7 @@ export class PonggameService {
   private _currentMatches: Map<string, GameState> = new Map(); //string represent the matchId
   private _userMatch: Map<string, string> = new Map(); //keeps track of which match the current user is currently part of.
   private _queueDefaultMatchId: string = "";
-  private _queueCustomMatchId: string = "";
+  private _queueReversiMatchId: string = "";
   private _queueShimmerMatchId: string = "";
   private _gameLogic: GameLogic = new GameLogic();
 
@@ -42,22 +42,19 @@ export class PonggameService {
     if (match.currentState == "Playing") {
       match.currentState = "End";
       match.stateMessage = "Opponent disconnected. You win be default";
-      console.log(`match info ${match.player1loginname} equal to ${userId}`);
       if(match.player1loginname === userId)
       {
         match.winner = 2;
-        console.log("player 2 is set to winnner");
       } else {
         match.winner = 1;
-        console.log("player 1 is set to winner");
       }
     } 
     else if (match.currentState == "Queue") {
       match.currentState = "Reset";
       match.stateMessage = "";
       if (match.gameType == "Default") this._queueDefaultMatchId = "";
-      else if (match.gameType == "Custom") this._queueCustomMatchId = "";
-      else if (match.gameType == "Shimmer") this._queueCustomMatchId = "";
+      else if (match.gameType == "Reversi") this._queueReversiMatchId = "";
+      else if (match.gameType == "Shimmer") this._queueShimmerMatchId = "";
     }
     else if (match.currentState == 'WaitingForInvited' && match.player1loginname == userId){
         match.currentState = 'Disconnection';
@@ -65,22 +62,19 @@ export class PonggameService {
     }
     else if (match.currentState =="PrivateQueue" || (match.currentState == 'WaitingForInvited' && match.player2loginname == userId))
         return;
-    console.log(`deleting ${userId} from matchesmap`);
     this._userMatch.delete(userId);
   }
 
   playerLeavesQueue(userId: string) : boolean{
-    console.log("calling playerLeavesQueue");
     const matchId = this._userMatch.get(userId);
     if (matchId == undefined) return true;
     const match = this._currentMatches.get(matchId);
-console.log("currentstate :" + match.currentState);
     if (match.currentState == "Queue" || match.currentState == "WaitingForInvited")
     { 
         match.currentState = "Reset";
         match.stateMessage = "";
         if (match.gameType == "Default") this._queueDefaultMatchId = "";
-        else if (match.gameType == "Custom") this._queueCustomMatchId = "";
+        else if (match.gameType == "Reversi") this._queueReversiMatchId = "";
         else if (match.gameType == "Shimmer") this._queueShimmerMatchId = "";
         this._userMatch.delete(userId);
         return true;
@@ -91,7 +85,6 @@ console.log("currentstate :" + match.currentState);
   cleanUpMatches() {
     this._currentMatches.forEach((gameState: GameState, matchId: string) => {
       if (gameState.currentState == "End" || gameState.currentState == "Disconnection" || gameState.currentState == "Reset") {
-        console.log(`deleting ${matchId}`);
         this._currentMatches.delete(matchId);
       }
     });
@@ -107,7 +100,7 @@ console.log("currentstate :" + match.currentState);
   updateUserInput(matchId: string, userId: string, input: number) {
     if (!this._currentMatches.has(matchId)) return;
     const currentMatch = this._currentMatches.get(matchId);
-    if (currentMatch.gameType == "Custom") input *= -1;
+    if (currentMatch.gameType == "Reversi") input *= -1;
     if (currentMatch.player1loginname == userId) {
       currentMatch.player1input = input;
     } else if (currentMatch.player2loginname == userId) {
@@ -117,10 +110,6 @@ console.log("currentstate :" + match.currentState);
 
   //get matchId if the user is already in a match else return emptystring
   getMatchId(userId: string): string {
-    this._userMatch.forEach((matchid, user) =>{
-      console.log(`${matchid} player ${user}`);
-    }
-    )
     if (this._userMatch.has(userId)) {
       return this._userMatch.get(userId);
     }
@@ -130,26 +119,19 @@ console.log("currentstate :" + match.currentState);
   joinGame(userId: string, profilename: string, matchType: string) : string {
     if (matchType == "Default" && this._queueDefaultMatchId == "") {
       return this.createNewMatch(userId, profilename, "Default");
-    } else if (matchType == "Custom" && this._queueCustomMatchId == "") {
-      return this.createNewMatch(userId, profilename, "Custom");
+    } else if (matchType == "Reversi" && this._queueReversiMatchId == "") {
+      return this.createNewMatch(userId, profilename, "Reversi");
     } else if (matchType == "Shimmer" && this._queueShimmerMatchId == "") {
       return this.createNewMatch(userId, profilename, "Shimmer");
     } else {
 
-    //   const currentMatchId =
-    //     matchType == "Default"
-    //       ? this._queueDefaultMatchId
-    //       : this._queueCustomMatchId;
-    //   matchType == "Default"
-    //     ? (this._queueDefaultMatchId = "")
-    //     : (this._queueCustomMatchId = "");
       let currentMatchId = "";
       if (matchType == "Default") {
          currentMatchId = this._queueDefaultMatchId;
          this._queueDefaultMatchId = "";
-      } else if (matchType == "Custom") {
-         currentMatchId = this._queueCustomMatchId;
-         this._queueCustomMatchId = "";
+      } else if (matchType == "Reversi") {
+         currentMatchId = this._queueReversiMatchId;
+         this._queueReversiMatchId = "";
       } else if (matchType == "Shimmer") {
          currentMatchId = this._queueShimmerMatchId;
          this._queueShimmerMatchId = "";
@@ -178,7 +160,7 @@ console.log("currentstate :" + match.currentState);
     this._currentMatches.set(currentMatchId, newMatch);
     this._userMatch.set(userId, currentMatchId);
     if (matchType == "Default") this._queueDefaultMatchId = currentMatchId;
-    else if (matchType == "Custom") this._queueCustomMatchId = currentMatchId;
+    else if (matchType == "Reversi") this._queueReversiMatchId = currentMatchId;
     else if (matchType == "Shimmer") this._queueShimmerMatchId = currentMatchId;
     return currentMatchId;
   }
@@ -206,7 +188,7 @@ console.log("currentstate :" + match.currentState);
     let invisibletimer = 0;
     let paddleHeight = 0.2;
 
-    if (matchType == "Custom") {
+    if (matchType == "Reversi") {
       paddleHeight = 0.1;
     }
     else if(matchType == "Shimmer"){
@@ -263,14 +245,6 @@ console.log("currentstate :" + match.currentState);
         currentGamestate.stateMessage= 'User declined your invite';
         this.removeUserIdMatch(userId);
     }
-  }
-
-  test_display_userMatch() {
-    this.logger.log("\nuser match log");
-    this._userMatch.forEach((matchId: string, userId: string) => {
-      this.logger.log("user : " + userId + " is part of " + matchId);
-    });
-    this.logger.log("\n");
   }
 
   // ADDED JAKA //////////////////////////////////////////////

@@ -63,9 +63,10 @@ export class UserEntity {
 	@Column({default: 'Newbee'})
 	achievements: string;
 
+/*
 	@Column()
 	hashedSecret: string;
-
+*/
 	@Column({default: 'default'})
 	refreshToken: string;
 

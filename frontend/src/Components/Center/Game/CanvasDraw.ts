@@ -8,7 +8,6 @@ function drawBall(
 ) {
   let ballcolor = "white";
   if(gameState.gameType == "Shimmer" && gameState.invisibletoggle){
-    console.log("change color");
     ballcolor = "black";
   }
   //draw ball
