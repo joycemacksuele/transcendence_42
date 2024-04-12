@@ -326,7 +326,9 @@ const MainComponent = () => {
             <Col className="members-col-body d-flex flex-column">
               {/* This element MembersGroup is a row and it has fixed height in .css */}
               {chatClicked?.type != ChatType.PRIVATE && (
-                <MembersGroup chatClicked={chatClicked} />
+                <MembersGroup chatClicked={chatClicked}
+                              activeContentLeft={activeContentLeft}
+                />
               )}
 
               {chatClicked?.type == ChatType.PRIVATE && (

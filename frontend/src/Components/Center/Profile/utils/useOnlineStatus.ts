@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-// import { io } from "socket.io-client";
 import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
-
 
 /*
 	Real-time update of the displayed online status:
@@ -18,16 +16,14 @@ interface StatusUpdateProps {
 	isOnline: boolean;
 }
 
-// function useOnlineStatus(loginName: string) { 
 export const useOnlineStatus = (loginName: string) => {
-	console.log('useOnlineStatus of: ', loginName);
+	//console.log('useOnlineStatus of: ', loginName);
 
 	const [isUserOnline, setIsUserOnline] = useState<boolean | null>(false);
 
 	// Function to be called when status change is detected
 	const statusUpdateCallback = ( { isOnline }: StatusUpdateProps ) => {
 		setIsUserOnline(isOnline);
-		console.log("     Status isOnline has changed: ", isOnline);
 	};
 
 	const handleError = (error: Error) => {
@@ -39,9 +35,6 @@ export const useOnlineStatus = (loginName: string) => {
 		if (!loginName) return;
 
 		try {
-			// jaka: disabled io, trying to use the imported existing chatSocket
-			// const socket = io(apiAddress, { transports: ["websocket"] });
-			
 			if (!chatSocket.connected)
 				chatSocket.connect();
 			
@@ -62,8 +55,8 @@ export const useOnlineStatus = (loginName: string) => {
 		} catch (error) {
 			console.error("Error in useOnlineStatus():", error);
 		}
-	}, [loginName] );
+	}, [loginName]);
 
-	console.log('     Is Online: ', isUserOnline);
+	//console.log('     Is Online: ', isUserOnline);
 	return isUserOnline;
 }

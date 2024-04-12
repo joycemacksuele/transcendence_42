@@ -1,17 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate} from "react-router-dom";
 import axiosInstance from "../../Other/AxiosInstance";
-import { ListGroup, Container, Col, Row } from "react-bootstrap";
+import { ListGroup, Container, Col, Row, Modal, Button } from "react-bootstrap";
 import { insertDummyUsers } from "../../Test/InsertDummyUsers";
 import { deleteDummies } from "../../Test/deleteDummyUsers";
 import DisplayOneUser from "../Profile/DisplayOneUser/DisplayOneUser";
 import { useSelectedUser } from "../Profile/utils/contextSelectedUserName";
 import { getOnlineStatusUpdates } from "../Profile/utils/getOnlineStatuses";
 import { chatSocket } from "../Chat/Utils/ClientSocket";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-// import axios from "axios";
-// import '../../../css/Profile-users-list.css'
+import { CurrentUserContext } from "../Profile/utils/contextCurrentUser";
 
 // axios.defaults.withCredentials = true;
 
@@ -48,6 +45,12 @@ const UsersList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [hasFetchedUsers, setHasFetchedUsers] = useState(false);
   const usersRef = useRef<User[]>(users);
+
+  // To use the COntext it must first check if exists 
+  const context = useContext(CurrentUserContext);
+  if (!context)
+      return <div>No user data available</div>;
+  const { setAllUsers } = context;
 
   //invite button useStates
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -127,7 +130,6 @@ const UsersList: React.FC = () => {
 
   // Get online status for each user, via websocket:
   useEffect(() => {
-    // console.log('     useEffects ...');
     let unsubscribe: (() => void) | undefined;
     // fetchUsers();
     if (hasFetchedUsers) {
@@ -141,6 +143,11 @@ const UsersList: React.FC = () => {
     }
   }, [hasFetchedUsers]);
 
+  useEffect(() => {
+    console.log('[DisplayUsers] change detected in users / allUsers!');
+    setAllUsers(users);  // from CurrentUserContext
+  }, [users]);
+
   const handleUserClick = (e: React.MouseEvent, loginName: string) => {
     e.preventDefault();
     setSelectedUser(loginName);
@@ -149,8 +156,6 @@ const UsersList: React.FC = () => {
 
   return (
     <Container fluid className="h-100 w-100 container-max-width">
-      {/* <div className="users-outerXXX"> */}
-      {/* <div className="inner-section"> */}
       <Row
         text="dark"
         className="row-center d-flex justify-content-center users-outer"

@@ -246,7 +246,15 @@ return (
                                     <Modal.Title>Add user(s)</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body className="column-list-matches overflow-y">
-                                    <Form>
+                                    <Form onKeyDown={(event) => {         // Send msg on Enter, new line on Shift + Enter
+                                            if (event.key === 'Enter' && !event.shiftKey) {
+                                                event.preventDefault(); // Prevent making a newline on Enter
+                                                addUsers();
+                                                setShowAddUsersModal(false);
+                                            }
+                                        }}
+                                    >
+                                        
                                         {currentChatUsers && currentChatUsers.map((currentChatUser, index: number) => (
                                             <div
                                                 key={JSON.stringify(currentChatUser)}
