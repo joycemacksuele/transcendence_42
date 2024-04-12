@@ -194,9 +194,7 @@ const MainComponent = () => {
     setActiveContentLeft(content || "");
     setActiveTabLeft(content || "");
     console.log(
-      "[Main] Clicked navigation - value in chatClicked: "+chatClicked?.name +
-      ", Content: " + content
-    );
+      "[Main] Clicked navigation - value in chatClicked: " + chatClicked?.name + ", Content: " + content);
   };
 
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
