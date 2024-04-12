@@ -1,5 +1,4 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { useLocation } from "react-router-dom";
 import { ChatType, ResponseNewChatDto } from "../Utils/ChatUtils.tsx";
 import { chatSocket } from "../Utils/ClientSocket.tsx";
 
@@ -10,7 +9,6 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Image from "react-bootstrap/Image";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 
-// Jaka
 type PropsHeader = {
   chatInfo: ResponseNewChatDto[];
   setChatInfo: (allChats: ResponseNewChatDto[]) => void;
@@ -28,30 +26,6 @@ const MyChats: React.FC<PropsHeader> = ({
 }) => {
   const [intraName, setIntraName] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
-  // const [chatsExist, setChatsExist] = useState<boolean>(false);
-
-  // jaka: After clicking Privat Chat on Users Profile, it sends here the user's Profile Name
-  //        via the navigate( state ), which is then accessible in location()
-  const location = useLocation();
-  const [startedPrivateChatName, setStartedPrivateChatName] =
-    useState<string>("");
-  console.log("[MyChats] Location state on start:", location.state);
-
-  // useEffect(() => {
-  //   setStartedPrivateChatName(location.state);
-  //   // find chat by profileName in the chatInfo
-  //   const privateChatId: number = chatInfo.find(
-  //     (chat) => {
-  //       if (chat.name === startedPrivateChatName)
-  //         return chat.id;
-  //     }
-  //   );
-  //   // find the corresponding chatID
-  //   // set the ActiveChatId
-  // }, [location.state]);
-
-  // // const { startedPrivateChatName } = location.state || {};
-  // console.log("startedPrivateChatName:", startedPrivateChatName);
 
   const getIntraName = async () => {
     return await axiosInstance
@@ -112,16 +86,21 @@ const MyChats: React.FC<PropsHeader> = ({
   }, [intraName]);
 
   useEffect(() => {
-    console.log(
-      "[MyChats] inside useEffect -> socket connected? ",
-      chatSocket.connected
-    );
+    console.log("[MyChats] inside useEffect -> socket connected? ", chatSocket.connected);
     const handleGetAllChats = (allChats: ResponseNewChatDto[]) => {
       setChatInfo(allChats);
     };
-    console.log("[MyChats] inside useEffect -> socket id: ", chatSocket.id);
-    chatSocket.emit("getChats");
+    // console.log('[MyChats] ALL CHATS: ' + JSON.stringify(chatInfo));
+    console.log("[MyChats] inside useEffect -----> socket id: ", chatSocket.id);
     chatSocket.on("getChats", handleGetAllChats);
+
+    // Added a forced delay, because sometimes the newly joined chat was added
+    // too quickly and therefore not shown in the list MyChats 
+    setTimeout(() => {
+      chatSocket.emit("getChats");
+      console.log("Request for chats sent to the server");
+    }, 1000); 
+    // chatSocket.emit("getChats");
     return () => {
       console.log(
         "[MyChats] Inside useEffect return function (Component was removed from DOM) and chatClicked is cleaned"
@@ -141,23 +120,12 @@ const MyChats: React.FC<PropsHeader> = ({
     if (activeId_Chats === -1) setMessages(null);
   }, [chatInfo, activeId_Chats]);
 
-  // If curr. user is not a member of any chat, display just info message 'Not a member ...'
-  // useEffect(() => {
-  //   const res = chatInfo.some( (chat) => {
-  //     if (chat.usersIntraName && intraName)
-  //       return chat.usersIntraName.includes(intraName);
-  //   });
-  //   setChatsExist(res);
-  //   // console.log("[MYCHATS] chatsExist: ", chatsExist);
-  // }, [chatInfo])
-
   ////////////////////////////////////////////////////////////////////// UI OUTPUT
   return (
     <>
       {/* Recent chats row */}
       <Row className="">
         <Stack gap={2}>
-          {/* {!chatsExist ? (    // Not used for now */}
           {chatInfo.length === 0 ? (
             <span className="pt-5">You are not a member of any chat yet.</span>
           ) : (
