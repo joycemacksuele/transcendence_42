@@ -17,7 +17,7 @@ export class RequestNewChatDto {
     
     @IsString()
     @MinLength(3)
-    @MaxLength(15)
+    @MaxLength(30)
     @IsNotEmpty()
     name: string;
 
