@@ -152,6 +152,12 @@ const Messages: React.FC<PropsHeader> = ({ activeContentLeft, chatClicked, messa
               placeholder={messageBoxPlaceHolder}
               onChange={(event) => setMessage(event.target.value)}
               value={message}
+              onKeyDown={(event) => {     // Send msg on Enter, new line on Shift + Enter
+                if (event.key === 'Enter' && !event.shiftKey) {
+                  event.preventDefault(); // Prevent making a newline on Enter
+                  sendMessage();
+                }
+              }}
             />
             {/* TODO onClick erase the message from the form box*/}
             <Button

@@ -32,7 +32,7 @@ function GetPlayingStatus(loginName: string) {
 		} catch (error) {
 			console.log('Error in GetPlayingStatus():');
 		}
-	}, [] ); // No need to have socket as dependancy
+	}, [loginName] ); // No need to have socket as dependancy
 
 	return isUserPlaying;
 }
