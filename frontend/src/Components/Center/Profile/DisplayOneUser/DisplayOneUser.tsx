@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 import { Col, Image, Row, Button, Modal } from "react-bootstrap";
 import handleClickBlocking from "./blockUser.ts";
@@ -10,6 +10,7 @@ import { chatSocket } from "../../Chat/Utils/ClientSocket.tsx";
 import MatchHistory from "../SubComponents/MatchHistory.tsx";
 import GetPlayingStatus from "../utils/GetPlayingStatus.tsx";
 import { useOnlineStatus } from "../utils/useOnlineStatus.ts";
+import { CurrentUserContext } from "../utils/contextCurrentUser.tsx";
 import "../../../../css/Profile-users-list.css";
 import { CustomSpinner } from "../../../Other/Spinner.tsx";
 
@@ -43,24 +44,45 @@ const DisplayOneUser: React.FC<{
   setShowMatchHistory: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ loginName, showMatchHistory, setShowMatchHistory }) => {
 
+  console.log('-------- DisplayOneUser -------');
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [IamFollowing, setIamFollowing] = useState(false);
   const [isBlocked, setIsBlocked] = useState(true);
   const [myId, setMyId] = useState<number | undefined>();
   const [showButtons, setShowButtons] = useState(true);
+  const isUserOnline = useOnlineStatus(loginName);
   const isUserPlaying = GetPlayingStatus(loginName);
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
-  const isUserOnline = useOnlineStatus(loginName);
   const navigate = useNavigate();
+  
+  const context = useContext(CurrentUserContext);
+  if (!context)
+    return <div>No user data available</div>
+  const { allUsers } = context;
 
-  // if the current user is displayed, do not show the buttons
+  const [isUserOnline2, setIsUserOnline2] = useState<boolean>();
+
+  useEffect(() => {
+    // console.log('DisplayOneUser, change in allUsers: USERS ' + JSON.stringify(allUsers));
+    setIsUserOnline2(allUsers?.some((user) => {
+      if (user.loginName === loginName)
+        return (user.onlineStatus);
+    }));
+    console.log('> > > > > > > > > > > > > isUserOnline2: ' + loginName + ' is ' + isUserOnline2);
+
+  }, [allUsers, loginName]);
+
+  useEffect(() => {
+    console.log('Check if isUSerOnline2 changed > > > > isUserOnline2:' + isUserOnline2);
+  }, [isUserOnline2]);
+
+  // If the current user is displayed, do not show the buttons
   useEffect(() => {
     const compareUserNames = async () => {
       const currIntraName = await getCurrentIntraName();
-      // console.log("=================== compare: ", currIntraName, ", ", loginName);
       if (currIntraName === loginName) {
-        setShowButtons(false); // do not show buttons
+        setShowButtons(false);
       } else {
         setShowButtons(true);
       }
@@ -78,7 +100,7 @@ const DisplayOneUser: React.FC<{
         response = await axiosInstance.get(`/users/get-user/${loginName}`);
         // response = await axiosInstance.get('/users/get-current-user');
         setUserData(response.data);
-        console.log("Fetched userData: ", response);
+        // console.log("Fetched userData: ", response);
       } catch (error) {
         console.error("Error fetching user's data: ", error);
         return;
@@ -151,7 +173,7 @@ const DisplayOneUser: React.FC<{
       };
       chatSocket.emit("createChat", requestNewChatDto);
 
-      console.log("[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:", requestNewChatDto);
+      //console.log("[DisplayOneUser] handleClickPrivateChat -> requestNewChatDto:", requestNewChatDto);
     } else {
       console.log("[DisplayOneUser] ERROR could not creat private chat: Could not retrieve user's name");
     }
@@ -189,7 +211,7 @@ const DisplayOneUser: React.FC<{
       });
     }
     reconnectChatSocketIfNecessary();
-    console.log("JAKA USERdata.profileName: ", userData.profileName);
+    //console.log("JAKA USERdata.profileName: ", userData.profileName);
     navigate('/main_page/chat', { 
       state: { startedPrivateChatName: userData.profileName }
     });
@@ -223,8 +245,12 @@ const DisplayOneUser: React.FC<{
                       >
                         &#9679;
                       </span> */}
-                      onlineWS
+                      {/* onlineWS_old
                       <span id={`circle${isUserOnline ? "Green" : "Red"}`}>
+                        &#9679;
+                      </span> */}
+                      online
+                      <span id={`circle${isUserOnline2 ? "Green" : "Red"}`}>
                         &#9679;
                       </span>
                       {/* <span>{userData.onlineStatus ? "Yes" : "No"}</span> */}
@@ -313,9 +339,9 @@ const DisplayOneUser: React.FC<{
               </Col>
 
               {/* Temporary button, to be removed */}
-              <Button onClick={() => getBlockedIds()} variant="" size="sm">
+              {/* <Button onClick={() => getBlockedIds()} variant="" size="sm">
                 Test: Get blocked ids
-              </Button>
+              </Button> */}
             </Row>
             <Modal show={showModal} onHide={toggleModal} centered size="lg">
               <Modal.Body>

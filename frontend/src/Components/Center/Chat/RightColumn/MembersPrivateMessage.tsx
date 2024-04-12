@@ -11,6 +11,7 @@ import Image from "react-bootstrap/Image";
 import Modal from "react-bootstrap/Modal";
 import axiosInstance from "../../../Other/AxiosInstance.tsx";
 import useFetchMemberImages from "../Utils/useFetchMemberImages.ts";
+import { useSelectedUser } from "../../Profile/utils/contextSelectedUserName.tsx";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | null;
@@ -21,7 +22,7 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
 
   const [intraName, setIntraName] = useState<string | null>();
   const [showMemberModal, setShowMemberModal] = useState(false);
-  const [clickedMember, setClickedMember] = useState<string>();
+  const [clickedMember, setClickedMember] = useState<string | undefined>();
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showOfflineModal, setShowOfflineModal] = useState(false);
@@ -31,6 +32,8 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
   const handleOfflineShow = () => setShowOfflineModal(false);
   // jaka
   const memberImages = useFetchMemberImages(chatClicked?.usersIntraName);
+  const { setSelectedLoginName } = useSelectedUser();
+
 
   const getIntraName = async () => {
     return await axiosInstance.get('/users/get-current-intra-name').then((response): string => {
@@ -41,6 +44,12 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
       return null;
     });
   }
+
+  const goToUserProfile = (loginName: string | undefined) => {
+    if (loginName)
+      setSelectedLoginName(loginName);
+    navigate(`/main_page/users`);
+  };
 
   // We want to get the current user intra name when the component is reloaded only (intraName will be declared again)
   useEffect(() => {
@@ -201,8 +210,9 @@ const MembersPrivateMessage: React.FC<PropsHeader> = ({ chatClicked }) => {
                       <br></br>
                       <Button
                         className="me-3"
-                        href={import.meta.env.VITE_FRONTEND as string + "/main_page/users"}
+                        // href={import.meta.env.VITE_FRONTEND as string + "/main_page/users"}
                         variant="primary"
+                        onClick={() => goToUserProfile(clickedMember)}
                         // onClick={ () => setShow(false)}
                       >
                         Go to profile

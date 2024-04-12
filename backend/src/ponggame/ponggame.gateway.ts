@@ -297,13 +297,15 @@ console.log(`getting player profile name: ${player.profileName}`);
       client.emit('responsePlayingStatus', { isPlaying })
     }
 
-  // ADDED JAKA: single user's status
+  // ADDED JAKA: single user's status  // NOT USED
   @SubscribeMessage('requestOnlineStatus')
   handleRequestOnlineStatus(
     @MessageBody() loginName: string,
     @ConnectedSocket() client: Socket) {
       const isOnline = this._userIdSocketId.has(loginName);
+      this.logger.log('RequestOnlineStatus: ' + isOnline);
       client.emit('responseOnlineStatus', { isOnline });
+      // this.server.emit('responseOnlineStatus', { isOnline });
   }
 
   // Added Jaka:
@@ -311,6 +313,7 @@ console.log(`getting player profile name: ${player.profileName}`);
   // after each change of any user login status
   private emitOnlineStatuses() {
     const onlineUsersIds = Array.from(this._userIdSocketId.keys());
+    this.logger.log('Emit Online statuses');
     this.server.emit('onlineStatusUpdates', onlineUsersIds);
   }
 

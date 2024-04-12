@@ -19,9 +19,10 @@ import useFetchMemberImages from "../Utils/useFetchMemberImages.ts";
 
 type PropsHeader = {
   chatClicked: ResponseNewChatDto | undefined;
+  activeContentLeft: string;
 };
 
-const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
+const MembersGroup: React.FC<PropsHeader> = ({ chatClicked, activeContentLeft }) => {
   if (chatClicked) {
     console.log("[MembersGroup] chatClicked: ", chatClicked.name);
   }
@@ -176,8 +177,9 @@ const MembersGroup: React.FC<PropsHeader> = ({ chatClicked }) => {
       {/* Members row */}
       <Row className="members-col-members flex-grow-1">
         <Stack gap={2}>
-          { chatClicked?.usersIntraName &&
-            chatClicked?.type != 2 &&
+          { chatClicked?.usersIntraName &&  // In MyChats always show members, in Channels only show for Public, not for Protected
+            (activeContentLeft === 'recent' || (activeContentLeft === 'groups' && chatClicked?.type != 2))
+            &&
             chatClicked?.usersIntraName.map((memberIntraName: string, i: number) => (
                 <ListGroup key={i} variant="flush">
                   <ListGroup.Item
