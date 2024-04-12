@@ -242,7 +242,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				const messageCreator = await this
 					.createQueryBuilder("new_chat")
 					.select('user.loginName as "loginName", user.id as "userId"')
-					.where('user.id = :id', {id: messagesList.creator})// TODO: There is probably something wrong here, it was as creatorId before and we were still getting the exception
+					.where('user.id = :id', {id: messagesList.creator})
 					.leftJoin("new_chat.users", "user")
 					.getRawOne();
 				responseDto_inner.creator = messageCreator.loginName;
@@ -251,7 +251,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				return responseDto_inner;
 			} catch (err) {
 				// this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
-				// throw new Error('[getChat] err: ' + err);// TODO ERROR: err: TypeError: Cannot read properties of undefined (reading 'loginName')
+				throw new Error('[getChat] err: ' + err);
 			}
 		}));
 
@@ -284,7 +284,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				return await this.getOneRowAndSaveAsDTO(chat); // jaka
 			}));
 		} catch (err) {
-			throw new Error('[getAllChats] err: ' + err);
+			//throw new Error('[getAllChats] err: ' + err);
 		}
 	}
 
@@ -329,7 +329,6 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	public async deleteUserFromChat(foundChatEntityToLeave: NewChatEntity, userToDelete: UserEntity) {
 		try {
 			if (!foundChatEntityToLeave.users || !foundChatEntityToLeave.users.toString()) {// I remember checking the size was still true for an empty array
-				// TODO DELETE FROM ChatMessageEntity is working?
 				await this.delete(foundChatEntityToLeave.id);
 				this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". It was deleted!");
 				return false;
@@ -342,7 +341,6 @@ export class ChatRepository extends Repository<NewChatEntity> {
 
 					// if we don't have any user left, we can delete the chat
 					if (!foundChatEntityToLeave.users || !foundChatEntityToLeave.users.toString()) {
-						// TODO DELETE FROM ChatMessageEntity is working?
 						return await this.delete(foundChatEntityToLeave.id).then(() => {
 							this.logger.log("[deleteUserFromChat] Chat " + foundChatEntityToLeave.name + " has no users, so it was deleted");
 							return false;
@@ -440,7 +438,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			let chatAdmins = await this
 				.createQueryBuilder("new_chat")
 				.where('new_chat.id = :id', { id: chat.id })
-				.leftJoinAndSelect("new_chat.admins", "admin")// TODO why admin and not user for the alias?
+				.leftJoinAndSelect("new_chat.admins", "admin")
 				.getOne();
 			chatAdmins.admins.push(user);
 			await this
