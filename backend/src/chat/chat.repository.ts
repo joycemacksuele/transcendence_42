@@ -24,6 +24,8 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 
 	public async addNewUserToUsersCanChatEntity(chatEntity: NewChatEntity, user: UserEntity) {
 		try {
+			console.log("Ab", chatEntity);
+			console.log("Cd", user);
 			let usersCanChatRow = await this
 				.createQueryBuilder("users_can_chat")
 				.where('new_chat.id = :chatId  AND user.id = :userId', {chatId: chatEntity.id, userId: user.id})
@@ -199,7 +201,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			// All users in the UsersCanChatEntity that have a time stamp in the future are muted
 			if (usersCanChatRow.timeStamp > new Date().getTime()) {
 				return this.userService.getUserById(usersCanChatRow.userId).then((user) => {
-					// this.logger.log("[getChat] Muted users in the chat: " + user.loginName);
+					//this.logger.log("[getChat] Muted users in the chat: " + user.loginName);
 					return user.loginName;
 				}).catch((error) => {
 					// return [];
@@ -233,28 +235,31 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.messages", "chat_message")
 			.orderBy("chat_message.id", "ASC")
 			.getRawMany();
-		responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
-			const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
-			responseDto_inner.id = messagesList.id;
-			responseDto_inner.message = messagesList.message;
-			// this.logger.log("[getChat] NewChat message(s): " + messagesList.message);
-			try {
-				const messageCreator = await this
-					.createQueryBuilder("new_chat")
-					.select('user.loginName as "loginName", user.id as "userId"')
-					.where('user.id = :id', {id: messagesList.creator})
-					.leftJoin("new_chat.users", "user")
-					.getRawOne();
-				responseDto_inner.creator = messageCreator.loginName;
-				responseDto_inner.creator_id = messageCreator.userId;
-				// this.logger.log("[getChat] NewChat message sender: " + messageCreator.loginName);
-				return responseDto_inner;
-			} catch (err) {
-				// this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
-				throw new Error('[getChat] err: ' + err);
-			}
-		}));
-
+		if (chatMessages[0].id === null) {
+			responseDto.messages = [];
+		} else {
+			responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
+				const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
+				responseDto_inner.id = messagesList.id;
+				responseDto_inner.message = messagesList.message;
+				// this.logger.log("[getChat] NewChat message(s): " + messagesList.message);
+				try {
+					const messageCreator = await this
+						.createQueryBuilder("new_chat")
+						.select('user.loginName as "loginName", user.id as "userId"')
+						.where('user.id = :id', {id: messagesList.creator})
+						.leftJoin("new_chat.users", "user")
+						.getRawOne();
+					responseDto_inner.creator = messageCreator.loginName;
+					responseDto_inner.creator_id = messageCreator.userId;
+					// this.logger.log("[getChat] NewChat message sender: " + messageCreator.loginName);
+					return responseDto_inner;
+				} catch (err) {
+					// this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
+					// throw new Error('[getChat] err: ' + err);
+				}
+			}));
+		}
 		return responseDto;
 	}
 
@@ -284,7 +289,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 				return await this.getOneRowAndSaveAsDTO(chat); // jaka
 			}));
 		} catch (err) {
-			//throw new Error('[getAllChats] err: ' + err);
+			throw new Error('[getAllChats] err: ' + err);
 		}
 	}
 
