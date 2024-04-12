@@ -2,8 +2,6 @@ import React, { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate} from "react-router-dom";
 import axiosInstance from "../../Other/AxiosInstance";
 import { ListGroup, Container, Col, Row, Modal, Button } from "react-bootstrap";
-import { insertDummyUsers } from "../../Test/InsertDummyUsers";
-import { deleteDummies } from "../../Test/deleteDummyUsers";
 import DisplayOneUser from "../Profile/DisplayOneUser/DisplayOneUser";
 import { useSelectedUser } from "../Profile/utils/contextSelectedUserName";
 import { getOnlineStatusUpdates } from "../Profile/utils/getOnlineStatuses";
@@ -24,11 +22,6 @@ export interface User {
   gamesWon: number;
   gamesLost: number;
 }
-
-// interface UpdateOnlineStatus {
-//   id: string;
-//   isOnline: boolean;
-// }
 
 const UsersList: React.FC = () => {
   // const [displayList, setDisplayList] = useState(true);
@@ -83,14 +76,7 @@ const UsersList: React.FC = () => {
     }
   }, [setSelectedLoginName]);
 
-  // Check if dummies have been inserted before using local storage
   useEffect(() => {
-    if (!localStorage.getItem("dummiesInserted")) {
-      insertDummyUsers();
-
-      // Set a flag in local storage to indicate dummies have been inserted
-      localStorage.setItem("dummiesInserted", "true");
-    }
     chatSocket.emit('identify');
     //invite button
     chatSocket.on("inviteMessage", (message: string) => {
@@ -245,13 +231,6 @@ const UsersList: React.FC = () => {
               </span>
             </p>
           )}
-          <button onClick={insertDummyUsers} className="button-custom">
-            Create dummies
-          </button>
-          &nbsp;&nbsp;
-          <button onClick={deleteDummies} className="button-custom">
-            Delete dummies
-          </button>
         </Col>
       </Row>
       <Modal show={showInviteModal}>

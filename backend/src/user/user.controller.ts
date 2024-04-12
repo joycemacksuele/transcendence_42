@@ -174,18 +174,6 @@ export class UserController {
 		}
 	}
 
-	@Delete()
-	async deleteDummies(): Promise<void> {
-		// this.logger.log('DELETE All Dummies');
-		try {
-			await this.userService.deleteDummies();
-			// this.logger.log('from nest user.controller: All dummies deleted.');
-		} catch (error) {
-			this.logger.error('from nest user.controller: Error deleting dummies.', error);
-		}
-	}
-
-
 	@Get('check_if_user_in_db')
   // async checkIfCurrUserIsInDB(@Query('loginName') loginName: string) {
     async checkIfCurrUserIsInDB(@Req() request: Request): Promise<CheckResponse> {
@@ -268,16 +256,5 @@ export class UserController {
     }
   }
 
-	// @Post('delete-dummies')
-	// async deleteDummies(): Promise<void> {
-	//   return this.userService.deleteDummies();
-	// }
-
-	// :id  is a route parameter, matching the request /users/:id
-	// @Get(':id')
-	// async getUserById(@Param('id') id: number): Promise<UserEntity | undefined> {
-	//   this.logger.log('findById');
-	//   return this.userService.getUserById(id);
-	// }
 }
 

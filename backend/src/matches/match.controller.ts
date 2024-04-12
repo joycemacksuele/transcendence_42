@@ -16,19 +16,6 @@ export class MatchController {
 		return this.matchService.createMatch(MatchDto);
 	}
 
-
-	// todo jaka: should detect the current user from decorator. Unless we need to display history for every friend ???
-	// @Get('/history/:userId')
-	// async getMatchHistory(@Param('userId') userId: number) {
-	// 	console.log('Fetching /matches/history:1');
-	// 	return await this.matchService.getMatchHistory(userId);
-	// }
-	// @Get('/history/:userId')
-	// async getMatchHistory(@Param('userId') userId: number) {
-	// 	console.log('Fetching /matches/history, userID: ', userId);
-	// 	return await this.matchService.getMatchHistory(userId);
-	// }
-
 	@Get('/history/:loginName')
 	async getMatchHistoryByLoginName(@Param('loginName') loginName: string) {
 
@@ -37,22 +24,6 @@ export class MatchController {
 		console.log('Fetching /matches/history, USER ID: ', user.id);
 		return await this.matchService.getMatchHistoryByUserId(user.id);
 		// return await this.matchService.getMatchHistoryByLoginName(loginName);
-	}
-
-
-	// Todo: To be removed (jaka):
-	// 		Prevent creating more dummy matches, if they already exists.
-	//		Assuming that there is always a dummy with id === 2 
-	//		If any match already exist, no matter which ID -> exit
-	@Get('/check-if-dummy-matches-exist')
-		//   WITH A Promise<>
-	// async checkIfDummyMatchesExists(): Promise<{ matchExists: number }>  {
-		// WITH A @Res
-		async checkIfDummyMatchesExists(@Res() res: Response)  {
-		const dummy_match = await this.matchService.getMatchHistoryByUserId(2);
-		// console.log('dummyMatch.length:', dummy_match.length)
-
-		res.json({ matchExists: dummy_match.length > 0 });
 	}
 
 	@Get('/recalculateRanks')

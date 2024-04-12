@@ -86,7 +86,6 @@ async function main() {
   // todo: replace with .env
   app.use('/uploads', express.static('uploads'));
   app.use('/resources', express.static('resources'));
-  app.use('/uploadsDummies', express.static('uploadsDummies'));
 
   // this allows the AuthGuard to be used globally so that we don't have to add the decorator to every single controller
   // app.useGlobalGuards(new AuthGuard(new DataSource({type: "postgres"}), new UserService(new UserRepository), new JwtService,  new Reflector));

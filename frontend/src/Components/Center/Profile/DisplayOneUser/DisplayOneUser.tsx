@@ -38,6 +38,17 @@ export const getCurrentIntraName = async () => {
   }
 };
 
+export const getCurrentUserName = async () => {
+  try {
+    const response = await axiosInstance.get("/users/get-current-username");
+    // console.log('=================== username: ', response.data.username);
+    return response.data.username;
+  } catch (error) {
+    console.error("Error getting current username: ", error);
+    return null;
+  }
+};
+
 const DisplayOneUser: React.FC<{
   loginName: string;
   showMatchHistory: boolean;
@@ -166,7 +177,7 @@ const DisplayOneUser: React.FC<{
 
   const creatChat = async () => {
     if (userData) {
-      const me = await getCurrentIntraName();
+      const me = await getCurrentUserName();
       const requestNewChatDto: RequestNewChatDto = {
         name: userData.profileName + " and " + me,
         type: ChatType.PRIVATE,

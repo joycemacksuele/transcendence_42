@@ -38,7 +38,6 @@ import { TwoFactorAuthModule } from "src/auth/2fa/2fa.module";
 import { JwtService } from "@nestjs/jwt";
 import { MailerModule } from "@nestjs-modules/mailer";
 
-import { DummyUsersController } from "src/dummies/dummyUsers.controller";
 import { UploadImageController } from "src/user/change_profile_image_or_name/change_profile_image";
 import { AddUsernameMiddleware } from "src/user/change_profile_image_or_name/change_profile_image";
 import { MatchModule } from "src/matches/match.module";
@@ -83,7 +82,7 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
     }),
 
 
-    TypeOrmModule.forFeature([UserEntity]), // it is already in user.module -> DELETE FROM HERE?
+    TypeOrmModule.forFeature([UserEntity]),
     UserModule,
     TwoFactorAuthModule,
     MailerModule,
@@ -99,9 +98,7 @@ import { PonggameModule } from "src/ponggame/ponggame.module";
     UserController,
     TwoFactorAuthController,
     AuthController,
-    DummyUsersController, // jaka, testing
     UploadImageController,
-    // GetUserNameFromIntra, // jaka, testing
   ],
 
   providers: [

@@ -40,19 +40,6 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async deleteDummies(): Promise<void> {
-    this.logger.log('deleteDummies');
-    try {
-      await this.userRepository.delete({ profileName: Like ('%dummy%') });
-      await this.userRepository.delete({ loginName: Like ('%dummy%') });  // Jaka: Temporary, until the 'change name' bug is solved
-      this.logger.log('All dummy users deleted.');
-    }
-    catch (error) {
-      this.logger.error('Error deleting dummy users.', error);
-      // throw new InternalServerErrorException('Unable to delete dummy users');
-    }
-  }
-
   async getAllUsers(): Promise<UserEntity[]> {
     this.logger.log('getAllUsers');
     const users = await this.userRepository.find();

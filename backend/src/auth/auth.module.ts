@@ -2,7 +2,6 @@ import {Logger, Module} from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-// import { AuthGuard } from './guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { UserService } from 'src/user/user.service';
 import { TwoFactorAuthService } from './2fa/2fa.service';
@@ -14,7 +13,7 @@ import { UserEntity } from 'src/user/user.entity';
   imports: [
   JwtModule.register({
     global: true,
-    secret: process.env.secret // added jaka, to enable extracting the jwt token
+    secret: process.env.secret
   }), 
   UserModule, 
   TypeOrmModule.forFeature([UserEntity])],
@@ -31,7 +30,7 @@ import { UserEntity } from 'src/user/user.entity';
   TwoFactorAuthService,
   ],
 
-  exports: [AuthService]  // added jaka, to be able to use it in the Blockship controller
+  exports: [AuthService]
 })
 
 export class AuthModule {

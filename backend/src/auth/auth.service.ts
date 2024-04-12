@@ -75,17 +75,14 @@ export class AuthService {
 			throw new HttpException('Authorization failed with 42 API', HttpStatus.UNAUTHORIZED);
 		});
 
-		const hash = await this.hashSecret(secret, id);  // CORINA - TO DO - is this actually necesary? 
-
 		const dto: CreateUserDto = {
 			loginName: login,
 			profileName: login,
 			intraId: +id,
 			email: email,
-			onlineStatus: false,		// at logout change to 'false'
-//			hashedSecret: hash,         // might not be necessary and might need to be removed 
+			onlineStatus: false,
 			refreshToken: 'default',
-			tfaEnabled: true,
+			tfaEnabled: false,
 			tfaCode: 'default',
 			tfaVerified: false,
 			profileImage: avatar,
@@ -103,17 +100,6 @@ export class AuthService {
 	//At Auth0, the integrity and security of our data are one of our highest priorities. 
 	//We use the industry-grade and battle-tested bcrypt algorithm to securely hash and salt passwords. 
 
-	async hashSecret(secret: string, id: string) {
-		const saltOrRounds = 10; 
-		this.logger.log('Salt : ' + saltOrRounds + ' Secret: ' +  secret); // testing purpose - TO BE REMOVED!
-		try {
-			return await bcryptjs.hash(secret, saltOrRounds);
-		}
-		catch (err) {
-			this.logger.error('\x1b[31mHash secret error: \x1b[0m' + err);
-		}
-	}
-
 	async getOrCreateUser(data: CreateUserDto, response: Response) {
     	let token: string; 
 		let player = await this.userService.getUserByLoginName(data.loginName);
@@ -123,10 +109,7 @@ export class AuthService {
 				player = await this.userService.createUser(data);
 				this.logger.log('made new player: ' + player.loginName);
 
-				// ADDED JAKA: 							//	SAVE ORIG USER IMAGE TO THE ./uploads/ FOLDER
-				const imageUrl = data.profileImage;		// 	AND STORE THE PATH TO THE DATABASE
-
-				// todo: replace ./uploads/ with .env var everywhere
+				const imageUrl = data.profileImage;
             	const imagePath = `./${process.env.UPLOADS}/${player.loginName}.jpg`;
 
 				try {
@@ -327,7 +310,6 @@ export class AuthService {
         //DISABLE LOGGER
 		    //this.logger.log('extract token from header()');
 
-//	console.log(request);
         cookie = request.get('Cookie');
         if (!cookie)
             return undefined;

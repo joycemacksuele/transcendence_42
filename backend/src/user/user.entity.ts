@@ -25,7 +25,7 @@ import { UsersCanChatEntity } from "../chat/entities/users-can-chat.entity";
 export class UserEntity {
 
 	@PrimaryGeneratedColumn()
-	id?: number;	// ? is optional -> it will be created automatically
+	id?: number;
 
 	@Column()
 	loginName: string;
@@ -63,10 +63,6 @@ export class UserEntity {
 	@Column({default: 'Newbee'})
 	achievements: string;
 
-/*
-	@Column()
-	hashedSecret: string;
-*/
 	@Column({default: 'default'})
 	refreshToken: string;
 

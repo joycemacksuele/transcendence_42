@@ -3,9 +3,6 @@ import axiosInstance from "../../../Other/AxiosInstance";
 import { Row, Col, ListGroup } from "react-bootstrap";
 import { getCurrentIntraName } from "../DisplayOneUser/DisplayOneUser";
 
-import { addDummyMatches } from "../../../Test/addDummyMatches";
-
-
 interface UserProps {
 	loginName: string | null;
 }
@@ -57,7 +54,6 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 	
 	useEffect(() => {
 		// console.log('Adding ')
-		addDummyMatches();
 
 		const fetchMatchHistory = async () => {
 			if (loginName) {
@@ -68,7 +64,7 @@ const MatchHistory: React.FC<UserProps> = (props) => {
 					console.log("Match history: response: ", response);
 					setMatchHistory(response.data);
 				} catch (error) {
-					console.error('Error fetching match history', error);
+					// console.error('Error fetching match history', error);
 					return;
 				}
 			} 

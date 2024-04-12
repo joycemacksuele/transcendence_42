@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../Other/AxiosInstance";
-import { insertDummyUsers } from "../../../Test/InsertDummyUsers";
 import { ListGroup } from "react-bootstrap";
-// import axios from "axios";
 
-
-// axios.defaults.withCredentials = true;
 
 interface User {
   id: number;
@@ -61,12 +57,6 @@ const FriendsList: React.FC<FriendsListProps> = ({ clickOnUser }) => {
   };
 
   useEffect(() => {
-    // Check if dummies have been inserted before using local storage
-    if (!localStorage.getItem("dummiesInserted")) {
-      insertDummyUsers();
-      // Set a flag in local storage to indicate dummies have been inserted
-      localStorage.setItem("dummiesInserted", "true");
-    }
     fetchData();
   }, []);
 
