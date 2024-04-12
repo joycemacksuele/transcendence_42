@@ -24,6 +24,8 @@ export class UsersCanChatRepository extends Repository<UsersCanChatEntity> {
 
 	public async addNewUserToUsersCanChatEntity(chatEntity: NewChatEntity, user: UserEntity) {
 		try {
+			console.log("Ab", chatEntity);
+			console.log("Cd", user);
 			let usersCanChatRow = await this
 				.createQueryBuilder("users_can_chat")
 				.where('new_chat.id = :chatId  AND user.id = :userId', {chatId: chatEntity.id, userId: user.id})
@@ -199,7 +201,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			// All users in the UsersCanChatEntity that have a time stamp in the future are muted
 			if (usersCanChatRow.timeStamp > new Date().getTime()) {
 				return this.userService.getUserById(usersCanChatRow.userId).then((user) => {
-					// this.logger.log("[getChat] Muted users in the chat: " + user.loginName);
+					//this.logger.log("[getChat] Muted users in the chat: " + user.loginName);
 					return user.loginName;
 				}).catch((error) => {
 					// return [];
@@ -233,28 +235,31 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			.leftJoin("new_chat.messages", "chat_message")
 			.orderBy("chat_message.id", "ASC")
 			.getRawMany();
-		responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
-			const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
-			responseDto_inner.id = messagesList.id;
-			responseDto_inner.message = messagesList.message;
-			// this.logger.log("[getChat] NewChat message(s): " + messagesList.message);
-			try {
-				const messageCreator = await this
-					.createQueryBuilder("new_chat")
-					.select('user.loginName as "loginName", user.id as "userId"')
-					.where('user.id = :id', {id: messagesList.creator})// TODO: There is probably something wrong here, it was as creatorId before and we were still getting the exception
-					.leftJoin("new_chat.users", "user")
-					.getRawOne();
-				responseDto_inner.creator = messageCreator.loginName;
-				responseDto_inner.creator_id = messageCreator.userId;
-				// this.logger.log("[getChat] NewChat message sender: " + messageCreator.loginName);
-				return responseDto_inner;
-			} catch (err) {
-				// this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
-				// throw new Error('[getChat] err: ' + err);// TODO ERROR: err: TypeError: Cannot read properties of undefined (reading 'loginName')
-			}
-		}));
-
+		if (chatMessages[0].id === null) {
+			responseDto.messages = [];
+		} else {
+			responseDto.messages = await Promise.all(chatMessages.map(async (messagesList) => {
+				const responseDto_inner : ResponseMessageChatDto = new ResponseMessageChatDto();
+				responseDto_inner.id = messagesList.id;
+				responseDto_inner.message = messagesList.message;
+				// this.logger.log("[getChat] NewChat message(s): " + messagesList.message);
+				try {
+					const messageCreator = await this
+						.createQueryBuilder("new_chat")
+						.select('user.loginName as "loginName", user.id as "userId"')
+						.where('user.id = :id', {id: messagesList.creator})
+						.leftJoin("new_chat.users", "user")
+						.getRawOne();
+					responseDto_inner.creator = messageCreator.loginName;
+					responseDto_inner.creator_id = messageCreator.userId;
+					// this.logger.log("[getChat] NewChat message sender: " + messageCreator.loginName);
+					return responseDto_inner;
+				} catch (err) {
+					// this.logger.log("[getChat] Can't find user to set the ResponseMessageChatDto");
+					// throw new Error('[getChat] err: ' + err);
+				}
+			}));
+		}
 		return responseDto;
 	}
 
@@ -329,7 +334,6 @@ export class ChatRepository extends Repository<NewChatEntity> {
 	public async deleteUserFromChat(foundChatEntityToLeave: NewChatEntity, userToDelete: UserEntity) {
 		try {
 			if (!foundChatEntityToLeave.users || !foundChatEntityToLeave.users.toString()) {// I remember checking the size was still true for an empty array
-				// TODO DELETE FROM ChatMessageEntity is working?
 				await this.delete(foundChatEntityToLeave.id);
 				this.logger.log("[deleteUserFromChat] No users left in the chat " + foundChatEntityToLeave.name + ". It was deleted!");
 				return false;
@@ -342,7 +346,6 @@ export class ChatRepository extends Repository<NewChatEntity> {
 
 					// if we don't have any user left, we can delete the chat
 					if (!foundChatEntityToLeave.users || !foundChatEntityToLeave.users.toString()) {
-						// TODO DELETE FROM ChatMessageEntity is working?
 						return await this.delete(foundChatEntityToLeave.id).then(() => {
 							this.logger.log("[deleteUserFromChat] Chat " + foundChatEntityToLeave.name + " has no users, so it was deleted");
 							return false;
@@ -440,7 +443,7 @@ export class ChatRepository extends Repository<NewChatEntity> {
 			let chatAdmins = await this
 				.createQueryBuilder("new_chat")
 				.where('new_chat.id = :id', { id: chat.id })
-				.leftJoinAndSelect("new_chat.admins", "admin")// TODO why admin and not user for the alias?
+				.leftJoinAndSelect("new_chat.admins", "admin")
 				.getOne();
 			chatAdmins.admins.push(user);
 			await this

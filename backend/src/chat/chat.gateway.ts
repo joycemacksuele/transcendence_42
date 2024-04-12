@@ -16,7 +16,6 @@ import {ChatRepository} from './chat.repository';
 import {ResponseNewChatDto} from './dto/response-new-chat.dto';
 import {RequestNewChatDto} from './dto/request-new-chat.dto';
 import {RequestMessageChatDto} from './dto/request-message-chat.dto';
-import {RequestRegisterChatDto} from './dto/request-register-chat.dto';
 import {AuthService} from "src/auth/auth.service";
 import {WsExceptionFilter} from "./utils/chat-exception-handler";
 import {UserService} from "../user/user.service";
@@ -375,24 +374,14 @@ export class ChatGateway
       @MessageBody() requestMessageChatDto: RequestMessageChatDto,
       @ConnectedSocket() clientSocket: Socket) {
     this.logger.log('messageChat -> requestMessageChatDto: ', requestMessageChatDto);
-    // TODO: only send (emit) message to the specific chat room if the users' time stamp for muting is over
     const ret : ResponseNewChatDto = await this.chatService.sendChatMessage(requestMessageChatDto);
     // A message was received and saved into the database, so we can emit it to everyone on the specific socket room
     const theChat : NewChatEntity = await this.chatRepository.getOneChat(requestMessageChatDto.chatId);
 //    this.logger.log("Derp", theChat.name);
 //    clientSocket.emit(theChat.name, ret);
-    this.ws_server.in(clientSocket.id).socketsJoin(theChat.name);
-    this.ws_server.to(theChat.name).emit('messageChat', ret);
+    this.ws_server.in(clientSocket.id).socketsJoin(theChat.id.toString());
+    this.ws_server.to(theChat.id.toString()).emit('messageChat', ret);
   }
-
-  @SubscribeMessage('registerChat')// TODO: ARE WE USING THIS? This DTO repeats the new chat dto and is not updated with the password/name validations
-  registerChat(@MessageBody() requestRegisterChatDto: RequestRegisterChatDto) {
-    this.logger.log('registerChat -> requestRegisterChatDto: ', requestRegisterChatDto);
-    // const ret = this.chatService.messageChat(requestMessageChatDto);
-    // this.ws_server.emit('new_chat', ret);
-    // return ret; if needed
-  }
-
 
   // added jaka:
   @SubscribeMessage('getOneChatDto')
@@ -403,6 +392,7 @@ export class ChatGateway
       this.logger.log('         fetched oneChat.name: ' + oneChat.name);
       // this.logger.log('         fetched oneChat.messages: ' + oneChat.messages);
       // this.logger.log('         fetched oneChat.users: ' + JSON.stringify(oneChat.usersIntraName));
+      this.ws_server.in(clientSocket.id).socketsJoin(data.chatId.toString());
       clientSocket.emit('oneChat', oneChat);
     } catch (error) {
       this.logger.error('Error fetching one chat', error);

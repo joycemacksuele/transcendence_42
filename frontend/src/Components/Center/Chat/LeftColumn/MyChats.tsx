@@ -181,14 +181,7 @@ const MyChats: React.FC<PropsHeader> = ({
                             alt="chat"
                           />
                         )}
-                        {chat.name == profileName
-                          ? chat.usersProfileName.map((userProfileName) => {
-                              // Here we are trying to get the second user profile name to set as the chat name
-                              if (userProfileName != chat.name) {
-                                return userProfileName;
-                              }
-                            })
-                          : chat.name}
+                        {chat.name}
                       </ListGroup.Item>
                     </ListGroup>
                   )}

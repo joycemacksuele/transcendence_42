@@ -164,10 +164,11 @@ const DisplayOneUser: React.FC<{
     )
   }
 
-  const creatChat = () => {
+  const creatChat = async () => {
     if (userData) {
+      const me = await getCurrentIntraName();
       const requestNewChatDto: RequestNewChatDto = {
-        name: userData.profileName,
+        name: userData.profileName + " and " + me,
         type: ChatType.PRIVATE,
         password: null,
       };
@@ -189,7 +190,7 @@ const DisplayOneUser: React.FC<{
     });
   };
 
-  const handleClickPrivateChat = () => {
+  const handleClickPrivateChat = async () => {
     if (chatSocket.connected) {
       console.log(
         "[DisplayOneUser] socket connected: ",
